@@ -1,8 +1,0 @@
-DB4O was found to function only if it is within the same package as the
-data objects it stores, and thus had be placed in the Core modual.
-
-Subsequently, the Database Services had to be also placed in the Core modual
-because DatabaseServices has to import Family, which is a Core data object.
-At the same time, DB4O requires importing DatabaseServices. So, placing
-the Database service into its own modual causes cross dependencies, which
-the NetBeans platform does not allow. 
