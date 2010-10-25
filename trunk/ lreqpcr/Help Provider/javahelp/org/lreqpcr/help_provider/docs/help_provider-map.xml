@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2010  Bob Rutledge
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>
+and open the template in the editor.
+-->
+<!DOCTYPE map PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp Map Version 2.0//EN" "http://java.sun.com/products/javahelp/map_2_0.dtd">
+<map version="2.0">
+    <mapID target="About LRE Analyzer" url="about_lre_analyzer.html"/>
+<!--Amplicon database    -->
+    <mapID target="amplicon-overview" url="amplicon/amplicon_overview.html"/>
+    <mapID target="amplicon-editing" url="amplicon/amplicon_editing.html"/>
+<!--Calibration database   -->
+    <mapID target="calibration overview" url="calibration/calibration_overview.html"/>
+    <mapID target="calbration tree" url="calibration/calibration_tree.html"/>
+<!--Data Export    -->
+    <mapID target="data-export-overview" url="data_export/data_export_overview.html"/>
+<!--Data Import    -->
+    <mapID target="data-import-overview" url="data_import/data_import_overview.html"/>
+    <mapID target="ab7500ver2" url="data_import/ab7500ver2.html"/>
+    <mapID target="ab7500ver1" url="data_import/ab7500ver1.html"/>
+    <mapID target="mxpVer4" url="data_import/mxpVer4.html"/>
+    <mapID target="sample-template" url="data_import/sampleprofile_template_import.html"/>
+    <mapID target="calibration-template" url="data_import/calbnprofile_template_import.html"/>
+    <mapID target="ab7900ver2_3" url="data_import/ab7900ver2_3.html"/>
+    <mapID target="amplicon-import" url="data_import/amplicon_import.html"/>
+<!--Database Overview    -->
+    <mapID target="database-overview" url="database_overview/database_overview.html"/>
+    <mapID target="experiment-database" url="database_overview/experiment_database.html"/>
+    <mapID target="calibration-database" url="database_overview/calibration_database.html"/>
+    <mapID target="amplicon-database" url="database_overview/amplicon_database.html"/>
+<!--Editor Panel    -->
+    <mapID target="editor-panel-overview" url="editor_panel/editor_panel_overview.html"/>
+    <mapID target="profile-editor-window" url="editor_panel/profile_editor_window.html"/>
+    <mapID target="amplicon-editor-window" url="editor_panel/amplicon_editor_window.html"/>
+<!--Explorer Panel    -->
+    <mapID target="explorer-panel-overview" url="explorer_panel/explorer_panel_overview.html"/>
+    <mapID target="experiment-database-window" url="explorer_panel/experiment_database_window.html"/>
+    <mapID target="calibration-database-window" url="explorer_panel/calibration_database_window.html"/>
+    <mapID target="amplicon-database-window" url="explorer_panel/amplicon_database_window.html"/>
+<!--Getting Started    -->
+    <mapID target="getting-start" url="getting_started/getting_start.html"/>
+    <mapID target="program-intro" url="getting_started/lre_analyzer_intro.html"/>
+    <mapID target="demo-databases" url="getting_started/demo_databases.html"/>
+    <mapID target="implementing-lre" url="getting_started/implementing_lre_assays.html"/>
+<!--Glossary    -->
+    <mapID target="glossary" url="glossary/glossary.html"/>
+<!--Issues    -->
+    <mapID target="known-issues" url="issues/known_issues_overview.html"/>
+    <mapID target="profile-arcing" url="issues/profile_arcing.html"/>
+    <mapID target="profile-anomalies" url="issues/profile_anomalies.html"/>
+    <mapID target="emax-normalization" url="issues/high_emax.html"/>
+    <mapID target="ab7500-fast-ramping" url="issues/ab7500_fast_ramping.html"/>
+    <mapID target="rox-normalization" url="issues/rox_normalization.html"/>
+<!--    <mapID target="baseline-drifting" url="issues/baseline_drifting.html"/>-->
+<!--LRE Overview    -->
+    <mapID target="lre-introduction" url="lre_overview/lre_introduction.html"/>
+    <mapID target="lre-literature" url="lre_overview/lre_literature.html"/>
+    <mapID target="lre-faqs" url="lre_overview/lre_faqs.html"/>
+<!--LRE Window Selection    -->
+    <mapID target="lre-window-selection-overview" url="lre_window_selection/lre_window_selection_overview.html"/>
+    <mapID target="lre-window-definition" url="lre_window_selection/window_definition.html"/>
+    <mapID target="automated-window-selection" url="lre_window_selection/automated_window_selection.html"/>
+    <mapID target="manual-window-selection" url="lre_window_selection/manual_window_selection.html"/>
+<!--Optical Calibration    -->
+    <mapID target="optical-calibration-overview" url="optical_calibration/optical_calibration_overview.html"/>
+    <mapID target="generating-an-ocf" url="optical_calibration/generating_an_ocf.html"/>
+    <mapID target="run-specific-ocf" url="optical_calibration/run_specific_ocf.html"/>
+<!--Program Overview    -->
+    <mapID target="user-interface-overview" url="program_overview/user_interface_overview.html"/>
+    <mapID target="revision-overview" url="revision_overview/revision_overview.html"/>
+    <mapID target="uninstalling" url="program_overview/uninstalling.html"/>
+<!--Quality Control    -->
+    <mapID target="developing-performance-benchmarks" url="quality_control/developing_performance_benchmarks.html"/>
+    <mapID target="quality-control" url="quality_control/quality_control.html"/>
+    <mapID target="monitoring-assay-performance" url="quality_control/monitoring_assay_performance.html"/>
+    <mapID target="optical-precision-overview" url="quality_control/optical_precision_overview.html"/>
+<!--Quantitative Accuracy    -->
+    <mapID target="assessing-accuracy" url="quantitative_accuracy/assessing_accuracy.html"/>
+    <mapID target="less-than-10molecules" url="quantitative_accuracy/less_than_10molecules.html"/>
+    <mapID target="lda-overview" url="quantitative_accuracy/lda_overview.html"/>
+    
+<!--Sorting Panel    -->
+    <mapID target="sorting-panel-overview" url="sorting_panel/sorting_panel_overview.html"/>
+
+<!--Assay Precision    -->
+<!--    <mapID target="assay-precision" url="assay_precision/assay_precision_overview.html"/>
+    <mapID target="average-profiles" url="assay_precision/average_profiles.html"/>
+    <mapID target="repl-fo-cv" url="assay_precision/repl_fo_cv.html"/>-->
+
+<!--Advanced Topics    -->
+<!--    <mapID target="advanced-topics-overview" url="advanced_topics/advanced_topics_overview.html"/>-->
+<!--Assay Design    -->
+<!--    <mapID target="assay-design-overview" url="assay_design/assay_design_overview.html"/>
+    <mapID target="primer-design" url="assay_design/primer_design.html"/>-->
+
+
+</map>

@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+OpenIDE-Module: org.lreqpcr.manual_data_import
+OpenIDE-Module-Layer: org/lreqpcr/manual_data_import/layer.xml
+OpenIDE-Module-Localizing-Bundle: org/lreqpcr/manual_data_import/Bundle.properties
+OpenIDE-Module-Specification-Version: 1.0
+

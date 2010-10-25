@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2010  Bob Rutledge
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>
+and open the template in the editor.
+-->
+<!DOCTYPE toc PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp TOC Version 2.0//EN" "http://java.sun.com/products/javahelp/toc_2_0.dtd">
+<toc version="2.0">
+    <tocitem text="LRE Analyzer" target="About LRE Analyzer">
+
+        <tocitem text="Getting Start" target="getting-start">
+            <tocitem text="Introduction to LRE" target="lre-introduction"/>
+            <tocitem text="LRE Analyzer Introduction" target="program-intro"/>
+            <tocitem text="Demo Databases" target="demo-databases"/>
+            <tocitem text="Implementing LRE-based Assays" target="implementing-lre"/>
+        </tocitem>
+        
+        <tocitem text="LRE Databases" target="database-overview">
+            <tocitem text="Experiment Database" target="experiment-database"/>
+            <tocitem text="Calibration Database" target="calibration-database"/>
+            <tocitem text="Amplicon Database" target="amplicon-database"/>
+        </tocitem>
+        
+        <tocitem text="User Interface" target="user-interface-overview">
+            <tocitem text="Explorer Panel" target="explorer-panel-overview">
+                <tocitem text="Experiment Database Window" target="experiment-database-window"/>
+                <tocitem text="Calibration Database Window" target="calibration-database-window"/>
+                <tocitem text="Amplicon Database Window" target="amplicon-database-window"/>
+            </tocitem>
+            <tocitem text="Editor Panel" target="editor-panel-overview">
+                <tocitem text="Profile Editor Window" target="profile-editor-window"/>
+                <tocitem text="Amplicon Editor Window" target="amplicon-editor-window"/>
+            </tocitem>
+            <tocitem text="Sorting Panel" target="sorting-panel-overview"/>
+        </tocitem>
+        <tocitem text="LRE Window Selection" target="lre-window-selection-overview">
+            <tocitem text="What is the LRE Window?" target="lre-window-definition"/>
+            <tocitem text="Automated Window Selection" target="automated-window-selection"/>
+            <tocitem text="Manual Window Selection" target="manual-window-selection"/>
+        </tocitem>
+        
+        <tocitem text="Optical Calibration" target="optical-calibration-overview">
+            <tocitem text="Generating an OCF" target="generating-an-ocf"/>
+            <tocitem text="Applying a Run-specific OCR" target="run-specific-ocf"/>
+        </tocitem>
+        
+        <tocitem text="Data Import" target="data-import-overview">
+            <tocitem text="AB7500 Version 2" target="ab7500ver2"/>
+            <tocitem text="MXP5000p Version 3/4" target="mxpVer4"/>
+            <tocitem text="AB7500 Version 1" target="ab7500ver1"/>
+<!--            <tocitem text="AB7900 Version 2.3" target="ab7900ver2_3"/>-->
+            <tocitem text="Sample Template" target="sample-template"/>
+            <tocitem text="Calibration Template" target="calibration-template"/>
+            <tocitem text="Amplicon Import" target="amplicon-import"/>
+        </tocitem>
+        
+        <tocitem text="Data Export" target="data-export-overview">
+
+        </tocitem>
+<!--        <tocitem text="Advanced Topics" target="advanced-topics-overview">
+            <tocitem text="Assay Design" target="assay-design-overview">
+                <tocitem text="Primer Design" target="primer-design"/>
+            </tocitem>
+            <tocitem text="Amplification Kinetics" target="">
+               
+            </tocitem>   -->
+<!--        </tocitem>-->
+<!--        <tocitem text="LRE FAQS" target="lre-faqs"/>-->
+
+        <tocitem text="Quality Control" target="quality-control">
+            <tocitem text="Optical Precision" target="optical-precision-overview"/>
+            <tocitem text="Monitoring Assay Performance" target="monitoring-assay-performance"/>
+            <tocitem text="<10 Molecule Problem" target="less-than-10molecules"/>
+            <tocitem text="Assessing Quantitative Accuracy" target="assessing-accuracy"/>
+            <tocitem text = "Emax Normalization" target="emax-normalization"/>
+            <tocitem text="Developing Performance Benchmarks" target="developing-performance-benchmarks"/>
+        </tocitem>
+        <tocitem text="Trouble Shooting" target="known-issues">
+            <tocitem text="Profile Arcing" target="profile-arcing"/>
+            <tocitem text="Kinetic Anomalies" target="profile-anomalies"/>
+<!--            <tocitem text="Baseline Drifting" target="baseline-drifting"/>-->
+            <tocitem text="Rox Normalization" target="rox-normalization"/>
+            <tocitem text="AB7500 Fast Ramping" target="ab7500-fast-ramping"/>
+        </tocitem>
+        
+        <tocitem text="Uninstalling the Program" target="uninstalling"/>
+<!--        <tocitem text="Revision Overview" target="revision-overview"/>-->
+        <tocitem text="Literature" target="lre-literature"/>
+        <tocitem text="Glossary" target="glossary"/>
+    </tocitem>
+</toc>

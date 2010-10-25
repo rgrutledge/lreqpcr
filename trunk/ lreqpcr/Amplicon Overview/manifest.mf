@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+OpenIDE-Module: org.lreqpcr.amplicon_overview
+OpenIDE-Module-Layer: org/lreqpcr/amplicon_overview/layer.xml
+OpenIDE-Module-Localizing-Bundle: org/lreqpcr/amplicon_overview/Bundle.properties
+OpenIDE-Module-Requires: org.openide.windows.WindowManager
+OpenIDE-Module-Specification-Version: 1.0
+

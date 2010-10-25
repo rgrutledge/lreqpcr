@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+    <attr name="Menu\Edit_hidden\position" intvalue="600"/>
+    <attr name="Menu\GoTo_hidden\position" intvalue="700"/>
+    <attr name="Menu\Import\position" intvalue="500"/>
+    <attr name="Menu\Tools_hidden\position" intvalue="800"/>
+    <attr name="Menu\View\position" intvalue="200"/>
+    <attr name="Windows2\Modes\explorer\CalibrationTopComponent.wstcref\position" intvalue="200"/>
+    <attr name="Windows2\Modes\explorer\favorites.wstcref\position" intvalue="300"/>
+    <folder name="Actions">
+        <folder name="Window">
+            <file name="org-lreqpcr-experiment_ui-ExperimentAction.instance">
+                <attr name="component" methodvalue="org.lreqpcr.experiment_ui.ExperimentTopComponent.findInstance"/>
+                <attr name="displayName" bundlevalue="org.lreqpcr.experiment_ui.Bundle#CTL_ExperimentAction"/>
+                <attr name="instanceCreate" methodvalue="org.openide.windows.TopComponent.openAction"/>
+            </file>
+        </folder>
+    </folder>
+    <folder name="Menu">
+        <folder name="File">
+            <attr name="position" intvalue="100"/>
+            </folder>
+        <folder name="Help">
+            <attr name="position" intvalue="400"/>
+            <file name="master-help.xml" url="master-help.xml"/>
+            <file name="org-netbeans-modules-autoupdate-ui-actions-CheckForUpdatesAction.shadow_hidden"/>
+        </folder>
+            <folder name="View">
+            <file name="org-netbeans-core-actions-HTMLViewAction.shadow_hidden"/>
+        </folder>
+        <file name="Window_hidden"/>
+    </folder>
+    <folder name="Toolbars"/>
+    <folder name="Windows2">
+        <folder name="Components">
+            <file name="ExperimentTopComponent.settings" url="ExperimentTopComponentSettings.xml"/>
+            <file name="properties.settings_hidden"/>
+        </folder>
+        <folder name="Modes">
+            <folder name="explorer">
+                <file name="ExperimentTopComponent.wstcref" url="ExperimentTopComponentWstcref.xml">
+                    <attr name="position" intvalue="100"/>
+                </file>
+            </folder>
+        </folder>
+<!--        <folder name="Groups">
+            <file name="profile_view.wsgrp" url="ProfileViewWsgrp.xml"/>
+            <folder name="profile_view">
+                <file name="experiment.wstcgrp" url="ExperimentTCWstcgrp.xml"/>
+            </folder>
+        </folder>-->
+    </folder>
+</filesystem>
