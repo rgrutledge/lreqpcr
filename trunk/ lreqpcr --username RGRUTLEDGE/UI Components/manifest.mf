@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-OpenIDE-Module: org.lreqpcr.ui_components
-OpenIDE-Module-Localizing-Bundle: org/lreqpcr/ui_components/Bundle.properties
-OpenIDE-Module-Specification-Version: 1.0
-

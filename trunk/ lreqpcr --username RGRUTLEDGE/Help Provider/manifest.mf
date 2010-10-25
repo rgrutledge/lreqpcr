@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-OpenIDE-Module: org.lreqpcr.help_provider
-OpenIDE-Module-Layer: org/lreqpcr/help_provider/layer.xml
-OpenIDE-Module-Localizing-Bundle: org/lreqpcr/help_provider/Bundle.properties
-OpenIDE-Module-Requires: org.netbeans.api.javahelp.Help
-OpenIDE-Module-Specification-Version: 1.0
-

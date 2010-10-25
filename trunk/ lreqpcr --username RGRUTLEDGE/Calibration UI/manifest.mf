@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-OpenIDE-Module: org.lreqpcr.calibration_ui
-OpenIDE-Module-Layer: org/lreqpcr/calibration_ui/layer.xml
-OpenIDE-Module-Localizing-Bundle: org/lreqpcr/calibration_ui/Bundle.properties
-OpenIDE-Module-Requires: org.openide.windows.WindowManager
-OpenIDE-Module-Specification-Version: 1.0
-

@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-OpenIDE-Module: org.lreqpcr.core
-OpenIDE-Module-Install: org/lreqpcr/core/Installer.class
-OpenIDE-Module-Localizing-Bundle: org/lreqpcr/core/Bundle.properties
-OpenIDE-Module-Specification-Version: 1.0
-

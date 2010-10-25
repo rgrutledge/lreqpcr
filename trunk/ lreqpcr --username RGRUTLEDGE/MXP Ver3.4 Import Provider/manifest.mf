@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-OpenIDE-Module: org.lreqpcr.mxpver3_4import
-OpenIDE-Module-Layer: org/lreqpcr/mxpver3_4import/layer.xml
-OpenIDE-Module-Localizing-Bundle: org/lreqpcr/mxpver3_4import/Bundle.properties
-OpenIDE-Module-Specification-Version: 1.0
-
