@@ -1,0 +1,71 @@
+<!--
+Copyright (C) 2010  Bob Rutledge
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>
+and open the template in the editor.
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>Developing Performance Benchmarks</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+        <h1 align="center">Developing Performance Benchmarks</h1>
+      	<p align="left">Originating from recognition that like for other 
+		molecular technologies, lambda gDNA could be used as a universal 
+		standard for qPCR, lambda-based assays provided an essential foundation 
+		for development and testing of LRE. This included investigations into 
+		the impact of enzyme formulation, SYBR Green I concentration, reaction 
+		volume, amplicon size and GC content, and cycling regime<sup><a href="#1">1</a>,<a href="#2">2</a></sup>. </p>
+		<p align="left">The general utility of lambda-based performance benchmarks 
+		became even more evident during broad implementation of LRE, for 
+		example, performance testing of a new instrument or enzyme formulation, 
+		in addition to becoming a central part of the quality control protocols 
+		provided by the LRE Analyzer. As discussed in the
+		<a href="optical_precision_overview.html">optical precision overview</a>, 
+		a prominent example are differences in optical performance as reflected 
+		by scattering of the LRE plot, which 
+		for the examples below were generated with 100 pg lambda gDNA + CAL1, 
+		amplified with QuantiTect using an identical cycling regime (95 <sup>o</sup>C 
+		10sec, 65 <sup>o</sup>C 120 sec):</p>
+		<p align="center"><b>AB7500 normal ramping</b><br>
+		<img border="0" src="images/lre_plot_scattering3.gif" width="260" height="149"><br>
+		<b>AB7500 fast ramping<br>
+		</b>
+		<img border="0" src="images/7900_lre_plot.gif" width="258" height="144"><br>
+		<b>MX5000P<br>
+		</b>
+		<img border="0" src="images/lre_plot_scattering1.gif" width="261" height="147"></p>
+		<p>Particularly for cycles within the lower region of the amplification 
+		plots, it is clear that the Applied Biosystems 7500 with normal ramping 
+		produces the highest optical precision, as reflected by generating E<sub>C</sub> 
+		values that best conform to the LRE line. </p>
+		<p>Other examples include <a href="monitoring_assay_performance.html">
+		monitoring assay performance</a> and identification of anomalies 
+		produced by the enzyme formulation such as
+		<a href="../issues/profile_arcing.html">profile arcing</a>. </p>
+		<p>It is thus recommended that a standard calibration reaction set 
+		consisting of 100 pg lambda gDNA and CAL1 be included during 
+		implementation of LRE, in order to assess the general performance of 
+		your instrument and reaction setup.</p>
+		<p align="left"><a name="1">1</a>.
+		Rutledge RG, Stewart D (2008) A kinetic-based sigmoidal model for the 
+		polymerase chain reaction and its application to high-capacity absolute 
+		quantitative real-time PCR. BMC Biotechnol 8: 47</p>
+		<p align="left"><a name="2">2</a>.
+		Rutledge RG, Stewart D (2010) Assessing the performance capabilities of 
+		LRE-based assays for absolute quantitative real-time PCR. PLoS ONE 5: 
+		e9731.</p>
+      </body>
+</html>

@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+OpenIDE-Module: org.lreqpcr.analysis_services
+OpenIDE-Module-Localizing-Bundle: org/lreqpcr/analysis_services/Bundle.properties
+OpenIDE-Module-Specification-Version: 1.0
+

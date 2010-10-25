@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+OpenIDE-Module: org.lreqpcr.ab7500Ver1import
+OpenIDE-Module-Layer: org/lreqpcr/ab7500Ver1import/layer.xml
+OpenIDE-Module-Localizing-Bundle: org/lreqpcr/ab7500Ver1import/Bundle.properties
+OpenIDE-Module-Specification-Version: 1.0
+

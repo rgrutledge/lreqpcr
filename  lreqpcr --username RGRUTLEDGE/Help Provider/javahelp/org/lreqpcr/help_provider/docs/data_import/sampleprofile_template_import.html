@@ -1,0 +1,44 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Sample profile import using the Excel template</title>
+</head>
+
+<body>
+
+<h1 align="center"><font face="Arial">Sample profile import using the Excel template</font></h1>
+<p><font face="Arial">Note that this template has a limit of 182 Fc datasets and 
+does not allow Ct and Ft values to be imported; well position and amplicon Tm 
+are also not imported.&nbsp; Also note that calibration profiles must be 
+imported using the <a href="calbnprofile_template_import.html">calibration 
+profile template</a>.</font></p>
+<p><font face="Arial">To open an empty Excel template, go to the Import menu and 
+select &quot;Sample Import Template&quot;. A file dialog box will 
+appear asking for a name and a location for the resulting Excel file. Once a 
+file has be designated, Excel should automatically 
+open to display the sample import template:</font></p>
+<p align="center"><img border="0" src="images/templa1.gif"></p>
+<p><font face="Arial">Enter the Run date in C1, if the default date is not 
+correct, along with a Run name and an optional Profile name. Note that although 
+the Run date and F<sub>C</sub> readings cannot be changed, all of the other values can be 
+manually edited once the data has been imported. Note also that if the amplicon 
+size is left blank, the program will attempt to retrieve the amplicon size from 
+the amplicon database, assuming one is open. If not, the amplicon size will be 
+set to zero. </font></p>
+<p><font face="Arial">Each F<sub>C</sub> dataset is entered vertically starting at C10, along 
+with the amplicon name, amplicon size and sample name in rows 4-6 respectively 
+for each F<sub>C</sub> dataset. This should be the raw fluorescence readings 
+(i.e. not background subtracted), in order to allow the program to conduct 
+background subtract. Nevertheless, the program will accept 
+background subtracted F<sub>C</sub> datasets if this is necessary (not recommended).</font></p>
+<p><font face="Arial">The default strandedness of the target is single stranded. 
+This can be changed to double stranded by putting &quot;Yes&quot; in row 7. If left blank 
+the default single stranded will be applied.</font></p>
+<p><font face="Arial">SAVE THE FILE.</font></p>
+<p><font face="Arial">To initiate data import go to the Import menu and select 
+&quot;Import Sample Profiles&quot;.</font></p>
+
+</body>
+
+</html>
