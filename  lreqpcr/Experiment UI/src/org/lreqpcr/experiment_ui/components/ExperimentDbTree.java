@@ -1,0 +1,272 @@
+/*
+ * Copyright (C) 2010  Bob Rutledge
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>
+ * and open the template in the editor.
+ */
+package org.lreqpcr.experiment_ui.components;
+
+import java.awt.Toolkit;
+import org.lreqpcr.core.data_objects.*;
+import org.lreqpcr.core.ui_elements.LreActionFactory;
+import org.lreqpcr.core.ui_elements.LreNode;
+import org.lreqpcr.core.ui_elements.LreObjectChildren;
+import org.lreqpcr.core.ui_elements.LabelFactory;
+import org.lreqpcr.core.utilities.FormatingUtilities;
+import org.lreqpcr.experiment_ui.actions.ExperimentTreeNodeActions;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.text.DecimalFormat;
+import java.util.List;
+import javax.swing.Action;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import org.lreqpcr.core.database_services.DatabaseServices;
+import org.lreqpcr.core.utilities.UniversalLookup;
+import org.lreqpcr.ui_components.PanelMessages;
+import org.openide.explorer.ExplorerManager;
+import org.openide.explorer.view.BeanTreeView;
+import org.openide.nodes.AbstractNode;
+import org.openide.nodes.Children;
+import org.openide.util.lookup.Lookups;
+
+/**
+ * Tree-based view of the Experiment database
+ * 
+ * @author Bob Rutledge
+ */
+public class ExperimentDbTree extends JPanel {
+
+    private ExplorerManager mgr;
+    private DatabaseServices experimentDB;
+    private double averageOCF;
+    private ExperimentDbInfo dbInfo;
+    private LreActionFactory nodeActionFactory;
+    private LabelFactory runNodeLabelFactory;
+    private LabelFactory sortNodeLabelFactory;
+    private DecimalFormat df = new DecimalFormat();
+
+    /** Creates new form ExperimentDbTree */
+    public ExperimentDbTree() {
+        initComponents();
+        runViewButton.setSelected(true);
+        ocfDisplay.addKeyListener(new KeyAdapter() {
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (!experimentDB.isDatabaseOpen()) {
+                    return;
+                }
+                super.keyReleased(e);
+                if (!experimentDB.isDatabaseOpen()) {
+                    return;
+                }
+                if (e.getKeyCode() == 10) {//"Return" key
+                    //Remove any commas
+                    String ocf = ocfDisplay.getText();
+                    while (ocf.contains(",")) {
+                        int index = ocf.indexOf(",");
+                        ocf = ocf.substring(0, index) + ocf.substring(index + 1);
+                    }
+                    try {
+                        averageOCF = Double.valueOf(ocf);
+                        df.applyPattern(FormatingUtilities.decimalFormatPattern(averageOCF));
+                        ocfDisplay.setText(df.format(averageOCF));
+                        dbInfo.setOcf(averageOCF);
+                        experimentDB.saveObject(dbInfo);
+                        updateAllNo();
+                    } catch (NumberFormatException nan) {
+                        Toolkit.getDefaultToolkit().beep();
+                        JOptionPane.showMessageDialog(null,
+                                "The OCF must be a valid number" + "\n"
+                                + "   Please click on the OK button",
+                                "Invalid OCF",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        });
+    }
+
+    public void initTreeView(ExplorerManager mgr, DatabaseServices db) {
+        this.mgr = mgr;
+        experimentDB = db;
+        nodeActionFactory = new ExperimentTreeNodeActions(mgr);
+        runNodeLabelFactory = (LabelFactory) new RunTreeNodeLabels();
+        sortNodeLabelFactory = (LabelFactory) new ProfileTreeNodeLabels();
+        createTree();
+    }
+
+    @SuppressWarnings(value = "unchecked")
+    public void createTree() {
+        runViewButton.setSelected(true);
+        if (!experimentDB.isDatabaseOpen()) {
+            AbstractNode root = new AbstractNode(Children.LEAF);
+            root.setName("No Experiment database is open");
+            mgr.setRootContext(root);
+            return;
+        }
+        dbInfo = (ExperimentDbInfo) experimentDB.getAllObjects(ExperimentDbInfo.class).get(0);
+        File dbFile = experimentDB.getDatabaseFile();
+        String dbFileName = dbFile.getName();
+        int length = dbFileName.length();
+        String displayName = dbFileName.substring(0, length - 4);
+        averageOCF = dbInfo.getOcf();
+        df.applyPattern(FormatingUtilities.decimalFormatPattern(averageOCF));
+        ocfDisplay.setText(df.format(averageOCF));
+        List<? extends LreObject> runList =
+                (List<? extends LreObject>) experimentDB.getAllObjects(Run.class);
+        LreNode root = new LreNode(new LreObjectChildren(mgr, experimentDB, runList, nodeActionFactory,
+                runNodeLabelFactory), Lookups.singleton(dbInfo), new Action[]{});
+        root.setDatabaseService(experimentDB);
+        root.setDisplayName(displayName);
+        root.setShortDescription(dbFile.getAbsolutePath());
+
+        mgr.setRootContext(root);
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.CLEAR_PROFILE_EDITOR);
+    }
+
+    @SuppressWarnings(value = "unchecked")
+    public void creatAmpliconTree(String ampName) {
+        if (experimentDB.isDatabaseOpen()) {
+            List ampList = experimentDB.retrieveUsingFieldValue(AverageSampleProfile.class, "ampliconName", ampName);
+            LreNode root = new LreNode(new LreObjectChildren(mgr, experimentDB, ampList, nodeActionFactory,
+                    sortNodeLabelFactory), Lookups.singleton(dbInfo), new Action[]{});
+            root.setName(ampName + " (" + String.valueOf(ampList.size()) + ")");
+            root.setDatabaseService(experimentDB);
+            mgr.setRootContext(root);
+            runViewButton.setSelected(false);
+            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.CLEAR_PROFILE_EDITOR);
+        }
+    }
+
+    @SuppressWarnings(value = "unchecked")
+    public void createSampleTree(String sampleName) {
+        if (experimentDB.isDatabaseOpen()) {
+            List sampleList = experimentDB.retrieveUsingFieldValue(AverageSampleProfile.class, "sampleName", sampleName);
+            LreNode root = new LreNode(new LreObjectChildren(mgr, experimentDB, sampleList, nodeActionFactory, sortNodeLabelFactory),
+                    Lookups.singleton(dbInfo), new Action[]{});
+            root.setName(sampleName + " (" + String.valueOf(sampleList.size()) + ")");
+            root.setDatabaseService(experimentDB);
+            mgr.setRootContext(root);
+            runViewButton.setSelected(false);
+            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.CLEAR_PROFILE_EDITOR);
+        }
+    }
+
+    public void createLdaTree(){
+
+    }
+
+    public void createEmptyTree() {
+        AbstractNode root = new AbstractNode(Children.LEAF);
+        mgr.setRootContext(root);
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.CLEAR_PROFILE_EDITOR);
+    }
+
+    @SuppressWarnings(value = "unchecked")
+    private void updateAllNo() {
+        if (!experimentDB.isDatabaseOpen()) {
+            return;
+        }
+        List<Profile> profileList =
+                (List<Profile>) experimentDB.getAllObjects(Profile.class);
+        for (Profile profile : profileList) {
+//If runOCF != 0, then a run-specific OCF has been set and will be used instead of the average OCF
+            if (profile.getRunOCF() == 0) {
+                profile.setOCF(averageOCF);
+                profile.updateProfile();
+                experimentDB.saveObject(profile);
+            }
+        }
+        createTree();
+    }
+
+    public double getOCF() {
+        return averageOCF;
+    }
+
+    /** This method is called from within the constructor to
+     * initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is
+     * always regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jScrollPane1 = new javax.swing.JScrollPane();
+        beanTree = new BeanTreeView();
+        jLabel1 = new javax.swing.JLabel();
+        ocfDisplay = new javax.swing.JTextField();
+        runViewButton = new javax.swing.JRadioButton();
+
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(400, 100));
+
+        beanTree.setPreferredSize(new java.awt.Dimension(200, 100));
+        jScrollPane1.setViewportView(beanTree);
+
+        jLabel1.setText("Av. OCF (FU/ng):");
+
+        ocfDisplay.setColumns(8);
+
+        runViewButton.setText("Run View");
+        runViewButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                runViewButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(runViewButton)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(ocfDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(runViewButton)
+                    .addComponent(ocfDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 534, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void runViewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runViewButtonActionPerformed
+        createTree();
+        UniversalLookup.getDefault().add(PanelMessages.RUN_VIEW_SELECTED, null);
+}//GEN-LAST:event_runViewButtonActionPerformed
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JScrollPane beanTree;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextField ocfDisplay;
+    private javax.swing.JRadioButton runViewButton;
+    // End of variables declaration//GEN-END:variables
+}

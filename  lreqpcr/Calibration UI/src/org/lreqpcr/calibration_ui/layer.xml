@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+    <folder name="Actions">
+        <folder name="Window">
+            <file name="org-lreqpcr-calibration_ui-CalibrationAction.instance">
+                <attr name="component" methodvalue="org.lreqpcr.calibration_ui.CalibrationTopComponent.findInstance"/>
+                <attr name="displayName" bundlevalue="org.lreqpcr.calibration_ui.Bundle#CTL_CalibrationAction"/>
+                <attr name="instanceCreate" methodvalue="org.openide.windows.TopComponent.openAction"/>
+            </file>
+        </folder>
+    </folder>
+    <folder name="Menu">
+        <folder name="Help">
+            <file name="master-help.xml" url="master-help.xml"/>
+        </folder>
+        <folder name="Window">
+            <file name="CalibrationAction.shadow">
+                <attr name="originalFile" stringvalue="Actions/Window/org-lreqpcr-calibration_ui-CalibrationAction.instance"/>
+            </file>
+        </folder>
+    </folder>
+    <folder name="Windows2">
+        <folder name="Components">
+            <file name="CalibrationTopComponent.settings" url="CalibrationTopComponentSettings.xml"/>
+        </folder>
+        <folder name="Modes">
+            <folder name="explorer">
+                <file name="CalibrationTopComponent.wstcref" url="CalibrationTopComponentWstcref.xml"/>
+                    <attr name="position" intvalue="100"/>
+            </folder>
+        </folder>
+<!--        <folder name="Groups">
+            <folder name="profile_view">
+                <file name="calibration.wstcgrp" url="CalibrationTCWstcgrp.xml"/>
+            </folder>
+        </folder>-->
+    </folder>
+</filesystem>
