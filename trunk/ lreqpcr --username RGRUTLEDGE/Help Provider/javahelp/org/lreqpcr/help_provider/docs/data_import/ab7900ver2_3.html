@@ -1,0 +1,49 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Applied Biosystems 7900 Version 2.3 data import</title>
+</head>
+
+<body>
+
+<h1 align="center"><font face="Arial">Applied Biosystems 7900 Version 2.3 Data 
+Import</font></h1>
+<p align="center"><font color="#FF0000" size="5">==&gt;Excluded from the first 
+release</font></p>
+<p>Importing data from the 7900 is unfortunately one of the most complex. This is primarily due to the fact that the 7900 software exports 
+data using a comma delimited file format, and that amplicon and sample 
+information is exported as one file, whereas the Fc data sets are exported into 
+a second.&nbsp; It is thus necessary to first convert the comma delimited files into an 
+excel worksheet and then to combine the two datafiles into a single excel 
+workbook.&nbsp; </p>
+<p>Note that the amplicon name is taken from the &quot;detector&quot; designated to a 
+well, so during plate setup be sure that the amplicon name is designated as the 
+detector. Also, be sure that data has been &quot;Analyzed&quot;.</p>
+<p>Go to &quot;Export...&quot; located on the File menu and select Results Table. Provide 
+a location and name and push export:</p>
+<p align="center">
+<img border="0" src="images/ab7900_1.gif" width="709" height="398"></p>
+
+<p align="left">Use MS Excel to open the resulting text file, which will generate 
+a panel asking 
+about how to import the data. Simply push finish. Open this file, and save it as 
+a .xls file using the “File-Save as...” in the File menu.</p>
+<p align="left">Go to B5 and enter the run data.</p>
+<p align="left"><b>Fc data import</b></p>
+
+<p align="left">Insert a new work sheet, which is where the Fc datasets will be 
+located. Note that this must be the first worksheet in the workbook. </p>
+<p align="left">Return the to 7900 Ver 2.3 program, go to the export panel and 
+now selected the &quot;Clipped&quot; for export:</p>
+<p align="center">&nbsp;<img border="0" src="images/ab7900_2.gif" width="713" height="396"></p>
+<p align="left">Again select a location and name, go to MS Excel and open this 
+new file as was done for the Results Table. Select and copy (ctrl A, ctrl C) all 
+of the data in this new worksheet. </p>
+<p align="left">Return to the first workbook and select A1 in the empty 
+worksheet that was previously inserted, and paste the Fc data (ctrl V). Save the 
+file, which is now ready to import.</p>
+
+</body>
+
+</html>

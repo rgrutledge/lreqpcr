@@ -1,0 +1,90 @@
+<!--
+Copyright (C) 2010  Bob Rutledge
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Experiment Database Window</title>
+        <link rel="stylesheet" href="nbdocs:/org/netbeans/modules/usersguide/ide.css" type="text/css">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+    <body>
+        <h1 align="center">Experiment Database Window</h1>
+		<p>The Experiment Database Window displays data elements contained within 
+		an experiment database file, which consists of Sample Profiles grouped 
+		under their respective Run. When first opened, an experiment database 
+		will appear as a tree:</p>
+		<p align="center">
+		<img border="0" src="images/expt1.gif" width="296" height="145"></p>
+		<p>The root presents the name of 
+		the database file. Each Run within the database file is then listed as 
+		branches, with the date and name of the run presented in the branch 
+		label. Profiles within a Run can be view by expanding a Run branch by 
+		either double clicking on the branch or clicking on the&nbsp;
+		<img border="0" src="images/experi16.gif"> on the left of the branch:</p>
+		<p align="center">
+		<img border="0" src="images/expt2.gif" width="272" height="210"></p>
+		<p>This presents each
+		<a href="../glossary/glossary.html#Average_Profile">average profile </a>&nbsp;as 
+		a branch below the respective Run. Each profile label provide 
+		information about the LRE analysis:</p>
+		<p><img border="0" src="images/expt3.gif" width="201" height="18"></p>
+		<p>So that this profile was produced using an amplicon called &quot;14715 
+		F1R1&quot; and a sample called &quot;364&quot; which produced an E<sub>max</sub>&nbsp; 
+		of 101.6% and a target quantity of 251 molecules. </p>
+		<p>An average profile branch can be expanded to show the 
+		<a href="../glossary/glossary.html#Replicate_Profile">replicate 
+		profiles</a>:</p>
+		<p align="center">
+		<img border="0" src="images/replicate_sample_list.gif" width="225" height="54"></p>
+		<p>Note that the <a href="../glossary/glossary.html#LRE_Analysis">LRE analysis</a> of the 
+		<a href="../glossary/glossary.html#Average_Profile">average profile</a> is independent of 
+		that conducted on the 
+		<a href="../glossary/glossary.html#Replicate_Profile">replicate profiles</a>. 
+		However, right clicking on a replicate profile will present a 
+		fly out menu that allows the profile to be excluded:</p>
+		<p align="center">
+		<img border="0" src="images/exclude_profile1.gif" width="292" height="98"></p>
+		<p>&quot;EXCLUDED&quot; is added to the label to signify that this replicate 
+		profile is not included into the average profile:</p>
+		<p align="center">
+		<img border="0" src="images/exclude_profile2.gif" width="240" height="71"></p>
+		<p>This will then trigger recalculation of the average profile using the 
+		remaining replicate profiles, and automated LRE analysis conducted on 
+		the new average profile. An excluded replicate profile can also be 
+		included, and again the average profile is updated to include the 
+		replicate profile. </p>
+		<p>Similarly, average profiles and runs can be deleted by right clicking 
+		and selecting &quot;Delete...&quot;. Note also that multiple average profiles or 
+		runs can be deleted simultaneously deleted by multiple selection using 
+		the Shift or Ctrl key in combination with the mouse left click:</p>
+		<p align="center">
+		<img border="0" src="images/delete_profile.gif" width="391" height="219"></p>
+		<p align="left"><font color="#FF0000"><b>IMPORTANT</b></font>: Note that there is no undo function in this 
+		version of the LRE Analyzer, so once a run or profile is deleted, there is no 
+		way to recovery it.</p>
+		<p>Above the Run tree, an calibration factor (<a href="../glossary/glossary.html#OCF">OCF</a>) 
+		can be manually entered:</p>
+    	<p align="center">
+		<img border="0" src="images/ocf_entry.gif" width="269" height="28"></p>
+		<p>The
+		<a href="../optical_calibration/optical_calibration_overview.html">
+		optical calibration overview</a> provides details about how an OCF is 
+		derived and how it is used to convert target quantities into the number 
+		of molecules. The function of the Run View button is described in the 
+		<a href="../sorting_panel/sorting_panel_overview.html">Sort View 
+		Panel</a>.</p>
+    </body>
+</html>

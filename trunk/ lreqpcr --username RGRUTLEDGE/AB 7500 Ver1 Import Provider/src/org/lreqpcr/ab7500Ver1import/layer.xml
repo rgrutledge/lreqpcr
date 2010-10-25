@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+    <folder name="Actions">
+        <folder name="Tools">
+            <file name="org-lreqpcr-ab7500Ver1import-Ab7500Ver1.instance">
+                <attr name="delegate" newvalue="org.lreqpcr.ab7500Ver1import.Ab7500Ver1"/>
+                <attr name="displayName" bundlevalue="org.lreqpcr.ab7500Ver1import.Bundle#CTL_Ab7500Ver1"/>
+                <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
+                <attr name="noIconInMenu" boolvalue="false"/>
+            </file>
+        </folder>
+    </folder>
+    <folder name="Menu">
+        <folder name="Import">
+            <file name="org-lreqpcr-ab7500Ver1import-Ab7500Ver1ImportProvider.shadow">
+                <attr name="originalFile" stringvalue="Actions/Tools/org-lreqpcr-ab7500Ver1import-Ab7500Ver1.instance"/>
+            </file>
+        </folder>
+    </folder>
+</filesystem>
