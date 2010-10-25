@@ -282,7 +282,6 @@ public final class AmpliconTopComponent extends TopComponent
         LreObjectChildren newChildren = new LreObjectChildren(mgr,
                 ampliconDB, newChildList, nodeActionFactory, new AmpliconTreeNodeLabels());
         changeRootNodeChildren(newChildren);
-// TODO delete this       nameDisplay.requestFocusInWindow();
 
         newNode = (LreNode) newChildren.findChild(newAmplicon.getName());
         try {
