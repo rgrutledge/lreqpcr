@@ -7,7 +7,7 @@
             <suite-component/>
             <module-dependencies>
                 <dependency>
-                    <code-name-base>com.db4o</code-name-base>
+                    <code-name-base>com.db4o2</code-name-base>
                     <build-prerequisite/>
                     <compile-dependency/>
                     <run-dependency>
