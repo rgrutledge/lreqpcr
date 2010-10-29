@@ -150,6 +150,10 @@ public abstract class Db4oServices implements DatabaseServices {
                 //Note also that closing and reopening the same database file can produce duplicates
                 //Version 7.12 (vs. 7.4) appears (but not confirmed) to have the same problem
                 db4o.close();
+                //Porting to the NetBeans windowing system appears to prevent duplicate object creation
+                //and so the problem has been resolved, at least for version 7.4.106. Attempting to upgrade
+                //to version 7.4.155 produces an IllegalArgumentException when attempting to open a second database file.
+                //This appears to be undocumented and does not occur with ver 106
             }
         }
     }
@@ -162,10 +166,12 @@ public abstract class Db4oServices implements DatabaseServices {
             }
         }
         try {
-            //Not that closing and then reopening the same database file can produce duplicates!!
+ //This throws an IllegalArguentException for ver 7.4.155, which is not documented!!
             db4o = Db4o.openFile(config, databaseFile.getAbsolutePath());
         } catch (Exception e) {
-            String msg = "The database file " + databaseFile.getName() + " could not be opened due to the error: \"" + e.getClass().getSimpleName() + "\"";
+            String msg = "The database file " + databaseFile.getName() 
+                    + " could not be opened due to the error: \""
+                    + e.getClass().getSimpleName() + "\"";
             JOptionPane.showMessageDialog(null, msg, "Unable to open the database file",
                     JOptionPane.ERROR_MESSAGE);
         }

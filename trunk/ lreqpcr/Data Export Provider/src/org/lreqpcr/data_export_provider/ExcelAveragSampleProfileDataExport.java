@@ -219,18 +219,6 @@ public class ExcelAveragSampleProfileDataExport {
                 sheet.addCell(number);
                 number = new Number(10, row, avProfile.getOCF(), floatFormat);
                 sheet.addCell(number);
-//                if (avProfile.isExcluded()) {
-//                    //All replicate profiles have been excluded
-//                    label = new Label(11, row, "nd", center);
-//                    sheet.addCell(label);
-//                    label = new Label(11, row, avProfile.getLongDescription());
-//                    sheet.addCell(label);
-//                    row++;
-//                    continue;
-//                } else {
-//                    number = new Number(11, row, avProfile.getAdjustedNo(), integerFormat);
-//                    sheet.addCell(number);
-//                }
                 label = new Label(11, row, avProfile.getLongDescription());
                 sheet.addCell(label);
                 row++;
@@ -291,8 +279,13 @@ public class ExcelAveragSampleProfileDataExport {
                             row++;
                             continue;
                         }
-                        number = new Number(3, row, profile.getNo(), floatFormat);
-                        sheet.addCell(number);
+                        if (profile.getEmax() > 1.00) {
+                            number = new Number(3, row, profile.getAdjustedNo(), floatFormat);
+                            sheet.addCell(number);
+                        } else {
+                            number = new Number(3, row, profile.getNo(), floatFormat);
+                            sheet.addCell(number);
+                        }
                         if (profile.getEmax() != 0) {
                             number = new Number(4, row, profile.getEmax(), percentFormat);
                             sheet.addCell(number);
