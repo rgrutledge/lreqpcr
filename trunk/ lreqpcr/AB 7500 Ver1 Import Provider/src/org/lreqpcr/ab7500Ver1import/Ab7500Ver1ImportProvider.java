@@ -90,12 +90,14 @@ public class Ab7500Ver1ImportProvider extends RunImportService {
             return null;
         }
 
-        Sheet deltaRnSheet = workbook.getSheet(0);
-        Sheet resultSheet = workbook.getSheet(1);
-
-        if (resultSheet == null || deltaRnSheet == null) {
-            String msg = "Either the \"Results\" or \"Delta Rn\" worksheet could not be imported. " +
-                    "Data import will be terminated.";
+        Sheet deltaRnSheet = null;
+        Sheet resultSheet = null;
+        try {
+            deltaRnSheet = workbook.getSheet(0);
+            resultSheet = workbook.getSheet(1);
+        } catch (Exception e) {
+            String msg = "Either the \"Results\" or \"Delta Rn\" worksheet could not be imported. "
+                    + "Data import will be terminated.";
             JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
                     msg,
                     "Invalid Excel import file",
@@ -106,9 +108,9 @@ public class Ab7500Ver1ImportProvider extends RunImportService {
         try {
             date = (DateCell) resultSheet.getCell(1, 7);
         } catch (Exception e) {
-            String msg = "The Run Date appears to be invalid. Manually replace " +
-                    "the run date in the Results sheet (B8), " +
-                    "save the file, and try importing the xls file again.";
+            String msg = "The Run Date appears to be invalid. Manually replace "
+                    + "the run date in the Results sheet (B8), "
+                    + "save the file, and try importing the xls file again.";
             JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
                     msg,
                     "Invalid Run Date",
@@ -188,10 +190,10 @@ public class Ab7500Ver1ImportProvider extends RunImportService {
             }
             profile.setRawFcReadings(fcArray);
             if (CalibrationProfile.class.isAssignableFrom(profile.getClass())) {
-                    calbnProfileList.add(profile);
-                } else {
-                    sampleProfileList.add(profile);
-                }
+                calbnProfileList.add(profile);
+            } else {
+                sampleProfileList.add(profile);
+            }
 
         }
         ImportData importData = new ImportData();

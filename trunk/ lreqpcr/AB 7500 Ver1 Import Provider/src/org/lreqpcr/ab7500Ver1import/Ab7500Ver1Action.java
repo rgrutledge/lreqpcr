@@ -19,7 +19,7 @@ package org.lreqpcr.ab7500Ver1import;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public final class Ab7500Ver1 implements ActionListener {
+public final class Ab7500Ver1Action implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
        new Ab7500Ver1ImportProvider();

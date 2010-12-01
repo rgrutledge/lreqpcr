@@ -3,8 +3,8 @@
 <filesystem>
     <folder name="Actions">
         <folder name="Tools">
-            <file name="org-lreqpcr-ab7500Ver1import-Ab7500Ver1.instance">
-                <attr name="delegate" newvalue="org.lreqpcr.ab7500Ver1import.Ab7500Ver1"/>
+            <file name="org-lreqpcr-ab7500Ver1import-Ab7500Ver1Action.instance">
+                <attr name="delegate" newvalue="org.lreqpcr.ab7500Ver1import.Ab7500Ver1Action"/>
                 <attr name="displayName" bundlevalue="org.lreqpcr.ab7500Ver1import.Bundle#CTL_Ab7500Ver1"/>
                 <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
                 <attr name="noIconInMenu" boolvalue="false"/>
@@ -14,7 +14,7 @@
     <folder name="Menu">
         <folder name="Import">
             <file name="org-lreqpcr-ab7500Ver1import-Ab7500Ver1ImportProvider.shadow">
-                <attr name="originalFile" stringvalue="Actions/Tools/org-lreqpcr-ab7500Ver1import-Ab7500Ver1.instance"/>
+                <attr name="originalFile" stringvalue="Actions/Tools/org-lreqpcr-ab7500Ver1import-Ab7500Ver1Action.instance"/>
             </file>
         </folder>
     </folder>
