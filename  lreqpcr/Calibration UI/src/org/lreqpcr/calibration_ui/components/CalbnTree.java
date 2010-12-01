@@ -139,12 +139,12 @@ public class CalbnTree extends JPanel {
             for (int i = 0; i < calbnProfileList.size(); i++) {
                 CalibrationProfile profile = (CalibrationProfile) calbnProfileList.get(i);
                 if (!profile.isExcluded()) {
-                    if (profile.getAdjustedOCF() == 0){
-                        ocfSum += profile.getRunOCF();
-                         ocfArray.add(profile.getRunOCF());
-                    } else {
+                    if (profile.getEmax() > 1) {
                         ocfSum += profile.getAdjustedOCF();
-                         ocfArray.add(profile.getAdjustedOCF());
+                        ocfArray.add(profile.getAdjustedOCF());
+                    } else {
+                        ocfSum += profile.getRunOCF();
+                        ocfArray.add(profile.getRunOCF());
                     }
                 }
             }
