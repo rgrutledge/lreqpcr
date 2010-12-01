@@ -19,7 +19,7 @@ package org.lreqpcr.mxpver3_4import;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public final class MxpVer3_4 implements ActionListener {
+public final class MxpVer3_4Action implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         new MxpVer3_4ImportProvider();
