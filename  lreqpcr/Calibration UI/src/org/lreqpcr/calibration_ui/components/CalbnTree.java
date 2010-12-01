@@ -153,12 +153,6 @@ public class CalbnTree extends JPanel {
             double cv = sd / averageOCF;
             df.applyPattern(FormatingUtilities.decimalFormatPattern(averageOCF));
             avProfileOCFdisplay.setText(df.format(averageOCF) + " +/-" + dfCV.format(cv * 100) + "%");
-
-//            double adjustedAverageOCF = adjustedOcfSum / adjustedOcfArray.size();
-//            double adjustedSD = MathFunctions.calcStDev(adjustedOcfArray);
-//            double adjustedCV = adjustedSD / adjustedAverageOCF;
-//            df.applyPattern(FormatingUtilities.decimalFormatPattern(adjustedAverageOCF));
-//            avProfileOCFdisplay.setText(df.format(adjustedAverageOCF) + " +/-" + dfCV.format(adjustedCV * 100) + "%");
         }
     }
 
