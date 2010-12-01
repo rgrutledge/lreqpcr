@@ -34,6 +34,7 @@ import org.lreqpcr.core.utilities.WellLabelToWellNumber;
 import org.lreqpcr.data_import_services.ImportData;
 import org.lreqpcr.data_import_services.RunImportService;
 import org.openide.util.Exceptions;
+import org.openide.windows.WindowManager;
 
 /**
  *
@@ -63,22 +64,24 @@ public class AB7500Ver2ImportProvider extends RunImportService {
         }
         if (workbook == null) {
             String msg = "The selected file (" + ver2ExcelImportFile.getName() + " could not be opened";
-            JOptionPane.showMessageDialog(null, msg,
-                    "Unable to open the selected file "
-                    + ver2ExcelImportFile.getName(), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                    msg,
+                    "Unable to open the selected file " + ver2ExcelImportFile.getName(),
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
         Sheet resultSheet = null;
         Sheet ampDataSheet = null;
-        try {
-            resultSheet = workbook.getSheet("Results");
-            ampDataSheet = workbook.getSheet("Amplification Data");
-        } catch (Exception e) {
-            String msg = "Either the \"Results\" or \"Amplificatio Data\" "
-                    + "worksheet was not present or has been renamed. "
+        resultSheet = workbook.getSheet("Results");
+        ampDataSheet = workbook.getSheet("Amplification Data");
+        if (resultSheet == null || ampDataSheet == null){
+            String msg = "Either the \"Results\" or \"Amplification Data\" "
+                    + "worksheet was not present or has been renamed.\n"
                     + "Data import will be terminated.";
-            JOptionPane.showMessageDialog(null, msg,
-                    "Invalid Excel import file", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                    msg,
+                    "Invalid Excel import file",
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
         DateCell date = null;
@@ -88,8 +91,10 @@ public class AB7500Ver2ImportProvider extends RunImportService {
             String msg = "The Run Date appears to be invalid. Manually entry the "
                     + "run date in the \"Results\" sheet (B4), "
                     + "save the file, and try importing the xls file again.";
-            JOptionPane.showMessageDialog(null, msg,
-                    "Invalid Run Date", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                    msg,
+                    "Invalid Run Date",
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
 //All of the following is to deal with the ability of the user to change the column order
@@ -140,32 +145,40 @@ public class AB7500Ver2ImportProvider extends RunImportService {
             Toolkit.getDefaultToolkit().beep();
             String msg = "The \"Well\" column was not found in the Results sheet (sheet #1)"
                     + "Data import will be terminated.";
-            JOptionPane.showMessageDialog(null, msg,
-                    "No Well column", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                    msg,
+                    "No Well column",
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
         if (ampliconNameCol == columnAbsent) {
             Toolkit.getDefaultToolkit().beep();
             String msg = "The \"Target Name\" column was not found in the Results sheet (sheet #1). "
                     + "Data import will be terminated.";
-            JOptionPane.showMessageDialog(null, msg,
-                    "No Target Name column", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                    msg,
+                    "No Target Name column",
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
         if (sampleNameCol == columnAbsent) {
             Toolkit.getDefaultToolkit().beep();
             String msg = "The \"Sample Name\" column was not found in the Results sheet (sheet #1). "
                     + "Data import will be terminated.";
-            JOptionPane.showMessageDialog(null, msg,
-                    "No Sample Name column", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                    msg,
+                    "No Sample Name column",
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
         if (taskCol == columnAbsent) {
             Toolkit.getDefaultToolkit().beep();
             String msg = "The \"Task\" column was not found in the Results sheet (sheet #2)"
                     + "Data import will be terminated.";
-            JOptionPane.showMessageDialog(null, msg,
-                    "No Task column", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                    msg,
+                    "No Task column",
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
 

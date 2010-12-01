@@ -29,7 +29,7 @@ public class Installer extends ModuleInstall {
     public void restored() {
         WindowManager.getDefault().invokeWhenUIReady(new Runnable() {
             public void run(){
-                WindowManager.getDefault().getMainWindow().setTitle("LRE Analyzer Ver 0.6b");
+                WindowManager.getDefault().getMainWindow().setTitle("LRE Analyzer Ver 0.6b Working Copy");
             }
         });
     }
