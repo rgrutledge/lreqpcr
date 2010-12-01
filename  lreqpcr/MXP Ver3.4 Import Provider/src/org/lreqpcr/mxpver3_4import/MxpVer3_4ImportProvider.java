@@ -85,9 +85,9 @@ public class MxpVer3_4ImportProvider extends RunImportService {
 
         Sheet chartSheet = null;
         Sheet reportSheet = null;
+        chartSheet = workbook.getSheet(0);
+        reportSheet = workbook.getSheet(1);
         try {
-            chartSheet = workbook.getSheet(0);
-            reportSheet = workbook.getSheet(1);
         } catch (Exception e) {
             String msg = "One of the worksheets could not be loaded."
                     + "Be sure that \nthe first sheet contains the Fc"

@@ -3,8 +3,8 @@
 <filesystem>
     <folder name="Actions">
         <folder name="Tools">
-            <file name="org-lreqpcr-mxpver3_4import-MxpVer3_4.instance">
-                <attr name="delegate" newvalue="org.lreqpcr.mxpver3_4import.MxpVer3_4"/>
+            <file name="org-lreqpcr-mxpver3_4import-MxpVer3_4Action.instance">
+                <attr name="delegate" newvalue="org.lreqpcr.mxpver3_4import.MxpVer3_4Action"/>
                 <attr name="displayName" bundlevalue="org.lreqpcr.mxpver3_4import.Bundle#CTL_MxpVer3_4"/>
                 <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
                 <attr name="noIconInMenu" boolvalue="false"/>
@@ -16,7 +16,7 @@
             <attr name="org-lreqpcr-ab7500ver2import-Ab7500Ver2.shadow/org-lreqpcr-mxpver3_4import-MxpVer3_4.shadow" boolvalue="true"/>
             <attr name="org-lreqpcr-mxpver3_4import-MxpVer3_4.shadow/org-lreqpcr-ab7500Ver1import-Ab7500Ver1ImportProvider.shadow" boolvalue="true"/>
             <file name="org-lreqpcr-mxpver3_4import-MxpVer3_4.shadow">
-                <attr name="originalFile" stringvalue="Actions/Tools/org-lreqpcr-mxpver3_4import-MxpVer3_4.instance"/>
+                <attr name="originalFile" stringvalue="Actions/Tools/org-lreqpcr-mxpver3_4import-MxpVer3_4Action.instance"/>
             </file>
         </folder>
     </folder>
