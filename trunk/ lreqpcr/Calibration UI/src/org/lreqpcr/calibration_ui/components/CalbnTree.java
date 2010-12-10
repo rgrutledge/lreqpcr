@@ -127,7 +127,7 @@ public class CalbnTree extends JPanel {
             avProfileOCFdisplay.setText("");
             return;
         }
-        //This returns both replicat and average profiles
+        //This returns both replicate and average profiles
         List<? extends LreObject> calbnProfileList =
                 (List<? extends LreObject>) calbnDB.getAllObjects(CalibrationProfile.class);
         double ocfSum = 0;
