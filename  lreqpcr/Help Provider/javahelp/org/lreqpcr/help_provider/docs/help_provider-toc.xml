@@ -82,6 +82,7 @@ and open the template in the editor.
             <tocitem text="Optical Precision" target="optical-precision-overview"/>
             <tocitem text="Monitoring Assay Performance" target="monitoring-assay-performance"/>
             <tocitem text="<10 Molecule Problem" target="less-than-10molecules"/>
+            <tocitem text="LDA Overview" target="lda-overview"/>
             <tocitem text="Assessing Quantitative Accuracy" target="assessing-accuracy"/>
             <tocitem text = "Emax Normalization" target="emax-normalization"/>
             <tocitem text="Developing Performance Benchmarks" target="developing-performance-benchmarks"/>
