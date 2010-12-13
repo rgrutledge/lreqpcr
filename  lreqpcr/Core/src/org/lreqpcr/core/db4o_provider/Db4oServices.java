@@ -100,7 +100,7 @@ public abstract class Db4oServices implements DatabaseServices {
     private void deleteAverageProfile(AverageProfile averageProfile) {
         //Delete the replicate Profiles
         if (averageProfile != null) {
-            ArrayList<? extends Profile> profileList = averageProfile.getReplicateProfileList();
+            List<? extends Profile> profileList = averageProfile.getReplicateProfileList();
             for (Profile prf : profileList) {
                 db4o.delete(prf);
             }

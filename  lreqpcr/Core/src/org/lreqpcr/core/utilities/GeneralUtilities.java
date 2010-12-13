@@ -18,6 +18,7 @@ package org.lreqpcr.core.utilities;
 
 import org.lreqpcr.core.data_objects.Profile;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -34,8 +35,8 @@ public class GeneralUtilities {
      * @param replicates ArrayList of the replicate Profiles
      * @return the average Fc dataset
      */
-    public static double[] generateAverageFcDataset(ArrayList<? extends Profile> replicates) {
-        if (replicates.size() == 0) {
+    public static double[] generateAverageFcDataset(List<? extends Profile> replicates) {
+        if (replicates.isEmpty()) {
             return null;
         }
 
@@ -49,7 +50,7 @@ public class GeneralUtilities {
                 profileList.add(profile);
             }
         }
-        if (profileList.size() == 0) {
+        if (profileList.isEmpty()) {
             return null;
         }
         if (profileList.size() > 1) {
@@ -57,9 +58,7 @@ public class GeneralUtilities {
             //Place the double[] Fc raw readings into a double[profile][raw Fc dataset]
             double[][] fcArray = new double[numberOfProfiles][numberOfCycles];
             for (int i = 0; i < numberOfProfiles; i++) {
-                for (int j = 0; j < numberOfCycles; j++) {
-                    fcArray[i][j] = profileList.get(i).getRawFcReadings()[j];
-                }
+                System.arraycopy(profileList.get(i).getRawFcReadings(), 0, fcArray[i], 0, numberOfCycles);
             }
             //Calculate average Fc for each cycle and put it into a new double[]
             for (int i = 0; i < numberOfCycles; i++) {

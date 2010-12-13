@@ -14,10 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * and open the template in the editor.
  */
-
 package org.lreqpcr.core.data_objects;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implementation of the AverageProfile interface.
@@ -30,26 +29,42 @@ import java.util.ArrayList;
  */
 public class AverageSampleProfile extends SampleProfile implements AverageProfile {
 
-    private ArrayList<SampleProfile> sampleProfileList;
+    private List<SampleProfile> sampleProfileList;
 
+    /**
+     * An average sample profile constructed from its sample replicate profiles.
+     */
     public AverageSampleProfile() {
-        setChildClass(SampleProfile.class); 
+        setChildClass(SampleProfile.class);
     }
 
-    public ArrayList<SampleProfile> getReplicateProfileList() {
+    /**
+     *
+     * @return list of replicate sample profiles
+     */
+    public List<SampleProfile> getReplicateProfileList() {
         return sampleProfileList;
     }
 
+    /**
+     * Will throw an illegal cast exception if the list does not contain
+     * Calibration Profiles.
+     *
+     * @param replicateProfileList
+     */
     @SuppressWarnings(value = "unchecked")
-    public void setReplicateProfileList(ArrayList<? extends Profile> replicateProfileList) {
-        this.sampleProfileList = (ArrayList<SampleProfile>) replicateProfileList;
+    public void setReplicateProfileList(List<? extends Profile> replicateProfileList) {
+        this.sampleProfileList = (List<SampleProfile>) replicateProfileList;
     }
+//    public void setReplicateProfileList(List<SampleProfile> replicateProfileList) {
+//        this.sampleProfileList = replicateProfileList;
+//    }
 
     @Override
     public void updateProfile() {
         super.updateProfile();
     }
-    
+
     @Override
     public int compareTo(Object o) {
         SampleProfile prf = (AverageSampleProfile) o;

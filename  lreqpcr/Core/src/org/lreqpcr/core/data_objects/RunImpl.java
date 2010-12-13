@@ -26,6 +26,9 @@ package org.lreqpcr.core.data_objects;
 public class RunImpl extends Run {
 
 
+    /**
+     * Implementation of Run
+     */
     public RunImpl() {
         
     }

@@ -24,7 +24,6 @@ import org.lreqpcr.core.utilities.GeneralUtilities;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
@@ -94,7 +93,7 @@ public class DeleteSampleProfileAction extends AbstractAction {
 //Need to remove the Profile from the AverageProfile replicate profile list
             AverageSampleProfile avProfile =
                     (AverageSampleProfile) sampleProfile.getParent();
-            ArrayList<SampleProfile> samplePrfList = avProfile.getReplicateProfileList();
+            List<SampleProfile> samplePrfList = avProfile.getReplicateProfileList();
             //Test to sure that at least one Sample Profile will remain
             if (samplePrfList.size() < 2) {
                 String msg = "There appears to be only one remaining replicate Profile, " +
