@@ -22,7 +22,6 @@ import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
@@ -89,7 +88,7 @@ public class DeleteAverageSampleProfileAction extends AbstractAction {
 
         //Need to remove the AverageProfile from the Run Profile list
         Run run = (Run) avProfile.getParent();
-        ArrayList<AverageSampleProfile> avSamplePrfList = run.getAverageProfileList();
+        List<AverageSampleProfile> avSamplePrfList = run.getAverageProfileList();
         avSamplePrfList.remove(avProfile);
         db.saveObject(avSamplePrfList);
         db.deleteObject(avProfile);

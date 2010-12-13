@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * and open the template in the editor.
  */
-
 package org.lreqpcr.core.data_objects;
 
 /**
@@ -26,20 +25,38 @@ public class LreWindowSelectionParameters {
     private Double minFc = 0d;
     private Double foThreshold = 0.06;//6% default
 
+    /**
+     * Returns he Fo threshold (fraction of the cycle Fo vs. the average Fo) beyond which the
+     * the next upper cycle will not be added to the LRE window.
+     * @return the Fo threshold
+     */
     public Double getFoThreshold() {
         return foThreshold;
     }
 
+    /**
+     * Sets the Fo threshold (fraction of the cycle Fo vs. the average Fo) beyond which the
+     * the next upper cycle will not be added to the LRE window.
+     * @param cutoff the Fo threshold
+     * @param foThreshold
+     */
     public void setFoThreshold(Double foThreshold) {
         this.foThreshold = foThreshold;
     }
 
+    /**
+     * Returns the minimum Fc reading used to set the start cycle of the LRE window.
+     * @return the minimum Fc reading
+     */
     public Double getMinFc() {
         return minFc;
     }
 
+    /**
+     * Sets the minimum Fc reading used to set the start cycle of the LRE window.
+     * @param minFc the minimum Fc reading
+     */
     public void setMinFc(Double minFc) {
         this.minFc = minFc;
     }
-
 }

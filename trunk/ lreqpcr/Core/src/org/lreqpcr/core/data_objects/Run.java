@@ -17,10 +17,10 @@
 
 package org.lreqpcr.core.data_objects;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 /**
  * Data object represent a Run. Note that Profile is linked to
@@ -37,8 +37,8 @@ import java.util.GregorianCalendar;
 public abstract class Run extends LreObject {
     
     private Date runDate;
-    private ArrayList<String> operators;//The person(s) conducting the Run
-    private ArrayList<AverageSampleProfile> averageProfileList;
+    private List<String> operators;//The person(s) conducting the Run
+    private List<AverageSampleProfile> averageProfileList;
     private int year;
     private int month;
     private double runOCF = 0;//Run-specific OCF
@@ -55,7 +55,7 @@ public abstract class Run extends LreObject {
      *
      * @return the persons conducting the Run
      */
-    public ArrayList<String> getOperators() {
+    public List<String> getOperators() {
         return operators;
     }
 
@@ -75,11 +75,11 @@ public abstract class Run extends LreObject {
         this.machineDataFile = machineDataFile;
     }
 
-    public ArrayList<AverageSampleProfile> getAverageProfileList() {
+    public List<AverageSampleProfile> getAverageProfileList() {
         return averageProfileList;
     }
 
-    public void setAverageProfileList(ArrayList<AverageSampleProfile> averageProfileList) {
+    public void setAverageProfileList(List<AverageSampleProfile> averageProfileList) {
         this.averageProfileList = averageProfileList;
     }
 

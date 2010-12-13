@@ -16,7 +16,7 @@
  */
 package org.lreqpcr.core.data_objects;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -24,17 +24,21 @@ import java.util.ArrayList;
  */
 public class AverageCalibrationProfile extends CalibrationProfile implements AverageProfile {
 
-    private ArrayList<CalibrationProfile> lambdaProfileList;
+    private List<CalibrationProfile> lambdaProfileList;
 
+    /**
+     * An average calibration file constructed from the replicate calibration
+     * profiles
+     */
     public AverageCalibrationProfile() {
         setChildClass(CalibrationProfile.class);
     }
 
     /**
-     *
+     * List of the replicate profiles
      * @return list of replicate Calibration Profiles
      */
-    public ArrayList<CalibrationProfile> getReplicateProfileList() {
+    public List<CalibrationProfile> getReplicateProfileList() {
         return lambdaProfileList;
     }
 
@@ -45,8 +49,8 @@ public class AverageCalibrationProfile extends CalibrationProfile implements Ave
      * @param replicateProfileList list of replicate Calibration profiles
      */
     @SuppressWarnings(value = "unchecked")
-    public void setReplicateProfileList(ArrayList<? extends Profile> replicateProfileList) {
-        lambdaProfileList = (ArrayList<CalibrationProfile>) replicateProfileList;
+    public void setReplicateProfileList(List<? extends Profile> replicateProfileList) {
+        lambdaProfileList = (List<CalibrationProfile>) replicateProfileList;
     }
 
     /**

@@ -20,7 +20,7 @@ package org.lreqpcr.core.data_objects;
 /**
  * Provides the framework for retrieving and 
  * displaying Objects based on a single parent/multiple children
- * pattern, in which children are designated by Class. Children objects for a Parent
+ * pattern, in which children are designated by a single type (Class). Children objects of a Parent
  * are thus retrieved by searching all Child objects (ID'd by Class) for those
  * in which it is set as the Parent. This Object database "centric" approach
  * foregoes the need to  maintain a List of children, where e.g. when a child
@@ -32,6 +32,7 @@ package org.lreqpcr.core.data_objects;
  * overcome such performance issues, as this avoids instantiation of
  * the Child objects.
  *
+ * @param <T>
  * @author Bob Rutledge
  */
 public interface Family<T> {
@@ -43,17 +44,23 @@ public interface Family<T> {
     public void setParent(T parent);
 
     /**
-     * Returns the Parent Object or null if none exsists
+     * Returns the Parent Object or null if none exists
      * @return the parent Object
      */
     public T getParent();
 
     /**
      * Sets the Child class that allows retrieval of children objects.
+     * Note that a parent can only have children of one type.
      * Assumes only one type of child.
      * @param childClass the Child class
      */
     public void setChildClass(Class childClass);
 
+    /**
+     * Returns the child Class. Note that a parent can only have children of one
+     * type (Class)
+     * @return the type of the children
+     */
     public Class getChildClass();
 }

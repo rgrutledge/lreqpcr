@@ -21,7 +21,7 @@ import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
+import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import org.lreqpcr.core.data_objects.Run;
@@ -54,7 +54,7 @@ class ApplyRunSpecficOCF extends AbstractAction {
         LreNode selectedRunNode = (LreNode) nodes[0];
         db = selectedRunNode.getDatabaseServices();
         Run selectedRun = selectedRunNode.getLookup().lookup(Run.class);
-        ArrayList<AverageSampleProfile> averageSampleProfileList = selectedRun.getAverageProfileList();
+        List<AverageSampleProfile> averageSampleProfileList = selectedRun.getAverageProfileList();
         String s = JOptionPane.showInputDialog(WindowManager.getDefault().getMainWindow(),
                 "Enter the OCF",
                 "Apply a Run-specific OCF",
@@ -83,7 +83,7 @@ class ApplyRunSpecficOCF extends AbstractAction {
                 avProfile.setRunOCF(runOCF);
                 avProfile.updateProfile();
                 db.saveObject(avProfile);
-                ArrayList<SampleProfile> sampleProfileList = avProfile.getReplicateProfileList();
+                List<SampleProfile> sampleProfileList = avProfile.getReplicateProfileList();
                 for (SampleProfile sampleProfile : sampleProfileList) {
                     if (!sampleProfile.isExcluded()) {
                         sampleProfile.setRunOCF(runOCF);

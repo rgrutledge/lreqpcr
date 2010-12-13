@@ -18,6 +18,7 @@
 package org.lreqpcr.core.data_objects;
 
 /**
+ * NOT IMPLEMENTED.
  * For unknown reasons, DB4O (ver 7.4) cannot store either java.awt.Image objects
  * or ArrayList<Byte[]> for unknown reasons. However, it was found that DB4O can
  * store byte[] in an ArrayList if they are first wrapped in an object
@@ -28,13 +29,21 @@ package org.lreqpcr.core.data_objects;
  * @author Bob Rutledge
  */
 public class ByteWrapper {
-    // TODO decide whether to import the image viewer from the LRE Suite
+
     private byte[] image;
 
+    /**
+     *
+     * @param image image bit array
+     */
     public ByteWrapper(byte[] image) {
         this.image = image;
     }
 
+    /**
+     *
+     * @return image bit array
+     */
     public byte[] getImage() {
         return image;
     }
