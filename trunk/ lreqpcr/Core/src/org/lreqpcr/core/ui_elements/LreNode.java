@@ -26,7 +26,7 @@ import org.openide.nodes.Node;
 import org.openide.util.Lookup;
 
 /**
- * Representation of an LRE object, the instance of which is held within the Node
+ * Node representation of an LRE object, the instance of which is held within the Node's
  * Lookup. This Node also has a reference to the database holding the LRE object,
  * providing the capability to save changes to the LRE object.
  * These Nodes also have the ability to change their Actions and Children,
@@ -52,6 +52,15 @@ public class LreNode extends AbstractNode implements ExplorerManager.Provider {
         actions = nodeActions;
     }
 
+    /**
+     * Copied from the getActions in the Node class
+     * Get the set of actions that are associated with this node. This set is 
+     * used to construct the context menu for the node.
+     * By default this method delegates to the deprecated getActions or 
+     * getContextActions method depending on the value of supplied argument. 
+     * @param context whether to find actions for context meaning or for the node itself 
+     * @return that actions of this node
+     */
     @Override
     public Action[] getActions(boolean context) {
         return actions;
@@ -84,18 +93,11 @@ public class LreNode extends AbstractNode implements ExplorerManager.Provider {
         if (parentNode != null) {
             LreObjectChildren children = (LreObjectChildren) parentNode.getChildren();
             children.refreshNodeLabel(this);
-        } else {
-//No nodeLabelFactory is available, because this is a root node...
-            //Not sure why this is needed but is known to throw null pointer exceptions
-//            if(getLookup() != null){
-//                String newDisplayName = getLookup().lookup(LreObject.class).getName();
-//                this.setDisplayName(newDisplayName);
-//            }
         }
     }
 
     /**
-     * Provides the database being viewed
+     * Provides the database in which the member of this node is stored
      * 
      * @return the database being viewed
      */
@@ -103,6 +105,10 @@ public class LreNode extends AbstractNode implements ExplorerManager.Provider {
         return db;
     }
 
+    /**
+     * Set the database in which the member of this node is stored
+     * @param db the database holding the member of this node
+     */
     public void setDatabaseService(DatabaseServices db) {
         this.db = db;
     }

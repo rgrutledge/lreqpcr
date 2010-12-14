@@ -18,15 +18,15 @@
 package org.lreqpcr.core.utilities;
 
 /**
- *
- * @author brutledg
+ * Listener interface for the UniversalLookup
+ * @author Bob Rutledge
  */
 public interface UniversalLookupListener {
 
     /**
      * Note that each key is linked to a list of associated objects.
      *
-     * @param key the key value added to the UniversalLookup
+     * @param key the key value that triggered the change in the UniversalLookup
      */
     public void universalLookupChangeEvent(Object key);
 

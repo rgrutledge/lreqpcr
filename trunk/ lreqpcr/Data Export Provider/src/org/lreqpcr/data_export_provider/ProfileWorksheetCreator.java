@@ -17,8 +17,8 @@
 package org.lreqpcr.data_export_provider;
 
 import java.awt.Toolkit;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import javax.swing.JOptionPane;
 import jxl.format.Alignment;
 import jxl.format.Border;
@@ -110,7 +110,7 @@ public class ProfileWorksheetCreator {
         dateFormat.setAlignment(Alignment.CENTRE);
         DateTime dateCell = new DateTime(1, 1, run.getRunDate(), dateFormat);
         sheet.addCell(dateCell);
-        ArrayList<AverageSampleProfile> profileList = run.getAverageProfileList();
+        List<AverageSampleProfile> profileList = run.getAverageProfileList();
         Collections.sort(profileList);
         Number number = new Number(4, 1, profileList.get(0).getOCF(), ocfFormat);
         sheet.addCell(number);
@@ -123,13 +123,13 @@ public class ProfileWorksheetCreator {
         }
 
 //Calculate averages for the amplicon Tm and Ct taken from the replicate profiles
+        //Export of Ct values has been decapricated
         for (AverageSampleProfile avProfile : profileList) {
             double avTm = 0;
 //                    double avCt = 0;
 //                    double ctSD = 0;//Ct standard deviation
 //                    ArrayList<Double> ctArray = Lists.newArrayList();
             int tmCnt = 0;
-//                    int ctCnt = 0;
             for (Profile sampleProfile : avProfile.getReplicateProfileList()) {
                 if (sampleProfile.getAmpTm() != 0) {
                     avTm += sampleProfile.getAmpTm();

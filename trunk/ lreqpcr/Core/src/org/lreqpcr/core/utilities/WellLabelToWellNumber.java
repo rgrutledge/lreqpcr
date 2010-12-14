@@ -20,13 +20,18 @@ package org.lreqpcr.core.utilities;
 import org.lreqpcr.core.data_objects.Profile;
 
 /**
- * This is required for data export that only provides a well label and
+ * Converts the well label to well number. This is required for data
+ * export that only provides a well label and
  * is based on the AB 7900 labeling scheme
  *
  * @author Bob Rutledge
  */
 public class WellLabelToWellNumber {
 
+    /**
+     * Converts the well label to well number for the provided profile
+     * @param profile the profile
+     */
     public static void labelToNumber96Well_AB7900(Profile profile){
         String wellLabel = profile.getWellLabel();
         if(wellLabel.compareTo("A1") == 0){

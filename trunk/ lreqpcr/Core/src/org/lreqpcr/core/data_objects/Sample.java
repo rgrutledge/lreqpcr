@@ -18,7 +18,7 @@
 package org.lreqpcr.core.data_objects;
 
 /**
- * NOT YET IMPLEMENTED.
+ * NOT YET IMPLEMENTED Represents a sample.
  *
  * Sample is a complex element that in e.g. gene expression analysis 
  * is composed of RNA derived from a sample, followed by cDNA derived by RT. 
@@ -35,15 +35,15 @@ public abstract class Sample extends LreObject {
 //Note that it is possible the the sample is a mixture of single and 
 //double stranded targets, so this designation is likely not correct. 
 //It may be best to specify strandedness in Profile instead. 
-    private Strandedness targetStandedness;
+    private TargetStrandedness targetStandedness;
     //Strandedness should be an enum...
     private boolean isTargetSingleStranded = true;
 
-    public Strandedness getTargetStandedness() {
+    public TargetStrandedness getTargetStandedness() {
         return targetStandedness;
     }
 
-    public void setTargetStandedness(Strandedness targetStandedness) {
+    public void setTargetStandedness(TargetStrandedness targetStandedness) {
         this.targetStandedness = targetStandedness;
     }
     //Sample type should also be an enum...

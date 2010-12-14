@@ -18,9 +18,9 @@
 package org.lreqpcr.core.data_processing;
 
 /**
- * Representation of a thermocycle that allows an amplification
+ * Abstract class representing a thermocycle that allows an amplification
  * profile to be constructed as a linked list. This in turn allows data retrieval
- * by transversing the profile, cycle by cycle. 
+ * by transversing the profile linked list.
  * 
  * @author Bob Rutledge
  */
@@ -38,7 +38,7 @@ public abstract class Cycle {
     private double[] cycLREparam;//Linear regression values [slope, intercept, r2]
 
     /**
-     * Cycle constructor
+     * 
      *@param cycleNumber the cycle number of this Cycle
      *@param fluorReading the fluorescence reading from this Cycle (Fc)
      *@param previousCycle the previous Cycle
@@ -53,34 +53,66 @@ public abstract class Cycle {
         if(cycNum != 0 && cycleNumber !=1){ec = (fc/prevCycle.fc)-1;}
     }
 
+    /**
+     * Returns the cycle efficiency, Ec.
+     * @return the cycle efficiency
+     */
     public double getEc() {
         return ec;
     }
 
+    /**
+     * Set the cycle efficiency Ec.
+     * @param ec the cycle efficiency
+     */
     public void setEc(double ec) {
         this.ec = ec;
     }
 
+    /**
+     * Returns the cycle fluorescence (Fc).
+     * @return the cycle fluorescence
+     */
     public double getFc() {
         return fc;
     }
 
+    /**
+     * Sets the cycle fluorescence (Fc).
+     * @param fc the cycle fluorescence
+     */
     public void setFc(double fc) {
         this.fc = fc;
     }
 
+    /**
+     * Returns the cycle number. 
+     * @return the cycle number
+     */
     public int getCycNum() {
         return cycNum;
     }
 
+    /**
+     * Sets the cycle number 
+     * @param cycNum the cycle number
+     */
     public void setCycNum(int cycNum) {
         this.cycNum = cycNum;
     }
 
+    /**
+     * Return the next cycle object, or null if none exists.
+     * @return the next Cycle object
+     */
     public Cycle getNextCycle() {
         return nextCycle;
     }
 
+    /**
+     * Sets the next cycle object.
+     * @param nextCycle the next Cycle object
+     */
     public void setNextCycle(Cycle nextCycle) {
         this.nextCycle = nextCycle;
     }
@@ -106,7 +138,7 @@ public abstract class Cycle {
     }
 
     /**
-     *
+     * Returns the Fo adjusted to Emax > 100%, or zero if Emax < 100%.
      * @return Fo adjusted to 100% Emax
      */
     public double getAdjustedFo() {
@@ -114,7 +146,7 @@ public abstract class Cycle {
     }
 
     /**
-     *
+     * Sts the Fo adjusted to Emax > 100%.
      * @param adjustedFo Fo adjusted to 100% Emax
      */
     public void setAdjustedFo(double adjustedFo) {
@@ -122,7 +154,7 @@ public abstract class Cycle {
     }
 
     /**
-     * 
+     * Returns the predicted cycle fluorescence (pFc).
      * @return the predicted Fc for this cycle
      */
     public double getPredFc() {
@@ -130,41 +162,49 @@ public abstract class Cycle {
     }
 
     /**
-     * 
+     * Sets the predicted cycle fluorescence (pFc).
      * @param pFc the predicted Fc for this cycle
      */
     public void setPredFc(double pFc) {
         this.pFc = pFc;
     }
 
+    /**
+     * Returns the previous Cycle object
+     * @return the previous cycle object
+     */
     public Cycle getPrevCycle() {
         return prevCycle;
     }
 
+    /**
+     * Sets the previous Cycle object.
+     * @param prevCycle the previous cycle object
+     */
     public void setPrevCycle(Cycle prevCycle) {
         this.prevCycle = prevCycle;
     }
 
     /**
-     * 
-     * @return the fractional difference in this cycle's Fo and the average Fo derived
-     * from the LRE window.
+     * Returns the fractional difference between in this cycle's Fo and the average Fo 
+     * derived from the LRE window.
+     * @return the fractional Fo difference i
      */
     public double getFoFracFoAv() {
         return oFfracFoAv;
     }
 
     /**
-     * 
-     * @param oFfracFoAv the fractional difference in this cycle's Fo and the average Fo derived
-     * from the LRE window.
+     * Sets the fractional difference between in this cycle's Fo and the average Fo 
+     * derived from the LRE window.
+     * @param oFfracFoAv the fractional Fo difference 
      */
     public void setFoFracFoAv(double oFfracFoAv) {
         this.oFfracFoAv = oFfracFoAv;
     }
 
     /**
-     * 
+     * Returns the linear regression parameters for this cycle [slope, intercept, r2].
      * @return the linear regression parameters for this cycle [slope, intercept, r2]
      */
     public double[] getCycLREparam() {
@@ -172,7 +212,7 @@ public abstract class Cycle {
     }
 
     /**
-     * 
+     * Sets the cycLREparam the linear regression parameters for this cycle [slope, intercept, r2].
      * @param cycLREparam the linear regression parameters for this cycle [slope, intercept, r2]
      */
     public void setCycLREparam(double[] cycLREparam) {

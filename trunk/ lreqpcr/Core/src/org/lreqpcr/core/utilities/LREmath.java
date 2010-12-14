@@ -19,16 +19,12 @@ package org.lreqpcr.core.utilities;
 
 /**
  *
- * Static methods for LRE-related calculations
+ * A collection of static methods for LRE-related calculations
  *
  * @author Bob Rutledge
  */
 public class LREmath {
     
-    /**
-     * 
-     */
-    public LREmath() {}
     
     /**
      * Calculates Target Quantity in fluorescence units (Fo)
@@ -41,7 +37,7 @@ public class LREmath {
      * @param  c   the cycle number
      * @param cF   the cycle fluorescence reading (Fc)
      * @param dE   the rate of loss in cycle efficiency (deltaE)
-     * @param mE   th maximal amplification efficiency (Emax)
+     * @param mE   the maximal amplification efficiency (Emax)
      * @return     the predicted target quantity in fluorescence units (Fo) 
      */
     public static double calcFo(int c, double cF, double dE, double mE) {
@@ -86,6 +82,14 @@ public class LREmath {
         return pFc;
     }
     
+    /**
+     * Calculates C1/2 for a profile based on the supplied parameters.
+     *
+     * @param deltaE the delta E (slope of the LRE plot)
+     * @param emax Emax (Y-intercept of the LRE plot)
+     * @param avFo the average Fo of this profile
+     * @return C1/2 which the fractional cycle at which Fc reaches half of Fmax
+     */
     public static double getMidC(double deltaE, double emax, double avFo){
         double maxF = emax/deltaE*-1;
         double numerator = Math.log10((maxF/avFo)-1);
@@ -98,8 +102,7 @@ public class LREmath {
      * Determines non-linear correlation coefficent (R2) for
      * the predicted Fc within the LRE window
      *
-     *@param point a array list of points containing the observed and predicted fluorescence readings
-     * within the LRE window [Fc][pFc]
+     * @param fcpFc the array holding the values for Fc and predicted Fc: [0, Fc][1, pFc]
      * @return the nonlinear correlation coefficient (R2)
      */
     public static double calcNonLinearR2(double[][] fcpFc) {

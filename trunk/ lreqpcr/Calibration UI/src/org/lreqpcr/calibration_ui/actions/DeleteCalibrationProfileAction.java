@@ -24,7 +24,6 @@ import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
 import org.lreqpcr.core.utilities.GeneralUtilities;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
@@ -98,7 +97,7 @@ public class DeleteCalibrationProfileAction extends AbstractAction {
 
         if (profile instanceof AverageCalibrationProfile) {
             AverageCalibrationProfile prf = (AverageCalibrationProfile) profile;
-            ArrayList<CalibrationProfile> lambdaProfileList = prf.getReplicateProfileList();
+            List<CalibrationProfile> lambdaProfileList = prf.getReplicateProfileList();
             //Delete all of the replicate profiles
             for (CalibrationProfile cp : lambdaProfileList) {
                 db.deleteObject(cp);
@@ -115,7 +114,7 @@ public class DeleteCalibrationProfileAction extends AbstractAction {
             CalibrationProfile calibrationProfile = (CalibrationProfile) profile;
             AverageCalibrationProfile avProfile =
                     (AverageCalibrationProfile) calibrationProfile.getParent();
-            ArrayList<CalibrationProfile> calibrationPrfList = avProfile.getReplicateProfileList();
+            List<CalibrationProfile> calibrationPrfList = avProfile.getReplicateProfileList();
             //Test to sure that at least one Sample Profile will remain
 // TODO present an error dialog to indicate that the last calibration profile cannot be deleted
             if (calibrationPrfList.size() < 2) {

@@ -18,7 +18,7 @@
 package org.lreqpcr.core.data_objects;
 
 /**
- * Amplicon base abstract class
+ * Amplicon base abstract class NOT YET FULLY IMPLEMENTED
  * @author Bob Rutledge
  */
 public abstract class Amplicon extends LreObject {

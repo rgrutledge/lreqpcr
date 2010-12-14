@@ -29,7 +29,7 @@ import org.openide.util.Lookup;
 import org.openide.windows.WindowManager;
 
 /**
- *
+ * Static utilities for data input/output
  * @author Bob Rutledge
  */
 public class IOUtilities {
@@ -159,6 +159,7 @@ public class IOUtilities {
     /**
      * Presents a file chooser dialog for selecting a preexisting xls file.
      * If the file does not exist null is return
+     * @param title the file chooser title
      * @return the selected xls file, or null if it does not exist
      */
     public static File openImportExcelFile(String title) {

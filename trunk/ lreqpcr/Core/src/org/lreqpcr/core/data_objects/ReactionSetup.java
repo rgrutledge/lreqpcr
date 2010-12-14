@@ -18,14 +18,7 @@
 package org.lreqpcr.core.data_objects;
 
 /**
- * Represents the conditions used to conduct an amplication  
- * using a reaction mix of a specific volume,
- * composed of an enzyme forumulation and primer concentration
- * that is subjected to a specific cycling regime using a single
- * real-time machine set to a specific gain setting. The central
- * function of a Reaction Setup is to provide an average OCF.
- *
- * NOT FULLY IMPLEMENTED... OCF is currently applied manually
+ * Represents the setup used to conduct an amplification NOTE YET FULLY IMPLEMENTED.
  *
  * @author Bob Rutledge
  */
@@ -40,6 +33,10 @@ public abstract class ReactionSetup extends LreObject {
     private String reactionClosure;//The type of vessel closure (e.g. caps)
     private double averageOCF;
     private double ocfCV;
+
+    public ReactionSetup() {
+        setChildClass(AverageCalibrationProfile.class);
+    }
 
     public String getCyclingRegime() {
         return cyclingRegime;

@@ -23,14 +23,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
- * Data object represent a Run. Note that Profile is linked to
- * all of the reaction-specific components via Reaction Setup,
- * thus separating the Run from the details as to how the amplification
- * is conducted. This includes the machine, optical gain
- * and cycling regime (etc.), which is documented within the
- * Reaction Setup, although full functionality of ReactionSetup has not yet
- * been implemented. Note also that Run is not linked to CalibrationProfiles,
- * which are instead linked to a ReactionSetup
+ * Data object representing a Run loosely based on the RDML 1.0 specification.
  * 
  * @author Bob Rutledge
  */
@@ -47,12 +40,15 @@ public abstract class Run extends LreObject {
     private String importDataFileName;
     private byte[] importDataFile; //The import data file; e.g. XLS
     
+    /**
+     * The child class is set to AverageProfile.
+     */
     public Run() {
         setChildClass(AverageProfile.class);
     }
 
     /**
-     *
+     * Returns a list of persons that conducted the Run.
      * @return the persons conducting the Run
      */
     public List<String> getOperators() {
@@ -60,7 +56,7 @@ public abstract class Run extends LreObject {
     }
 
     /**
-     *
+     * Add a person to those conducting the Run
      * @param operator the person conducting the Run
      */
     public void addOperator(String operator) {
@@ -83,10 +79,18 @@ public abstract class Run extends LreObject {
         this.averageProfileList = averageProfileList;
     }
 
+    /**
+     * Returns the date of the run.
+     * @return the run date
+     */
     public Date getRunDate() {
         return runDate;
     }
 
+    /**
+     * Sets the data of the run.
+     * @param runDate the run date
+     */
     public void setRunDate(Date runDate) {
         this.runDate = runDate;
         Calendar calendar = new GregorianCalendar();
@@ -95,10 +99,18 @@ public abstract class Run extends LreObject {
         month = calendar.get(Calendar.MONTH);
     }
 
+    /**
+     * 
+     * @return the month of the run 
+     */
     public int getMonth() {
         return month;
     }
 
+    /**
+     * 
+     * @return the year of the run
+     */
     public int getYear() {
         return year;
     }
@@ -106,7 +118,7 @@ public abstract class Run extends LreObject {
     public byte[] getRunDataFile() {
         return machineDataFile;
     }
-
+  
     public void setRunDataFile(byte[] runDataFile) {
         this.machineDataFile = runDataFile;
     }
@@ -139,6 +151,10 @@ public abstract class Run extends LreObject {
         return runOCF;
     }
 
+    /**
+     * Sets the run-specific OCF.
+     * @param runOCF the run-specific OCF
+     */
     public void setRunOCF(double runOCF) {
         this.runOCF = runOCF;
     }

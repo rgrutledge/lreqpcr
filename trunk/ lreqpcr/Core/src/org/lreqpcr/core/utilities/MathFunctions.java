@@ -74,8 +74,8 @@ public class MathFunctions {
      /**
      * Calculates standard deviation based on Excel's stdev function
      *
-     *@param xList a double[] list of values
-     *@return stDev the standard deviation
+      *@param values the values to process
+      * @return stDev the standard deviation
      */
     public static double calcStDev(List<Double> values) {
         double stDev = 0;

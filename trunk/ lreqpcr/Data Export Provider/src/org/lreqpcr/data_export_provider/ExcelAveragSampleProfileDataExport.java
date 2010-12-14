@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import javax.swing.JOptionPane;
 import jxl.Workbook;
@@ -52,7 +53,7 @@ public class ExcelAveragSampleProfileDataExport {
      * @throws WriteException Excel file write exception
      */
     @SuppressWarnings("unchecked")
-    public static void exportProfiles(HashMap<String, ArrayList<AverageSampleProfile>> groupList) throws IOException, WriteException {
+    public static void exportProfiles(HashMap<String, List<AverageSampleProfile>> groupList) throws IOException, WriteException {
         //Setup the the workbook based on the file choosen by the user
         File selectedFile = IOUtilities.newExcelFile();
         if (selectedFile == null) {
@@ -136,8 +137,6 @@ public class ExcelAveragSampleProfileDataExport {
             sheet.addCell(label);
             label = new Label(10, 2, "OCF", centerBoldUnderline);
             sheet.addCell(label);
-//            label = new Label(11, 2, "Adjt No", centerBoldUnderline);
-//            sheet.addCell(label);
             label = new Label(11, 2, "Notes", centerBoldUnderline);
             sheet.addCell(label);
             int row = 3;
@@ -147,7 +146,7 @@ public class ExcelAveragSampleProfileDataExport {
             Number number = null;
             DateFormat customDateFormat = new DateFormat("ddMMMyy");
 
-            ArrayList<AverageSampleProfile> profileList = groupList.get(pageName);
+            List<AverageSampleProfile> profileList = groupList.get(pageName);
             Collections.sort(profileList);
             ArrayList<AverageSampleProfile> belowTenMoleculeList = new ArrayList<AverageSampleProfile>();
 

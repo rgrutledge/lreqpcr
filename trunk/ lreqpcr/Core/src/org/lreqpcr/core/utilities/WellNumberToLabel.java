@@ -20,12 +20,16 @@ package org.lreqpcr.core.utilities;
 import org.lreqpcr.core.data_objects.Profile;
 
 /**
- *
+ * Converts the well number to well label
  * @author Bob Rutledge
  */
 public class WellNumberToLabel {
 
-        public static void indexToLabel96WelL_AB7900(Profile prf){
+    /**
+     * Converts the well number to well label for the provided Profile
+     * @param prf the profile
+     */
+    public static void indexToLabel96WelL_AB7900(Profile prf){
             int wellNumber = prf.getWellNumber();
             switch (wellNumber){
                 case 1: prf.setWellLabel("A1"); break;
@@ -129,7 +133,7 @@ public class WellNumberToLabel {
         }
 
         /**
-         * Well number to well lable conversion for a AB 7900 384 well plate.
+         * Well number to well label conversion for a AB 7900 384 well plate.
          *
          * @param prf the profile in which to determine the well label
          */

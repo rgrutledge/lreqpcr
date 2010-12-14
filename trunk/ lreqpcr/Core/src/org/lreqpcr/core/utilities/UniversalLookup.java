@@ -23,20 +23,20 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A Universal Lookup based on Google Collection's ArrayListMultimap in which
- * elements Lists are associated with a key. This allows storage of multiple
- * objects associated with a single key.
+ * Singleton object for storage of multiple objects associated with a single key.
+ * Based on Google Collection's ArrayListMultimap 
+ * Lists of element can be associated with a key, which itself can be of any object type.
+ * This provides versatile functionality beyond that possible with the NetBeans Lookup.
  *
  * @author Bob Rutledge
  */
-public class UniversalLookup<K extends Object, E extends Object> {
+public class UniversalLookup {
 
-    private static UniversalLookup instance;
-    private ListMultimap<K, E> lookupMultimap = ArrayListMultimap.create();
-    private ListMultimap<K, UniversalLookupListener> listeners = ArrayListMultimap.create();
+    private static UniversalLookup instance;//Singleton object
+    private ListMultimap<Object, Object> lookupMultimap = ArrayListMultimap.create();
+    private ListMultimap<Object, UniversalLookupListener> listeners = ArrayListMultimap.create();
 
-    public UniversalLookup() {
-//     TODO delete:   instance = this;
+    private UniversalLookup() {
         lookupMultimap = Multimaps.synchronizedListMultimap(lookupMultimap);
         listeners = Multimaps.synchronizedListMultimap(listeners);
     }
@@ -49,7 +49,7 @@ public class UniversalLookup<K extends Object, E extends Object> {
      * @param element the object to store
      * @return true if the element was successfully added
      */
-    public boolean add(K key, E element) {
+    public boolean add(Object key, Object element) {
         //This is necessary to prevent multiple entries of the same element
         if (lookupMultimap.get(key).contains(element)) {
             fireChangeEvent(key);
@@ -68,7 +68,7 @@ public class UniversalLookup<K extends Object, E extends Object> {
      * @param element the single object to stored
      * @return true if the element was successfully added
      */
-    public boolean addSingleton(K key, E element) {
+    public boolean addSingleton(Object key, Object element) {
         if (lookupMultimap.containsKey(key)) {
             //Remove all elements associated with this key
             while (!lookupMultimap.get(key).isEmpty()) {
@@ -87,23 +87,28 @@ public class UniversalLookup<K extends Object, E extends Object> {
      * @return true if the removal was successful
      */
     //    @SuppressWarnings("unchecked")
-    public boolean remove(K key, E element) {
+    public boolean remove(Object key, Object element) {
         boolean b = lookupMultimap.get(key).remove(element);
         fireChangeEvent(key);
         return b;
     }
 
+    /**
+     * Determines whether the supplied key is present in the lookup.
+     * @param key the key to search for
+     * @return true if the key does exist
+     */
     public boolean containsKey(Object key) {
         return lookupMultimap.containsKey(key);
     }
 
     /**
      * Removes all the elements associated with the provided key, in addition to
-     * removing the key
+     * removing the key.
      *
      * @param key the key to remove
      */
-    public void removeAll(K key) {
+    public void removeAll(Object key) {
         lookupMultimap.removeAll(key);
     }
 
@@ -113,20 +118,25 @@ public class UniversalLookup<K extends Object, E extends Object> {
      * @param key the key to the element List
      * @return an unmodifiable List containing the elements
      */
-    public List<E> getAll(K key) {
+    public List<Object> getAll(Object key) {
         return Collections.unmodifiableList(lookupMultimap.get(key));
     }
 
     /**
-     * 
+     * Add a listener to the lookup.
      * @param listener the listener
      * @param key the key value to listen for
      */
-    public void addListner(K key, UniversalLookupListener listener) {
+    public void addListner(Object key, UniversalLookupListener listener) {
         listeners.put(key, listener);
     }
 
-    public void removeListner(K key, UniversalLookupListener listener) {
+    /**
+     * Remove a listener.
+     * @param key the associated key object
+     * @param listener the listener to remove
+     */
+    public void removeListner(Object key, UniversalLookupListener listener) {
         listeners.get(key).remove(listener);
         //Some cleanup
         if (listeners.get(key).isEmpty()) {
@@ -134,12 +144,20 @@ public class UniversalLookup<K extends Object, E extends Object> {
         }
     }
 
-    public void fireChangeEvent(K key) {
+    /**
+     * Fire a change event based on the supplied key.
+     * @param key the key that triggered the change event
+     */
+    public void fireChangeEvent(Object key) {
         for (UniversalLookupListener l : listeners.get(key)) {
             l.universalLookupChangeEvent(key);
         }
     }
 
+    /**
+     * Provides the singleton object of this lookup.
+     * @return the UniversalLookup object
+     */
     public static UniversalLookup getDefault() {
         if (instance == null) {
             instance = new UniversalLookup();

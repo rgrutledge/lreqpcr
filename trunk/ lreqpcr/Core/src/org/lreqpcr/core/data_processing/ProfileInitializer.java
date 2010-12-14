@@ -24,10 +24,9 @@ import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.utilities.MathFunctions;
 
 /**
- * Provides stactic function for basic LRE initialization, excluding LRE
- * automated window selection, which are provided via
- * a seperate function. This approach facilitates modification
- * to the algorythms used to select the LRE window.
+ * Provides static functions for basic LRE initialization, excluding automated LRE
+ * window selection. This approach facilitates modification
+ * to the algorithms used to select the LRE window.
  *
  * @author Bob Rutledge
  */

@@ -18,9 +18,7 @@
 package org.lreqpcr.core.data_objects;
 
 /**
- * The base abstract of a Target object.
- *
- * NOT IMPEMENTED
+ * The base abstract of a Target NOT YET IMPEMENTED
  * 
  * @author Bob Rutledge
  */

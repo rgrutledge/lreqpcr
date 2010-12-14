@@ -21,7 +21,7 @@ package org.lreqpcr.core.database_services;
  * A factory for database provider of a specified type. Not
  * only does this allow the generation of database providers for multiple 
  * types of databases, but also allows opening of multiple database files
- * for any type.
+ * for any single type.
  * 
  * @author Bob Rutledge
  */
