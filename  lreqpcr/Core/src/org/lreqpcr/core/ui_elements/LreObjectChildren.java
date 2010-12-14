@@ -31,7 +31,7 @@ import org.openide.util.lookup.Lookups;
 /**
  * Basic Children implementation for LRE objects, which provides pointers to
  * both the corresponding Explorer manager and the database holding the 
- * LRE object, along with providing 
+ * LRE object, along with generating
  * node labels and actions via factories. This greatly simplifies generating
  * labels and actions for diverse types of LRE objects.
  * @author Bob Rutledge
@@ -90,7 +90,7 @@ public class LreObjectChildren extends Children.Keys<LreObject> {
      * Changes the child LRE objects of this parent LRE Node, in order to allow
      * a refresh after addition or deletion of a child Node
      *
-     * @param memberList List of the child members for this Node
+     * @param lreObjectList list of the children objects
      */
     public void setLreObjectList(List<? extends LreObject> lreObjectList) {
         this.lreObjectList = lreObjectList;

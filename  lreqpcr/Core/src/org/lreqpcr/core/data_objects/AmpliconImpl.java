@@ -18,16 +18,13 @@
 package org.lreqpcr.core.data_objects;
 
 /**
- * Basic implementation of Amplicon
+ * Basic impliementation of Amplicon
  *
  *
  * @author Bob Rutledge
  */
 public class AmpliconImpl extends Amplicon {
 
-    /**
-     * Implementation of the Amplicon base abstract class
-     */
     public AmpliconImpl() {
     }
 

@@ -18,9 +18,29 @@
 package org.lreqpcr.core.database_services;
 
 /**
- *
+ * Used to specify the type of database.
  * @author Bob Rutledge
  */
 public enum DatabaseType {
-    EXPERIMENT, CALIBRATION, AMPLICON, SETTINGS
+
+    /**
+     * An experiment database that holds a group of related Runs
+     */
+    EXPERIMENT,
+
+    /**
+     * A calibration database which holds calibration profiles
+     */
+    CALIBRATION,
+
+    /**
+     * A amplicon database that holds amplicon information
+     */
+    AMPLICON,
+
+    /**
+     * A settings database that is used to store various types of program information,
+     * such as the last accessed directory or database file.
+     */
+    SETTINGS
 }

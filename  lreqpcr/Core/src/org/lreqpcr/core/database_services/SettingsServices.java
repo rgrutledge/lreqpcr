@@ -20,7 +20,7 @@ import java.io.File;
 
 /**
  * Storage and retrieval of various program settings,
- * primarily locations of the last opened databases. 
+ * primarily locations of the last opened database files and directories.
  *
  * @author Bob Rutledge
  */

@@ -20,7 +20,7 @@ package org.lreqpcr.core.data_objects;
 import java.util.ArrayList;
 
 /**
- * Based on the concept of a RDML-defined experiment except that details of the
+ * NOT IMPLEMENTED Based on the concept of a RDML-defined experiment except that details of the
  * how an amplification is conducted is relegated to Reaction Setup,
  * which is a major component of the Calibration database. This is because
  * the primary outcome of each type of Reaction Setup is an optical calibration
@@ -40,6 +40,7 @@ public abstract class Experiment extends LreObject {
     private ArrayList<Run> runList; //List of Runs within this Experiment
 
     public Experiment() {
+        setChildClass(Run.class);
     }
     public ArrayList<String> getInvestigatorList() {
         return investigators;

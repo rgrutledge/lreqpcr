@@ -17,7 +17,7 @@
 package org.lreqpcr.core.data_objects;
 
 /**
- *
+ * Holds values used for LRE window selection
  * @author Bob Rutledge
  */
 public class LreWindowSelectionParameters {
@@ -26,7 +26,7 @@ public class LreWindowSelectionParameters {
     private Double foThreshold = 0.06;//6% default
 
     /**
-     * Returns he Fo threshold (fraction of the cycle Fo vs. the average Fo) beyond which the
+     * Returns he Fo threshold (fraction of the cycle Fo vs the average Fo) beyond which the
      * the next upper cycle will not be added to the LRE window.
      * @return the Fo threshold
      */
@@ -35,10 +35,9 @@ public class LreWindowSelectionParameters {
     }
 
     /**
-     * Sets the Fo threshold (fraction of the cycle Fo vs. the average Fo) beyond which the
+     * Sets the Fo threshold (fraction of the cycle Fo vs the average Fo) beyond which the
      * the next upper cycle will not be added to the LRE window.
-     * @param cutoff the Fo threshold
-     * @param foThreshold
+     * @param foThreshold the Fo threshold
      */
     public void setFoThreshold(Double foThreshold) {
         this.foThreshold = foThreshold;

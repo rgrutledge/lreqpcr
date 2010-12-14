@@ -29,7 +29,7 @@ import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
- *
+ * Used to ensure that all database files are closed before exiting the program.
  * @author Bob Rutledge
  */
 @ServiceProvider(service=LifecycleManager.class, position=1)
@@ -50,8 +50,9 @@ public class LreLifecycleManager extends LifecycleManager {
         for (DatabaseType type :DatabaseType.values()){
             if (uLookup.containsKey(type) && type != DatabaseType.SETTINGS) {
                 //Cycle through all exsisting database services for this type
-                List<DatabaseServices> typeList = uLookup.getAll(type);
-                for (DatabaseServices service : typeList){
+                List<Object> typeList = uLookup.getAll(type);
+                for (Object o : typeList){
+                    DatabaseServices service = (DatabaseServices) o;
                     service.closeDatabase();
                 }
             }

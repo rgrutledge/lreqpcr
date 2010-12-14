@@ -18,11 +18,15 @@
 package org.lreqpcr.core.database_services;
 
 /**
- *
- * @author brutledg
+ * Interface for providing access to the database services associated with an object
+ * @author Bob Rutledge
  */
 public interface DatabaseProvider {
 
+    /**
+     * Returns that associated database service.
+     * @return the associated database service
+     */
     public DatabaseServices getDatabase();
 
 }

@@ -24,6 +24,7 @@ import org.lreqpcr.core.ui_elements.LreObjectChildren;
 import org.lreqpcr.core.utilities.GeneralUtilities;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.AbstractAction;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.utilities.UniversalLookup;
@@ -47,13 +48,13 @@ class IncludeCalibrationProfileAction extends AbstractAction {
         putValue(NAME, "Include Calibration Profile");
     }
 
-    @SuppressWarnings("unchecked")
+//    @SuppressWarnings("unchecked")
     public void actionPerformed(ActionEvent e) {
         Node[] nodes = mgr.getSelectedNodes();
         LreNode selectedNode = (LreNode) nodes[0];
         CalibrationProfile selectedProfile = selectedNode.getLookup().lookup(CalibrationProfile.class);
         AverageCalibrationProfile parentAvProfile = (AverageCalibrationProfile) selectedProfile.getParent();
-        ArrayList<CalibrationProfile> profileList = parentAvProfile.getReplicateProfileList();
+        List<CalibrationProfile> profileList = parentAvProfile.getReplicateProfileList();
         db = selectedNode.getDatabaseServices();
         selectedProfile.setExcluded(false);
         selectedNode.refreshNodeLabel();

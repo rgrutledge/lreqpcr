@@ -18,7 +18,7 @@
 package org.lreqpcr.core.data_objects;
 
 /**
- *
+ * Stores experiment database information
  * @author Bob Rutledge
  */
 public class ExperimentDbInfo extends LreObject {

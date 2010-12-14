@@ -18,11 +18,17 @@
 package org.lreqpcr.core.data_processing;
 
 /**
- *
+ * Implementation of Cycle
  * @author Bob Rutledge
  */
 public class CycleImp extends Cycle{
 
+    /**
+     * Linked list representing an amplification profile
+     * @param cycleNumber the cycle number
+     * @param fluorReading the fluorescence reading for this cycle
+     * @param previousCycle pointer to the previous cycle
+     */
     public CycleImp(int cycleNumber, double fluorReading, Cycle previousCycle) {
         super(cycleNumber, fluorReading, previousCycle);
     }

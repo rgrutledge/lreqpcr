@@ -18,7 +18,7 @@
 package org.lreqpcr.core.utilities;
 
 /**
- *
+ * Static methods for formating
  * @author Bob Rutledge
  */
 public class FormatingUtilities {

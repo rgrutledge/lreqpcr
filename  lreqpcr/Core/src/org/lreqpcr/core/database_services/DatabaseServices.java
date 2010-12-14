@@ -23,14 +23,30 @@ import java.util.List;
 
 /**
  * The database services interface.
- * Note that is a DB4O-centric interface.
+ * Note that is a DB4O-centric interface, in which the Family interface is used
+ * to retrieve various Objects from the database.
  *
  * @author Bob Rutledge
  */
 public interface DatabaseServices {
 
+    /**
+     * Create a new database
+     * @return indicates whether creation of the new database was successful
+     */
     public boolean createNewDatabase();
+
+    /**
+     * Open a database. Note that this assumes that a file chooser dialog will
+     * be provided by this method in order to allow a database file to be specified.
+     * @return indicates whether the database was opened successfully
+     */
     public boolean openDatabase();
+
+    /**
+     * The enum DatabaseType is used to specify the identity of each database
+     * @return the database type
+     */
     public DatabaseType getDatabaseType();
 
     /**
@@ -42,9 +58,10 @@ public interface DatabaseServices {
     public List getAllObjects(Class clazz);
 
     /**
-     * Returns the children of this Memeber, or null if it does not have children.
+     * Returns the children of this Member, or null if it does not have children.
      *
      * @param member the Family member
+     * @param childClass the child class as specified by the Family interface
      * @return a List containing all Member's children
      */
     public List<? extends Family> getChildren(Family member, Class childClass);
@@ -77,7 +94,7 @@ public interface DatabaseServices {
     public void deleteObject(Object object);
 
     /**
-     * Commits changes to the database file.
+     * Commits changes to the database file to disk.
      */
     public void commitChanges();
 

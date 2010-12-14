@@ -20,13 +20,12 @@ package org.lreqpcr.core.data_objects;
 /**
  * Basic implementation of ReactionSetup
  *
- * NOT YET IMPLEMENTED
  *
  * @author Bob Rutledge
  */
 public class ReactionSetupImpl extends ReactionSetup {
 
     public ReactionSetupImpl() {
-        setChildClass(AverageCalibrationProfile.class);
+        
     }
 }

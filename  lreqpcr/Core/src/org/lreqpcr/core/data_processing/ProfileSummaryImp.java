@@ -20,7 +20,7 @@ package org.lreqpcr.core.data_processing;
 import org.lreqpcr.core.data_objects.Profile;
 
 /**
- * Basic ProfileSummary implementation
+ * Basic implementation of ProfileSummary
  * 
  * @author Bob Rutledge
  */
