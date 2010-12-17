@@ -36,12 +36,15 @@ import org.openide.util.Lookup;
 import org.openide.windows.WindowManager;
 
 /**
- * Generates AverageProfiles
+ * Generates AverageProfiles.
  * @author Bob Rutledge
  */
 public class AverageProfileGenerator {
 
     /**
+     * Generates a list of AverageSampleProfiles from the provided list of SampleProfiles.
+     * Replicate profiles are identified by having identical sample and amplicon names.
+     * Note that the average profiles will also be initialized.
      *
      * @param profileList a list of the Profiles to be processed
      * @param parentRun the Run from which this Profile dataset was derived
@@ -103,6 +106,7 @@ public class AverageProfileGenerator {
     /**
      * Generates a list of AverageCalibrationProfiles from the provided list of CalibrationProfiles. 
      * Replicate profiles are identified by having identical sample and amplicon names.
+     * Note that the average profiles will also be initialized. 
      * 
      * @param profileList the list of CalibrationProfiles 
      * @param rxnSetup the ReactionSetup object for this calibration

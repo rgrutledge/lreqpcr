@@ -46,7 +46,7 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
 
     /**
      * Will throw an illegal cast exception if the list does not contain
-     * Calibration Profiles.
+     * Sample Profiles.
      *
      * @param replicateProfileList
      */

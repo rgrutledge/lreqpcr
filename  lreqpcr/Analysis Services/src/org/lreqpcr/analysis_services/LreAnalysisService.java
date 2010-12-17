@@ -22,46 +22,42 @@ import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_processing.ProfileSummary;
 
 /**
- * Intialize all fields within the provided Profile and within the
- * ProfileSummary that encapsulates the Profile. 
+ * Initialize all fields within the provided Profile and the
+ * ProfileSummary that encapsulates it.
  *
  * @author Bob Rutledge
  */
 public abstract class LreAnalysisService {
 
     /**
-     * Provides all the functions necessary for full initialization of both
-     * the provided Profile and the encapsulating ProfileSummary. Central to
-     * this capability is automating LRE window selection.
+     * Provides all the functions necessary initialize both
+     * the supplied Profile and to encapsulate within a ProfileSummary.
+     * This primarily involves baseline subtraction and automated
+     * LRE window selection. Note that these
+     * methods do not save the modifications made to the Profile.
      * 
      * @param profile the Profile to initialize
-     * @return fully intialized ProfileSummary
+     * @return a fully initialized ProfileSummary
      */
     public abstract ProfileSummary initializeProfile(Profile profile);
 
     /**
-     * This allows manual adjustment of the two parameters used in automated
-     * LRE window selection: the minimal fluorescence used for start cycle selection
-     * and the Fo threshold, which is the maximum fractional difference (i.e. percent
-     * difference) in a cycle's Fo vs. the average Fo derived from the cycles within
-     * the LRE window, to allow the cycle to be included into the LRE window.
+     * Profile initialization using the user defined parameters provided by
+     * the LreWindowSelectionParameters object for automated LRE window selection.
      *
      * @param profile the Profile to initialize
      * @param parameters the LRE window parameters which cannot be null
-     * @return fully intialized ProfileSummary
+     * @return fully initialized ProfileSummary
      */
     public abstract ProfileSummary initializeProfile(Profile profile, LreWindowSelectionParameters parameters);
 
     /**
      * Provides the necessary functions to update the LRE window,
      * along with recalculation of all of the associated LRE parameters.
-     * Note that this method does not save the modified Profile to the
-     * database holding the Profile.
-     *
+     * The boolean denotes whether the update was successful.
      * @param profileSummary the ProfileSummary to update
      * @param parameters LRE window parameters
      * @return returns true if the ProfileSummary has been updated, false if not
      */
-    // TODO is it appropriate to have the service save the changes???
     public abstract boolean updateLreWindow(ProfileSummary profileSummary, LreWindowSelectionParameters parameters);
 }

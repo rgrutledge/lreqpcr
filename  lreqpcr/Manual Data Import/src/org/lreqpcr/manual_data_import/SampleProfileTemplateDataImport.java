@@ -17,9 +17,8 @@
 package org.lreqpcr.manual_data_import;
 
 import java.awt.Desktop;
-import org.lreqpcr.data_import_services.ImportData;
+import org.lreqpcr.data_import_services.RunImportData;
 import org.lreqpcr.data_import_services.RunImportUtilities;
-import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.RunImpl;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.utilities.IOUtilities;
@@ -48,6 +47,7 @@ import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
+import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.TargetStrandedness;
 import org.lreqpcr.data_import_services.RunImportService;
 import org.openide.util.Exceptions;
@@ -149,7 +149,7 @@ public class SampleProfileTemplateDataImport extends RunImportService {
      * @return the Run of Excel type
      */
     @Override
-    public ImportData importRunData() {
+    public RunImportData importRunData() {
         //Retrieve the Excel sample profile import file
         File excelImportFile = IOUtilities.openImportExcelFile("Sample Template Data Import");
         if (excelImportFile == null) {
@@ -195,8 +195,8 @@ public class SampleProfileTemplateDataImport extends RunImportService {
         run.setRunDate(RunImportUtilities.importExcelDate(date));
 
         //Import the data
-        List<Profile> sampleProfileList = new ArrayList<Profile>();
-        List<Profile> calbnProfileList = new ArrayList<Profile>();//Not used
+        List<SampleProfile> sampleProfileList = new ArrayList<SampleProfile>();
+        List<CalibrationProfile> calbnProfileList = new ArrayList<CalibrationProfile>();//Empty
         NumberFormat numFormat = NumberFormat.getInstance();
 
         int colCount = sheet.getColumns();
@@ -204,7 +204,7 @@ public class SampleProfileTemplateDataImport extends RunImportService {
         int col = 2;//Start column
         int wellNumber = 1;//Used to preserve ordering of the profiles
         while (col < colCount && sheet.getCell(col, 3).getType() != CellType.EMPTY) {
-            Profile profile = new SampleProfile();
+            SampleProfile profile = new SampleProfile();
             profile.setWellNumber(wellNumber);
             profile.setParent(run);
             profile.setRunDate(run.getRunDate());
@@ -250,15 +250,10 @@ public class SampleProfileTemplateDataImport extends RunImportService {
         }
         workbook.close();
 
-        ImportData importData = new ImportData();
+        RunImportData importData = new RunImportData();
         importData.setRun(run);
         importData.setCalibrationProfileList(calbnProfileList);
         importData.setSampleProfileList(sampleProfileList);
         return importData;
-    }
-
-    @Override
-    public String getRunImportServiceName() {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

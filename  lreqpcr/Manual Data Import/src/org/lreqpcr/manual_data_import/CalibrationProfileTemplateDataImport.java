@@ -18,7 +18,7 @@ package org.lreqpcr.manual_data_import;
 
 import java.awt.Desktop;
 import java.awt.Toolkit;
-import org.lreqpcr.data_import_services.ImportData;
+import org.lreqpcr.data_import_services.RunImportData;
 import org.lreqpcr.data_import_services.RunImportUtilities;
 import org.lreqpcr.core.data_objects.*;
 import org.lreqpcr.core.utilities.IOUtilities;
@@ -139,7 +139,7 @@ public class CalibrationProfileTemplateDataImport extends RunImportService {
 
     @SuppressWarnings(value = "unchecked")
     @Override
-    public ImportData importRunData() {
+    public RunImportData importRunData() {
         //Retrieve the Excel sample profile import file
         File excelImportFile = IOUtilities.openImportExcelFile("***Calibration Template Data Import");
         if (excelImportFile == null) {
@@ -189,8 +189,8 @@ public class CalibrationProfileTemplateDataImport extends RunImportService {
         }
         
         //Import the data
-        List<Profile> sampleProfileList = new ArrayList<Profile>();//Not used
-        List<Profile> calbnProfileList = new ArrayList<Profile>();
+        List<SampleProfile> sampleProfileList = new ArrayList<SampleProfile>();//Not used
+        List<CalibrationProfile> calbnProfileList = new ArrayList<CalibrationProfile>();
         NumberFormat numFormat = NumberFormat.getInstance();
 
         while (col < colCount && sheet.getCell(col, 2).getType() != CellType.EMPTY) {
@@ -238,15 +238,10 @@ public class CalibrationProfileTemplateDataImport extends RunImportService {
         RunImpl run = new RunImpl();
         run.setRunDate(RunImportUtilities.importExcelDate(date));
         
-        ImportData importData = new ImportData();
+        RunImportData importData = new RunImportData();
         importData.setRun(run);
         importData.setCalibrationProfileList(calbnProfileList);
         importData.setSampleProfileList(sampleProfileList);
         return importData;
-    }
-
-    @Override
-    public String getRunImportServiceName() {
-        return "Manual Sample Import";
     }
 }

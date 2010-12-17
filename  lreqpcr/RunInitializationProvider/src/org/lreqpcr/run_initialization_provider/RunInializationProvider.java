@@ -31,7 +31,7 @@ import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.data_import_services.RunImportUtilities;
 import org.lreqpcr.core.utilities.UniversalLookup;
-import org.lreqpcr.data_import_services.ImportData;
+import org.lreqpcr.data_import_services.RunImportData;
 import org.lreqpcr.data_import_services.RunInitializationService;
 import org.lreqpcr.ui_components.PanelMessages;
 import org.openide.util.Lookup;
@@ -44,7 +44,7 @@ import org.openide.util.Lookup;
 public class RunInializationProvider implements RunInitializationService {
 
     @SuppressWarnings(value = "unchecked")
-    public void intializeRun(ImportData importData) {
+    public void intializeRun(RunImportData importData) {
         if (importData == null || importData.getRun() == null) {
             return;
         }

@@ -7,25 +7,40 @@ import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 
 /**
- * Interface for exporting data
+ * Service interface for exporting profiles. This service needs to be better implemented.
+ * It is therefore anticipated that changes will need to be made. Note also that
+ * amplicon data is exported by a dedicated module.
  * 
  * @author Bob Rutledge
  */
 public interface DataExportServices {
 
-    public  void exportAverageSampleProfiles(List<Run> runList);
+    /**
+     * Average sample profile export organized by run.
+     * @param runList list containing the runs to be exported
+     */
+    public void exportAverageSampleProfiles(List<Run> runList);
     
+    /**
+     * Replicate sample profile export organized by run.
+     * @param runList list containing the runs to be exported
+     */
     public void exportReplicateSampleProfiles(List<Run> runList);
 
+   /**
+    * Average calibration profile export.
+    * @param profileList list containing the average calibration profile to be exported
+    */
     public void exportAverageCalibrationProfiles(List<AverageCalibrationProfile> profileList);
 
     /**
-     * Data export of a list of Profiles derived by a parent,
-     * such as a Run, Amplicon or Sample. The resulting excel workbook will
+     * Data export of a lists of Profiles based on sorting by Run, Amplicon or
+     * Sample. The resulting excel workbook will
      * contain a worksheet for each parent, with the parent name as the worksheet
      * name. 
      * 
-     * @param groupList Map with worksheet name as the key (e.g. the name of the
+     * @param groupList Map with the key being the name of the element (run, amplicon or sample used to
+     * sort the average sample profiles (e.g. the name of the
      * Run, Amplicon or Sample)
      */
     public void exportAverageProfiles(HashMap<String, List<AverageSampleProfile>> groupList);

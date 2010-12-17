@@ -18,18 +18,19 @@
 package org.lreqpcr.data_import_services;
 
 /**
- * Initialize all Profiles and the Run, and store the data to the appropriate
- * databases.
- * Provided as a Service in order to allow changes to how the databases
- * are handled (e.g. having multiple database files to be open at one time).
+ * Uses a RunImportData object to initialize the the Profiles within the run
+ * and stores the data to the appropriate databases.
+ * This is provided as a Service in order to allow changes to how the databases
+ * are handled (e.g. having multiple database files open at one time).
+ *
  * @author Bob Rutledge
  */
 public interface RunInitializationService {
 
     /**
-     * 
-     * @param importData the ImportData object containing the run data
+     * Initialize a run using the data provided in the RunImportData object.
+     * @param importData the RunImportData object containing the run data
      */
-    public void intializeRun(ImportData importData);
+    public void intializeRun(RunImportData importData);
 
 }

@@ -14,52 +14,52 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * and open the template in the editor.
  */
-
 package org.lreqpcr.data_import_services;
 
 import org.openide.util.Lookup;
 
 /**
- * A service provider needs only to generate an ImportData instance
- * via implementing the importRunData method.
- * Run initialization and data storage is conducted via the 
- * Run Initialization service which is called within the constructor.
+ * Data import service using data generated from a run. This is divided into
+ * two steps: 1. generating a generic RunImportData object that holds all of the
+ * run information and 2. initialization of the profiles within the run via
+ * the Run Initialization Service.
  *
  * @author Bob Rutledge
  */
 public abstract class RunImportService {
 
+    /**
+     * 
+     * A service provider needs only to generate an RunImportData instance
+     * via implementing the importRunData method.
+     * Run initialization and data storage is conducted via the
+     * Run Initialization service.
+     */
     public RunImportService() {
-        // TODO fix this terrible methodology
         importRun();
     }
 
     /**
-     * 
+     * Called from the constructor to start the data import
      */
-    private void importRun(){
+    public final void importRun() {
         initializeRun(importRunData());
     }
-    
+
     /**
-     * 
+     * Constructs the RunImportData object
      * 
      * @return the Run data ready for initialization
      */
-    public abstract ImportData importRunData();
+    public abstract RunImportData importRunData();
 
-     /**
+    /**
      * Use the RunInitializationService to initialize the Run data. 
      *
-     * @param importData the import data
+     * @param importData the run import data
      */
-    private void initializeRun(ImportData importData){
+    public void initializeRun(RunImportData importData) {
         RunInitializationService initRunService = Lookup.getDefault().lookup(RunInitializationService.class);
         initRunService.intializeRun(importData);
     }
-
-   /**
-    * Provides the name to be used to identify the type of import service
-    * @return the name of the import service
-    */ public abstract String getRunImportServiceName();
 }

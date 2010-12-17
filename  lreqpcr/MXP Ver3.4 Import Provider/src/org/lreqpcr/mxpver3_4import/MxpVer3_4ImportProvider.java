@@ -32,7 +32,7 @@ import jxl.DateCell;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
-import org.lreqpcr.data_import_services.ImportData;
+import org.lreqpcr.data_import_services.RunImportData;
 import org.lreqpcr.data_import_services.RunImportService;
 import org.openide.util.Exceptions;
 import org.openide.windows.WindowManager;
@@ -63,7 +63,7 @@ public class MxpVer3_4ImportProvider extends RunImportService {
 
     @Override
     @SuppressWarnings(value = "unchecked")
-    public ImportData importRunData() {
+    public RunImportData importRunData() {
         //Retrieve the export xls file
         File mxpExcelImportFile = IOUtilities.openImportExcelFile("MXP5000 Version 3.4 Data Import");
         if (mxpExcelImportFile == null) {
@@ -172,14 +172,14 @@ public class MxpVer3_4ImportProvider extends RunImportService {
         //Setup the Run and determine run date
         RunImpl run = new RunImpl();
         String runName = mxpExcelImportFile.getName();
-        RunImportUtilities.importExcelImportFile(run, mxpExcelImportFile);
+//        RunImportUtilities.importExcelImportFile(run, mxpExcelImportFile);
         runName = runName.substring(0, runName.indexOf("."));
         run.setName(runName);
         run.setRunDate(RunImportUtilities.importExcelDate(date));
 
         //Import the data
-        ArrayList<Profile> sampleProfileList = new ArrayList<Profile>();
-        ArrayList<Profile> calbnProfileList = new ArrayList<Profile>();
+        ArrayList<SampleProfile> sampleProfileList = new ArrayList<SampleProfile>();
+        ArrayList<CalibrationProfile> calbnProfileList = new ArrayList<CalibrationProfile>();
         //Determine the strandedness of the Targets
         TargetStrandedness targetStrandedness = RunImportUtilities.isTheTargetSingleStranded();
         NumberFormat numFormat = NumberFormat.getInstance();
@@ -269,20 +269,18 @@ public class MxpVer3_4ImportProvider extends RunImportService {
                 profile.setRawFcReadings(fcArray);
 
                 if (CalibrationProfile.class.isAssignableFrom(profile.getClass())) {
-                    calbnProfileList.add(profile);
+                    CalibrationProfile calProfile = (CalibrationProfile) profile;
+                    calbnProfileList.add(calProfile);
                 } else {
-                    sampleProfileList.add(profile);
+                    SampleProfile sampleProfile = (SampleProfile) profile;
+                    sampleProfileList.add(sampleProfile);
                 }
             }
         }
-        ImportData importData = new ImportData();
+        RunImportData importData = new RunImportData();
         importData.setRun(run);
         importData.setCalibrationProfileList(calbnProfileList);
         importData.setSampleProfileList(sampleProfileList);
         return importData;
-    }
-
-    public int compareTo(RunImportService o) {
-        return getRunImportServiceName().compareToIgnoreCase(o.getRunImportServiceName());
     }
 }
