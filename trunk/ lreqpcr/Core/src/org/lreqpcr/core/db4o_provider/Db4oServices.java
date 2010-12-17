@@ -86,9 +86,6 @@ public abstract class Db4oServices implements DatabaseServices {
                     deleteAverageProfile(avPrf);
                 }
             }
-            //Could not determine whether byte arrays are deleted
-            db4o.delete(run.getRunDataFile());
-            db4o.delete(run.getImportDataFile());
             db4o.delete(run);
         } else if (object instanceof ReactionSetupImpl){
             deleteReactionSetup((ReactionSetupImpl) object);

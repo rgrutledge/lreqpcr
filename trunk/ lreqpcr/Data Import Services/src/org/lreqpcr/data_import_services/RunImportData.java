@@ -18,37 +18,39 @@
 package org.lreqpcr.data_import_services;
 
 import java.util.List;
+import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.Run;
+import org.lreqpcr.core.data_objects.SampleProfile;
 
 /**
- * Used to transfer import data based on supplying a Run and lists of
- * all Sample and Calibration Profiles. The Run initialization service is
+ * Used to import run data based on supplying lists of
+ * Sample and Calibration Profiles. The Run initialization service is
  * then used to complete data import by initializing the profiles, along with
  * generated average profiles and saving the data to the appropriate databases.
  *
  * @author Bob Rutledge
  */
-public class ImportData {
+public class RunImportData {
 
     private Run run;
-    private List<? extends Profile> sampleProfileList;
-    private List<? extends Profile> calibrationProfileList;
+    private List<SampleProfile> sampleProfileList;
+    private List<CalibrationProfile> calibrationProfileList;
 
-    public List<? extends Profile> getCalibrationProfileList() {
+    public List<CalibrationProfile> getCalibrationProfileList() {
         return calibrationProfileList;
     }
 
     /**
+     * Provides the calibration profiles conducted during this run.
      * The Calibration Profiles must contain the Amplicon name
      * and quantity of Lambda gDNA in picograms,
      * along with the raw Fc dataset (i.e. not baseline subtracted). Well number
-     * and label (e.g. A1) should also be included. Run date is retrieved from the Run.
-     * Target strandedness will be set to double stranded during run initialization.
+     * and label (e.g. A1) should also be included.      * Target strandedness will be set to double stranded during run initialization.
      * 
      * @param calibrationProfileList
      */
-    public void setCalibrationProfileList(List<? extends Profile> calibrationProfileList) {
+    public void setCalibrationProfileList(List<CalibrationProfile> calibrationProfileList) {
         this.calibrationProfileList = calibrationProfileList;
     }
 
@@ -57,8 +59,7 @@ public class ImportData {
     }
 
     /**
-     * The Run must include the Run date and Run name. It can also include copies of the
-     * Excel import and machine data files, which are optional.
+     * The Run must include the Run date and Run name.
      *
      * @param run the run which contains run information such as run date
      */
@@ -66,18 +67,20 @@ public class ImportData {
         this.run = run;
     }
 
-    public List<? extends Profile> getSampleProfileList() {
+    public List<SampleProfile> getSampleProfileList() {
         return sampleProfileList;
     }
 
     /**
+     * Provides the sample profiles conducted during this run.
      * The SampleProfiles must contain the sample and Amplicon names, target strandedness.
      * along with the raw Fc dataset (i.e. not baseline subtracted). Well number
-     * and well label (e.g. A1) should also be included. Run date is retrieved from the Run.
+     * and well label (e.g. A1) should also be included.
+     * Run date is retrieved from the Run.
      *
      * @param sampleProfileList the list of sample profiles
      */
-    public void setSampleProfileList(List<? extends Profile> sampleProfileList) {
+    public void setSampleProfileList(List<SampleProfile> sampleProfileList) {
         this.sampleProfileList = sampleProfileList;
     }
 

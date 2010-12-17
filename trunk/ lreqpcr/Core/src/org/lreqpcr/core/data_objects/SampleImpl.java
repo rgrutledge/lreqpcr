@@ -14,23 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * and open the template in the editor.
  */
-package org.lreqpcr.core;
 
-import org.openide.modules.ModuleInstall;
-import org.openide.windows.WindowManager;
+package org.lreqpcr.core.data_objects;
 
 /**
- * Manages a module's lifecycle. Remember that an installer is optional and
- * often not needed at all.
+ * 
+ * @author Bob Rutledge
  */
-public class Installer extends ModuleInstall {
+public class SampleImpl extends Sample {
 
-    @Override
-    public void restored() {
-        WindowManager.getDefault().invokeWhenUIReady(new Runnable() {
-            public void run(){
-                WindowManager.getDefault().getMainWindow().setTitle("LRE Analyzer Ver 0.6.1b Working Copy");
-            }
-        });
-    }
 }

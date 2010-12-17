@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2010  Bob Rutledge
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -15,23 +15,17 @@
  * and open the template in the editor.
  */
 
-package org.lreqpcr.data_import_services;
+package org.lreqpcr.core.data_objects;
 
 /**
- * Implementation deferred to final release
+ * Holds general information relevant to the
+ * amplicon database
+ *
+ * Not yet implemented
+ *
  * @author Bob Rutledge
  */
-public abstract class ManualDataImportService {
-    
-    public abstract void createSampleProfileTemplate();
-    public abstract void importSampleProfiles();
-    public abstract void createCalibrationProfileTemplate();
-    
-    /**
-     * This must also include profile initialization, I think??
-     */
-    public abstract void importCalibrationProfiles();
-    
-    //
+public class AmpliconDbInfo extends LreObject {
+
 
 }

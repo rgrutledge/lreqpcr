@@ -55,7 +55,7 @@ import org.openide.util.LookupListener;
 import org.openide.util.Utilities;
 
 /**
- * Top component which displays something.
+ * Explorer window that displays sample profiles within an experiment database.
  */
 @ConvertAsProperties(dtd = "-//org.lreqpcr.experiment_ui//Experiment//EN",
 autostore = false)

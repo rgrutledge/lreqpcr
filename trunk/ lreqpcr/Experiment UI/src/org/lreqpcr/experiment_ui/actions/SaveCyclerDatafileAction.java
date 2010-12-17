@@ -34,7 +34,7 @@ import org.openide.nodes.Node;
 import org.openide.util.Lookup;
 
 /**
- * 
+ * DEACTIVATED
  * @author Bob Rutledge
  */
 public class SaveCyclerDatafileAction extends AbstractAction {
@@ -81,8 +81,8 @@ public class SaveCyclerDatafileAction extends AbstractAction {
                     Logger.getLogger("global").log(Level.SEVERE, null, ex);
                 }
             }
-            run.setRunDataFile(dataFile);
-            run.setCyclerDatafileName(newFile.getName());
+//            run.setRunDataFile(dataFile);
+//            run.setCyclerDatafileName(newFile.getName());
             db.saveObject(run);
             db.commitChanges();
         }

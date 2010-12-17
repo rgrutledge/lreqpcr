@@ -17,7 +17,11 @@
 package org.lreqpcr.core.data_objects;
 
 /**
- * Holds values used for LRE window selection
+ * Holds user defined parameters for automated LRE window selection.
+ * This includes the minimal fluorescence used for start cycle selection
+ * and the Fo threshold, which is the maximum fractional difference
+ * in a cycle's Fo vs. the average Fo derived from the cycles within
+ * the LRE window, to determine if this next cycle is to be included into the LRE window.
  * @author Bob Rutledge
  */
 public class LreWindowSelectionParameters {

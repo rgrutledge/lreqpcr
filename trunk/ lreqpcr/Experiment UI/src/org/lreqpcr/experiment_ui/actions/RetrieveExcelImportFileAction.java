@@ -35,7 +35,7 @@ import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 
 /**
- * Retrieves the cycler machine datafile, saving it with the same name 
+ * DEACTIVATED the cycler machine datafile, saving it with the same name
  * as the original datafile into a directory specified by the user
  * 
  * @author Bob Rutledge
@@ -54,13 +54,13 @@ public class RetrieveExcelImportFileAction extends AbstractAction {
         Node[] nodes = mgr.getSelectedNodes();
         LreNode selectedNode = (LreNode) nodes[0];
         RunImpl run = selectedNode.getLookup().lookup(RunImpl.class);
-        if(run.getImportDataFile() == null){
-            String msg = "No import file has been stored";
-                JOptionPane.showMessageDialog(null, msg, "No import file exsists",
-                         JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        File saveToFile = new File(run.getImportDataFileName());
+//        if(run.getImportDataFile() == null){
+//            String msg = "No import file has been stored";
+//                JOptionPane.showMessageDialog(null, msg, "No import file exsists",
+//                         JOptionPane.ERROR_MESSAGE);
+//            return;
+//        }
+//        File saveToFile = new File(run.getImportDataFileName());
         //Allow the user to change the directory and/or name
         File file = null;
         JFileChooser fc = new JFileChooser();
@@ -71,7 +71,7 @@ public class RetrieveExcelImportFileAction extends AbstractAction {
                 file = null;
             }
             fc.setCurrentDirectory(file);
-            fc.setSelectedFile(saveToFile);
+//            fc.setSelectedFile(saveToFile);
             int returnVal = fc.showSaveDialog(null);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 //Reset the savedFile to the user selection
@@ -84,11 +84,11 @@ public class RetrieveExcelImportFileAction extends AbstractAction {
             } catch (FileNotFoundException ex) {
                 Exceptions.printStackTrace(ex);
             }
-            try {
-                out.write(run.getImportDataFile());
-            } catch (IOException ex) {
-                Exceptions.printStackTrace(ex);
-            }
+//            try {
+//                out.write(run.getImportDataFile());
+//            } catch (IOException ex) {
+//                Exceptions.printStackTrace(ex);
+//            }
             try {
                 out.close();
             } catch (IOException ex) {

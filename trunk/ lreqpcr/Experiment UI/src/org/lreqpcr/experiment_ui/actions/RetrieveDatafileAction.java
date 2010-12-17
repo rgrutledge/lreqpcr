@@ -36,7 +36,7 @@ import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 
 /**
- * Retrieves the cycler machine datafile, saving it with the same name 
+ * DEACTIVATED Retrieves the cycler machine datafile, saving it with the same name
  * as the original datafile into a directory specified by the user
  * 
  * @author Bob Rutledge
@@ -55,14 +55,14 @@ public class RetrieveDatafileAction extends AbstractAction {
         Node[] nodes = mgr.getSelectedNodes();
         LreNode selectedNode = (LreNode) nodes[0];
         RunImpl run = selectedNode.getLookup().lookup(RunImpl.class);
-        if (run.getMachineDataFile() == null) {
-            String msg = "No Cycler Datafile has been imported";
-            NotifyDescriptor d =
-                    new NotifyDescriptor.Message(msg, NotifyDescriptor.ERROR_MESSAGE);
-            DialogDisplayer.getDefault().notify(d);
-            return;
-        }
-        File saveToFile = new File(run.getCyclerDatafileName());
+//        if (run.getMachineDataFile() == null) {
+//            String msg = "No Cycler Datafile has been imported";
+//            NotifyDescriptor d =
+//                    new NotifyDescriptor.Message(msg, NotifyDescriptor.ERROR_MESSAGE);
+//            DialogDisplayer.getDefault().notify(d);
+//            return;
+//        }
+//        File saveToFile = new File(run.getCyclerDatafileName());
         //Allow the user to change the directory and/or name
         File file = null;
         JFileChooser fc = new JFileChooser();
@@ -73,7 +73,7 @@ public class RetrieveDatafileAction extends AbstractAction {
                 file = null;
             }
             fc.setCurrentDirectory(file);
-            fc.setSelectedFile(saveToFile);
+//            fc.setSelectedFile(saveToFile);
             int returnVal = fc.showSaveDialog(null);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 //Reset the savedFile to the user selection
@@ -85,11 +85,11 @@ public class RetrieveDatafileAction extends AbstractAction {
                 } catch (FileNotFoundException ex) {
                     Exceptions.printStackTrace(ex);
                 }
-                try {
-                    out.write(run.getRunDataFile());
-                } catch (IOException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
+//                try {
+//                    out.write(run.getRunDataFile());
+//                } catch (IOException ex) {
+//                    Exceptions.printStackTrace(ex);
+//                }
                 try {
                     out.close();
                 } catch (IOException ex) {

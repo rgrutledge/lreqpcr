@@ -35,10 +35,6 @@ public abstract class Run extends LreObject {
     private int year;
     private int month;
     private double runOCF = 0;//Run-specific OCF
-    private String cyclerDatafileName;
-    private byte[] machineDataFile; //The machine data file; e.g. a MXP file
-    private String importDataFileName;
-    private byte[] importDataFile; //The import data file; e.g. XLS
     
     /**
      * The child class is set to AverageProfile.
@@ -61,14 +57,6 @@ public abstract class Run extends LreObject {
      */
     public void addOperator(String operator) {
         this.operators.add(operator);
-    }
-
-    public byte[] getMachineDataFile() {
-        return machineDataFile;
-    }
-
-    public void setMachineDataFile(byte[] machineDataFile) {
-        this.machineDataFile = machineDataFile;
     }
 
     public List<AverageSampleProfile> getAverageProfileList() {
@@ -113,38 +101,6 @@ public abstract class Run extends LreObject {
      */
     public int getYear() {
         return year;
-    }
-
-    public byte[] getRunDataFile() {
-        return machineDataFile;
-    }
-  
-    public void setRunDataFile(byte[] runDataFile) {
-        this.machineDataFile = runDataFile;
-    }
-
-    public String getCyclerDatafileName() {
-        return cyclerDatafileName;
-    }
-
-    public void setCyclerDatafileName(String cyclerDatafileName) {
-        this.cyclerDatafileName = cyclerDatafileName;
-    }
-
-    public byte[] getImportDataFile() {
-        return importDataFile;
-    }
-
-    public void setImportDataFile(byte[] importDataFile) {
-        this.importDataFile = importDataFile;
-    }
-
-    public String getImportDataFileName() {
-        return importDataFileName;
-    }
-
-    public void setImportDataFileName(String importDataFileName) {
-        this.importDataFileName = importDataFileName;
     }
 
     public double getRunOCF() {

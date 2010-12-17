@@ -31,7 +31,7 @@ import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import org.lreqpcr.core.utilities.WellLabelToWellNumber;
-import org.lreqpcr.data_import_services.ImportData;
+import org.lreqpcr.data_import_services.RunImportData;
 import org.lreqpcr.data_import_services.RunImportService;
 import org.openide.util.Exceptions;
 import org.openide.windows.WindowManager;
@@ -42,13 +42,9 @@ import org.openide.windows.WindowManager;
  */
 public class AB7500Ver2ImportProvider extends RunImportService {
 
-    public String getRunImportServiceName() {
-        return "AB7500 Ver 2";
-    }
-
     @Override
     @SuppressWarnings(value = "unchecked")
-    public ImportData importRunData() {
+    public RunImportData importRunData() {
         //Retrieve the ABI Ver2 export xls file
         File ver2ExcelImportFile = IOUtilities.openImportExcelFile("AB7500 Version 2 Data Import");
         if (ver2ExcelImportFile == null) {
@@ -185,16 +181,13 @@ public class AB7500Ver2ImportProvider extends RunImportService {
         //Setup the Run and determine run date
         Run run = new RunImpl();
         String runName = ver2ExcelImportFile.getName();
-        //Turn off excel file import due to a Java bug that can generate large delays during byte storage
-        //Source not known
-//        RunImportUtilities.importExcelImportFile(run, ver2ExcelImportFile);
         //Remove the file extension
         runName = runName.substring(0, runName.indexOf("."));
         run.setName(runName);
         run.setRunDate(RunImportUtilities.importExcelDate(date));
         //Import the data
-        List<Profile> sampleProfileList = new ArrayList<Profile>();
-        List<Profile> calbnProfileList = new ArrayList<Profile>();
+        List<SampleProfile> sampleProfileList = new ArrayList<SampleProfile>();
+        List<CalibrationProfile> calbnProfileList = new ArrayList<CalibrationProfile>();
         //Determine the strandedness of the Targets
         TargetStrandedness targetStrandedness = RunImportUtilities.isTheTargetSingleStranded();
         NumberFormat numFormat = NumberFormat.getInstance();
@@ -282,16 +275,18 @@ public class AB7500Ver2ImportProvider extends RunImportService {
                 //This is necessary to eliminate empty Fc datasets
                 if (profile.getRawFcReadings() != null) {
                     if (CalibrationProfile.class.isAssignableFrom(profile.getClass())) {
-                        calbnProfileList.add(profile);
+                        CalibrationProfile calProfile = (CalibrationProfile) profile;
+                        calbnProfileList.add(calProfile);
                     } else {
-                        sampleProfileList.add(profile);
+                        SampleProfile sampleProfile = (SampleProfile) profile;
+                        sampleProfileList.add(sampleProfile);
                     }
                 }
 
             }
         }
 
-        ImportData importData = new ImportData();
+        RunImportData importData = new RunImportData();
         importData.setRun(run);
         importData.setCalibrationProfileList(calbnProfileList);
         importData.setSampleProfileList(sampleProfileList);

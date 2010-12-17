@@ -27,7 +27,7 @@ package org.lreqpcr.core.data_objects;
 public class CalibrationProfile extends Profile {
 
     private double lambdaMass;//The mass of the lamdba gDNA in nanograms
-    private double adjustedOCF;//OCF adjusted to 100% Emax normalization
+    private double adjustedOCF;//OCF adjusted to 100% Emax
 
     /**
      *  Target standedness is set to double stranded by default
