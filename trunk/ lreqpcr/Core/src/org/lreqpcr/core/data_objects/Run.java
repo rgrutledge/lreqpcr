@@ -103,6 +103,10 @@ public abstract class Run extends LreObject {
         return year;
     }
 
+    /**
+     * Returns the run-specific OCF.
+     * @return run-specific OCF
+     */
     public double getRunOCF() {
         return runOCF;
     }

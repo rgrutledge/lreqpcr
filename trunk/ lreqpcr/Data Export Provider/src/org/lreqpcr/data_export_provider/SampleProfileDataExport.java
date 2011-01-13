@@ -17,7 +17,6 @@
 package org.lreqpcr.data_export_provider;
 
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
-import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.utilities.IOUtilities;
 import java.awt.Desktop;
 import java.awt.Toolkit;
@@ -37,12 +36,13 @@ import jxl.format.BorderLineStyle;
 import jxl.format.Colour;
 import jxl.write.*;
 import jxl.write.Number;
+import org.lreqpcr.core.data_objects.SampleProfile;
 
 /**
  *
  * @author Bob Rutledge
  */
-public class ExcelAveragSampleProfileDataExport {
+public class SampleProfileDataExport {
 
     /**
      * Exports the AverageSampleProfiles from a list of Runs. Each 
@@ -131,13 +131,15 @@ public class ExcelAveragSampleProfileDataExport {
             sheet.addCell(label);
             label = new Label(7, 2, "Fmax", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(8, 2, "Av. Amp Tm", centerBoldUnderline);
+            label = new Label(8, 2, "Amp Tm", centerBoldUnderline);
             sheet.addCell(label);
             label = new Label(9, 2, "Amp Size", centerBoldUnderline);
             sheet.addCell(label);
             label = new Label(10, 2, "OCF", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(11, 2, "Notes", centerBoldUnderline);
+            label = new Label(11, 2, "Well", centerBoldUnderline);
+            sheet.addCell(label);
+            label = new Label(12, 2, "Notes", centerBoldUnderline);
             sheet.addCell(label);
             int row = 3;
             label = new Label(1, 0, pageName);
@@ -148,79 +150,73 @@ public class ExcelAveragSampleProfileDataExport {
 
             List<AverageSampleProfile> profileList = groupList.get(pageName);
             Collections.sort(profileList);
-            ArrayList<AverageSampleProfile> belowTenMoleculeList = new ArrayList<AverageSampleProfile>();
+            ArrayList<SampleProfile> belowTenMoleculeList = new ArrayList<SampleProfile>();
 
             for (AverageSampleProfile avProfile : profileList) {
-                if (avProfile.getNo() < 10) {
-                    belowTenMoleculeList.add(avProfile);
-                    continue;
-                }
-                //Calculate averages for the amplicon Tm taken from the replicate profiles
-                double avTm = 0;
-                int tmCnt = 0;
-                for (Profile sampleProfile : avProfile.getReplicateProfileList()) {
-                    if (sampleProfile.getAmpTm() != 0) {
-                        avTm += sampleProfile.getAmpTm();
-                        tmCnt++;
+                for (SampleProfile sampleProfile : avProfile.getReplicateProfileList()) {
+                    if (sampleProfile.getNo() < 10 && !sampleProfile.isExcluded()) {
+                        belowTenMoleculeList.add(sampleProfile);
+                        continue;
                     }
-                }
-                if (avTm != 0) {
-                    avTm = avTm / tmCnt;
-                }
-
-                WritableCellFormat dateFormat = new WritableCellFormat(customDateFormat);
-                dateFormat.setAlignment(Alignment.CENTRE);
-                DateTime dateCell = new DateTime(0, row, avProfile.getRunDate(), dateFormat);
-                sheet.addCell(dateCell);
-                label = new Label(1, row, avProfile.getAmpliconName());
-                sheet.addCell(label);
-                label = new Label(2, row, avProfile.getSampleName());
-                sheet.addCell(label);
-                if (avProfile.isExcluded()) {
-                    //All replicate profiles have been excluded
-                    label = new Label(3, row, "nd", center);
+                    WritableCellFormat dateFormat = new WritableCellFormat(customDateFormat);
+                    dateFormat.setAlignment(Alignment.CENTRE);
+                    DateTime dateCell = new DateTime(0, row, sampleProfile.getRunDate(), dateFormat);
+                    sheet.addCell(dateCell);
+                    label = new Label(1, row, sampleProfile.getAmpliconName());
                     sheet.addCell(label);
-                    label = new Label(11, row, avProfile.getLongDescription());
+                    label = new Label(2, row, sampleProfile.getSampleName());
+                    sheet.addCell(label);
+                    if (sampleProfile.isExcluded()) {
+                        //All replicate profiles have been excluded
+                        label = new Label(3, row, "nd", center);
+                        sheet.addCell(label);
+                        label = new Label(11, row, sampleProfile.getWellLabel());
+                        sheet.addCell(label);
+                        label = new Label(12, row, sampleProfile.getLongDescription());
+                        sheet.addCell(label);
+                        row++;
+                        continue;
+                    } else {
+                        if (sampleProfile.getEmax() > 1.00) {
+                            number = new Number(3, row, sampleProfile.getAdjustedNo(), integerFormat);
+                            sheet.addCell(number);
+                        } else {
+                            number = new Number(3, row, sampleProfile.getNo(), integerFormat);
+                            sheet.addCell(number);
+                        }
+                    }
+                    if (sampleProfile.getEmax() != 0) {
+                        number = new Number(4, row, sampleProfile.getEmax(), percentFormat);
+                        sheet.addCell(number);
+                    }
+                    if (sampleProfile.getAvFoCV() != 0) {
+                        number = new Number(5, row, sampleProfile.getAvFoCV(), percentFormat);
+                        sheet.addCell(number);
+                    }
+                    if (sampleProfile.getMidC() != 0) {
+                        number = new Number(6, row, sampleProfile.getMidC(), floatFormat);
+                        sheet.addCell(number);
+                    }
+                    if (sampleProfile.getEmax() != 0) {
+                        double fmax = (sampleProfile.getEmax() / sampleProfile.getDeltaE()) * -1;
+                        number = new Number(7, row, fmax, floatFormat);
+                        sheet.addCell(number);
+                    }
+                    if (sampleProfile.getAmpTm() != 0) {
+                        number = new Number(8, row, sampleProfile.getAmpTm(), floatFormat);
+                        sheet.addCell(number);
+                    }
+                    number = new Number(9, row, sampleProfile.getAmpliconSize(), integerFormat);
+                    sheet.addCell(number);
+                    number = new Number(10, row, sampleProfile.getOCF(), floatFormat);
+                    sheet.addCell(number);
+                    label = new Label(11, row, sampleProfile.getWellLabel());
+                    sheet.addCell(label);
+                    String s = sampleProfile.getLongDescription();
+                    label = new Label(12, row, sampleProfile.getLongDescription());
                     sheet.addCell(label);
                     row++;
-                    continue;
-                } else {
-                    if (avProfile.getEmax() > 1.00) {
-                        number = new Number(3, row, avProfile.getAdjustedNo(), integerFormat);
-                        sheet.addCell(number);
-                    } else {
-                        number = new Number(3, row, avProfile.getNo(), integerFormat);
-                        sheet.addCell(number);
-                    }
                 }
-                if (avProfile.getEmax() != 0) {
-                    number = new Number(4, row, avProfile.getEmax(), percentFormat);
-                    sheet.addCell(number);
-                }
-                if (avProfile.getAvFoCV() != 0) {
-                    number = new Number(5, row, avProfile.getAvFoCV(), percentFormat);
-                    sheet.addCell(number);
-                }
-                if (avProfile.getMidC() != 0) {
-                    number = new Number(6, row, avProfile.getMidC(), floatFormat);
-                    sheet.addCell(number);
-                }
-                if (avProfile.getEmax() != 0) {
-                    double fmax = (avProfile.getEmax() / avProfile.getDeltaE()) * -1;
-                    number = new Number(7, row, fmax, floatFormat);
-                    sheet.addCell(number);
-                }
-                if (avTm != 0) {
-                    number = new Number(8, row, avTm, floatFormat);
-                    sheet.addCell(number);
-                }
-                number = new Number(9, row, avProfile.getAmpliconSize(), integerFormat);
-                sheet.addCell(number);
-                number = new Number(10, row, avProfile.getOCF(), floatFormat);
-                sheet.addCell(number);
-                label = new Label(11, row, avProfile.getLongDescription());
-                sheet.addCell(label);
-                row++;
             }
 
 //List the replicate profiles from the average profiles with No <10
@@ -256,66 +252,62 @@ public class ExcelAveragSampleProfileDataExport {
                 sheet.addCell(label);
                 label = new Label(12, row, "Notes", centerBoldUnderline);
                 sheet.addCell(label);
-                for (AverageSampleProfile avProfile : belowTenMoleculeList) {
+                for (SampleProfile sampleProfile : belowTenMoleculeList) {
                     row++;
                     WritableCellFormat dateFormat = new WritableCellFormat(customDateFormat);
                     dateFormat.setAlignment(Alignment.CENTRE);
-                    DateTime dateCell = new DateTime(0, row, avProfile.getRunDate(), dateFormat);
+                    DateTime dateCell = new DateTime(0, row, sampleProfile.getRunDate(), dateFormat);
                     sheet.addCell(dateCell);
-                    label = new Label(1, row, avProfile.getAmpliconName());
+                    label = new Label(1, row, sampleProfile.getAmpliconName());
                     sheet.addCell(label);
-                    label = new Label(2, row, avProfile.getSampleName());
+                    label = new Label(2, row, sampleProfile.getSampleName());
                     sheet.addCell(label);
-                    int startRow = row + 1;//For setting up the average formula
-                    for (Profile profile : avProfile.getReplicateProfileList()) {
-                        if (profile.isExcluded()) {
-                            label = new Label(3, row, "0", integerFormat);
-                            sheet.addCell(label);
-                            label = new Label(11, row, profile.getWellLabel());
-                            sheet.addCell(label);
-                            label = new Label(12, row, profile.getLongDescription());
-                            sheet.addCell(label);
-                            row++;
-                            continue;
-                        }
-                        if (profile.getEmax() > 1.00) {
-                            number = new Number(3, row, profile.getAdjustedNo(), floatFormat);
-                            sheet.addCell(number);
-                        } else {
-                            number = new Number(3, row, profile.getNo(), floatFormat);
-                            sheet.addCell(number);
-                        }
-                        if (profile.getEmax() != 0) {
-                            number = new Number(4, row, profile.getEmax(), percentFormat);
-                            sheet.addCell(number);
-                        }
-                        if (profile.getAvFoCV() != 0) {
-                            number = new Number(5, row, profile.getAvFoCV(), percentFormat);
-                            sheet.addCell(number);
-                        }
-                        if (profile.getMidC() != 0) {
-                            number = new Number(6, row, profile.getMidC(), floatFormat);
-                            sheet.addCell(number);
-                        }
-                        if (profile.getEmax() != 0) {
-                            double fmax = (profile.getEmax() / profile.getDeltaE()) * -1;
-                            number = new Number(7, row, fmax, floatFormat);
-                            sheet.addCell(number);
-                        }
-                        if (profile.getAmpTm() != 0) {
-                            number = new Number(8, row, profile.getAmpTm(), floatFormat);
-                            sheet.addCell(number);
-                        }
-                        number = new Number(9, row, profile.getAmpliconSize(), integerFormat);
-                        sheet.addCell(number);
-                        number = new Number(10, row, profile.getOCF(), floatFormat);
-                        sheet.addCell(number);
-                        label = new Label(11, row, profile.getWellLabel());
+                    if (sampleProfile.isExcluded()) {
+                        label = new Label(3, row, "0", integerFormat);
                         sheet.addCell(label);
-                        label = new Label(12, row, profile.getLongDescription());
+                        label = new Label(11, row, sampleProfile.getWellLabel());
+                        sheet.addCell(label);
+                        label = new Label(12, row, sampleProfile.getLongDescription());
                         sheet.addCell(label);
                         row++;
+                        continue;
                     }
+                    if (sampleProfile.getEmax() > 1.00) {
+                        number = new Number(3, row, sampleProfile.getAdjustedNo(), floatFormat);
+                        sheet.addCell(number);
+                    } else {
+                        number = new Number(3, row, sampleProfile.getNo(), floatFormat);
+                        sheet.addCell(number);
+                    }
+                    if (sampleProfile.getEmax() != 0) {
+                        number = new Number(4, row, sampleProfile.getEmax(), percentFormat);
+                        sheet.addCell(number);
+                    }
+                    if (sampleProfile.getAvFoCV() != 0) {
+                        number = new Number(5, row, sampleProfile.getAvFoCV(), percentFormat);
+                        sheet.addCell(number);
+                    }
+                    if (sampleProfile.getMidC() != 0) {
+                        number = new Number(6, row, sampleProfile.getMidC(), floatFormat);
+                        sheet.addCell(number);
+                    }
+                    if (sampleProfile.getEmax() != 0) {
+                        double fmax = (sampleProfile.getEmax() / sampleProfile.getDeltaE()) * -1;
+                        number = new Number(7, row, fmax, floatFormat);
+                        sheet.addCell(number);
+                    }
+                    if (sampleProfile.getAmpTm() != 0) {
+                        number = new Number(8, row, sampleProfile.getAmpTm(), floatFormat);
+                        sheet.addCell(number);
+                    }
+                    number = new Number(9, row, sampleProfile.getAmpliconSize(), integerFormat);
+                    sheet.addCell(number);
+                    number = new Number(10, row, sampleProfile.getOCF(), floatFormat);
+                    sheet.addCell(number);
+                    label = new Label(11, row, sampleProfile.getWellLabel());
+                    sheet.addCell(label);
+                    label = new Label(12, row, sampleProfile.getLongDescription());
+                    sheet.addCell(label);
                     row++;
                 }
             }

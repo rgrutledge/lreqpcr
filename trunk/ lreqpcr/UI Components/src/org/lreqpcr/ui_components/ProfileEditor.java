@@ -52,7 +52,6 @@ public class ProfileEditor extends JPanel implements
     private DatabaseServices currentDB;
     private Lookup.Result nodeResult;
     private UniversalLookup universalLookup;
-    private TopComponent currentlySelectedWindow;
 
     /** Creates new form ProfileView */
     public ProfileEditor() {
@@ -71,7 +70,6 @@ public class ProfileEditor extends JPanel implements
         nodeResult = Utilities.actionsGlobalContext().lookupResult(LreNode.class);
         nodeResult.allItems();
         nodeResult.addLookupListener(this);
-//        plotLREs.addPropertyChangeListener(this);
         plotLREs.clearPlot();
         if (currentDB != null) {
             if (currentDB.isDatabaseOpen()) {
@@ -88,7 +86,7 @@ public class ProfileEditor extends JPanel implements
             lreObjectInfo.displayMember(selectedNode);
             return;
         }
-        //Display and editing of a profile is conducted through the ProfileSummary interface
+//Display and editing of a profile is conducted through the ProfileSummary interface
         prfSum = analysisService.initializeProfile(profile);
         if (profile.getLreWinSize() == 0) {
             clearPanels();
@@ -100,23 +98,6 @@ public class ProfileEditor extends JPanel implements
         plotFc.iniPlot(prfSum);
         plotFo.iniPlot(prfSum);
         lreObjectInfo.displayMember(selectedNode);
-    }
-
-    private void updatePanels() {
-        if (selectionParameters == null) {
-            clearPanels();
-            return;
-        }
-        if (prfSum != null) {
-            analysisService.updateLreWindow(prfSum, selectionParameters);
-            selectedNode.saveLreObject();
-            plotLREs.iniPlotLREs(prfSum);
-            numericalTable.iniNumTable(prfSum);
-            plotFc.iniPlot(prfSum);
-            plotFo.iniPlot(prfSum);
-        } else {
-            clearPanels();
-        }
     }
 
     private void clearPanels() {
@@ -256,7 +237,9 @@ public class ProfileEditor extends JPanel implements
         if (key == PanelMessages.CLEAR_PROFILE_EDITOR) {
             clearPanels();
         }
-        if (key == PanelMessages.PROFILE_EXCLUDED || key == PanelMessages.PROFILE_INCLUDED) {
+        if (key == PanelMessages.PROFILE_EXCLUDED 
+                || key == PanelMessages.PROFILE_INCLUDED
+                || key == PanelMessages.PROFILE_CHANGED) {
             //Need to update the panel
             LreObject member = selectedNode.getLookup().lookup(LreObject.class);
             if (member instanceof Profile) {
@@ -265,14 +248,7 @@ public class ProfileEditor extends JPanel implements
             } else {
                 clearPanels();
             }
-        }
-        if (key == PanelMessages.PROFILE_CHANGED) {
-            if (selectedNode != null) {
-                if (currentDB.isDatabaseOpen()) {
-                    updatePanels();
-                    selectedNode.refreshNodeLabel();
-                }
-            }
+            selectedNode.refreshNodeLabel();
         }
     }
 }

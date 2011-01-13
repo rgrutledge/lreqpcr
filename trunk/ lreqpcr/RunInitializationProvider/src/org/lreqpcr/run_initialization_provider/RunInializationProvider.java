@@ -22,12 +22,14 @@ import org.lreqpcr.data_import_services.AverageProfileGenerator;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
+import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.ExperimentDbInfo;
 import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.ReactionSetupImpl;
 import org.lreqpcr.core.data_objects.Run;
+import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.data_import_services.RunImportUtilities;
 import org.lreqpcr.core.utilities.UniversalLookup;
@@ -49,8 +51,8 @@ public class RunInializationProvider implements RunInitializationService {
             return;
         }
         Run run = importData.getRun();
-        List<? extends Profile> sampleProfileList = importData.getSampleProfileList();
-        List<? extends Profile> calibnProfileList = importData.getCalibrationProfileList();
+        List<SampleProfile> sampleProfileList = importData.getSampleProfileList();
+        List<CalibrationProfile> calibnProfileList = importData.getCalibrationProfileList();
         //Try to retrieve the three database files which are in alphabetic order
         DatabaseServices[] dbArray = RunImportUtilities.getDatabases();
         if(dbArray == null){
@@ -71,6 +73,7 @@ public class RunInializationProvider implements RunInitializationService {
                 double averageOCF = dbInfo.getOcf();
                 for (Profile profile : sampleProfileList) {
                     profile.setParent(run);
+                    profile.setRun(run);//This is NOT redundant to setParent 
                     profile.setRunDate(run.getRunDate());
                     if (ampliconDB != null) {
                         if (ampliconDB.isDatabaseOpen()
@@ -87,7 +90,7 @@ public class RunInializationProvider implements RunInitializationService {
                     experimentDB.saveObject(profile);
                 }
                 List<? extends Profile> averageSampleProfileList =
-                        AverageProfileGenerator.averageSampleProfileConstruction((List<Profile>) sampleProfileList,
+                        AverageProfileGenerator.averageSampleProfileConstruction((List<SampleProfile>) sampleProfileList,
                         run,
                         averageOCF,
                         winParameters);
@@ -136,7 +139,7 @@ public class RunInializationProvider implements RunInitializationService {
                 //Process the AverageCalibnProfiles
                 List<AverageCalibrationProfile> averageCalbnProfileList =
                         (List<AverageCalibrationProfile>) AverageProfileGenerator.averageCalbrationProfileConstruction(
-                        (List<Profile>) calibnProfileList,
+                        (List<CalibrationProfile>) calibnProfileList,
                         rxnSetup,
                         calbnParameters);
                 calbnDB.saveObject(averageCalbnProfileList);

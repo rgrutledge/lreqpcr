@@ -57,8 +57,8 @@ public class ExcelCalibrationProfileExport {
         for (int i = 0; i < profileList.size(); i++) {
             Profile profile = (Profile) profileList.get(i);
             if (!profile.isExcluded()) {
-                ocfSum = ocfSum + profile.getRunOCF();
-                ocfArray.add(profile.getRunOCF());
+                ocfSum = ocfSum + profile.getOCF();
+                ocfArray.add(profile.getOCF());
             }
         }
         double averageOCF = ocfSum / ocfArray.size();
@@ -143,7 +143,11 @@ public class ExcelCalibrationProfileExport {
             sheet.addCell(dateCell);
             label = new Label(1, row, profile.getAmpliconName(), center);
             sheet.addCell(label);
-            number = new Number(2, row, profile.getRunOCF(), floatFormat);
+            if (profile.getEmax() > 1.0){
+                number = new Number(2, row, profile.getAdjustedOCF(), floatFormat);
+            } else {
+                number = new Number(2, row, profile.getOCF(), floatFormat);
+            }
             sheet.addCell(number);
             number = new Number(3, row, profile.getEmax(), percentFormat);
             sheet.addCell(number);
@@ -170,6 +174,8 @@ public class ExcelCalibrationProfileExport {
             }
             label = new Label(9, row, notes);
             sheet.addCell(label);
+            number = new Number(9, row, profile.getDeltaE(), exponentialFormat);
+            sheet.addCell(number);
             row++;
         }
 

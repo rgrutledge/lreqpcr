@@ -61,7 +61,7 @@ public class ProfileTreeNodeLabels implements LabelFactory {
                 double avNo = sum / avPrf.getReplicateProfileList().size();
                 if (avNo < 10) {
                     profile.setShortDescription("Replicate No average");
-                    df.applyPattern("0.0");
+                    df.applyPattern("0.00");
                     return label + " <10 Molecules (" + df.format(avNo) + ")";
                 } else {
                     profile.setShortDescription("");
@@ -71,10 +71,10 @@ public class ProfileTreeNodeLabels implements LabelFactory {
         df.applyPattern("###,###");
         if (profile.getEmax() > 1.00) {
             if (profile.getAdjustedNo() < 10) {
-                df.applyPattern("0.0");
+                df.applyPattern("0.00");
             } else {
                 if (profile.getNo() < 10) {
-                    df.applyPattern("0.0");
+                    df.applyPattern("0.00");
                 }
             }
         }

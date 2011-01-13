@@ -23,10 +23,13 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.text.DecimalFormat;
 import javax.swing.JPanel;
+import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.data_objects.TargetStrandedness;
+import org.lreqpcr.core.ui_elements.LreObjectChildren;
+import org.openide.nodes.Node;
 import org.openide.util.Lookup;
 
 /**
@@ -90,6 +93,21 @@ public class LreObjectInfo extends JPanel {
                     profile.setAmpliconSize(i);
                     profile.updateProfile();
                     selectedNode.refreshNodeLabel();
+                    //Update the replicate profiles if this is an average profile
+                    if (profile instanceof AverageProfile) {
+                        AverageProfile avProfile = (AverageProfile) profile;
+                        for (Profile prf : avProfile.getReplicateProfileList()) {
+                            prf.setAmpliconSize(i);
+                            prf.updateProfile();
+                            //Decided not to update the replicate profile node labels, so they may not be correct
+                        }
+                        LreObjectChildren children = (LreObjectChildren) selectedNode.getChildren();
+                        Node[] nodes = children.getNodes();
+                        for (Node node : nodes){
+                            LreNode ln = (LreNode) node;
+                            ln.refreshNodeLabel();
+                        }
+                    }
                 }
                 selectedNode.saveLreObject();
             }
@@ -115,7 +133,9 @@ public class LreObjectInfo extends JPanel {
     }
 
     public void iniInfo() {
-        if (selectedNode == null) return;
+        if (selectedNode == null) {
+            return;
+        }
         member = selectedNode.getLookup().lookup(LreObject.class);
         if (member == null) {
             clearPanel();

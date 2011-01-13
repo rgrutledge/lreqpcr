@@ -206,7 +206,6 @@ public class SampleProfileTemplateDataImport extends RunImportService {
         while (col < colCount && sheet.getCell(col, 3).getType() != CellType.EMPTY) {
             SampleProfile profile = new SampleProfile();
             profile.setWellNumber(wellNumber);
-            profile.setParent(run);
             profile.setRunDate(run.getRunDate());
             profile.setName(sheet.getCell(col, 2).getContents());
             profile.setAmpliconName(sheet.getCell(col, 3).getContents());

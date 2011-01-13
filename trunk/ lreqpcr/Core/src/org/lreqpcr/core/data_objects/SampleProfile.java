@@ -31,36 +31,21 @@ public class SampleProfile extends Profile {
     /**
      * Calculate the number of target molecules (No) 
      * based on the OCF and amplicon size.
-     * If the run OCF not = 0, use the runOCF, else use the average OCF.
-     * If both are = 0, simply return
      */
     public void updateProfile() {
-        double currentOCF = 0;
-        if (getRunOCF() != 0) {
-            currentOCF = getRunOCF();
-        }else {
-            if (getOCF() != 0){
-                currentOCF = getOCF();
-            }else {
-                setNo(0);
-                setAdjustedNo(0);
-                return;
-            }
-        }
         if (getTargetStrandedness() == TargetStrandedness.SINGLESTRANDED) {
-            setNo(2 * ((getAvFo() / currentOCF) * 910000000000d) / getAmpliconSize());
-            setAdjustedNo(2 * ((getAdjustedAvFo() / currentOCF) * 910000000000d) / getAmpliconSize());
+            setNo(2 * ((getAvFo() / getOCF()) * 910000000000d) / getAmpliconSize());
+            setAdjustedNo(2 * ((getAdjustedAvFo() / getOCF()) * 910000000000d) / getAmpliconSize());
         } else {
             if(getTargetStrandedness() == TargetStrandedness.DOUBLESTRANDED){
-                setNo(((getAvFo() / currentOCF) * 910000000000d) / getAmpliconSize());
-                setAdjustedNo(((getAdjustedAvFo() / currentOCF) * 910000000000d) / getAmpliconSize());
+                setNo(((getAvFo() / getOCF()) * 910000000000d) / getAmpliconSize());
+                setAdjustedNo(((getAdjustedAvFo() / getOCF()) * 910000000000d) / getAmpliconSize());
             }
         }
     }
 
     /**
-     * Sort based on the date of the Run if this is an average profile, or
-     * sort on well number if this is a replicate reaction profile
+     * Sorted to place excluded profiles last
      * @param o the Profile to compare to
      * @return the comparator integer
      */
@@ -75,25 +60,5 @@ public class SampleProfile extends Profile {
             }
         }
         return 0;
-
-//        if(isExcluded()){
-//            if(profile.isExcluded()){
-//                return 0;
-//            }else{
-//                return -1;
-//            }
-//        }
-//        int runDateComparison = getRunDate().compareTo(profile.getRunDate());
-//        //Must identify if this is an average profile, which does not contain
-//        //a well number
-//        if (getWellNumber() == 0) {
-//            return runDateComparison;
-//        }
-//        if (runDateComparison == 0) {
-//            if (getWellNumber() > profile.getWellNumber()) {
-//                return 1;
-//            }
-//        }
-//        return runDateComparison;
     }
 }

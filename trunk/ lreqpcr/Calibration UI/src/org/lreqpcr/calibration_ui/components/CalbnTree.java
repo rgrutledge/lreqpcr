@@ -127,13 +127,11 @@ public class CalbnTree extends JPanel {
             avProfileOCFdisplay.setText("");
             return;
         }
-        //This returns both replicate and average profiles
-        List<? extends LreObject> calbnProfileList =
-                (List<? extends LreObject>) calbnDB.getAllObjects(CalibrationProfile.class);
         double ocfSum = 0;
         ArrayList ocfArray = Lists.newArrayList();
         dfCV.applyPattern("0.0");
-        calbnProfileList =
+        //This returns both replicate and average profiles, so the repliate profiles must not be included
+        List<? extends LreObject> calbnProfileList =
                 (List<? extends LreObject>) calbnDB.getAllObjects(AverageCalibrationProfile.class);
         if (!calbnProfileList.isEmpty()) {
             for (int i = 0; i < calbnProfileList.size(); i++) {
@@ -143,8 +141,8 @@ public class CalbnTree extends JPanel {
                         ocfSum += profile.getAdjustedOCF();
                         ocfArray.add(profile.getAdjustedOCF());
                     } else {
-                        ocfSum += profile.getRunOCF();
-                        ocfArray.add(profile.getRunOCF());
+                        ocfSum += profile.getOCF();
+                        ocfArray.add(profile.getOCF());
                     }
                 }
             }
@@ -152,7 +150,11 @@ public class CalbnTree extends JPanel {
             double sd = MathFunctions.calcStDev(ocfArray);
             double cv = sd / averageOCF;
             df.applyPattern(FormatingUtilities.decimalFormatPattern(averageOCF));
-            avProfileOCFdisplay.setText(df.format(averageOCF) + " +/-" + dfCV.format(cv * 100) + "%");
+            if (calbnProfileList.size() ==1){
+                avProfileOCFdisplay.setText(df.format(averageOCF));
+            } else {
+                avProfileOCFdisplay.setText(df.format(averageOCF) + " +/-" + dfCV.format(cv * 100) + "%");
+            }
         }
     }
 

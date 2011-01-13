@@ -165,10 +165,6 @@ public class ExperimentDbTree extends JPanel {
         }
     }
 
-    public void createLdaTree(){
-
-    }
-
     public void createEmptyTree() {
         AbstractNode root = new AbstractNode(Children.LEAF);
         mgr.setRootContext(root);
@@ -183,8 +179,16 @@ public class ExperimentDbTree extends JPanel {
         List<Profile> profileList =
                 (List<Profile>) experimentDB.getAllObjects(Profile.class);
         for (Profile profile : profileList) {
-//If runOCF != 0, then a run-specific OCF has been set and will be used instead of the average OCF
-            if (profile.getRunOCF() == 0) {
+            //Necessary for prerelease compatiblity 
+            if (profile.getRun() != null) {
+                //If the runOCF > 0 then a run-specific ocf has been set, so do nothing
+                if (profile.getRun().getRunOCF() == 0) {
+                    //Reset the profile ocf to the average ocf
+                    profile.setOCF(averageOCF);
+                    profile.updateProfile();
+                    experimentDB.saveObject(profile);
+                }
+            } else {
                 profile.setOCF(averageOCF);
                 profile.updateProfile();
                 experimentDB.saveObject(profile);
@@ -247,14 +251,12 @@ public class ExperimentDbTree extends JPanel {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(runViewButton)
                     .addComponent(ocfDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
+                    .addComponent(jLabel1)
+                    .addComponent(runViewButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 534, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 

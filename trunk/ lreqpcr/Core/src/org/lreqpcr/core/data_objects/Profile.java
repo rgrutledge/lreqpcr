@@ -29,6 +29,7 @@ import java.util.Date;
 public abstract class Profile extends LreObject {
 
     //Profile creation parameters
+    private Run run;//The run that generated this profile
     private String wellLabel;//Well label i.e. A1-A12, A1-H1
     private int wellNumber;//1-96 etc, also allows ordering of profiles
     private Date runDate;
@@ -61,11 +62,16 @@ public abstract class Profile extends LreObject {
     
     //Target molecule (No) determination via optical calibration
     private double ocf;//The optical calibration factor used to calculate the number of target molecules
-    //ocf is derived from the corresponding Reaction Setup which is currently manually implemented
-    //because the full functionality of ReactionSetup is not yet implemented
-    private double runOCF;//Run specific OCF
     private double no;//Number of targets molecules
     private double adjustedNo;//Number of targets molecules adjusted to 100% Emax
+
+    public Run getRun() {
+        return run;
+    }
+
+    public void setRun(Run run) {
+        this.run = run;
+    }
 
     public int getWellNumber() {
         return wellNumber;
@@ -202,14 +208,6 @@ public abstract class Profile extends LreObject {
 
     public void setOCF(double averageOCF) {
         this.ocf = averageOCF;
-    }
-
-    public double getRunOCF() {
-        return runOCF;
-    }
-
-    public void setRunOCF(double runOCF) {
-        this.runOCF = runOCF;
     }
 
     /**

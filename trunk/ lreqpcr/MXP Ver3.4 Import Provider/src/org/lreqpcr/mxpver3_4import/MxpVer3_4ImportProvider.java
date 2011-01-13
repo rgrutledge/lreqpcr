@@ -44,7 +44,7 @@ import org.openide.windows.WindowManager;
 public class MxpVer3_4ImportProvider extends RunImportService {
 
     public String getRunImportServiceName() {
-        return "MXP5000 Ver 3.4";
+        return "Mx3000P Ver 3.4";
     }
 
     public URL getHelpFile() {
