@@ -108,6 +108,10 @@ public class LreObjectChildren extends Children.Keys<LreObject> {
         node.setShortDescription(modifiedMember.getShortDescription());
     }
 
+    public void refreshChildrenLabels(){
+
+    }
+
     /**
      * Calling this should update display of the children nodes
      */

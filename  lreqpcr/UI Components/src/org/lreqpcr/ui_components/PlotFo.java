@@ -84,7 +84,8 @@ public class PlotFo extends javax.swing.JPanel {
         winAvFoCV = profile.getAvFoCV();
         lreWinSize = profile.getLreWinSize();
         avFoLabel.setVisible(true);
-        avFoDisplay.setText(dfE.format(winAvFo) + "+/-" + df.format(winAvFoCV * 100) + "%");
+//        avFoDisplay.setText(dfE.format(winAvFo) + "+/-" + df.format(winAvFoCV * 100) + "%");
+        avFoDisplay.setText("+/-" + df.format(winAvFoCV * 100) + "%");
         df.applyPattern("0.00");
 
         /*Determine the maximum X&Y values: Dataset specific*/
@@ -167,7 +168,7 @@ public class PlotFo extends javax.swing.JPanel {
         avFoDisplay.setToolTipText("LRE-derived target quantity expressed in fluorescence units");
 
         avFoLabel.setForeground(new java.awt.Color(255, 0, 0));
-        avFoLabel.setText("Average Fo:");
+        avFoLabel.setText("Fo CV:");
         avFoLabel.setToolTipText("The average Fo calculated from the Fo values within the LRE window (red circles)");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -181,7 +182,7 @@ public class PlotFo extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(avFoLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(avFoDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE)
+                        .addComponent(avFoDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE)
                         .addGap(77, 77, 77)))
                 .addContainerGap())
         );

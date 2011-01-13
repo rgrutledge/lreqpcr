@@ -31,12 +31,13 @@ import javax.swing.JOptionPane;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.ReactionSetup;
+import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.data_objects.TargetStrandedness;
 import org.openide.util.Lookup;
 import org.openide.windows.WindowManager;
 
 /**
- * Generates AverageProfiles.
+ * Static methods for generating initialized AverageProfiles.
  * @author Bob Rutledge
  */
 public class AverageProfileGenerator {
@@ -54,22 +55,22 @@ public class AverageProfileGenerator {
      */
     @SuppressWarnings(value = "unchecked")
     public static ArrayList<AverageSampleProfile> averageSampleProfileConstruction(
-            List<Profile> profileList,
+            List<SampleProfile> profileList,
             Run parentRun,
             double ocf,
             LreWindowSelectionParameters parameters) {
-        ArrayList<Profile> profileArray = new ArrayList<Profile>(profileList);
+        ArrayList<SampleProfile> profileArray = new ArrayList<SampleProfile>(profileList);
         //Generate new ReplicatSampleProfiles for each replicate profile set within the profile list
         ArrayList<AverageSampleProfile> averageProfileList = new ArrayList<AverageSampleProfile>();
         //Parse out the replicate Profiles based on identical sample and amlipcon names
         //Prevent changes to the passed Profile list
-        ArrayList<Profile> listCopy = (ArrayList<Profile>) profileArray.clone();
+        ArrayList<SampleProfile> listCopy = (ArrayList<SampleProfile>) profileArray.clone();
         while (!listCopy.isEmpty()) {
-            Profile profile = listCopy.get(0);
+            SampleProfile profile = listCopy.get(0);
             AverageSampleProfile avSampleProfile = new AverageSampleProfile();
             avSampleProfile.setTargetStrandedness(profile.getTargetStrandedness());
-            ArrayList<Profile> replicateProfileList = new ArrayList<Profile>();
-            for (Profile prf : listCopy) {
+            ArrayList<SampleProfile> replicateProfileList = new ArrayList<SampleProfile>();
+            for (SampleProfile prf : listCopy) {
                 try {
                     if (profile.getAmpliconName().equals(prf.getAmpliconName()) && profile.getSampleName().equals(prf.getSampleName())) {
                         replicateProfileList.add(prf);
@@ -89,7 +90,7 @@ public class AverageProfileGenerator {
                 }
             }
             //Remove the replicate Profiles from the list copy
-            for (Profile prf : replicateProfileList) {
+            for (SampleProfile prf : replicateProfileList) {
                 listCopy.remove(prf);
             }
             avSampleProfile.setParent(parentRun);
@@ -114,21 +115,21 @@ public class AverageProfileGenerator {
      * @return a list of AverageCalibrationProfiles
      */
     @SuppressWarnings(value = "unchecked")
-    public static List<? extends Profile> averageCalbrationProfileConstruction(
-            List<Profile> profileList,
+    public static ArrayList<AverageCalibrationProfile> averageCalbrationProfileConstruction(
+            List<CalibrationProfile> profileList,
             ReactionSetup rxnSetup,
             LreWindowSelectionParameters parameters) {
-        ArrayList<Profile> profileArray = new ArrayList(profileList);
+        ArrayList<CalibrationProfile> profileArray = new ArrayList<CalibrationProfile>(profileList);
         //Generate new AverageCalibrationProfile for each replicate profile set within the profile list
         ArrayList<AverageCalibrationProfile> averageCalbnProfileList =
                 new ArrayList<AverageCalibrationProfile>();
         //Parse out the replicate Profiles based on identical sample and amlipcon names
         //Prevent changes to the passed Profile list
-        ArrayList<Profile> listCopy = (ArrayList<Profile>) profileArray.clone();
+        ArrayList<CalibrationProfile> listCopy = (ArrayList<CalibrationProfile>) profileArray.clone();
         while (!listCopy.isEmpty()) {
             Profile profile = listCopy.get(0);
-            ArrayList<Profile> calibrationProfileList = new ArrayList<Profile>();
-            for (Profile prf : listCopy) {
+            ArrayList<CalibrationProfile> calibrationProfileList = new ArrayList<CalibrationProfile>();
+            for (CalibrationProfile prf : listCopy) {
                 try {
                     if (profile.getAmpliconName().equals(prf.getAmpliconName()) && profile.getSampleName().equals(prf.getSampleName())) {
                         calibrationProfileList.add(prf);
@@ -148,15 +149,15 @@ public class AverageProfileGenerator {
                 }
             }
             //Remove the replicate Profiles from the list copy
-            for (Profile prf : calibrationProfileList) {
+            for (CalibrationProfile prf : calibrationProfileList) {
                 listCopy.remove(prf);
             }
             //Average the replicates Profile raw Fc datasets
             AverageCalibrationProfile avCalbnProfile = new AverageCalibrationProfile();
             avCalbnProfile.setParent(rxnSetup);
-            CalibrationProfile firstSampleProfile = (CalibrationProfile) calibrationProfileList.get(0);
-            avCalbnProfile.setLambdaMass(firstSampleProfile.getLambdaMass() * 1000000);
-            avCalbnProfile.setName(firstSampleProfile.getName());
+            CalibrationProfile firstCalibrationProfile = (CalibrationProfile) calibrationProfileList.get(0);
+            avCalbnProfile.setLambdaMass(firstCalibrationProfile.getLambdaMass() * 1000000);
+            avCalbnProfile.setName(firstCalibrationProfile.getName());
             avCalbnProfile.setTargetStrandedness(TargetStrandedness.DOUBLESTRANDED);
             avCalbnProfile.setReplicateProfileList(calibrationProfileList);
             avCalbnProfile.setRawFcReadings(generateAverageFcDataset(calibrationProfileList));
@@ -203,7 +204,7 @@ public class AverageProfileGenerator {
         LreAnalysisService profileIntialization =
                 Lookup.getDefault().lookup(LreAnalysisService.class);
         ArrayList<Profile> replicateList =
-                (ArrayList<Profile>) averageProfile.getReplicateProfileList();
+                new ArrayList<Profile>(averageProfile.getReplicateProfileList());
         Profile avProfile = (Profile) averageProfile;
         Profile firstRepProfile = replicateList.get(0);
         avProfile.setRunDate(firstRepProfile.getRunDate());

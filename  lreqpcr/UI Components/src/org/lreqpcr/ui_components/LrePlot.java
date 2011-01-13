@@ -69,9 +69,6 @@ public class LrePlot extends javax.swing.JPanel {
         clearPlot = false;
         this.prfSum = prfSum;
         profile = prfSum.getProfile();
-        //Setup the text fields
-//        df.applyPattern("##.00");
-//        String midC = df.format(prfSum.getProfile().getMidC());
         df.applyPattern("###,###");
         String numTargetMolecs = "";
         if(profile.getEmax() > 1.00){
@@ -80,7 +77,6 @@ public class LrePlot extends javax.swing.JPanel {
             numTargetMolecs = df.format(profile.getNo());
         }
         graphTitle.setText(sdf.format(profile.getRunDate()) + "-" + numTargetMolecs + " molecules");
-//                + " (" + midC + ")");
         lreWinSizeDisplay.setText(String.valueOf(profile.getLreWinSize()));
         startCycleDisplay.setText(String.valueOf(profile.getStrCycleInt()));
         dEdisplay.setText(dfE.format(profile.getDeltaE()));

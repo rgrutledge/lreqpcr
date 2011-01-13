@@ -166,6 +166,27 @@ public final class AmpliconOverviewTopComponent extends TopComponent
         hasTreeBeenCreated = false;
     }
 
+    private HashMap<String, List<AverageSampleProfile>> getSelectedAmplicons(){
+        Node[] nodes = mgr.getSelectedNodes();
+        HashMap<String, List<AverageSampleProfile>> groupList = new HashMap<String, List<AverageSampleProfile>>();
+        for (Node node : nodes) {
+            AmpliconImpl amplicon = node.getLookup().lookup(AmpliconImpl.class);
+            if (amplicon != null) {
+                List profileList = currentDB.retrieveUsingFieldValue(AverageSampleProfile.class, "ampliconName", amplicon.getName());
+                groupList.put(amplicon.getName(), new ArrayList<AverageSampleProfile>(profileList));
+            }
+        }
+        if (groupList.isEmpty()){
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null,
+                    "No Amplicons have not been selected",
+                    "Must select an Amplicon(s) to export",
+                    JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+        return groupList;
+    }
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -175,14 +196,44 @@ public final class AmpliconOverviewTopComponent extends TopComponent
     private void initComponents() {
 
         ampliconTree = new BeanTreeView();
-        exportButton = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
+        exportAvProfileButton = new javax.swing.JButton();
+        exportRepPrfsButton = new javax.swing.JButton();
 
-        org.openide.awt.Mnemonics.setLocalizedText(exportButton, org.openide.util.NbBundle.getMessage(AmpliconOverviewTopComponent.class, "AmpliconOverviewTopComponent.exportButton.text")); // NOI18N
-        exportButton.addActionListener(new java.awt.event.ActionListener() {
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(AmpliconOverviewTopComponent.class, "AmpliconOverviewTopComponent.jPanel1.border.title"))); // NOI18N
+
+        org.openide.awt.Mnemonics.setLocalizedText(exportAvProfileButton, org.openide.util.NbBundle.getMessage(AmpliconOverviewTopComponent.class, "AmpliconOverviewTopComponent.exportAvProfileButton.text")); // NOI18N
+        exportAvProfileButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exportButtonActionPerformed(evt);
+                exportAvProfileButtonActionPerformed(evt);
             }
         });
+
+        org.openide.awt.Mnemonics.setLocalizedText(exportRepPrfsButton, org.openide.util.NbBundle.getMessage(AmpliconOverviewTopComponent.class, "AmpliconOverviewTopComponent.exportRepPrfsButton.text")); // NOI18N
+        exportRepPrfsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exportRepPrfsButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(exportAvProfileButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(exportRepPrfsButton)
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(exportAvProfileButton)
+                    .addComponent(exportRepPrfsButton))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -191,45 +242,41 @@ public final class AmpliconOverviewTopComponent extends TopComponent
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(ampliconTree, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE)
-                    .addComponent(exportButton))
+                    .addComponent(ampliconTree, javax.swing.GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(exportButton)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(ampliconTree, javax.swing.GroupLayout.DEFAULT_SIZE, 786, Short.MAX_VALUE)
+                .addComponent(ampliconTree, javax.swing.GroupLayout.DEFAULT_SIZE, 789, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void exportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportButtonActionPerformed
-        Node[] nodes = mgr.getSelectedNodes();
-        if (nodes.length == 0) {
-            Toolkit.getDefaultToolkit().beep();
-            JOptionPane.showMessageDialog(null,
-                    "No Amplicons have not been selected",
-                    "Must select an Amplicon(s) to export",
-                    JOptionPane.ERROR_MESSAGE);
+    private void exportAvProfileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportAvProfileButtonActionPerformed
+        HashMap<String, List<AverageSampleProfile>> groupList = getSelectedAmplicons();
+        if (groupList == null){
             return;
         }
+        Lookup.getDefault().lookup(DataExportServices.class).exportAverageSampleProfiles(groupList);
+    }//GEN-LAST:event_exportAvProfileButtonActionPerformed
 
-        HashMap<String, ArrayList<AverageSampleProfile>> groupList = new HashMap<String, ArrayList<AverageSampleProfile>>();
-        for (Node node : nodes) {
-            AmpliconImpl amplicon = node.getLookup().lookup(AmpliconImpl.class);
-            if (amplicon != null) {
-                List profileList = currentDB.retrieveUsingFieldValue(AverageSampleProfile.class, "ampliconName", amplicon.getName());
-                groupList.put(amplicon.getName(), new ArrayList<AverageSampleProfile>(profileList));
-            }
+    private void exportRepPrfsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportRepPrfsButtonActionPerformed
+        HashMap<String, List<AverageSampleProfile>> groupList = getSelectedAmplicons();
+        if (groupList == null){
+            return;
         }
-        Lookup.getDefault().lookup(DataExportServices.class).exportAverageProfiles(groupList);
-    }//GEN-LAST:event_exportButtonActionPerformed
+        Lookup.getDefault().lookup(DataExportServices.class).exportReplicateSampleProfiles(groupList);
+    }//GEN-LAST:event_exportRepPrfsButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane ampliconTree;
-    private javax.swing.JButton exportButton;
+    private javax.swing.JButton exportAvProfileButton;
+    private javax.swing.JButton exportRepPrfsButton;
+    private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
 
     /**

@@ -40,7 +40,6 @@ public class CalbnTreeNodeLabels implements LabelFactory {
         }
         if (member instanceof AverageCalibrationProfile){
             AverageCalibrationProfile calbnProfile = (AverageCalibrationProfile) member;
-            
             String ocf = "";
             df.applyPattern("##.0");
             String emax = " (" + df.format(calbnProfile.getEmax()*100) + "%)";
@@ -56,8 +55,8 @@ public class CalbnTreeNodeLabels implements LabelFactory {
                     ocf = df.format(calbnProfile.getAdjustedOCF());
                     calbnProfile.setShortDescription("Normalized to 100% Emax");
                 } else {
-                    df.applyPattern(FormatingUtilities.decimalFormatPattern(calbnProfile.getRunOCF()));
-                    ocf = df.format(calbnProfile.getRunOCF());
+                    df.applyPattern(FormatingUtilities.decimalFormatPattern(calbnProfile.getOCF()));
+                    ocf = df.format(calbnProfile.getOCF());
                     calbnProfile.setShortDescription("");
                 }
                 return rundate + ": " + calbnProfile.getAmpliconName() + emax + " " + ocf;
@@ -65,13 +64,14 @@ public class CalbnTreeNodeLabels implements LabelFactory {
         }
         if (member instanceof CalibrationProfile) {
             CalibrationProfile calbnProfile = (CalibrationProfile) member;
-            df.applyPattern(FormatingUtilities.decimalFormatPattern(calbnProfile.getRunOCF()));
             String ocf = "";
             if (calbnProfile.getEmax() > 1.00) {
+                df.applyPattern(FormatingUtilities.decimalFormatPattern(calbnProfile.getAdjustedOCF()));
                 ocf = df.format(calbnProfile.getAdjustedOCF());
                 calbnProfile.setShortDescription("Normalized to 100% Emax");
             } else {
-                ocf = df.format(calbnProfile.getRunOCF());
+                df.applyPattern(FormatingUtilities.decimalFormatPattern(calbnProfile.getOCF()));
+                ocf = df.format(calbnProfile.getOCF());
                 calbnProfile.setShortDescription("");
             }
             df.applyPattern("##.0");

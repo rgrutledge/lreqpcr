@@ -28,9 +28,10 @@ public class CalibrationProfile extends Profile {
 
     private double lambdaMass;//The mass of the lamdba gDNA in nanograms
     private double adjustedOCF;//OCF adjusted to 100% Emax
+    private double mo;//Mo calculated from the lambdaMass
 
     /**
-     *  Target standedness is set to double stranded by default
+     *  Target strandedness is set to double stranded by default
      */
     public CalibrationProfile() {
         setTargetStrandedness(TargetStrandedness.DOUBLESTRANDED);
@@ -60,10 +61,10 @@ public class CalibrationProfile extends Profile {
      * based on the amount of lambda gDNA (Mo) and the average Fo. 
      */
     public void updateProfile() {
-        double mo = (lambdaMass * getAmpliconSize()) / 48502;//Mo for lambda gDNA
-        setRunOCF(getAvFo() / mo);
+        mo = (lambdaMass * getAmpliconSize()) / 48502;//Mo for lambda gDNA
+        setOCF(getAvFo() / mo);
         setAdjustedOCF(getAdjustedAvFo() / mo);
-        setNo(((getAvFo() / getRunOCF()) * 910000000000d) / getAmpliconSize());
+        setNo(((getAvFo() / getOCF()) * 910000000000d) / getAmpliconSize());
     }
 
     /**

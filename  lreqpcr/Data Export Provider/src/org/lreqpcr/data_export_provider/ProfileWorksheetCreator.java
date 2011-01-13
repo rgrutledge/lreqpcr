@@ -31,7 +31,7 @@ import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.Run;
 
 /**
- *
+ * NOT USED
  * @author Bob Rutledge
  */
 public class ProfileWorksheetCreator {
@@ -114,11 +114,11 @@ public class ProfileWorksheetCreator {
         Collections.sort(profileList);
         Number number = new Number(4, 1, profileList.get(0).getOCF(), ocfFormat);
         sheet.addCell(number);
-        if (profileList.get(0).getRunOCF() == 0) {
+        if (profileList.get(0).getRun().getRunOCF() == 0) {
             label = new Label(7, 1, "Not Applied");
             sheet.addCell(label);
         } else {
-            number = new Number(7, 1, profileList.get(0).getRunOCF(), ocfFormat);
+            number = new Number(7, 1, profileList.get(0).getRun().getRunOCF(), ocfFormat);
             sheet.addCell(number);
         }
 

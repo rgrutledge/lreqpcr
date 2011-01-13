@@ -106,6 +106,26 @@ public final class ExperimentTopComponent extends TopComponent
         }
         settingsDB = servicesLookup.lookup(SettingsServices.class);
     }
+    
+    private ArrayList<Run> getSelectedRuns(){
+        Node[] nodes = mgr.getSelectedNodes();
+        ArrayList<Run> runList = new ArrayList<Run>();
+        for (Node node : nodes) {
+            RunImpl run = node.getLookup().lookup(RunImpl.class);
+            if (run != null) {//Excludes non-Run nodes such as the root or profile nodes
+                runList.add(run);
+            }
+        }
+        if (runList.isEmpty()){
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null,
+                    "No Runs have not been selected",
+                    "Must select a Run(s)",
+                    JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+        return runList;
+    }
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -120,7 +140,9 @@ public final class ExperimentTopComponent extends TopComponent
         newDBbutton = new javax.swing.JButton();
         openLastDBbutton = new javax.swing.JButton();
         closeDBbutton = new javax.swing.JButton();
-        exportRunsButton = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
+        exportAverageProfileButton = new javax.swing.JButton();
+        exportReplicateProfilesButton = new javax.swing.JButton();
 
         openDBbutton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/lreqpcr/experiment_ui/Open24.gif"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(openDBbutton, org.openide.util.NbBundle.getMessage(ExperimentTopComponent.class, "ExperimentTopComponent.openDBbutton.text")); // NOI18N
@@ -159,12 +181,37 @@ public final class ExperimentTopComponent extends TopComponent
             }
         });
 
-        org.openide.awt.Mnemonics.setLocalizedText(exportRunsButton, org.openide.util.NbBundle.getMessage(ExperimentTopComponent.class, "ExperimentTopComponent.exportRunsButton.text")); // NOI18N
-        exportRunsButton.addActionListener(new java.awt.event.ActionListener() {
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(ExperimentTopComponent.class, "ExperimentTopComponent.jPanel1.border.title"))); // NOI18N
+
+        org.openide.awt.Mnemonics.setLocalizedText(exportAverageProfileButton, org.openide.util.NbBundle.getMessage(ExperimentTopComponent.class, "ExperimentTopComponent.exportAverageProfileButton.text")); // NOI18N
+        exportAverageProfileButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exportRunsButtonActionPerformed(evt);
+                exportAverageProfileButtonActionPerformed(evt);
             }
         });
+
+        org.openide.awt.Mnemonics.setLocalizedText(exportReplicateProfilesButton, org.openide.util.NbBundle.getMessage(ExperimentTopComponent.class, "ExperimentTopComponent.exportReplicateProfilesButton.text")); // NOI18N
+        exportReplicateProfilesButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exportReplicateProfilesButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(exportAverageProfileButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(exportReplicateProfilesButton))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(exportAverageProfileButton)
+                .addComponent(exportReplicateProfilesButton))
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -179,10 +226,10 @@ public final class ExperimentTopComponent extends TopComponent
                 .addComponent(newDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(closeDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(exportRunsButton)
-                .addContainerGap(60, Short.MAX_VALUE))
-            .addComponent(experimentDbTree, javax.swing.GroupLayout.DEFAULT_SIZE, 337, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(20, Short.MAX_VALUE))
+            .addComponent(experimentDbTree, javax.swing.GroupLayout.DEFAULT_SIZE, 348, Short.MAX_VALUE)
         );
 
         layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {closeDBbutton, newDBbutton, openDBbutton});
@@ -190,16 +237,18 @@ public final class ExperimentTopComponent extends TopComponent
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(newDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(closeDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(openLastDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(openDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(exportRunsButton))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(newDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(closeDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(openLastDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(openDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(experimentDbTree, javax.swing.GroupLayout.DEFAULT_SIZE, 596, Short.MAX_VALUE))
+                .addComponent(experimentDbTree, javax.swing.GroupLayout.DEFAULT_SIZE, 571, Short.MAX_VALUE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -255,30 +304,26 @@ public final class ExperimentTopComponent extends TopComponent
         }
     }//GEN-LAST:event_closeDBbuttonActionPerformed
 
-    private void exportRunsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportRunsButtonActionPerformed
-        Node[] nodes = mgr.getSelectedNodes();
-        if (nodes.length == 0) {
-            Toolkit.getDefaultToolkit().beep();
-            JOptionPane.showMessageDialog(null,
-                    "No Runs have not been selected",
-                    "Must select a Run(s)",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
+    private void exportAverageProfileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportAverageProfileButtonActionPerformed
+        ArrayList<Run> runList = getSelectedRuns();
+        if(runList != null){
+            Lookup.getDefault().lookup(DataExportServices.class).exportAverageSampleProfilesFromRuns(runList);
         }
-        ArrayList<Run> runList = new ArrayList<Run>();
-        for (Node node : nodes) {
-            RunImpl run = node.getLookup().lookup(RunImpl.class);
-            if (run != null) {//Excludes non-Run nodes such as the root or profile nodes
-                runList.add(run);
-            }
+    }//GEN-LAST:event_exportAverageProfileButtonActionPerformed
+
+    private void exportReplicateProfilesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportReplicateProfilesButtonActionPerformed
+        ArrayList<Run> runList = getSelectedRuns();
+        if(runList != null){
+        Lookup.getDefault().lookup(DataExportServices.class).exportReplicateSampleProfilesFromRuns(runList);
         }
-        Lookup.getDefault().lookup(DataExportServices.class).exportAverageSampleProfiles(runList);
-        return;
-    }//GEN-LAST:event_exportRunsButtonActionPerformed
+    }//GEN-LAST:event_exportReplicateProfilesButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton closeDBbutton;
     private org.lreqpcr.experiment_ui.components.ExperimentDbTree experimentDbTree;
-    private javax.swing.JButton exportRunsButton;
+    private javax.swing.JButton exportAverageProfileButton;
+    private javax.swing.JButton exportReplicateProfilesButton;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JButton newDBbutton;
     private javax.swing.JButton openDBbutton;
     private javax.swing.JButton openLastDBbutton;

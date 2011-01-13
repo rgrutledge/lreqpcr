@@ -132,7 +132,7 @@ public class ProfileGroupExcelDataExport {
                 double avTm = 0;
 //                double avCt = 0;
 //                double ctSD = 0;//Ct standard deviation
-                ArrayList<Double> ctArray = Lists.newArrayList();
+//                ArrayList<Double> ctArray = Lists.newArrayList();
                 int tmCnt = 0;
 //                int ctCnt = 0;
                 for (Profile sampleProfile : avProfile.getReplicateProfileList()) {
@@ -184,14 +184,7 @@ public class ProfileGroupExcelDataExport {
 //                }
 //                number = new Number(15, row, avProfile.getReplicateProfileList().get(0).getFt(), floatFormat);
 //                sheet.addCell(number);
-                double ocf = 0;
-                //If run OCF != 0 then this value was used to calculate No
-                if(profile.getRunOCF() != 0){
-                    ocf = profile.getRunOCF();
-                }else {
-                    ocf = profile.getOCF();
-                }
-                number = new Number(10, row, ocf, floatFormat);
+                number = new Number(10, row, profile.getOCF(), floatFormat);
                 sheet.addCell(number);
                 label = new Label(11, row, profile.getLongDescription());
                 sheet.addCell(label);

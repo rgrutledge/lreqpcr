@@ -17,23 +17,23 @@ import org.openide.util.Exceptions;
  */
 public class DataExportProvider implements DataExportServices {
 
-    public void exportAverageSampleProfiles(List<Run> runList) {
+    public void exportAverageSampleProfilesFromRuns(List<Run> runList) {
+//Defer to HashMap exportation of average profiles in which only the run name is used from the Run
         HashMap<String, List<AverageSampleProfile>> map = Maps.newHashMap();
         for(Run run : runList){
             map.put(run.getName(), run.getAverageProfileList());
         }
-        exportAverageProfiles(map);
+        exportAverageSampleProfiles(map);
     }
 
-    public void exportReplicateSampleProfiles(List<Run> runList) {
-        //Not implemented
-//        try {
-//            ExcelReplicateSampleProfileDataExport.exportAllSampleProfiles(runList);
-//        } catch (IOException ex) {
-//            Exceptions.printStackTrace(ex);
-//        } catch (WriteException ex) {
-//            Exceptions.printStackTrace(ex);
-//        }
+    public void exportReplicateSampleProfilesFromRuns(List<Run> runList) {
+//Defer to HashMap exportation of replicate sample profiles in which only the run name is used from the Run
+        HashMap<String, List<AverageSampleProfile>> map = new HashMap<String, List<AverageSampleProfile>>();
+
+        for (Run run : runList){
+            map.put(run.getName(), run.getAverageProfileList());
+        }
+        exportReplicateSampleProfiles(map);
     }
 
     public void exportAverageCalibrationProfiles(List<AverageCalibrationProfile> profileList) {
@@ -46,9 +46,17 @@ public class DataExportProvider implements DataExportServices {
         }
     }
 
-    public void exportAverageProfiles(HashMap<String, List<AverageSampleProfile>> groupList) {
+    public void exportAverageSampleProfiles(HashMap<String, List<AverageSampleProfile>> groupList) {
         try {
             ExcelAveragSampleProfileDataExport.exportProfiles(groupList);
+        } catch (Exception ex) {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+
+    public void exportReplicateSampleProfiles(HashMap<String, List<AverageSampleProfile>> groupList) {
+        try {
+            SampleProfileDataExport.exportProfiles(groupList);
         } catch (Exception ex) {
             Exceptions.printStackTrace(ex);
         }

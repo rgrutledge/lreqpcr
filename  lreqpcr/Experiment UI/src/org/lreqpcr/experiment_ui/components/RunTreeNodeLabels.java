@@ -73,7 +73,7 @@ public class RunTreeNodeLabels implements LabelFactory {
                     double avNo = sum / avPrf.getReplicateProfileList().size();
                     if (avNo < 10) {
                         profile.setShortDescription("Replicate No average");
-                        df.applyPattern("0.0");
+                        df.applyPattern("0.00");
                         return label + " <10 Molecules (" + df.format(avNo) + ")";
                     } else {
                         profile.setShortDescription("");

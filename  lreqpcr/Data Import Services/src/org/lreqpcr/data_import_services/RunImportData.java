@@ -19,7 +19,6 @@ package org.lreqpcr.data_import_services;
 
 import java.util.List;
 import org.lreqpcr.core.data_objects.CalibrationProfile;
-import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.data_objects.SampleProfile;
 

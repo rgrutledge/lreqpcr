@@ -58,7 +58,7 @@ public class DeleteCalibrationProfileAction extends AbstractAction {
         if (nodes.length == 1) {
             Profile profile = nodes[0].getLookup().lookup(Profile.class);
             String msg = "Are you sure you want to delete '" + profile.getName()
-                    + "'?";
+                    + "'?\n" + "This will permenantly remove this Calibration Profile. ";
             int n = JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(),
                     msg, "Delete Calibration Profile: " + profile.getName(),
                     JOptionPane.YES_NO_OPTION,
@@ -68,7 +68,8 @@ public class DeleteCalibrationProfileAction extends AbstractAction {
             }
         } else {
             String msg = "Are you sure you want to delete " + String.valueOf(nodes.length)
-                    + " Profiles?";
+                    + " Profiles?"
+                    + "'?\n" + "This will permenantly remove these Calibration Profiles.";
             int n = JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(),
                     msg, "Delete  Calibration Profiles",
                     JOptionPane.YES_NO_OPTION,
