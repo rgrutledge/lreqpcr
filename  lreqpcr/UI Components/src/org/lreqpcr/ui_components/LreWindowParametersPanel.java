@@ -117,7 +117,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                         minFc = Double.valueOf(minFcString);
                     } catch (NumberFormatException nan) {
                         Toolkit.getDefaultToolkit().beep();
-                        JOptionPane.showMessageDialog(null,
+                        JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
                                 "The minimum Fc must be a valid number",
                                 "Invalid Number",
                                 JOptionPane.ERROR_MESSAGE);
@@ -133,7 +133,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                         foThreshold = Double.valueOf(foThresholdString) / 100;
                     } catch (NumberFormatException nan) {
                         Toolkit.getDefaultToolkit().beep();
-                        JOptionPane.showMessageDialog(null,
+                        JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
                                 "The Fo Threshold must be a valid number",
                                 "Invalid Number",
                                 JOptionPane.ERROR_MESSAGE);

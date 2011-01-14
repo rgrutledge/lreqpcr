@@ -155,7 +155,7 @@ public class AverageProfileGenerator {
             //Average the replicates Profile raw Fc datasets
             AverageCalibrationProfile avCalbnProfile = new AverageCalibrationProfile();
             avCalbnProfile.setParent(rxnSetup);
-            CalibrationProfile firstCalibrationProfile = (CalibrationProfile) calibrationProfileList.get(0);
+            CalibrationProfile firstCalibrationProfile = calibrationProfileList.get(0);
             avCalbnProfile.setLambdaMass(firstCalibrationProfile.getLambdaMass() * 1000000);
             avCalbnProfile.setName(firstCalibrationProfile.getName());
             avCalbnProfile.setTargetStrandedness(TargetStrandedness.DOUBLESTRANDED);

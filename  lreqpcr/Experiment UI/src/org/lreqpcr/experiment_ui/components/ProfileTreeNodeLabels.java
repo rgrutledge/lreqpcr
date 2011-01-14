@@ -69,13 +69,11 @@ public class ProfileTreeNodeLabels implements LabelFactory {
             }
         }
         df.applyPattern("###,###");
-        if (profile.getEmax() > 1.00) {
-            if (profile.getAdjustedNo() < 10) {
+        if (profile.getAdjustedNo() < 10) {
+            df.applyPattern("0.00");
+        } else {
+            if (profile.getNo() < 10) {
                 df.applyPattern("0.00");
-            } else {
-                if (profile.getNo() < 10) {
-                    df.applyPattern("0.00");
-                }
             }
         }
 

@@ -87,6 +87,7 @@ public final class SampleOverviewTopComponent extends TopComponent
         UniversalLookup.getDefault().addListner(PanelMessages.DATABASE_FILE_CHANGED, this);
     }
 
+    @SuppressWarnings("unchecked")
     private void createTree() {
         if (currentDB == null) {
             return;
@@ -122,10 +123,10 @@ public final class SampleOverviewTopComponent extends TopComponent
         //Construct a list of Amplicons using the ampList name
         for (String sampleName : sampleNameList) {
             Sample facadeSample = new SampleImpl();
-            //Amplicon objects have not yet been implemented in the Experiment/Calibration databases
-            //That is, an Amplicon is only represented as a String name
+            //Sample objects have not yet been implemented in the Experiment/Calibration databases
+            //That is, a Sample is only represented as a String name
             facadeSample.setName(sampleName);
-            //Retrieve all average profiles derived from this amplicon
+            //Retrieve all average profiles derived from this sample
             profileList = currentDB.retrieveUsingFieldValue(AverageProfile.class, "sampleName", sampleName);
             ArrayList<Double> emaxArrayList = new ArrayList<Double>();
             double emaxTotal = 0;
@@ -151,7 +152,7 @@ public final class SampleOverviewTopComponent extends TopComponent
                 }
             }
             facadeSample.setEmaxAverage(emaxTotal / counter);
-            if (profileList.size() > 1) {
+            if (counter > 1) {
                 facadeSample.setEmaxCV(MathFunctions.calcStDev(emaxArrayList) / facadeSample.getEmaxAverage());
             } else {
                 facadeSample.setEmaxCV(0);
@@ -168,6 +169,7 @@ public final class SampleOverviewTopComponent extends TopComponent
         hasTreeBeenCreated = false;
     }
 
+    @SuppressWarnings("unchecked")
     private HashMap<String, List<AverageSampleProfile>> getSelectedAmplicons(){
         Node[] nodes = mgr.getSelectedNodes();
         HashMap<String, List<AverageSampleProfile>> groupList = new HashMap<String, List<AverageSampleProfile>>();

@@ -345,6 +345,7 @@ public class AmpliconEditPanel extends JPanel
      *
      * @param ev the lookup event
      */
+    @SuppressWarnings("unchecked")
     public void resultChanged(LookupEvent ev) {
         //If the active window is the Amplicon editor, ignore
         TopComponent activeTC = WindowManager.getDefault().getRegistry().getActivated();
