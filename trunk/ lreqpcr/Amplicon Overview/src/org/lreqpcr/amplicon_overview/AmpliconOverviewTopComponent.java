@@ -86,6 +86,7 @@ public final class AmpliconOverviewTopComponent extends TopComponent
         UniversalLookup.getDefault().addListner(PanelMessages.DATABASE_FILE_CHANGED, this);
     }
 
+    @SuppressWarnings("unchecked")
     private void createTree() {
         if (currentDB == null) {
             return;
@@ -149,7 +150,7 @@ public final class AmpliconOverviewTopComponent extends TopComponent
                 }
             }
             facadeAmplicon.setEmaxAverage(emaxTotal / counter);
-            if (profileList.size() > 1) {
+            if (counter > 1) {
                 facadeAmplicon.setEmaxCV(MathFunctions.calcStDev(emaxArrayList) / facadeAmplicon.getEmaxAverage());
             } else {
                 facadeAmplicon.setEmaxCV(0);
@@ -166,6 +167,7 @@ public final class AmpliconOverviewTopComponent extends TopComponent
         hasTreeBeenCreated = false;
     }
 
+    @SuppressWarnings("unchecked")
     private HashMap<String, List<AverageSampleProfile>> getSelectedAmplicons(){
         Node[] nodes = mgr.getSelectedNodes();
         HashMap<String, List<AverageSampleProfile>> groupList = new HashMap<String, List<AverageSampleProfile>>();

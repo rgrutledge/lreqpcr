@@ -36,6 +36,7 @@ import org.lreqpcr.core.data_objects.Run;
  */
 public class ProfileWorksheetCreator {
 
+    @SuppressWarnings("unchecked")
     public static void createRunWorksheet(WritableWorkbook workbook, Run run, int sheetNumber) throws WriteException {
         //Setup cell formatting
         WritableFont arialBold = new WritableFont(WritableFont.ARIAL, 10, WritableFont.BOLD);

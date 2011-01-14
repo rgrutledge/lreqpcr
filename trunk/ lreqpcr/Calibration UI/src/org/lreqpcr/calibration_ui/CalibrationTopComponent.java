@@ -270,6 +270,7 @@ public final class CalibrationTopComponent extends TopComponent
         }
     }//GEN-LAST:event_lastDBbuttonActionPerformed
 
+    @SuppressWarnings("unchecked")
     private void exportProfilesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportProfilesButtonActionPerformed
         if (!calibrationDB.isDatabaseOpen()) {
             Toolkit.getDefaultToolkit().beep();

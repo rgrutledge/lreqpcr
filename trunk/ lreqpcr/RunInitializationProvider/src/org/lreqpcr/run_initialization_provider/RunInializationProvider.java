@@ -90,7 +90,7 @@ public class RunInializationProvider implements RunInitializationService {
                     experimentDB.saveObject(profile);
                 }
                 List<? extends Profile> averageSampleProfileList =
-                        AverageProfileGenerator.averageSampleProfileConstruction((List<SampleProfile>) sampleProfileList,
+                        AverageProfileGenerator.averageSampleProfileConstruction(sampleProfileList,
                         run,
                         averageOCF,
                         winParameters);
@@ -139,7 +139,7 @@ public class RunInializationProvider implements RunInitializationService {
                 //Process the AverageCalibnProfiles
                 List<AverageCalibrationProfile> averageCalbnProfileList =
                         (List<AverageCalibrationProfile>) AverageProfileGenerator.averageCalbrationProfileConstruction(
-                        (List<CalibrationProfile>) calibnProfileList,
+                        calibnProfileList,
                         rxnSetup,
                         calbnParameters);
                 calbnDB.saveObject(averageCalbnProfileList);
