@@ -27,6 +27,7 @@ import java.awt.event.ActionEvent;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
+import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
@@ -41,6 +42,7 @@ public class DeleteSampleProfileAction extends AbstractAction {
 
     private ExplorerManager mgr;
     private DatabaseServices db;
+    private LreWindowSelectionParameters selectionParameters;
 
     public DeleteSampleProfileAction(ExplorerManager mgr) {
         this.mgr = mgr;
@@ -52,6 +54,13 @@ public class DeleteSampleProfileAction extends AbstractAction {
         Node[] nodes = mgr.getSelectedNodes();
         LreNode lreNode = (LreNode) nodes[0];
         db = lreNode.getDatabaseServices();
+        if (db != null) {
+            if (db.isDatabaseOpen()) {
+                List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
+//This list should never be empty, as a LreWindowSelectionParameters object is created during DB creation
+                selectionParameters = l.get(0);
+            }
+        }
         if (nodes.length == 1) {
             SampleProfile profile = nodes[0].getLookup().lookup(SampleProfile.class);
             String msg = "Are you sure you want to delete '" + profile.getName() +
@@ -113,7 +122,7 @@ public class DeleteSampleProfileAction extends AbstractAction {
             //Reinitialize the Average Profile
             LreAnalysisService profileIntialization =
                     Lookup.getDefault().lookup(LreAnalysisService.class);
-            profileIntialization.initializeProfile(avProfile);
+            profileIntialization.initializeProfile(avProfile, selectionParameters);
             db.saveObject(avProfile);
             db.deleteObject(sampleProfile);
 

@@ -173,7 +173,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
             for (Profile profile : profileList) {
                 //Need to initiate a full reanalysis
                 profile.setLreWinSize(0);
-                profileInitialization.initializeProfile(profile);
+                profileInitialization.initializeProfile(profile, selectionParameters);
                 currentDB.saveObject(profile);
             }
         } else {
@@ -344,6 +344,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                 if (currentDB.isDatabaseOpen()) {
                     selectionParameters = (LreWindowSelectionParameters) currentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
                     if (selectionParameters == null) {
+                        //This should not ever happen
                         clearPanel();
                     } else {
                         minFc = selectionParameters.getMinFc();
@@ -351,9 +352,9 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                         updateDisplay();
                     }
                 } else {
+                    selectionParameters = null;
                     clearPanel();
                 }
-
             }
         }
         if (key == PanelMessages.PROFILE_INCLUDED

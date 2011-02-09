@@ -159,7 +159,8 @@ public class LreWindowSelector {
      * @param threshold maximum fractional difference (%) between cycle Fo and the average Fo
      */
     public static void selectLreWindow(ProfileSummary prfSum, LreWindowSelectionParameters parameters) {
-        if (parameters.getMinFc() == null) {
+        //Test whether a minimum Fc has been set; if not fall back to default (first cycle below C1/2)
+        if (parameters.getMinFc() == null || parameters.getMinFc() == 0) {
             selectLreWindow(prfSum);
             return;
         }

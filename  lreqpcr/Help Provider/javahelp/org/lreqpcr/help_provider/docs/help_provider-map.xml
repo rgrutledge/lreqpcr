@@ -50,7 +50,7 @@ and open the template in the editor.
     <mapID target="calibration-database-window" url="explorer_panel/calibration_database_window.html"/>
     <mapID target="amplicon-database-window" url="explorer_panel/amplicon_database_window.html"/>
 <!--Getting Started    -->
-    <mapID target="getting-start" url="getting_started/getting_start.html"/>
+    <mapID target="getting-started" url="getting_started/getting_started.html"/>
     <mapID target="program-intro" url="getting_started/lre_analyzer_intro.html"/>
     <mapID target="demo-databases" url="getting_started/demo_databases.html"/>
     <mapID target="implementing-lre" url="getting_started/implementing_lre_assays.html"/>

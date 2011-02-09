@@ -48,7 +48,7 @@ public class CalbnTreeNodeLabels implements LabelFactory {
                 rundate = sdf.format(calbnProfile.getRunDate());
             }
             if(calbnProfile.isExcluded()){
-                return  rundate + ": " + calbnProfile.getAmpliconName() + " EXCLUDED ";
+                return  rundate + ": " + calbnProfile.getName() + " EXCLUDED ";
             } else{
                 if (calbnProfile.getEmax() > 1.00) {
                     df.applyPattern(FormatingUtilities.decimalFormatPattern(calbnProfile.getAdjustedOCF()));
@@ -59,7 +59,7 @@ public class CalbnTreeNodeLabels implements LabelFactory {
                     ocf = df.format(calbnProfile.getOCF());
                     calbnProfile.setShortDescription("");
                 }
-                return rundate + ": " + calbnProfile.getAmpliconName() + emax + " " + ocf;
+                return rundate + ": " + calbnProfile.getName() + emax + " " + ocf;
             }
         }
         if (member instanceof CalibrationProfile) {
@@ -80,7 +80,7 @@ public class CalbnTreeNodeLabels implements LabelFactory {
             if (calbnProfile.isExcluded()) {
                 return  calbnProfile.getName() + " EXCLUDED ";
             } else {
-                return rundate + " " + calbnProfile.getAmpliconName() + emax + " " + ocf;
+                return rundate + " " + calbnProfile.getName() + emax + " " + ocf;
             }
         }
         return "";

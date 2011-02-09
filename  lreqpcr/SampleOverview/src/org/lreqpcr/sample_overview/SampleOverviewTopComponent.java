@@ -140,6 +140,8 @@ public final class SampleOverviewTopComponent extends TopComponent
                     counter++;
                 }
                 //This excludes calibration profiles as they will never be <10 molecules
+                //This is necessary as profiles <10 cannot generate accurate average profiles
+                //Thus it is necessary to average the Emax from the replication profiles
                 if (profile.getNo() < 10 && profile instanceof AverageSampleProfile) {
                     AverageSampleProfile avProfile = (AverageSampleProfile) profile;
                     for (SampleProfile prf : avProfile.getReplicateProfileList()) {

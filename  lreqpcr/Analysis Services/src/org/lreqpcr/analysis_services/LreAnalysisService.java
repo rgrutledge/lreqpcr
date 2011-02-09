@@ -29,17 +29,17 @@ import org.lreqpcr.core.data_processing.ProfileSummary;
  */
 public abstract class LreAnalysisService {
 
-    /**
-     * Provides all the functions necessary initialize both
-     * the supplied Profile and to encapsulate within a ProfileSummary.
-     * This primarily involves baseline subtraction and automated
-     * LRE window selection. Note that these
-     * methods do not save the modifications made to the Profile.
-     * 
-     * @param profile the Profile to initialize
-     * @return a fully initialized ProfileSummary
-     */
-    public abstract ProfileSummary initializeProfile(Profile profile);
+//    /**
+//     * Provides all the functions necessary initialize both
+//     * the supplied Profile and to encapsulate within a ProfileSummary.
+//     * This primarily involves baseline subtraction and automated
+//     * LRE window selection. Note that these
+//     * methods do not save the modifications made to the Profile.
+//     *
+//     * @param profile the Profile to initialize
+//     * @return a fully initialized ProfileSummary
+//     */
+//    public abstract ProfileSummary initializeProfile(Profile profile);
 
     /**
      * Profile initialization using the user defined parameters provided by
