@@ -19,7 +19,7 @@ and open the template in the editor.
 <toc version="2.0">
     <tocitem text="LRE Analyzer" target="About LRE Analyzer">
 
-        <tocitem text="Getting Start" target="getting-start">
+        <tocitem text="Getting Started" target="getting-started">
             <tocitem text="Introduction to LRE" target="lre-introduction"/>
             <tocitem text="LRE Analyzer Introduction" target="program-intro"/>
             <tocitem text="Demo Databases" target="demo-databases"/>

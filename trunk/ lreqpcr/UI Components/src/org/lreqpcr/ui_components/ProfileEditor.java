@@ -63,6 +63,7 @@ public class ProfileEditor extends JPanel implements
     private void initProfileView() {
         analysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
         universalLookup = UniversalLookup.getDefault();
+        universalLookup.addListner(PanelMessages.DATABASE_FILE_CHANGED, this);
         universalLookup.addListner(PanelMessages.CLEAR_PROFILE_EDITOR, this);
         universalLookup.addListner(PanelMessages.PROFILE_EXCLUDED, this);
         universalLookup.addListner(PanelMessages.PROFILE_INCLUDED, this);
@@ -74,25 +75,29 @@ public class ProfileEditor extends JPanel implements
         if (currentDB != null) {
             if (currentDB.isDatabaseOpen()) {
                 List<LreWindowSelectionParameters> l = currentDB.getAllObjects(LreWindowSelectionParameters.class);
-                //This list should never be empty, as a LreWindowSelectionParameters object is created during DB creation
+//This list should never be empty, as a LreWindowSelectionParameters object is created during DB creation
                 selectionParameters = l.get(0);
             }
         }
     }
 
-    private void displayProfile(Profile profile) {
+    private void displayNewProfile(Profile profile) {
         if (profile.isExcluded()) {
             clearPanels();
             lreObjectInfo.displayMember(selectedNode);
             return;
         }
 //Display and editing of a profile is conducted through the ProfileSummary interface
-        prfSum = analysisService.initializeProfile(profile);
+        prfSum = analysisService.initializeProfile(profile, selectionParameters);
         if (profile.getLreWinSize() == 0) {
             clearPanels();
             lreObjectInfo.displayMember(selectedNode);
             return;
         }
+        updatePanels();
+    }
+
+    private void updatePanels() {
         plotLREs.iniPlotLREs(prfSum);
         numericalTable.iniNumTable(prfSum);
         plotFc.iniPlot(prfSum);
@@ -193,6 +198,7 @@ public class ProfileEditor extends JPanel implements
      */
     @SuppressWarnings(value = "unchecked")
     public void resultChanged(LookupEvent ev) {
+        //A new node has been selected
         Lookup.Result r = (Result) ev.getSource();
         Collection<LreNode> c = r.allInstances();
         if (!c.isEmpty()) {
@@ -218,7 +224,7 @@ public class ProfileEditor extends JPanel implements
             LreObject member = selectedNode.getLookup().lookup(LreObject.class);
             if (member instanceof Profile) {
                 profile = (Profile) member;
-                displayProfile(profile);
+                displayNewProfile(profile);
                 return;
             }
             clearPanels();
@@ -228,8 +234,8 @@ public class ProfileEditor extends JPanel implements
 //This is a crude attempt to clear the panel when the selected window changes,
 //but not when the Profile Editor is selected in order to allow profile editing
         TopComponent selectedTC = WindowManager.getDefault().getRegistry().getActivated();
-        if (!selectedTC.getName().equals("Profile Editor")){
-             clearPanels();//Not an LRE node and not the Profile Editor window
+        if (!selectedTC.getName().equals("Profile Editor")) {
+            clearPanels();//Not an LRE node and not the Profile Editor window
         }
     }
 
@@ -237,18 +243,37 @@ public class ProfileEditor extends JPanel implements
         if (key == PanelMessages.CLEAR_PROFILE_EDITOR) {
             clearPanels();
         }
-        if (key == PanelMessages.PROFILE_EXCLUDED 
-                || key == PanelMessages.PROFILE_INCLUDED
-                || key == PanelMessages.PROFILE_CHANGED) {
+        if (key == PanelMessages.PROFILE_EXCLUDED
+                || key == PanelMessages.PROFILE_INCLUDED) {
             //Need to update the panel
             LreObject member = selectedNode.getLookup().lookup(LreObject.class);
             if (member instanceof Profile) {
                 profile = (Profile) member;
-                displayProfile(profile);
+                displayNewProfile(profile);
             } else {
                 clearPanels();
             }
             selectedNode.refreshNodeLabel();
+        }
+        if (key == PanelMessages.PROFILE_CHANGED) {
+            analysisService.updateLreWindow(prfSum, selectionParameters);
+            selectedNode.refreshNodeLabel();
+            updatePanels();
+        }
+        if (key == PanelMessages.DATABASE_FILE_CHANGED) {
+            currentDB = (DatabaseServices) universalLookup.getAll(PanelMessages.DATABASE_FILE_CHANGED).get(0);
+            if (currentDB == null) {
+                selectionParameters = null;
+                clearPanels();
+            } else {
+                if (currentDB.isDatabaseOpen()) {
+                    selectionParameters = (LreWindowSelectionParameters) currentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
+                } else {
+                    //This could cause problems 
+                    selectionParameters = null;
+                    clearPanels();
+                }
+            }
         }
     }
 }

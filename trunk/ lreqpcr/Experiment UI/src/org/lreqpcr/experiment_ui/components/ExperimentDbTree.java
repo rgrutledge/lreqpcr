@@ -42,7 +42,7 @@ import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
 
 /**
- * Tree-based view of the Experiment database
+ * Tree-based view of an Experiment database
  * 
  * @author Bob Rutledge
  */

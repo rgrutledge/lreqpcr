@@ -28,6 +28,7 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import org.lreqpcr.core.data_objects.LreObject;
+import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.ui_components.PanelMessages;
@@ -44,6 +45,7 @@ public class DeleteCalibrationProfileAction extends AbstractAction {
 
     private ExplorerManager mgr;
     private DatabaseServices db;
+    private LreWindowSelectionParameters selectionParameters;
 
     public DeleteCalibrationProfileAction(ExplorerManager mgr) {
         this.mgr = mgr;
@@ -55,6 +57,13 @@ public class DeleteCalibrationProfileAction extends AbstractAction {
         Node[] nodes = mgr.getSelectedNodes();
         LreNode lreNode = (LreNode) nodes[0];
         db = lreNode.getDatabaseServices();
+        if (db != null) {
+            if (db.isDatabaseOpen()) {
+                List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
+//This list should never be empty, as a LreWindowSelectionParameters object is created during DB creation
+                selectionParameters = l.get(0);
+            }
+        }
         if (nodes.length == 1) {
             Profile profile = nodes[0].getLookup().lookup(Profile.class);
             String msg = "Are you sure you want to delete '" + profile.getName()
@@ -129,7 +138,7 @@ public class DeleteCalibrationProfileAction extends AbstractAction {
             //Reinitialize the Average Profile
             LreAnalysisService profileIntialization =
                     Lookup.getDefault().lookup(LreAnalysisService.class);
-            profileIntialization.initializeProfile(avProfile);
+            profileIntialization.initializeProfile(avProfile, selectionParameters);
             db.deleteObject(profile);
             db.commitChanges();
         }

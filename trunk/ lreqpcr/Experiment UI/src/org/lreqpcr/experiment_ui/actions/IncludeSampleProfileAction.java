@@ -25,6 +25,7 @@ import org.lreqpcr.core.utilities.GeneralUtilities;
 import java.awt.event.ActionEvent;
 import java.util.List;
 import javax.swing.AbstractAction;
+import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.ui_components.PanelMessages;
@@ -41,6 +42,7 @@ class IncludeSampleProfileAction extends AbstractAction {
 
     private ExplorerManager mgr;
     private DatabaseServices db;
+    private LreWindowSelectionParameters selectionParameters;
 
     public IncludeSampleProfileAction(ExplorerManager mgr) {
         this.mgr = mgr;
@@ -55,19 +57,25 @@ class IncludeSampleProfileAction extends AbstractAction {
         AverageSampleProfile parentAvProfile = (AverageSampleProfile) selectedProfile.getParent();
         List<SampleProfile> profileList = parentAvProfile.getReplicateProfileList();
         db = selectedNode.getDatabaseServices();
-            selectedProfile.setExcluded(false);
-            selectedNode.refreshNodeLabel();
-            db.saveObject(selectedProfile);
+        if (db != null) {
+            if (db.isDatabaseOpen()) {
+                List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
+//This list should never be empty, as a LreWindowSelectionParameters object is created during DB creation
+                selectionParameters = l.get(0);
+            }
+        }
+        selectedProfile.setExcluded(false);
+        selectedNode.refreshNodeLabel();
+        db.saveObject(selectedProfile);
 
         //Update the parent Average Sample Profile
         LreNode parentNode = (LreNode) nodes[0].getParentNode();
         parentAvProfile.setFcReadings(null);//Fb will need to be recalculated
-        parentAvProfile.setRawFcReadings(GeneralUtilities.
-                generateAverageFcDataset(profileList));
+        parentAvProfile.setRawFcReadings(GeneralUtilities.generateAverageFcDataset(profileList));
         //Reinitialize the Average Profile
         LreAnalysisService profileIntialization =
                 Lookup.getDefault().lookup(LreAnalysisService.class);
-        profileIntialization.initializeProfile(parentAvProfile);
+        profileIntialization.initializeProfile(parentAvProfile, selectionParameters);
         db.saveObject(parentAvProfile);
         db.commitChanges();
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_INCLUDED);

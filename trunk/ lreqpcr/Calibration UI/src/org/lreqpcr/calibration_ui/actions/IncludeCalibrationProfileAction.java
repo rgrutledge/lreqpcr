@@ -26,6 +26,7 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
+import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.ui_components.PanelMessages;
@@ -42,6 +43,7 @@ class IncludeCalibrationProfileAction extends AbstractAction {
 
     private ExplorerManager mgr;
     private DatabaseServices db;
+    private LreWindowSelectionParameters selectionParameters;
 
     public IncludeCalibrationProfileAction(ExplorerManager mgr) {
         this.mgr = mgr;
@@ -56,6 +58,13 @@ class IncludeCalibrationProfileAction extends AbstractAction {
         AverageCalibrationProfile parentAvProfile = (AverageCalibrationProfile) selectedProfile.getParent();
         List<CalibrationProfile> profileList = parentAvProfile.getReplicateProfileList();
         db = selectedNode.getDatabaseServices();
+        if (db != null) {
+            if (db.isDatabaseOpen()) {
+                List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
+//This list should never be empty, as a LreWindowSelectionParameters object is created during DB creation
+                selectionParameters = l.get(0);
+            }
+        }
         selectedProfile.setExcluded(false);
         selectedNode.refreshNodeLabel();
         db.saveObject(selectedProfile);
@@ -67,7 +76,7 @@ class IncludeCalibrationProfileAction extends AbstractAction {
         //Reinitialize the Average Profile
         LreAnalysisService profileIntialization =
                 Lookup.getDefault().lookup(LreAnalysisService.class);
-        profileIntialization.initializeProfile(parentAvProfile);
+        profileIntialization.initializeProfile(parentAvProfile, selectionParameters);
         db.saveObject(parentAvProfile);
         db.commitChanges();
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_EXCLUDED);

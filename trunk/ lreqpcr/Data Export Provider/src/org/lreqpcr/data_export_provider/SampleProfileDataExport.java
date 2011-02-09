@@ -250,7 +250,9 @@ public class SampleProfileDataExport {
                 sheet.addCell(label);
                 label = new Label(11, row, "Well", centerBoldUnderline);
                 sheet.addCell(label);
-                label = new Label(12, row, "Notes", centerBoldUnderline);
+                label = new Label(12, row, "LRE-Fo", centerBoldUnderline);
+                sheet.addCell(label);
+                label = new Label(13, row, "Notes", centerBoldUnderline);
                 sheet.addCell(label);
                 for (SampleProfile sampleProfile : belowTenMoleculeList) {
                     row++;
@@ -306,9 +308,16 @@ public class SampleProfileDataExport {
                     sheet.addCell(number);
                     label = new Label(11, row, sampleProfile.getWellLabel());
                     sheet.addCell(label);
-                    label = new Label(12, row, sampleProfile.getLongDescription());
+                    if (sampleProfile.getEmax() > 1.00) {
+                        number = new Number(12, row, sampleProfile.getAdjustedAvFo(), exponentialFormat);
+                        sheet.addCell(number);
+                    } else {
+                        number = new Number(12, row, sampleProfile.getAvFo(), exponentialFormat);
+                        sheet.addCell(number);
+                    }
+                    label = new Label(13, row, sampleProfile.getLongDescription());
                     sheet.addCell(label);
-                    row++;
+//                    row++;
                 }
             }
             pageCounter++;
