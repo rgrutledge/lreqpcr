@@ -168,19 +168,11 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         if (profileList.isEmpty()) {
             return;
         }
-        if (minFc == 0) {
-            //Fall back to the automated LRE window selection
-            for (Profile profile : profileList) {
-                //Need to initiate a full reanalysis
-                profile.setLreWinSize(0);
-                profileInitialization.initializeProfile(profile, selectionParameters);
-                currentDB.saveObject(profile);
-            }
-        } else {
-            for (Profile profile : profileList) {
-                profileInitialization.initializeProfile(profile, selectionParameters);
-                currentDB.saveObject(profile);
-            }
+        for (Profile profile : profileList) {
+            //If minFc=0, first cycle below C1/2 will be used as the start cycle during profile intialization
+            profile.setLreWinSize(0);
+            profileInitialization.initializeProfile(profile, selectionParameters);
+            currentDB.saveObject(profile);
         }
         currentDB.commitChanges();
         calcReplAvFoCV();
@@ -367,7 +359,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
     }
 
     public void propertyChange(PropertyChangeEvent evt) {
-        //A new TC window has been selected
+        //A new Top Component window has been selected
         TopComponent tc = WindowManager.getDefault().getRegistry().getActivated();
         if (tc instanceof DatabaseProvider) {
             DatabaseProvider dbProvider = (DatabaseProvider) tc;
@@ -377,8 +369,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                 //A new experiment or calibration DB has been selected thus the parameters need to be updated
                 currentDB = dbProvider.getDatabase();
                 if (currentDB.isDatabaseOpen()) {
-                    selectionParameters = (LreWindowSelectionParameters)
-                            currentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
+                    selectionParameters = (LreWindowSelectionParameters) currentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
                     if (selectionParameters == null) {
                         clearPanel();
                         return;
