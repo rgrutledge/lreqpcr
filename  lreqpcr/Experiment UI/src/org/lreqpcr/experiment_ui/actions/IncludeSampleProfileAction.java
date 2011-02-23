@@ -75,6 +75,8 @@ class IncludeSampleProfileAction extends AbstractAction {
         //Reinitialize the Average Profile
         LreAnalysisService profileIntialization =
                 Lookup.getDefault().lookup(LreAnalysisService.class);
+        //This will trigger an auto selection of the LRE window
+        parentAvProfile.setLreWinSize(0);
         profileIntialization.initializeProfile(parentAvProfile, selectionParameters);
         db.saveObject(parentAvProfile);
         db.commitChanges();
