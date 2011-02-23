@@ -33,23 +33,6 @@ public class LreAnalysisProvider extends LreAnalysisService {
 
     public LreAnalysisProvider() {
     }
-//
-//    public ProfileSummary initializeProfile(Profile profile) {
-//        if (profile.getFcReadings() == null) {//Background fluorescence has NOT been subtracted
-//            BaselineSubtraction.baselineSubtraction(profile);
-//        }
-//        ProfileSummary prfSum = new ProfileSummaryImp(profile);
-//        prfSum.setZeroCycle(ProfileInitializer.makeCycleList(profile.getFcReadings()));
-//        //Set the startCycle
-//        if (profile.getLreWinSize() == 0) {//Needs full initialization
-//            LreWindowSelector.selectLreWindow(prfSum);
-//            if (profile.getLreWinSize() == 0) {//Is a bad profile, e.g. is flat
-//                return prfSum;
-//            }
-//        }
-//        ProfileInitializer.calcLreParameters(prfSum);
-//        return prfSum;
-//    }
 
     public ProfileSummary initializeProfile(Profile profile, LreWindowSelectionParameters parameters) {
         if (profile.getFcReadings() == null) {//Background fluorescence has NOT been subtracted
@@ -58,7 +41,12 @@ public class LreAnalysisProvider extends LreAnalysisService {
         ProfileSummaryImp prfSum = new ProfileSummaryImp(profile);
         prfSum.setZeroCycle(ProfileInitializer.makeCycleList(profile.getFcReadings()));
         //Set the startCycle
-        LreWindowSelector.selectLreWindow(prfSum, parameters);
+        if (profile.getLreWinSize() == 0) {//Signifies new window is needed; if fcMin = 0 the start cycle = first cycle below C1/2
+            LreWindowSelector.selectLreWindow(prfSum, parameters);
+            if (profile.getLreWinSize() == 0) {//Is a bad profile, e.g. is flat
+                return prfSum;
+            }
+        }
         ProfileInitializer.calcLreParameters(prfSum);
         return prfSum;
     }
