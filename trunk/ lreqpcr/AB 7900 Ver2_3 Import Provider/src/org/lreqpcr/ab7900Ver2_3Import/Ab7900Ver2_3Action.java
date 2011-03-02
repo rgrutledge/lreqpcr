@@ -19,7 +19,7 @@ package org.lreqpcr.ab7900Ver2_3Import;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public final class Ab7900Ver2_3 implements ActionListener {
+public final class Ab7900Ver2_3Action implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         new AB7900Ver2_3ImportProvider();

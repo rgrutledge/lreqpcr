@@ -63,7 +63,7 @@ and open the template in the editor.
     <mapID target="emax-normalization" url="issues/high_emax.html"/>
     <mapID target="ab7500-fast-ramping" url="issues/ab7500_fast_ramping.html"/>
     <mapID target="rox-normalization" url="issues/rox_normalization.html"/>
-<!--    <mapID target="baseline-drifting" url="issues/baseline_drifting.html"/>-->
+    <mapID target="baseline-drifting" url="issues/baseline_drifting.html"/>
 <!--LRE Overview    -->
     <mapID target="lre-introduction" url="lre_overview/lre_introduction.html"/>
     <mapID target="lre-literature" url="lre_overview/lre_literature.html"/>

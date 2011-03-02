@@ -90,7 +90,7 @@ and open the template in the editor.
         <tocitem text="Trouble Shooting" target="known-issues">
             <tocitem text="Profile Arcing" target="profile-arcing"/>
             <tocitem text="Kinetic Anomalies" target="profile-anomalies"/>
-<!--            <tocitem text="Baseline Drifting" target="baseline-drifting"/>-->
+            <tocitem text="Baseline Drifting" target="baseline-drifting"/>
             <tocitem text="Rox Normalization" target="rox-normalization"/>
             <tocitem text="AB7500 Fast Ramping" target="ab7500-fast-ramping"/>
         </tocitem>
