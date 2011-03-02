@@ -3,8 +3,8 @@
 <filesystem>
     <folder name="Actions">
         <folder name="Tools">
-            <file name="org-lreqpcr-ab7900Ver2_3Import-Ab7900Ver2_3.instance">
-                <attr name="delegate" newvalue="org.lreqpcr.ab7900Ver2_3Import.Ab7900Ver2_3"/>
+            <file name="org-lreqpcr-ab7900Ver2_3Import-Ab7900Ver2_3Action.instance">
+                <attr name="delegate" newvalue="org.lreqpcr.ab7900Ver2_3Import.Ab7900Ver2_3Action"/>
                 <attr name="displayName" bundlevalue="org.lreqpcr.ab7900Ver2_3Import.Bundle#CTL_Ab7900Ver2_3"/>
                 <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
                 <attr name="noIconInMenu" boolvalue="false"/>
@@ -15,7 +15,7 @@
         <folder name="Import">
             <attr name="org-lreqpcr-ab7500Ver1import-Ab7500Ver1ImportProvider.shadow/org-lreqpcr-ab7900Ver2_3Import-Ab7900Ver2_3.shadow" boolvalue="true"/>
             <file name="org-lreqpcr-ab7900Ver2_3Import-Ab7900Ver2_3.shadow">
-                <attr name="originalFile" stringvalue="Actions/Tools/org-lreqpcr-ab7900Ver2_3Import-Ab7900Ver2_3.instance"/>
+                <attr name="originalFile" stringvalue="Actions/Tools/org-lreqpcr-ab7900Ver2_3Import-Ab7900Ver2_3Action.instance"/>
             </file>
         </folder>
     </folder>

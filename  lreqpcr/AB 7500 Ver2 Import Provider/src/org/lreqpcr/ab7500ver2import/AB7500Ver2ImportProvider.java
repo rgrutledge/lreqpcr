@@ -282,7 +282,6 @@ public class AB7500Ver2ImportProvider extends RunImportService {
                         sampleProfileList.add(sampleProfile);
                     }
                 }
-
             }
         }
 

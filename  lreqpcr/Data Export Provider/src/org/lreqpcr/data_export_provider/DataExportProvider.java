@@ -48,7 +48,7 @@ public class DataExportProvider implements DataExportServices {
 
     public void exportAverageSampleProfiles(HashMap<String, List<AverageSampleProfile>> groupList) {
         try {
-            ExcelAveragSampleProfileDataExport.exportProfiles(groupList);
+            ExcelAverageSampleProfileDataExport.exportProfiles(groupList);
         } catch (Exception ex) {
             Exceptions.printStackTrace(ex);
         }

@@ -46,6 +46,8 @@ public class BaselineSubtraction {
         //The initial Fb start and end cycles
         int start = 4;
         int end = 9;
+//        int start = 7;
+//        int end = 12;
         int fbWindow = (end - start) + 1;
         double fb = 0d;//The fluorescence background
         //Start with a 6 cycle average from cycle 4-8

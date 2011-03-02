@@ -16,25 +16,22 @@
  */
 package org.lreqpcr.ab7900Ver2_3Import;
 
-import java.net.URL;
 import org.lreqpcr.core.data_objects.*;
 import org.lreqpcr.data_import_services.RunImportUtilities;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.utilities.IOUtilities;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JOptionPane;
 import jxl.DateCell;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import org.lreqpcr.core.utilities.WellNumberToLabel;
-import org.lreqpcr.data_import_services.ImportData;
+import org.lreqpcr.data_import_services.RunImportData;
 import org.lreqpcr.data_import_services.RunImportService;
 import org.openide.util.Exceptions;
 import org.openide.windows.WindowManager;
@@ -50,27 +47,9 @@ import org.openide.windows.WindowManager;
  */
 public class AB7900Ver2_3ImportProvider extends RunImportService {
 
-    public String getRunImportServiceName() {
-        return "AB7900 Ver 2.3";
-    }
-
-    public URL getHelpFile() {
-        try {
-            try {
-                // TODO setup the 7900 import help file
-                return new URI("file:HelpFiles/ab7900ver2_3.html").toURL();
-            } catch (MalformedURLException ex) {
-                Exceptions.printStackTrace(ex);
-                return null;
-            }
-        } catch (URISyntaxException ex) {
-            Exceptions.printStackTrace(ex);
-            return null;
-        }
-    }
-
+    @Override
     @SuppressWarnings(value = "unchecked")
-    public ImportData importRunData() {
+    public RunImportData importRunData() {
 
         //Retrieve the export xls file
         File ver2_3ExcelImportFile = IOUtilities.openImportExcelFile("AB 7900 Version 2.3 Data Import");
@@ -94,11 +73,11 @@ public class AB7900Ver2_3ImportProvider extends RunImportService {
             return null;
         }
 
-         Sheet resultSheet = null;
-         Sheet fcSheet = null;
+        Sheet resultSheet = null;
+        Sheet fcSheet = null;
         try {
-            resultSheet = workbook.getSheet(0);
-            fcSheet = workbook.getSheet(1);
+            resultSheet = workbook.getSheet(1);
+            fcSheet = workbook.getSheet(0);
         } catch (Exception e) {
             String msg = "Either the \"Results\" or \"Rn\" worksheet could not be imported. "
                     + "Data import will be terminated.";
@@ -140,106 +119,127 @@ public class AB7900Ver2_3ImportProvider extends RunImportService {
         //Setup the Run and determine run date
         RunImpl run = new RunImpl();
         String runName = ver2_3ExcelImportFile.getName();
-        //This has been deactivated as it can cause long delays
-        //Import the excel workbook
-//        RunImportUtilities.importExcelImportFile(run, ver2_3ExcelImportFile);
         runName = runName.substring(0, runName.indexOf(".xls"));
         run.setName(runName);
         run.setRunDate(RunImportUtilities.importExcelDate(date));
 
         //Import the data
-        ArrayList<Profile> sampleProfileList = new ArrayList<Profile>();
-        ArrayList<Profile> calbnProfileList = new ArrayList<Profile>();
+        List<SampleProfile> sampleProfileList = new ArrayList<SampleProfile>();
+        List<CalibrationProfile> calbnProfileList = new ArrayList<CalibrationProfile>();
         //Determine the strandedness of the Targets
         TargetStrandedness targetStrandedness = RunImportUtilities.isTheTargetSingleStranded();
         NumberFormat numFormat = NumberFormat.getInstance();
 
-        int resultRow = 11;//Starting row in the Result sheet
-        int fcRow = 2;//Starting row in the Fc Data sheet
-//Cycle down the rows until an out of bounds exception is encounter, signifying the bottom of the sheet
-        try {//This is necessary for the 96 well import
-            //"Slope" is present at the end of the resulte in the 384 well export but not the 96 well export??
-            while (!resultSheet.getCell(0, resultRow).getContents().equals("Slope")) {
-                Profile profile = null;
-                //Determine if this is a calibration profile
-                if (resultSheet.getCell(4, resultRow).getContents().equals("Standard")) {
-                    profile = new CalibrationProfile();//Target strandedness is set to double during instantiation
-                    CalibrationProfile calbnProfile = (CalibrationProfile) profile;
-                    try {
-                        Number value = numFormat.parse(resultSheet.getCell(6, resultRow).getContents());
-                        calbnProfile.setLambdaMass(value.doubleValue());
-                    } catch (Exception e) {
-                        calbnProfile.setLambdaMass(0);
-                    }
-                } else {//Must be a Sample Profile
-                    profile = new SampleProfile();
-                    profile.setTargetStrandedness(targetStrandedness);
-                }
-                profile.setWellNumber(Integer.parseInt(resultSheet.getCell(0, resultRow).getContents()));
-                //Extract the well label from the well number
-                if (is96WellPlate) {
-                    WellNumberToLabel.indexToLabel96WelL_AB7900(profile);
-                } else {
-                    WellNumberToLabel.indexToLabel384Well_AB7900(profile);
-                }
+        int resultRow = 0;//Start at the top of the Result sheet; assumes no well data in first row
+        int fcRow = 0;//Starting row in the Fc Data sheet
+        boolean reachedTheBottom = false;
 
-                profile.setSampleName(resultSheet.getCell(1, resultRow).getContents());
-                profile.setAmpliconName(resultSheet.getCell(2, resultRow).getContents());
-                profile.setName(profile.getSampleName() + " @ " + profile.getAmpliconName());
-
-                try {
-                    profile.setCt(Double.parseDouble(resultSheet.getCell(5, resultRow).getContents()));
-                } catch (Exception e) {
-                }
-                try {
-                    profile.setFt(Double.parseDouble(resultSheet.getCell(16, resultRow).getContents()));
-                } catch (Exception e) {
-                }
-                //Tm is not exported!!!
-
-                //Retrieve and store the Fc dataset
-                //Assumes one to one relationship with the rows within the result sheet
-                //Retrieve the raw Fc readings (Rn)
-                ArrayList<Double> fcDataSet = new ArrayList<Double>();
-                int fcCol = 3;
-                //Cycle until reach "Delta Rn" with denotes the end of the profile
-                while (!fcSheet.getCell(fcCol, 1).getContents().equals("Delta Rn")) {
-                    try {
-                        //NumberFormat needed to prevent locale differences in numbers (e.g. comma vs period)
-                        Number value = numFormat.parse(fcSheet.getCell(fcCol, fcRow).getContents());
-                        fcDataSet.add(value.doubleValue());
-                    } catch (Exception e) {
-                    }
-                    fcCol++;
-                }
-
-                if (!fcDataSet.isEmpty()) {
-                    double[] fcArray = new double[fcDataSet.size()];
-                    for (int j = 0; j < fcDataSet.size(); j++) {
-                        fcArray[j] = fcDataSet.get(j);
-                    }
-                    profile.setRawFcReadings(fcArray);
-
-
-                }
-                if (CalibrationProfile.class.isAssignableFrom(profile.getClass())) {
-                    calbnProfileList.add(profile);
-                } else {
-                    sampleProfileList.add(profile);
-                }
+        reachBottom:
+        while (!reachedTheBottom) {
+            //Find the next well or the bottom of the sheet
+            boolean foundWell = false;
+            while (!foundWell) {
                 resultRow++;
+                //Is this the bottom of the sheet?
+                try {
+                    resultSheet.getCell(0, resultRow).getContents();
+                } catch (Exception e) {
+                    //Reached the bottom of the sheet
+                    reachedTheBottom = true;
+                    break reachBottom;
+                }
+                //Test to see if this cell holds a well number designated by an integer
+                try {
+                    Integer.valueOf(resultSheet.getCell(0, resultRow).getContents());
+                    foundWell = true;
+                } catch (Exception e) {
+                    resultRow++;
+                }
+            }
+            Profile profile = null;
+            //Determine if this is a calibration profile
+            if (resultSheet.getCell(4, resultRow).getContents().equals("Standard")) {
+                profile = new CalibrationProfile();//Target strandedness is set to double during instantiation
+                CalibrationProfile calbnProfile = (CalibrationProfile) profile;
+                try {
+                    Number value = numFormat.parse(resultSheet.getCell(6, resultRow).getContents());
+                    calbnProfile.setLambdaMass(value.doubleValue());
+                } catch (Exception e) {
+                    calbnProfile.setLambdaMass(0);
+                }
+            } else {//Must be a Sample Profile
+                profile = new SampleProfile();
+                profile.setTargetStrandedness(targetStrandedness);
+            }
+            profile.setWellNumber(Integer.parseInt(resultSheet.getCell(0, resultRow).getContents()));
+            //Extract the well label from the well number
+            if (is96WellPlate) {
+                WellNumberToLabel.indexToLabel96WelL_AB7900(profile);
+            } else {
+                WellNumberToLabel.indexToLabel384Well_AB7900(profile);
+            }
+            profile.setSampleName(resultSheet.getCell(1, resultRow).getContents());
+            profile.setAmpliconName(resultSheet.getCell(2, resultRow).getContents());
+            profile.setName(profile.getSampleName() + " @ " + profile.getAmpliconName());
+
+            try {
+                profile.setCt(Double.parseDouble(resultSheet.getCell(5, resultRow).getContents()));
+            } catch (Exception e) {
+            }
+            try {
+                profile.setFt(Double.parseDouble(resultSheet.getCell(16, resultRow).getContents()));
+            } catch (Exception e) {
+            }
+            //Tm is not exported!!!
+
+            //Retrieve and store the Fc dataset
+            //Retrieve the raw Fc readings (Rn)
+
+            ArrayList<Double> fcDataSet = new ArrayList<Double>();
+            int fcCol = 3;
+            //Move to the row containing the corresponding well based on well number
+            //This assumes that a corresponding well does exist
+            while (!fcSheet.getCell(0, fcRow).getContents().equals(String.valueOf(profile.getWellNumber()))) {
                 fcRow++;
             }
-        } catch (Exception e) {
-        }
-        ImportData importData = new ImportData();
-        importData.setRun(run);
-        importData.setCalibrationProfileList(calbnProfileList);
-        importData.setSampleProfileList(sampleProfileList);
-        return importData;
-    }
+            //Move across the row until a blank cell is reached, signifying the end of te Rn Fc data
+            while (!fcSheet.getCell(fcCol, fcRow).getContents().equals("")) {
+                try {
+                    //NumberFormat needed to prevent locale differences in numbers (e.g. comma vs period)
+                    Number value = numFormat.parse(fcSheet.getCell(fcCol, fcRow).getContents());
+                    fcDataSet.add(value.doubleValue());
+                } catch (Exception e) {
+                    //Not sure if this will ever happen
+                }
+                fcCol++;
+            }
+            //Reset the row
+            fcRow = 0;
+            if (!fcDataSet.isEmpty()) {
+                double[] fcArray = new double[fcDataSet.size()];
+                for (int j = 0; j < fcDataSet.size(); j++) {
+                    fcArray[j] = fcDataSet.get(j);
+                }
+                profile.setRawFcReadings(fcArray);
+            }
+            //This is necessary to eliminate empty Fc datasets
+            // TODO present an error dialog if the Fc dataset is null
+            if (profile.getRawFcReadings() != null) {
+                if (CalibrationProfile.class.isAssignableFrom(profile.getClass())) {
+                    CalibrationProfile calProfile = (CalibrationProfile) profile;
+                    calbnProfileList.add(calProfile);
 
-    public int compareTo(RunImportService o) {
-        return getRunImportServiceName().compareToIgnoreCase(o.getRunImportServiceName());
-    }
+                } else {
+                    SampleProfile sampleProfile = (SampleProfile) profile;
+                    sampleProfileList.add(sampleProfile);
+                }
+            }
+        }
+    RunImportData importData = new RunImportData();
+    importData.setRun (run);
+    importData.setCalibrationProfileList (calbnProfileList);
+    importData.setSampleProfileList (sampleProfileList);
+    return importData ;
+}
+
 }

@@ -42,7 +42,7 @@ import jxl.write.Number;
  *
  * @author Bob Rutledge
  */
-public class ExcelAveragSampleProfileDataExport {
+public class ExcelAverageSampleProfileDataExport {
 
     /**
      * Exports the AverageSampleProfiles from a list of Runs. Each 
@@ -139,6 +139,10 @@ public class ExcelAveragSampleProfileDataExport {
             sheet.addCell(label);
             label = new Label(11, 2, "Notes", centerBoldUnderline);
             sheet.addCell(label);
+//            label = new Label(12, 2, "adj Fo", centerBoldUnderline);
+//            sheet.addCell(label);
+//            label = new Label(13, 2, "Fo", centerBoldUnderline);
+//            sheet.addCell(label);
             int row = 3;
             label = new Label(1, 0, pageName);
             sheet.addCell(label);
@@ -220,6 +224,10 @@ public class ExcelAveragSampleProfileDataExport {
                 sheet.addCell(number);
                 label = new Label(11, row, avProfile.getLongDescription());
                 sheet.addCell(label);
+//                number = new Number(12, row, avProfile.getAdjustedAvFo(), exponentialFormat);
+//                sheet.addCell(number);
+//                number = new Number(13, row, avProfile.getAvFo(), exponentialFormat);
+//                sheet.addCell(number);
                 row++;
             }
 

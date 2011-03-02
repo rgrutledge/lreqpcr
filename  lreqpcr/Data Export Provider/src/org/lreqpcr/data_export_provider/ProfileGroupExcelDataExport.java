@@ -16,7 +16,6 @@
  */
 package org.lreqpcr.data_export_provider;
 
-import com.google.common.collect.Lists;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.utilities.IOUtilities;
@@ -118,6 +117,8 @@ public class ProfileGroupExcelDataExport {
             sheet.addCell(label);
             label = new Label(11, 3, "Notes", centerBoldUnderline);
             sheet.addCell(label);
+//            label = new Label(12, 3, "Fo", centerBoldUnderline);
+//            sheet.addCell(label);
 
             List<Profile> profileList = groupList.get(parentName);
             //Collections.sort cannot use a List
@@ -188,6 +189,8 @@ public class ProfileGroupExcelDataExport {
                 sheet.addCell(number);
                 label = new Label(11, row, profile.getLongDescription());
                 sheet.addCell(label);
+//                number = new Number(12, row, profile.getAdjustedAvFo(), floatFormat);
+//                sheet.addCell(number);
                 row++;
             }
             i++;//Run counter

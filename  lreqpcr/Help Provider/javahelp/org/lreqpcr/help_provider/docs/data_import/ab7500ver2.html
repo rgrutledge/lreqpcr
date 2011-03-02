@@ -8,14 +8,38 @@
 <body>
 
 <h1 align="center"><font face="Arial">AB 7500 Version 2 data import</font></h1>
-<h2><font face="Arial">Export data to an Excel file</font></h2>
+<p><b><font face="Arial">Plate Setup</font></b></p>
+<p><font face="Arial">It is important that the plate be setup using the target 
+and sample assignments provided by the version 2 software, and that these 
+correspond to the amplicon and sample names, respectively.</font></p>
+<p align="center"><b>An example of defining amplicon names</b><br>
+<img border="0" src="images/amplicon_definitions.gif" width="409" height="342"></p>
+<p align="center"><b>An example of defining sample names</b><br>
+<img border="0" src="images/sample_definitions.gif" width="405" height="345"></p>
+<p><font face="Arial">&nbsp;The plate setup also 
+provides the ability to designate which wells are standards (i.e. calibration 
+profiles) under the &quot;Task&quot; column. It is also important to enter the amount lambda gDNA 
+in femtograms into the &quot;Quantity&quot; column for each calibration well. </font></p>
+<p align="center"><b>Assigning calibration wells and lambda gDNA quantity (100 
+fg)</b><br>
+<img border="0" src="images/well-assignments.gif" width="438" height="207"></p>
+<p><font face="Arial">The program import function is designed to take advantage of all of these features, so it is 
+essential that this be done correctly.&nbsp;</font></p>
+<p><b><font face="Arial">Removing ROX normalization</font></b></p>
+<p><font face="Arial">It is important to turn off ROX normalization because the 
+program has problems working with the 0-1.0 unit scale that is produced. Also, 
+ROX normalization has not been found to increase quantitative accuracy. The menu 
+for turning normalization off is located at the bottom of the &quot;Assign Targets 
+and Samples&quot; page located within the &quot;Plate Setup&quot; in the Setup menu:</font></p>
+<p><img border="0" src="images/ab7500_rox-off.gif" width="572" height="387"></p>
+<p><b><font face="Arial">Export data to an Excel file</font></b></p>
 <p><font face="Arial">Go to &quot;Export&quot; located in the toolbar. </font></p>
 <p><font face="Arial">Set data to export to Results and Amplification Data, 
 select one file for data export, and select &quot;Open file(s) when export is complete&quot;. 
 You may want to change the &quot;Export File Location:&quot; to a more convenient 
 location, in that you will later need to select this file for data import. The Excel workbook should then open automatically.</font></p>
 <p align="center"><img border="0" src="images/ab75005.jpg"></p>
-<h2><font face="Arial">Enter the Run Date</font></h2>
+<p><b><font face="Arial">Enter the Run Date</font></b></p>
 <p><font face="Arial">The only modification required is to re-enter the Run date 
 in the Results sheet, located at B4. The run date can be entered in short form, 
 e.g. 5sep10, and pressing enter.</font></p>
