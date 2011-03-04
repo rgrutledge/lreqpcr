@@ -9,16 +9,22 @@
 
 <h1 align="center"><font face="Arial">Applied Biosystems 7900 Version 2.3 Data 
 Import</font></h1>
-<p>Importing data from the 7900 is unfortunately one of the most complex. This is primarily due to the fact that the 7900 software exports 
+<p>Importing data from the 7900 is unfortunately one of the most complex 
+encounter to date. This is primarily due to the fact that the 7900 software exports 
 data using a comma delimited file format, and that amplicon and sample 
 information is exported as one file, whereas the Fc data sets are exported into 
 a second.&nbsp; It is thus necessary to first convert the comma delimited files into an 
 excel worksheet and then to combine the two datafiles into a single excel 
 workbook.&nbsp; </p>
-<p>Note that the amplicon name is taken from the &quot;detector&quot; designated to a 
-well, so during plate setup be sure that the amplicon name is designated as the 
-detector. Also, be sure that data has been &quot;Analyzed&quot;.</p>
-<p>Go to &quot;Export...&quot; located on the File menu and select Results Table. Provide 
+<p>Note that the amplicon name is taken from the &quot;Detector&quot;, so during plate setup be sure that the amplicon is designated as the 
+detector and that the sample is entered into the &quot;Sample Name&quot;. For all 
+calibration reactions, be sure to set the task to &quot;Standard&quot; and to set the 
+quantity to the nanograms of lambda gDNA that was amplified (normally 100 fg). </p>
+<p>Finally , be sure that ROX normalization has been turned off (i.e. that the 
+&quot;Passive Reference&quot; located on the bottom of the setup page is set to &quot;-None-&quot;) 
+and that the data has been &quot;Analyzed&quot;.</p>
+<p>Go to &quot;Export...&quot; located on the File menu and select Results Table, 
+or use the export button on the button bar. Provide 
 a location and name and push export:</p>
 <p align="center">
 <img border="0" src="images/ab7900_1.gif" width="709" height="398"></p>
