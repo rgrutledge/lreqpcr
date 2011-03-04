@@ -59,7 +59,7 @@ and open the template in the editor.
             <tocitem text="AB7500 Version 2" target="ab7500ver2"/>
             <tocitem text="Mx3000P Version 3/4" target="mxpVer4"/>
             <tocitem text="AB7500 Version 1" target="ab7500ver1"/>
-<!--            <tocitem text="AB7900 Version 2.3" target="ab7900ver2_3"/>-->
+            <tocitem text="AB7900 Version 2.3" target="ab7900ver2_3"/>
             <tocitem text="Sample Template" target="sample-template"/>
             <tocitem text="Calibration Template" target="calibration-template"/>
             <tocitem text="Amplicon Import" target="amplicon-import"/>

@@ -20,7 +20,7 @@ import org.openide.modules.ModuleInstall;
 import org.openide.windows.WindowManager;
 
 /**
- * Manages a module's lifecycle. Remember that an installer is optional and
+ * Manages a module's life cycle. Remember that an installer is optional and
  * often not needed at all.
  */
 public class Installer extends ModuleInstall {
@@ -29,7 +29,7 @@ public class Installer extends ModuleInstall {
     public void restored() {
         WindowManager.getDefault().invokeWhenUIReady(new Runnable() {
             public void run(){
-                WindowManager.getDefault().getMainWindow().setTitle("LRE Analyzer Ver 0.7.5");
+                WindowManager.getDefault().getMainWindow().setTitle("LRE Analyzer Ver 0.7.6");
             }
         });
     }
