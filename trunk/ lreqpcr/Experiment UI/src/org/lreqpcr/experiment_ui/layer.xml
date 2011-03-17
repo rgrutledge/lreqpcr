@@ -6,7 +6,8 @@
     <attr name="Menu\Import\position" intvalue="500"/>
     <attr name="Menu\Tools_hidden\position" intvalue="800"/>
     <attr name="Menu\View\position" intvalue="200"/>
-    <attr name="Windows2\Modes\explorer\CalibrationTopComponent.wstcref\position" intvalue="200"/>
+    <attr name="Windows2\Modes\explorer\AmpliconTopComponent.wstcref\position" intvalue="100"/>
+    <attr name="Windows2\Modes\explorer\CalibrationTopComponent.wstcref\position" intvalue="50"/>
     <attr name="Windows2\Modes\explorer\favorites.wstcref\position" intvalue="300"/>
     <folder name="Actions">
         <folder name="Window">
@@ -40,7 +41,7 @@
         <folder name="Modes">
             <folder name="explorer">
                 <file name="ExperimentTopComponent.wstcref" url="ExperimentTopComponentWstcref.xml">
-                    <attr name="position" intvalue="100"/>
+                    <attr name="position" intvalue="0"/>
                 </file>
             </folder>
         </folder>
