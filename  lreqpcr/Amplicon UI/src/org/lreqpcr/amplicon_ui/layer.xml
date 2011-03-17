@@ -9,6 +9,7 @@
     <attr name="Menu\Tools_hidden\position" intvalue="500"/>
     <attr name="Menu\View_hidden\position" intvalue="600"/>
     <attr name="Menu\Window_hidden\position" intvalue="700"/>
+    <attr name="Windows2\Modes\explorer\CalibrationTopComponent.wstcref\position" intvalue="50"/>
     <folder name="Actions">
         <folder name="Tools">
             <file name="org-lreqpcr-amplicon_ui-AmpliconExport.instance">
