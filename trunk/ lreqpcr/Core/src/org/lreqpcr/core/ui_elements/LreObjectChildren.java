@@ -38,13 +38,12 @@ import org.openide.util.lookup.Lookups;
  */
 public class LreObjectChildren extends Children.Keys<LreObject> {
 
-    private ExplorerManager mgr;//Defines the tree in which the node is held
-    private DatabaseServices db;//Defines the database in which LreObjects are stored
+    public ExplorerManager mgr;//Defines the tree in which the node is held
+    public DatabaseServices db;//Defines the database in which LreObjects are stored
     private List<? extends LreObject> lreObjectList;//Children of lreObject
-    private LreActionFactory nodeActionFactory;
-    private LabelFactory nodeLabelFactory;
-    private Action[] actions;
-    private ArrayList<? extends LreObject> memberArray;//The node keys
+    public LreActionFactory nodeActionFactory;
+    public LabelFactory nodeLabelFactory;
+    public Action[] actions;
     private Comparator customComparator;//For sorting of the children nodes
 
     /**
@@ -68,7 +67,8 @@ public class LreObjectChildren extends Children.Keys<LreObject> {
     /**
      * Generates children nodes containing the children LRE objects
      * of a parent LRE object. The children LRE objects are retrieved from the
-     * database being viewed.
+     * database being viewed. However, this can dramatically reduce perform
+     * when the database is large.
      * 
      * @param mgr the manager of the view
      * @param db the database that is being viewed
@@ -82,6 +82,7 @@ public class LreObjectChildren extends Children.Keys<LreObject> {
         this.mgr = mgr;
         this.db = db;
         nodeActionFactory = actionFactory;
+//      This search can seriously reduce perform when the database is large
         lreObjectList = (List<? extends LreObject>) db.getChildren(partentLreObject, partentLreObject.getChildClass());
         nodeLabelFactory = labelFactory;
     }
@@ -113,7 +114,7 @@ public class LreObjectChildren extends Children.Keys<LreObject> {
     }
 
     /**
-     * Calling this should update display of the children nodes
+     * Calling this should update display of the children nodes. 
      */
     @SuppressWarnings(value = "unchecked")
     @Override
@@ -122,13 +123,13 @@ public class LreObjectChildren extends Children.Keys<LreObject> {
             return;
         }
         //This is necessary because DB4O lists cannot be sorted via Collections.sort
-        memberArray = new ArrayList<LreObject>(lreObjectList);
+        ArrayList<LreObject> lreObjectArray = new ArrayList<LreObject>(lreObjectList);
         if (customComparator == null) {
-            Collections.sort(memberArray);
+            Collections.sort(lreObjectArray);
         } else {
-            Collections.sort(memberArray, customComparator);
+            Collections.sort(lreObjectArray, customComparator);
         }
-        setKeys(memberArray);
+        setKeys(lreObjectArray);
     }
 
     /**
@@ -144,8 +145,8 @@ public class LreObjectChildren extends Children.Keys<LreObject> {
      * Provides a list of the child LRE objects.
      * @return
      */
-    public ArrayList<? extends LreObject> getChildList() {
-        return memberArray;
+    public List<? extends LreObject> getChildList() {
+        return lreObjectList;
     }
 
     /**

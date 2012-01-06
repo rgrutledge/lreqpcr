@@ -17,19 +17,23 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
+              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="experimentDbTree" alignment="0" pref="328" max="32767" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="openLastDBbutton" min="-2" pref="33" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <Component id="openDBbutton" linkSize="2" min="-2" pref="33" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <Component id="newDBbutton" linkSize="2" min="-2" pref="33" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <Component id="closeDBbutton" linkSize="2" min="-2" pref="33" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="openLastDBbutton" min="-2" pref="33" max="-2" attributes="0"/>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Component id="openDBbutton" linkSize="2" min="-2" pref="33" max="-2" attributes="0"/>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Component id="newDBbutton" linkSize="2" min="-2" pref="33" max="-2" attributes="0"/>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Component id="closeDBbutton" linkSize="2" min="-2" pref="33" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="20" max="32767" attributes="0"/>
           </Group>
-          <Component id="experimentDbTree" alignment="0" pref="348" max="32767" attributes="1"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -48,15 +52,13 @@
                   <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="experimentDbTree" pref="571" max="32767" attributes="0"/>
+              <Component id="experimentDbTree" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="org.lreqpcr.experiment_ui.components.ExperimentDbTree" name="experimentDbTree">
-    </Component>
     <Component class="javax.swing.JButton" name="openDBbutton">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
@@ -177,5 +179,7 @@
         </Component>
       </SubComponents>
     </Container>
+    <Component class="org.lreqpcr.experiment_ui.components.ExperimentDbTree" name="experimentDbTree">
+    </Component>
   </SubComponents>
 </Form>

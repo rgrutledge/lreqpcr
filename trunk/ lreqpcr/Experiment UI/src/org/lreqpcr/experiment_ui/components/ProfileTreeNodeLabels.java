@@ -78,7 +78,7 @@ public class ProfileTreeNodeLabels implements LabelFactory {
         }
 
         String no = "";
-        if (profile.getEmax() > 1.00) {
+        if (profile.getEmax() > 1.00 || profile.isIsEmaxFixedTo100Percent()) {
             no = df.format(profile.getAdjustedNo());
             profile.setShortDescription("Normalized to 100% Emax");
         } else {

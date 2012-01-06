@@ -86,11 +86,28 @@ public abstract class LreObject implements Family<LreObject>, Comparable {
     }
 
     /**
-     * Sets the long description which are most often notes about the object
-     * @param longDescription the long description of this LRE object
+     * Sets or replaces the existing the long description
+     * which are most often notes about the object.
+     * @param longDescription the new long description of this LRE object
      */
     public void setLongDescription(String longDescription) {
         this.longDescription = longDescription;
+    }
+    
+    /**
+     * Appends the supplied string to the end of the long description, along
+     * with a line break
+     * @param appendingString the string to append to the long description
+     */
+    public void appendLongDescription(String appendingString){
+        if (longDescription == null) {
+            longDescription = appendingString;
+        } else {
+//        This is necessary in order to make String.concat() work
+            appendingString = "\n" + appendingString;
+            String r = longDescription.concat(appendingString);
+            longDescription = r;
+        }
     }
 
     /**

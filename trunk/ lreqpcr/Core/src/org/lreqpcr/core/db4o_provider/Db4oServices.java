@@ -51,6 +51,13 @@ public abstract class Db4oServices implements DatabaseServices {
     public Db4oServices() {
         config.reflectWith(new JdkReflector(LreObject.class.getClassLoader()));
         config.optimizeNativeQueries(false);
+//Indexing greatly increases speed of retrieval of all profiles holding a specific amplicon or sample
+        config.objectClass(AverageProfile.class).objectField("ampliconName").indexed(true);
+        config.objectClass(AverageProfile.class).objectField("sampleName").indexed(true);
+//        Likely redundant...
+        config.objectClass(Profile.class).objectField("ampliconName").indexed(true);
+        config.objectClass(Profile.class).objectField("sampleName").indexed(true);
+        config.activationDepth(2);//This greatly increases display performance within NetBeans
     }
 
     public void saveObject(Object object) {

@@ -11,6 +11,9 @@
     <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
       <Dimension value="[630, 594]"/>
     </Property>
+    <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+      <Dimension value="[630, 639]"/>
+    </Property>
     <Property name="requestFocusEnabled" type="boolean" value="false"/>
   </Properties>
   <AuxValues>
@@ -29,26 +32,19 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="lreObjectInfo" min="-2" pref="278" max="-2" attributes="1"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="plotFo" min="-2" pref="326" max="-2" attributes="1"/>
-                  </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                          <Component id="plotFc" alignment="0" min="0" pref="0" max="32767" attributes="1"/>
-                          <Component id="plotLREs" alignment="0" max="32767" attributes="1"/>
-                      </Group>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="lreWindowParametersPanel" min="0" pref="0" max="32767" attributes="1"/>
-                          <Component id="numericalTable" alignment="0" min="-2" max="-2" attributes="1"/>
-                      </Group>
-                  </Group>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Component id="lreObjectInfo" max="32767" attributes="1"/>
+                  <Component id="plotFc" alignment="0" min="0" pref="0" max="32767" attributes="1"/>
+                  <Component id="plotLREs" alignment="0" max="32767" attributes="1"/>
               </Group>
-              <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="plotFo" alignment="0" min="-2" pref="250" max="-2" attributes="2"/>
+                  <Component id="numericalTable" alignment="0" min="-2" max="-2" attributes="1"/>
+                  <Component id="lreWindowParametersPanel" min="-2" max="-2" attributes="1"/>
+              </Group>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -56,21 +52,23 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" max="-2" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                  <Component id="lreWindowParametersPanel" max="32767" attributes="1"/>
-                  <Component id="plotFc" alignment="0" max="32767" attributes="1"/>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="plotLREs" min="-2" max="-2" attributes="1"/>
-                  <Component id="numericalTable" min="-2" max="-2" attributes="1"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="plotFc" min="-2" max="-2" attributes="1"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="plotLREs" min="-2" max="-2" attributes="1"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="lreObjectInfo" min="-2" max="-2" attributes="3"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="lreWindowParametersPanel" min="-2" pref="140" max="-2" attributes="1"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="numericalTable" min="-2" max="-2" attributes="1"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="plotFo" min="-2" max="-2" attributes="0"/>
+                  </Group>
               </Group>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="plotFo" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="lreObjectInfo" min="-2" max="-2" attributes="3"/>
-              </Group>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace pref="18" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -99,6 +97,14 @@
     <Component class="org.lreqpcr.ui_components.PlotFc" name="plotFc">
     </Component>
     <Component class="org.lreqpcr.ui_components.LreObjectInfo" name="lreObjectInfo">
+      <Properties>
+        <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[300, 300]"/>
+        </Property>
+        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[300, 300]"/>
+        </Property>
+      </Properties>
     </Component>
     <Component class="org.lreqpcr.ui_components.PlotFo" name="plotFo">
       <Properties>
@@ -115,11 +121,8 @@
     </Component>
     <Component class="org.lreqpcr.ui_components.LreWindowParametersPanel" name="lreWindowParametersPanel">
       <Properties>
-        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[267, 72]"/>
-        </Property>
         <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[267, 72]"/>
+          <Dimension value="[250, 100]"/>
         </Property>
       </Properties>
     </Component>

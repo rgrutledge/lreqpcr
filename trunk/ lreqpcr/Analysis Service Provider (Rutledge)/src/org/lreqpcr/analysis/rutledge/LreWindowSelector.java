@@ -117,8 +117,7 @@ public class LreWindowSelector {
             runner = runner.getNextCycle(); //Advances to the next cycle
         }
         if (!foundStrCyc) {
-            profile.setLongDescription("AN LRE WINDOW COULD NOT BE FOUND");
-            profile.setShortDescription("An LRE window could not be found");
+            profile.appendLongDescription("AN LRE WINDOW COULD NOT BE FOUND");
             profile.setExcluded(true);
             return;
         }
@@ -159,17 +158,27 @@ public class LreWindowSelector {
      * @param threshold maximum fractional difference (%) between cycle Fo and the average Fo
      */
     public static void selectLreWindow(ProfileSummary prfSum, LreWindowSelectionParameters parameters) {
-        //Test whether a minimum Fc has been set; if not fall back to default (first cycle below C1/2)
+//Reset to "Include" and remove "AN LRE WINDOW COULD NOT BE FOUND" from the long description
+        Profile profile = prfSum.getProfile();
+        profile.setExcluded(false);
+        if (profile.getLongDescription() != null) {
+            String longDescription = profile.getLongDescription();
+            if (longDescription.contains("\nAN LRE WINDOW COULD NOT BE FOUND")) {
+                int index = longDescription.indexOf("\nAN LRE WINDOW COULD NOT BE FOUND");
+                longDescription = longDescription.substring(0, index) + longDescription.substring(index + 33);
+                profile.setLongDescription(longDescription);
+            }
+        }
+        
+//Test whether a minimum Fc has been set; if not fall back to default (first cycle below C1/2)
         if (parameters.getMinFc() == null || parameters.getMinFc() == 0) {
             selectLreWindow(prfSum);
             return;
         }
-        Profile profile = prfSum.getProfile();
         Cycle cycZero = prfSum.getZeroCycle();
         if (cycZero == null) {
             //Profile initialization failed
-            profile.setLongDescription("AN LRE WINDOW COULD NOT BE FOUND");
-            profile.setShortDescription("An LRE window could not be found");
+            profile.appendLongDescription("AN LRE WINDOW COULD NOT BE FOUND");
             profile.setExcluded(true);
             return;
         }
@@ -188,15 +197,13 @@ public class LreWindowSelector {
         while (runner.getFc() < minFc) {
             if (runner.getNextCycle() == null) {
                 //Reached the end of the profile but the Fc > minFc
-                profile.setLongDescription("AN LRE WINDOW COULD NOT BE FOUND");
-                profile.setShortDescription("An LRE window could not be found");
+                profile.appendLongDescription("AN LRE WINDOW COULD NOT BE FOUND");
                 profile.setExcluded(true);
                 return;
             }
             if (runner.getNextCycle().getNextCycle() == null) {
                 //Need at least three cycle in order to set the LRE window
-                profile.setLongDescription("AN LRE WINDOW COULD NOT BE FOUND");
-                profile.setShortDescription("An LRE window could not be found");
+                profile.appendLongDescription("AN LRE WINDOW COULD NOT BE FOUND");
                 profile.setExcluded(true);
                 return;
             }

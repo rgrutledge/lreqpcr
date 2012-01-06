@@ -145,11 +145,11 @@ public class ProfileInitializer {
     }
 
       /**
-     * Calculates the average Fo across the LRE Window using the Cycle 
-     *linked list generated from the Profile.
+      * Calculates the average Fo across the LRE Window using the Cycle
+      *linked list generated from the Profile.
        * 
-     * @param prfSum the ProfileSummary holding the Profile to be processed
-     */
+      * @param prfSum the ProfileSummary holding the Profile to be processed
+      */
     private static void calcAverageFo(ProfileSummary prfSum) {
         Profile profile = prfSum.getProfile();
         //The current LRE window is traversed and the average Fo calculated

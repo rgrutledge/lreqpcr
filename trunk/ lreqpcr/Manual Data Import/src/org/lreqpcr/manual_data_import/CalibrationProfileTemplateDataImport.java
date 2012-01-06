@@ -198,7 +198,7 @@ public class CalibrationProfileTemplateDataImport extends RunImportService {
             calbnProfile.setTargetStrandedness(TargetStrandedness.DOUBLESTRANDED);
             calbnProfile.setRunDate(RunImportUtilities.importExcelDate(date));
             calbnProfile.setAmpliconName(sheet.getCell(col, 2).getContents());
-            calbnProfile.setSampleName(sheet.getCell(col, 4).getContents() + " pg");
+            calbnProfile.setSampleName(sheet.getCell(col, 4).getContents() + " fg");
             try {
                 calbnProfile.setAmpliconSize(Integer.valueOf(sheet.getCell(col, 3).getContents()));
             } catch (NumberFormatException e) {
