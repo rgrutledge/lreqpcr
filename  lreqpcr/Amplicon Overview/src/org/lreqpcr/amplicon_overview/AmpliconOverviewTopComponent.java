@@ -31,7 +31,6 @@ import org.lreqpcr.core.data_objects.AmpliconImpl;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.Profile;
-import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.database_services.DatabaseProvider;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
@@ -131,25 +130,26 @@ public final class AmpliconOverviewTopComponent extends TopComponent
             int counter = 0;
             for (int i = 0; i < profileList.size(); i++) {
                 Profile profile = (Profile) profileList.get(i);
-                //Check if a profile has not been exclucded
+                //Check if a profile has not been exclucded and is greater 10 molecules
                 if (!profile.isExcluded() && profile.getNo() > 10) {
                     emaxArrayList.add(profile.getEmax());
                     emaxTotal = emaxTotal + profile.getEmax();
                     counter++;
                 }
+//Subsequent work has shown that using replicate profile with <10 molecules can lead to inaccuracies in av. Emax determination
                 //This excludes calibration profiles as they will never be <10 molecules
                 //This is necessary as profiles <10 cannot generate accurate average profiles
                 //Thus it is necessary to average the Emax from the replication profiles
-                if (profile.getNo() < 10 && profile instanceof AverageSampleProfile) {
-                    AverageSampleProfile avProfile = (AverageSampleProfile) profile;
-                    for (SampleProfile prf : avProfile.getReplicateProfileList()) {
-                        if (!prf.isExcluded()) {
-                            emaxArrayList.add(prf.getEmax());
-                            emaxTotal = emaxTotal + prf.getEmax();
-                            counter++;
-                        }
-                    }
-                }
+//                if (profile.getNo() < 10 && profile instanceof AverageSampleProfile) {
+//                    AverageSampleProfile avProfile = (AverageSampleProfile) profile;
+//                    for (SampleProfile prf : avProfile.getReplicateProfileList()) {
+//                        if (!prf.isExcluded()) {
+//                            emaxArrayList.add(prf.getEmax());
+//                            emaxTotal = emaxTotal + prf.getEma
+//                            counter++;
+//                        }
+//                    }
+//                }
             }
             facadeAmplicon.setEmaxAverage(emaxTotal / counter);
             if (counter > 1) {

@@ -65,6 +65,8 @@ public abstract class Profile extends LreObject {
     private double no;//Number of targets molecules
     private double adjustedNo;//Number of targets molecules adjusted to 100% Emax
 
+    private boolean isEmaxFixedTo100Percent;
+
     public Run getRun() {
         return run;
     }
@@ -480,6 +482,14 @@ public abstract class Profile extends LreObject {
      */
     public void setAdjustedNo(double adjustedNo) {
         this.adjustedNo = adjustedNo;
+    }
+
+    public boolean isIsEmaxFixedTo100Percent() {
+        return isEmaxFixedTo100Percent;
+    }
+
+    public void setIsEmaxFixedTo100Percent(boolean isEmaxFixedTo100Percent) {
+        this.isEmaxFixedTo100Percent = isEmaxFixedTo100Percent;
     }
 
     @Override

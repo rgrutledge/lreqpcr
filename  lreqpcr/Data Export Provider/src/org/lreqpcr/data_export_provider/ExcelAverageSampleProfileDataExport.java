@@ -182,7 +182,7 @@ public class ExcelAverageSampleProfileDataExport {
                 sheet.addCell(label);
                 if (avProfile.isExcluded()) {
                     //All replicate profiles have been excluded
-                    label = new Label(3, row, "nd", center);
+                    label = new Label(3, row, "0", center);
                     sheet.addCell(label);
                     label = new Label(11, row, avProfile.getLongDescription());
                     sheet.addCell(label);

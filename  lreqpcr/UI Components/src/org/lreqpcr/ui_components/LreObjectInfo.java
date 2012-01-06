@@ -271,7 +271,7 @@ public class LreObjectInfo extends JPanel {
 
         setBackground(new java.awt.Color(244, 245, 247));
         setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        setMaximumSize(new java.awt.Dimension(300, 260));
+        setMaximumSize(new java.awt.Dimension(300, 450));
         setMinimumSize(new java.awt.Dimension(300, 260));
         setPreferredSize(new java.awt.Dimension(300, 260));
 

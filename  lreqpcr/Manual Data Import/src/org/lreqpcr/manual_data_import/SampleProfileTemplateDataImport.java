@@ -216,8 +216,8 @@ public class SampleProfileTemplateDataImport extends RunImportService {
 //Do nothing... Run intialization service will try to retrieve Amplicon size if an Amplicon database is open
             }
             profile.setSampleName(sheet.getCell(col, 5).getContents());
-            String ssDNA = sheet.getCell(col, 6).getContents();
-            if (ssDNA.equalsIgnoreCase("Yes")) {
+            String dsDNA = sheet.getCell(col, 6).getContents();
+            if (dsDNA.equalsIgnoreCase("Yes")) {
                 profile.setTargetStrandedness(TargetStrandedness.DOUBLESTRANDED);
             } else{
                 profile.setTargetStrandedness(TargetStrandedness.SINGLESTRANDED);

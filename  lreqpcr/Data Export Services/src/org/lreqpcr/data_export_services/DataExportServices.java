@@ -5,12 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
-import org.lreqpcr.core.data_objects.SampleProfile;
 
 /**
  * Service interface for exporting profiles. This service needs to be better implemented.
  * It is therefore anticipated that changes will need to be made. Note also that
- * amplicon data is exported by a dedicated module.
+ * Amplicon data is exported by a dedicated module.
  * 
  * @author Bob Rutledge
  */

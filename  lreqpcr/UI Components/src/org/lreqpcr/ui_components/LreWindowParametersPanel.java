@@ -257,8 +257,8 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
 
         setBackground(new Color(244, 245, 247));
         setBorder(BorderFactory.createTitledBorder("LRE Window Selection Parameters"));
-        setMinimumSize(new Dimension(250, 97));
-        setPreferredSize(new Dimension(230, 97));
+        setMinimumSize(new Dimension(250, 100));
+        setPreferredSize(new Dimension(230, 100));
 
         jLabel1.setText("Min Fc:");
         jLabel1.setToolTipText("Minimum Fc for the Start Cycle: set to zero for automated selection");
@@ -280,9 +280,13 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(Alignment.LEADING)
-            .addGroup(Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(ComponentPlacement.RELATED)
+                        .addComponent(minFcDisplay, GroupLayout.PREFERRED_SIZE, 163, GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(ComponentPlacement.RELATED)
@@ -290,12 +294,8 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addPreferredGap(ComponentPlacement.RELATED)
-                        .addComponent(replAvFoCvDisplay, GroupLayout.PREFERRED_SIZE, 52, GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(ComponentPlacement.RELATED)
-                        .addComponent(minFcDisplay, GroupLayout.PREFERRED_SIZE, 163, GroupLayout.PREFERRED_SIZE)))
-                .addGap(119, 119, 119))
+                        .addComponent(replAvFoCvDisplay, GroupLayout.PREFERRED_SIZE, 52, GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(49, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(Alignment.LEADING)
@@ -303,15 +303,15 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(minFcDisplay, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(foThresholdDisplay, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                    .addComponent(foThresholdDisplay, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2))
                 .addPreferredGap(ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(replAvFoCvDisplay))
-                .addContainerGap())
+                .addContainerGap(14, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
