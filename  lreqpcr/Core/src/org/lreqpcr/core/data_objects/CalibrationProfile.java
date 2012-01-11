@@ -27,7 +27,6 @@ package org.lreqpcr.core.data_objects;
 public class CalibrationProfile extends Profile {
 
     private double lambdaMass;//The mass of the lamdba gDNA in nanograms
-    private double adjustedOCF;//OCF adjusted to 100% Emax
     private double mo;//Mo calculated from the lambdaMass
 
     /**
@@ -64,24 +63,6 @@ public class CalibrationProfile extends Profile {
         mo = (lambdaMass * getAmpliconSize()) / 48502;//Mo for lambda gDNA
         setOCF(getAvFo() / mo);
         setNo(((getAvFo() / getOCF()) * 910000000000d) / getAmpliconSize());
-    }
-
-    /**
-     * For profiles that generate Emax values >100%, an adjusted OCF is determined in
-     * which Emax is set to 100% (Emax normalization).
-     * @return OCF adjusted to 100% Emax
-     */
-    public double getAdjustedOCF() {
-        return adjustedOCF;
-    }
-
-    /**
-     * For profiles that generate Emax values >100%, an adjusted OCF is determined in
-     * which Emax is set to 100% (Emax normalization).
-     * @param adjustedOCF OCF adjusted to 100% Emax
-     */
-    public void setAdjustedOCF(double adjustedOCF) {
-        this.adjustedOCF = adjustedOCF;
     }
 
     /**

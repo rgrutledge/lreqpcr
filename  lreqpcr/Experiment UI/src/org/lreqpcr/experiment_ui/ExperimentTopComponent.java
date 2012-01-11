@@ -83,7 +83,7 @@ public final class ExperimentTopComponent extends TopComponent
         putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
 
-        setName("Experiment");
+        setName("Experiment DB");
         associateLookup(ExplorerUtils.createLookup(mgr, this.getActionMap()));
         initServices();
         ampliconNodeResult = Utilities.actionsGlobalContext().lookupResult(AmpliconNode.class);
@@ -183,6 +183,7 @@ public final class ExperimentTopComponent extends TopComponent
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(ExperimentTopComponent.class, "ExperimentTopComponent.jPanel1.border.title"))); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(exportAverageProfileButton, org.openide.util.NbBundle.getMessage(ExperimentTopComponent.class, "ExperimentTopComponent.exportAverageProfileButton.text")); // NOI18N
+        exportAverageProfileButton.setToolTipText(org.openide.util.NbBundle.getMessage(ExperimentTopComponent.class, "ExperimentTopComponent.exportAverageProfileButton.toolTipText")); // NOI18N
         exportAverageProfileButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exportAverageProfileButtonActionPerformed(evt);
@@ -190,6 +191,7 @@ public final class ExperimentTopComponent extends TopComponent
         });
 
         org.openide.awt.Mnemonics.setLocalizedText(exportReplicateProfilesButton, org.openide.util.NbBundle.getMessage(ExperimentTopComponent.class, "ExperimentTopComponent.exportReplicateProfilesButton.text")); // NOI18N
+        exportReplicateProfilesButton.setToolTipText(org.openide.util.NbBundle.getMessage(ExperimentTopComponent.class, "ExperimentTopComponent.exportReplicateProfilesButton.toolTipText")); // NOI18N
         exportReplicateProfilesButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exportReplicateProfilesButtonActionPerformed(evt);

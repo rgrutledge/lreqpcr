@@ -14,12 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * and open the template in the editor.
  */
-package org.lreqpcr.experiment_ui.components;
+package org.lreqpcr.calibration_ui.components;
 
 import org.lreqpcr.core.data_objects.LreObject;
 import java.util.List;
 import javax.swing.Action;
-import org.lreqpcr.core.data_objects.Run;
+import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LabelFactory;
 import org.lreqpcr.core.ui_elements.LreActionFactory;
@@ -34,20 +34,20 @@ import org.openide.util.lookup.Lookups;
  *
  * @author Bob Rutledge
  */
-public class RootRunChildren extends LreObjectChildren {
+public class RootAvCalibrationProfileChildren extends LreObjectChildren {
 
     /**
      * Generates nodes containing the Runs within the supplied experiment database.
      * 
      * @param mgr the manager of the view
      * @param db the experiment database that is being viewed
-     * @param runList list of Runs to be displayed
+     * @param avCalProfileList list of AverageCalibration profiles to be displayed
      * @param actionFactory the node action factory
      * @param labelFactory the node label factory
      */
-    public RootRunChildren(ExplorerManager mgr, DatabaseServices db, List<? extends Run> runList,
+    public RootAvCalibrationProfileChildren(ExplorerManager mgr, DatabaseServices db, List<AverageCalibrationProfile> avCalProfileList,
             LreActionFactory actionFactory, LabelFactory labelFactory) {
-        super(mgr, db, runList, actionFactory, labelFactory);
+        super(mgr, db, avCalProfileList, actionFactory, labelFactory);
     }
 
     /**
@@ -61,7 +61,7 @@ public class RootRunChildren extends LreObjectChildren {
     @SuppressWarnings(value = "unchecked")
     @Override
     protected Node[] createNodes(LreObject lreObject) {
-        Run run = (Run) lreObject;
+        AverageCalibrationProfile avCalProfile = (AverageCalibrationProfile) lreObject;
         if (nodeActionFactory == null) {
             actions = new Action[]{};//i.e. no Actions have been set
         } else {
@@ -71,7 +71,7 @@ public class RootRunChildren extends LreObjectChildren {
             }
         }
 
-        LreNode node = new LreNode(new AvSampleProfileListChildren(mgr, db, run.getAverageProfileList(), nodeActionFactory, nodeLabelFactory),
+        LreNode node = new LreNode(new AvCalibrationProfileChildren(mgr, db, avCalProfile.getReplicateProfileList(), nodeActionFactory, nodeLabelFactory),
                     Lookups.singleton(lreObject), actions);
         node.setExplorerManager(mgr);
         node.setDatabaseService(db);

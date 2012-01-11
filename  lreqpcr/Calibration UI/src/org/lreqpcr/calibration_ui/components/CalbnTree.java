@@ -81,18 +81,19 @@ public class CalbnTree extends JPanel {
         String dbFileName = dbFile.getName();
         int length = dbFileName.length();
         String displayName = dbFileName.substring(0, length - 4);
-        //This assumes that the calibration database contains a single reaction setup
-        List<? extends LreObject> rxnSetupList = (List<? extends LreObject>) calbnDB.getAllObjects(ReactionSetupImpl.class);
-        LreNode root = new LreNode(new LreObjectChildren(mgr, calbnDB, rxnSetupList, nodeActionFactory,
+        //As of version 0.8.0 implementation of ReactionSetup has been removed
+//        //Implementation of ReactionSetup allows multiple reaction setups to be 
+//        //viewed and stored within a single database as a future option
+//        List<? extends LreObject> rxnSetupList = (List<? extends LreObject>) calbnDB.getAllObjects(ReactionSetupImpl.class);
+//        LreNode root = new LreNode(new LreObjectChildren(mgr, calbnDB, rxnSetupList, nodeActionFactory,
+//                nodeLabelFactory), null, new Action[]{});
+        List<AverageCalibrationProfile> avCalProfileList = (List<AverageCalibrationProfile>) calbnDB.getAllObjects(AverageCalibrationProfile.class);
+        LreNode root = new LreNode(new RootAvCalibrationProfileChildren(mgr, calbnDB, avCalProfileList, nodeActionFactory,
                 nodeLabelFactory), null, new Action[]{});
         root.setDatabaseService(calbnDB);
         root.setDisplayName(displayName);
         root.setShortDescription(dbFile.getAbsolutePath());
         mgr.setRootContext(root);
-        //An attempt to set the selection to the Reaction Setup node
-        LreObjectChildren children = (LreObjectChildren) root.getChildren();
-        LreNode firstNode = (LreNode) children.getNodes()[0];
-        mgr.setExploredContext(firstNode);
         calcAverageOCF();
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.CLEAR_PROFILE_EDITOR);
     }
@@ -100,7 +101,7 @@ public class CalbnTree extends JPanel {
     @SuppressWarnings(value = "unchecked")
     public void creatAmpliconTree(String ampName) {
         List ampList = calbnDB.retrieveUsingFieldValue(AverageCalibrationProfile.class, "ampliconName", ampName);
-        LreNode root = new LreNode(new LreObjectChildren(mgr, calbnDB, ampList, nodeActionFactory,
+        LreNode root = new LreNode(new RootAvCalibrationProfileChildren(mgr, calbnDB, ampList, nodeActionFactory,
                 nodeLabelFactory), null, new Action[]{});
         root.setDisplayName(ampName + " (" + String.valueOf(ampList.size()) + ")");
         root.setDatabaseService(calbnDB);
@@ -111,10 +112,10 @@ public class CalbnTree extends JPanel {
 
     @SuppressWarnings(value = "unchecked")
     public void createSampleTree(String sampleName) {
-        List sampleList = calbnDB.retrieveUsingFieldValue(AverageCalibrationProfile.class, "sampleName", sampleName);
-        LreNode root = new LreNode(new LreObjectChildren(mgr, calbnDB, sampleList, nodeActionFactory, nodeLabelFactory),
+        List avCalProfilList = calbnDB.retrieveUsingFieldValue(AverageCalibrationProfile.class, "sampleName", sampleName);
+        LreNode root = new LreNode(new RootAvCalibrationProfileChildren(mgr, calbnDB, avCalProfilList, nodeActionFactory, nodeLabelFactory),
                 null, new Action[]{});
-        root.setDisplayName(sampleName + " (" + String.valueOf(sampleList.size()) + ")");
+        root.setDisplayName(sampleName + " (" + String.valueOf(avCalProfilList.size()) + ")");
         root.setDatabaseService(calbnDB);
         mgr.setRootContext(root);
         runViewButton.setSelected(false);
@@ -137,20 +138,15 @@ public class CalbnTree extends JPanel {
             for (int i = 0; i < calbnProfileList.size(); i++) {
                 CalibrationProfile profile = (CalibrationProfile) calbnProfileList.get(i);
                 if (!profile.isExcluded()) {
-                    if (profile.getEmax() > 1) {
-                        ocfSum += profile.getAdjustedOCF();
-                        ocfArray.add(profile.getAdjustedOCF());
-                    } else {
-                        ocfSum += profile.getOCF();
-                        ocfArray.add(profile.getOCF());
-                    }
+                    ocfSum += profile.getOCF();
+                    ocfArray.add(profile.getOCF());
                 }
             }
             double averageOCF = ocfSum / ocfArray.size();
             double sd = MathFunctions.calcStDev(ocfArray);
             double cv = sd / averageOCF;
             df.applyPattern(FormatingUtilities.decimalFormatPattern(averageOCF));
-            if (calbnProfileList.size() ==1){
+            if (calbnProfileList.size() == 1) {
                 avProfileOCFdisplay.setText(df.format(averageOCF));
             } else {
                 avProfileOCFdisplay.setText(df.format(averageOCF) + " +/-" + dfCV.format(cv * 100) + "%");
@@ -197,27 +193,24 @@ public class CalbnTree extends JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(runViewButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(avProfileOCFdisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(69, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(runViewButton)
-                .addContainerGap(172, Short.MAX_VALUE))
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE)
+                .addContainerGap(22, Short.MAX_VALUE))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 271, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(11, 11, 11)
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(avProfileOCFdisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
+                    .addComponent(runViewButton)
+                    .addComponent(jLabel2)
+                    .addComponent(avProfileOCFdisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(runViewButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 493, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 514, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 

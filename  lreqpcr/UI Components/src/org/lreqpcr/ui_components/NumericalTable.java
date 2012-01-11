@@ -36,6 +36,7 @@ import javax.swing.table.TableColumnModel;
 public class NumericalTable extends javax.swing.JPanel {
 
     private ProfileSummary prfSum;
+    private NumberFormat nf = NumberFormat.getInstance();
 
     /** Creates new form numericalTable */
     public NumericalTable() {
@@ -121,9 +122,6 @@ public class NumericalTable extends javax.swing.JPanel {
 
         @Override
         public void setValue(Object value) {
-            NumberFormat nf = NumberFormat.getInstance();
-            nf.setMaximumFractionDigits(2);
-            nf.setMinimumFractionDigits(2);
             DecimalFormat dfE = new DecimalFormat("0.00E0");
             setText((value == null) ? "" : dfE.format(value));
         }
@@ -143,7 +141,6 @@ public class NumericalTable extends javax.swing.JPanel {
             if (value == null) {
                 setText("");
             } else {
-                NumberFormat nf = NumberFormat.getInstance();
                 nf.setMaximumFractionDigits(2);
                 nf.setMinimumFractionDigits(2);
                 double oF = Double.valueOf(value.toString());

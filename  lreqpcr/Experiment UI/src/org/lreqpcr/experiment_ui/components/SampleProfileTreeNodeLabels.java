@@ -27,7 +27,7 @@ import org.lreqpcr.core.data_objects.AverageSampleProfile;
  * 
  * @author Bob Rutledge
  */
-public class ProfileTreeNodeLabels implements LabelFactory {
+public class SampleProfileTreeNodeLabels implements LabelFactory {
 
     private SimpleDateFormat sdf = new SimpleDateFormat("dMMMyy");
     private DecimalFormat df = new DecimalFormat();
@@ -72,9 +72,9 @@ public class ProfileTreeNodeLabels implements LabelFactory {
         //Check if the Emax has been overridden
         if (profile.isEmaxOverridden()) {
             df.applyPattern("##.0");
-            profile.setShortDescription("Emax overriddended");
+            profile.setShortDescription("Emax overridden");
             //Denote overridden Emax using asterics
-            emax = " (**" + df.format(profile.getOverriddendEmaxValue() * 100) + "%) ";;
+            emax = " (**" + df.format(profile.getOverriddendEmaxValue() * 100) + "%) ";
         } else {
             profile.setShortDescription("");
             emax = " (" + df.format(profile.getEmax() * 100) + "%) ";

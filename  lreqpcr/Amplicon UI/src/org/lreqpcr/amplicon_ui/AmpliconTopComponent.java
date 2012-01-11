@@ -89,7 +89,7 @@ public final class AmpliconTopComponent extends TopComponent
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
 
-        setName("Amplicon");
+        setName("Amplicon DB");
         associateLookup(ExplorerUtils.createLookup(mgr, this.getActionMap()));
         ampliconDB = Lookup.getDefault().lookup(DatabaseServiceFactory.class).createDatabaseService(DatabaseType.AMPLICON);
         if (ampliconDB != null) {
