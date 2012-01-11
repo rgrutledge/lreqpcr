@@ -57,11 +57,7 @@ public class RunTreeNodeLabels implements LabelFactory {
                     int counter = 0;
                     for (Profile repPrf : avPrf.getReplicateProfileList()) {
                         if (!repPrf.isExcluded()) {
-                            if (repPrf.getEmax() > 1.00) {
-                                sum = sum + repPrf.getAdjustedNo();
-                            } else {
-                                sum = sum + repPrf.getNo();
-                            }
+                            sum = sum + repPrf.getNo();
                             counter++;
                         }
                     }
@@ -81,27 +77,26 @@ public class RunTreeNodeLabels implements LabelFactory {
                 }
             }
             df.applyPattern("###,###");
-            if (profile.getAdjustedNo() < 10) {
+            if (profile.getNo() < 10) {
                 df.applyPattern("0.00");
-            } else {
-                if (profile.getNo() < 10) {
-                    df.applyPattern("0.00");
-                }
             }
-            String no = "";
-            if (profile.getEmax() > 1.00) {
-                no = df.format(profile.getAdjustedNo());
-                profile.setShortDescription("Normalized to 100% Emax");
+            String no = df.format(profile.getNo());
+            String emax = "";
+            //Check if the Emax has been overridden
+            if (profile.isEmaxOverridden()) {
+                df.applyPattern("##.0");
+                profile.setShortDescription("Emax overriddended");
+                //Denote overridden Emax using asterics
+                emax = " (**" + df.format(profile.getOverriddendEmaxValue() * 100) + "%) ";
             } else {
-                no = df.format(profile.getNo());
+                df.applyPattern("##.0");
                 profile.setShortDescription("");
+                emax = " (" + df.format(profile.getEmax() * 100) + "%) ";
             }
-            df.applyPattern("##.0");
-            String emax = " (" + df.format(profile.getEmax() * 100) + "%)";
             if (profile.isExcluded()) {
-                return label + " EXCLUDED ";
+                return label + emax + no + " EXCLUDED";
             } else {
-                return label + emax + " " + no;
+                return label + emax + no;
             }
         }
         return "";

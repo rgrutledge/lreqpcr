@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * and open the template in the editor.
  */
-
 package org.lreqpcr.core.data_processing;
 
 import com.google.common.collect.Lists;
@@ -41,7 +40,7 @@ public class ProfileInitializer {
      * @return the header (cycle zero) of the Cycle linked list
      */
     public static Cycle makeCycleList(double[] fc) {
-        if(fc == null){
+        if (fc == null) {
             return null;
         }
         Cycle cycZero = new CycleImp(0, 0, null); //Zero cycle does not have a previous cycle
@@ -78,7 +77,9 @@ public class ProfileInitializer {
             winSize = 3;
             profile.setLreWinSize(winSize);
         }
-        if(winSize <1) return;
+        if (winSize < 1) {
+            return;//Not sure why this is here
+        }
         double[][] lreWinPts = new double[2][winSize];
         for (int i = 0; i < winSize; i++) {
             try {
@@ -86,7 +87,7 @@ public class ProfileInitializer {
             } catch (Exception e) {
                 return;
             }
-            
+
             lreWinPts[1][i] = runner.getEc();
             runner = runner.getNextCycle();
         }
@@ -95,8 +96,8 @@ public class ProfileInitializer {
         profile.setDeltaE(regressionValues[0]);
         profile.setEmax(regressionValues[1]);
         profile.setR2(regressionValues[2]);
-        if(profile.getDeltaE() >0){//Start cycle selection is corrupted by Fb drift
-            profile.setStrCycleInt(profile.getStrCycleInt() +1);
+        if (profile.getDeltaE() > 0) {//Start cycle selection is corrupted by Fb drift
+            profile.setStrCycleInt(profile.getStrCycleInt() + 1);
             calcLreParameters(prfSum);
         }
         //Update the linked cycle list
@@ -109,13 +110,13 @@ public class ProfileInitializer {
         //Transverse the LRE window Fc values to construct the Fc-pFc list
         try {
             for (int i = 0; i < winSize + 1; i++) {
-            winFcpFc[0][i] = runner.getFc();
-            winFcpFc[1][i] = runner.getPredFc();
-            runner = runner.getNextCycle();
-        }
+                winFcpFc[0][i] = runner.getFc();
+                winFcpFc[1][i] = runner.getPredFc();
+                runner = runner.getNextCycle();
+            }
         } catch (Exception e) {
         }
-        
+
         profile.setNonR2(LREmath.calcNonLinearR2(winFcpFc));
         profile.setMidC(LREmath.getMidC(profile.getDeltaE(), profile.getEmax(), profile.getAvFo()));
         profile.updateProfile();
@@ -135,45 +136,46 @@ public class ProfileInitializer {
         //The Cycle#-Fo Point2D.Double is also initialized 
         Cycle runner = prfSum.getZeroCycle().getNextCycle();//Start at cycle #1
         Profile profile = prfSum.getProfile();
-        do { //This should provide Fo values to all Cycles
-            runner.setFo(LREmath.calcFo(runner.getCycNum(), runner.getFc(),
-                    profile.getDeltaE(), profile.getEmax()));
-            runner.setAdjustedFo(LREmath.calcAdjustedFo(runner.getCycNum(), runner.getFc(),
-                    profile.getDeltaE(), profile.getEmax()));
-            runner = runner.getNextCycle();
-        } while (runner != null);
+        if (profile.isEmaxOverridden()) {
+            do { //This should provide Fo values to all Cycles
+                runner.setFo(LREmath.calcFo(runner.getCycNum(), runner.getFc(),
+                        profile.getDeltaE(), profile.getEmax(), profile.getOverriddendEmaxValue()));
+                runner = runner.getNextCycle();
+            } while (runner != null);
+        } else {
+            do { //This should provide Fo values to all Cycles
+                runner.setFo(LREmath.calcFo(runner.getCycNum(), runner.getFc(),
+                        profile.getDeltaE(), profile.getEmax()));
+                runner = runner.getNextCycle();
+            } while (runner != null);
+        }
     }
 
-      /**
-      * Calculates the average Fo across the LRE Window using the Cycle
-      *linked list generated from the Profile.
-       * 
-      * @param prfSum the ProfileSummary holding the Profile to be processed
-      */
+    /**
+     * Calculates the average Fo across the LRE Window using the Cycle
+     *linked list generated from the Profile.
+     *
+     * @param prfSum the ProfileSummary holding the Profile to be processed
+     */
     private static void calcAverageFo(ProfileSummary prfSum) {
         Profile profile = prfSum.getProfile();
         //The current LRE window is traversed and the average Fo calculated
         double sumFo = 0;
-        double adjustedFoSum = 0;
         ArrayList<Double> oFlist = Lists.newArrayList();//Used to calculate average Fo CV
-        ArrayList<Double> adjustedFoList = Lists.newArrayList();
         //The Fo from the cycle previous to the start cycle must be included
         Cycle runner = prfSum.getStrCycle().getPrevCycle(); //First cycle to be included in the average
         try {
             for (int i = 0; i < profile.getLreWinSize() + 1; i++) { //Calculates the sum of the LRE window Fo values
-            oFlist.add(runner.getFo());
-            sumFo += runner.getFo();
-            adjustedFoList.add(runner.getAdjustedFo());
-            adjustedFoSum += runner.getAdjustedFo();
-            runner = runner.getNextCycle();
-        }
+                oFlist.add(runner.getFo());
+                sumFo += runner.getFo();
+                runner = runner.getNextCycle();
+            }
         } catch (Exception e) {
             // TODO present an error dialog...is this even necessary ??
         }
-        
+
         profile.setAvFo(sumFo / (profile.getLreWinSize() + 1)); //Sets the LRE window average Fo value
         profile.setAvFoCV(MathFunctions.calcStDev(oFlist) / profile.getAvFo()); //Sets the average Fo CV
-        profile.setAdjustedAvFo((adjustedFoSum / (profile.getLreWinSize() + 1))); //Sets the LRE window average Fo value
         //Goto to cycle 1
         runner = prfSum.getZeroCycle().getNextCycle();
         //Sets the fractional difference between Fo and the averageFo across the entire profile
@@ -192,10 +194,18 @@ public class ProfileInitializer {
         Profile profile = prfSum.getProfile();
         //The cycle linked-list is traversed & predicted Fc values assigned to each cycle
         Cycle runner = prfSum.getZeroCycle().getNextCycle();//Goto cycle #1
-         do {
-            runner.setPredFc(LREmath.calcPrdFc(runner.getCycNum(), profile.getDeltaE(),
-                    profile.getEmax(), profile.getAvFo()));
-            runner = runner.getNextCycle();
-        }while (runner != null);
+        if (profile.isEmaxOverridden()) {
+            do {
+                runner.setPredFc(LREmath.calcPrdFc(runner.getCycNum(), profile.getDeltaE(),
+                        profile.getEmax(), profile.getAvFo(), profile.getOverriddendEmaxValue()));
+                runner = runner.getNextCycle();
+            } while (runner != null);
+        } else {
+            do {
+                runner.setPredFc(LREmath.calcPrdFc(runner.getCycNum(), profile.getDeltaE(),
+                        profile.getEmax(), profile.getAvFo()));
+                runner = runner.getNextCycle();
+            } while (runner != null);
+        }
     }
 }

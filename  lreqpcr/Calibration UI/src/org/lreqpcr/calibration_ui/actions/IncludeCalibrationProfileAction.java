@@ -23,7 +23,6 @@ import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
 import org.lreqpcr.core.utilities.GeneralUtilities;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;

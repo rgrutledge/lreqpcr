@@ -79,9 +79,24 @@ public class LreWindowSelector {
             int cycNum = runner.getCycNum();
             double fc = runner.getFc();
             regressionValues = runner.getCycLREparam();
-            runner.setFo(LREmath.calcFo(cycNum, fc,
-                    regressionValues[0], regressionValues[1]));
-            runner = runner.getNextCycle();
+            //Overridden Emax is used to calculate cycle Fo values, that in turn are used to
+            //calculate the average Fo, and thus the target quantity. 
+            if (profile.isEmaxOverridden()) {
+                runner.setFo(LREmath.calcFo(
+                        cycNum,
+                        fc,
+                        regressionValues[0], 
+                        regressionValues[1],
+                        profile.getOverriddendEmaxValue()));
+                runner = runner.getNextCycle();
+            } else {
+                runner.setFo(LREmath.calcFo(
+                        cycNum,
+                        fc,
+                        regressionValues[0],
+                        regressionValues[1]));
+                runner = runner.getNextCycle();
+            }
         }
 
         double r2Tol = 0.95; //The tolerance of the LRE r2 to determine the start of the profile
@@ -169,7 +184,7 @@ public class LreWindowSelector {
                 profile.setLongDescription(longDescription);
             }
         }
-        
+
 //Test whether a minimum Fc has been set; if not fall back to default (first cycle below C1/2)
         if (parameters.getMinFc() == null || parameters.getMinFc() == 0) {
             selectLreWindow(prfSum);

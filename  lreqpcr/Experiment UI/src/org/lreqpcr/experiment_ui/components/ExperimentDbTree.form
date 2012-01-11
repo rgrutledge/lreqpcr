@@ -16,10 +16,10 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane1" alignment="0" pref="311" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" alignment="0" pref="312" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="runViewButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -28,8 +28,10 @@
                       <Component id="ocfDisplay" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
-                      <Component id="fixEmaxTo100Percent" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="198" max="32767" attributes="0"/>
+                      <Component id="fixEmaxTo100" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="unfixEmax" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
           </Group>
@@ -44,9 +46,12 @@
                   <Component id="runViewButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="fixEmaxTo100Percent" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="9" max="32767" attributes="0"/>
-              <Component id="jScrollPane1" min="-2" pref="527" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="fixEmaxTo100" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="unfixEmax" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="jScrollPane1" pref="526" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -93,12 +98,20 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="runViewButtonActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JRadioButton" name="fixEmaxTo100Percent">
+    <Component class="javax.swing.JButton" name="unfixEmax">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="LRE Emax"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="unfixEmaxActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="fixEmaxTo100">
       <Properties>
         <Property name="text" type="java.lang.String" value="Fix Emax to 100%"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="fixEmaxTo100PercentActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="fixEmaxTo100ActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

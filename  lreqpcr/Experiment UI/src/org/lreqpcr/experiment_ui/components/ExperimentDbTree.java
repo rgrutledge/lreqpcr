@@ -31,7 +31,9 @@ import java.util.List;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.SampleProfile;
+import org.lreqpcr.core.data_processing.ProfileSummary;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.ui_components.PanelMessages;
@@ -39,6 +41,7 @@ import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
+import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 
 /**
@@ -61,10 +64,12 @@ public class ExperimentDbTree extends JPanel {
     private LabelFactory runNodeLabelFactory;
     private LabelFactory sortNodeLabelFactory;
     private DecimalFormat df = new DecimalFormat();
+    private LreAnalysisService analysisService;
 
     /** Creates new form ExperimentDbTree */
     public ExperimentDbTree() {
         initComponents();
+        analysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
         runViewButton.setSelected(true);
         ocfDisplay.addKeyListener(new KeyAdapter() {
 
@@ -116,7 +121,6 @@ public class ExperimentDbTree extends JPanel {
     /**
      * Creates a tree displaying all runs within the experiment database
      */
-
     @SuppressWarnings(value = "unchecked")
     public void createTree() {
         runViewButton.setSelected(true);
@@ -240,7 +244,8 @@ public class ExperimentDbTree extends JPanel {
         jLabel1 = new javax.swing.JLabel();
         ocfDisplay = new javax.swing.JTextField();
         runViewButton = new javax.swing.JRadioButton();
-        fixEmaxTo100Percent = new javax.swing.JRadioButton();
+        unfixEmax = new javax.swing.JButton();
+        fixEmaxTo100 = new javax.swing.JButton();
 
         jScrollPane1.setPreferredSize(new java.awt.Dimension(400, 100));
 
@@ -258,10 +263,17 @@ public class ExperimentDbTree extends JPanel {
             }
         });
 
-        fixEmaxTo100Percent.setText("Fix Emax to 100%");
-        fixEmaxTo100Percent.addActionListener(new java.awt.event.ActionListener() {
+        unfixEmax.setText("LRE Emax");
+        unfixEmax.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fixEmaxTo100PercentActionPerformed(evt);
+                unfixEmaxActionPerformed(evt);
+            }
+        });
+
+        fixEmaxTo100.setText("Fix Emax to 100%");
+        fixEmaxTo100.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fixEmaxTo100ActionPerformed(evt);
             }
         });
 
@@ -272,7 +284,7 @@ public class ExperimentDbTree extends JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 311, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 312, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(runViewButton)
                         .addGap(18, 18, 18)
@@ -280,8 +292,10 @@ public class ExperimentDbTree extends JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ocfDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(fixEmaxTo100Percent)
-                        .addContainerGap(198, Short.MAX_VALUE))))
+                        .addComponent(fixEmaxTo100)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(unfixEmax)
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -291,9 +305,11 @@ public class ExperimentDbTree extends JPanel {
                     .addComponent(jLabel1)
                     .addComponent(runViewButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(fixEmaxTo100Percent)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 527, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(fixEmaxTo100)
+                    .addComponent(unfixEmax))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 526, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -302,32 +318,51 @@ public class ExperimentDbTree extends JPanel {
         UniversalLookup.getDefault().add(PanelMessages.RUN_VIEW_SELECTED, null);
 }//GEN-LAST:event_runViewButtonActionPerformed
 
-    private void fixEmaxTo100PercentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fixEmaxTo100PercentActionPerformed
-        //Retrieve all sample profiles
+    private void unfixEmaxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_unfixEmaxActionPerformed
+ //Retrieve all sample profiles
         List allSampleProfiles = experimentDB.getAllObjects(SampleProfile.class);
-        if (fixEmaxTo100Percent.isSelected()){
-            //Set the flag to true
-            for(Object object : allSampleProfiles){
+        List<LreWindowSelectionParameters> l = experimentDB.getAllObjects(LreWindowSelectionParameters.class);
+        //This list should never be empty, as a LreWindowSelectionParameters object is created during DB creation
+        LreWindowSelectionParameters selectionParameters = l.get(0);
+        for (Object object : allSampleProfiles) {
                 SampleProfile profile = (SampleProfile) object;
-                profile.setIsEmaxFixedTo100Percent(true);
-                profile.updateProfile();
+                profile.setIsEmaxOverridden(false);
+                profile.setOverridentEmaxValue(0);
+                //Profile must be undated through reinitialization via a profile summary
+                ProfileSummary prfSum = analysisService.initializeProfile(profile, selectionParameters);
+                experimentDB.saveObject(prfSum.getProfile());
             }
-        }else{
-            //Retrieve all sample profiles and set the flag to false
-            for(Object object : allSampleProfiles){
+        //Update the tree
+        createTree();
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_CHANGED);
+    }//GEN-LAST:event_unfixEmaxActionPerformed
+
+    private void fixEmaxTo100ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fixEmaxTo100ActionPerformed
+         //Retrieve all sample profiles
+        List allSampleProfiles = experimentDB.getAllObjects(SampleProfile.class);
+        List<LreWindowSelectionParameters> l = experimentDB.getAllObjects(LreWindowSelectionParameters.class);
+        //This list should never be empty, as a LreWindowSelectionParameters object is created during DB creation
+        LreWindowSelectionParameters selectionParameters = l.get(0);
+        for (Object object : allSampleProfiles) {
                 SampleProfile profile = (SampleProfile) object;
-                profile.setIsEmaxFixedTo100Percent(false);
-                profile.updateProfile();
+                profile.setIsEmaxOverridden(true);
+                profile.setOverridentEmaxValue(1.0);
+                //Profile must be undated through reinitialization via a profile summary
+                ProfileSummary prfSum = analysisService.initializeProfile(profile, selectionParameters);
+                experimentDB.saveObject(prfSum.getProfile());
             }
-        }
-    }//GEN-LAST:event_fixEmaxTo100PercentActionPerformed
+        //Update the tree
+        createTree();
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_CHANGED);
+    }//GEN-LAST:event_fixEmaxTo100ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane beanTree;
-    private javax.swing.JRadioButton fixEmaxTo100Percent;
+    private javax.swing.JButton fixEmaxTo100;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField ocfDisplay;
     private javax.swing.JRadioButton runViewButton;
+    private javax.swing.JButton unfixEmax;
     // End of variables declaration//GEN-END:variables
 }

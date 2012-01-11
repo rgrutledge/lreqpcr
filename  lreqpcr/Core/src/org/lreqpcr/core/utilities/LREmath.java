@@ -47,18 +47,20 @@ public class LREmath {
     }
     
     /**
-     * Calculates Target Quantity in fluorescence units (Fo) adjusted to
-     * 100% Emax
+     * Calculates Target Quantity in fluorescence units (Fo) using an overridden Emax
+     * value
      * 
      * @param  c   the cycle number
      * @param cF   the cycle fluorescence reading (Fc)
      * @param dE   the rate of loss in cycle efficiency (deltaE)
-     * @param mE   th maximal amplification efficiency (Emax)
-     * @return     the predicted target quantity in fluorescence units (Fo) adjusted to 100% Emax
+     * @param mE   the maximal amplification efficiency (Emax)
+     * @param overriddenEmaxValue the Emax value to use for Fo calculation
+     * @return     the predicted target quantity in fluorescence units (Fo) using the specified Emax
      */
-    public static double calcAdjustedFo(int c, double cF, double dE, double mE) {
+    public static double calcFo(int c, double cF, double dE, double mE, double overridentEmaxValue) {
         double maxF = (mE)/-dE;
-        double trgFo = maxF/(1+(((maxF/cF)-1)*Math.pow(2, c)));
+        //Note that lack of deltaE is the primary basis for the presumed validation of overriding Emax
+        double trgFo = maxF/(1+(((maxF/cF)-1)*Math.pow(overridentEmaxValue + 1, c)));
         return trgFo;
     }
     
@@ -81,7 +83,22 @@ public class LREmath {
         double pFc = mF/(1+(((mF/oF)-1)*Math.pow(mE+1, -c)));
         return pFc;
     }
-    
+
+    /**
+     * Calculate predicted Fo using an overridden Emax
+     * @param c
+     * @param dE
+     * @param mE
+     * @param oF
+     * @param overriddenEmax
+     * @return
+     */
+    public static double calcPrdFc(int c, double dE, double mE, double oF, double overriddenEmax) {
+        double mF = (mE)/-dE; //Fmax
+        double pFc = mF/(1+(((mF/oF)-1)*Math.pow(overriddenEmax+1, -c)));
+        return pFc;
+    }
+
     /**
      * Calculates C1/2 for a profile based on the supplied parameters.
      *

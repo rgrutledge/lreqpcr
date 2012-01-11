@@ -139,10 +139,6 @@ public class ExcelAverageSampleProfileDataExport {
             sheet.addCell(label);
             label = new Label(11, 2, "Notes", centerBoldUnderline);
             sheet.addCell(label);
-//            label = new Label(12, 2, "adj Fo", centerBoldUnderline);
-//            sheet.addCell(label);
-//            label = new Label(13, 2, "Fo", centerBoldUnderline);
-//            sheet.addCell(label);
             int row = 3;
             label = new Label(1, 0, pageName);
             sheet.addCell(label);
@@ -189,13 +185,13 @@ public class ExcelAverageSampleProfileDataExport {
                     row++;
                     continue;
                 } else {
-                    if (avProfile.getEmax() > 1.00) {
-                        number = new Number(3, row, avProfile.getAdjustedNo(), integerFormat);
-                        sheet.addCell(number);
-                    } else {
+//                    if (avProfile.getEmax() > 1.00) {
+//                        number = new Number(3, row, avProfile.getAdjustedNo(), integerFormat);
+//                        sheet.addCell(number);
+//                    } else {
                         number = new Number(3, row, avProfile.getNo(), integerFormat);
                         sheet.addCell(number);
-                    }
+//                    }
                 }
                 if (avProfile.getEmax() != 0) {
                     number = new Number(4, row, avProfile.getEmax(), percentFormat);
@@ -224,10 +220,6 @@ public class ExcelAverageSampleProfileDataExport {
                 sheet.addCell(number);
                 label = new Label(11, row, avProfile.getLongDescription());
                 sheet.addCell(label);
-//                number = new Number(12, row, avProfile.getAdjustedAvFo(), exponentialFormat);
-//                sheet.addCell(number);
-//                number = new Number(13, row, avProfile.getAvFo(), exponentialFormat);
-//                sheet.addCell(number);
                 row++;
             }
 
@@ -286,13 +278,8 @@ public class ExcelAverageSampleProfileDataExport {
                             row++;
                             continue;
                         }
-                        if (profile.getEmax() > 1.00) {
-                            number = new Number(3, row, profile.getAdjustedNo(), floatFormat);
-                            sheet.addCell(number);
-                        } else {
                             number = new Number(3, row, profile.getNo(), floatFormat);
                             sheet.addCell(number);
-                        }
                         if (profile.getEmax() != 0) {
                             number = new Number(4, row, profile.getEmax(), percentFormat);
                             sheet.addCell(number);

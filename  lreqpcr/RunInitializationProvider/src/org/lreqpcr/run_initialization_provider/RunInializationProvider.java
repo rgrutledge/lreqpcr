@@ -24,10 +24,8 @@ import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.ExperimentDbInfo;
-import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
-import org.lreqpcr.core.data_objects.ReactionSetupImpl;
 import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.database_services.DatabaseServices;
@@ -117,12 +115,8 @@ public class RunInializationProvider implements RunInitializationService {
                 LreWindowSelectionParameters calbnParameters = (LreWindowSelectionParameters)
                         calbnDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
                 //Process the CalibnProfiles
-                List<? extends LreObject> rxnSetupList = (List<? extends LreObject>) calbnDB.getAllObjects(ReactionSetupImpl.class);
-                //Each calibration db has one reaction setup object, created when the database was created
-                ReactionSetupImpl rxnSetup = (ReactionSetupImpl) rxnSetupList.get(0);
                 for (Profile profile : calibnProfileList) {
                     profile.setRunDate(run.getRunDate());
-                    profile.setReactionSetup(rxnSetup);
                     if (ampliconDB != null) {
                         if (ampliconDB.isDatabaseOpen()
                                 && !profile.getAmpliconName().equals("")
@@ -133,14 +127,13 @@ public class RunInializationProvider implements RunInitializationService {
                     prfIntlz.initializeProfile(profile, calbnParameters);
                     if (profile.getStrCycleInt() != 0) {
                         profile.updateProfile();
-                    }
+                    } 
                     calbnDB.saveObject(profile);
                 }
                 //Process the AverageCalibnProfiles
                 List<AverageCalibrationProfile> averageCalbnProfileList =
                         (List<AverageCalibrationProfile>) AverageProfileGenerator.averageCalbrationProfileConstruction(
                         calibnProfileList,
-                        rxnSetup,
                         calbnParameters);
                 calbnDB.saveObject(averageCalbnProfileList);
                 calbnDB.commitChanges();

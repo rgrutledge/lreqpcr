@@ -18,7 +18,7 @@
 package org.lreqpcr.core.data_objects;
 
 /**
- * Represents the setup used to conduct an amplification NOTE YET FULLY IMPLEMENTED.
+ * Represents the setup used to conduct an amplification: NOT IMPLEMENTED
  *
  * @author Bob Rutledge
  */

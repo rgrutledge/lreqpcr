@@ -240,6 +240,13 @@ public class ProfileEditor extends JPanel implements
         }
     }
 
+    /**
+     * A general policy is that the parent panel is responsible for responding to 
+     * changes within it's children panels. E.g. if the user changes the LRE window, 
+     * this panel is responsible for initiating profile and display updating. 
+     *
+     * @param key
+     */
     public void universalLookupChangeEvent(Object key) {
         if (key == PanelMessages.CLEAR_PROFILE_EDITOR) {
             clearPanels();
@@ -257,6 +264,7 @@ public class ProfileEditor extends JPanel implements
             selectedNode.refreshNodeLabel();
         }
         if (key == PanelMessages.PROFILE_CHANGED) {
+            if(prfSum == null) return;
             analysisService.updateLreWindow(prfSum, selectionParameters);
             selectedNode.refreshNodeLabel();
             updatePanels();
