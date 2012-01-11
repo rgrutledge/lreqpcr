@@ -84,7 +84,7 @@ public final class CalibrationTopComponent extends TopComponent
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
 
-        setName("Calibration");
+        setName("Lambda Calibration DB");
         associateLookup(ExplorerUtils.createLookup(mgr, this.getActionMap()));
         mgr.addPropertyChangeListener(this);
         ampliconNodeResult = Utilities.actionsGlobalContext().lookupResult(AmpliconNode.class);

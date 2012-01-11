@@ -143,11 +143,7 @@ public class ExcelCalibrationProfileExport {
             sheet.addCell(dateCell);
             label = new Label(1, row, profile.getAmpliconName(), center);
             sheet.addCell(label);
-            if (profile.getEmax() > 1.0){
-                number = new Number(2, row, profile.getAdjustedOCF(), floatFormat);
-            } else {
-                number = new Number(2, row, profile.getOCF(), floatFormat);
-            }
+            number = new Number(2, row, profile.getOCF(), floatFormat);
             sheet.addCell(number);
             number = new Number(3, row, profile.getEmax(), percentFormat);
             sheet.addCell(number);
@@ -170,9 +166,9 @@ public class ExcelCalibrationProfileExport {
                     notes = "EXCLUDED ";
                 }
             } else {
-                if(profile.getLongDescription() != null){
+                if (profile.getLongDescription() != null) {
                     notes = profile.getLongDescription();
-                }else{
+                } else {
                     notes = "";
                 }
             }

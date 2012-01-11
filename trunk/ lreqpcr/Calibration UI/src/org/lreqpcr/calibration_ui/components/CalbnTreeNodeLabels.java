@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * and open the template in the editor.
  */
-
 package org.lreqpcr.calibration_ui.components;
 
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
@@ -25,6 +24,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.utilities.FormatingUtilities;
+
 /**
  *
  * @author Bob Rutledge
@@ -38,52 +38,54 @@ public class CalbnTreeNodeLabels implements LabelFactory {
         if (member instanceof ReactionSetupImpl) {
             return member.getName();
         }
-        if (member instanceof AverageCalibrationProfile){
+        if (member instanceof AverageCalibrationProfile) {
             AverageCalibrationProfile calbnProfile = (AverageCalibrationProfile) member;
             String ocf = "";
             df.applyPattern("##.0");
-            String emax = " (" + df.format(calbnProfile.getEmax()*100) + "%)";
+            String emax = "";
             String rundate = "Data import failed";
-            if (calbnProfile.getRunDate() != null){
+            if (calbnProfile.getRunDate() != null) {
                 rundate = sdf.format(calbnProfile.getRunDate());
             }
-            if(calbnProfile.isExcluded()){
-                return  rundate + ": " + calbnProfile.getName() + " EXCLUDED ";
-            } else{
-                if (calbnProfile.getEmax() > 1.00) {
-                    df.applyPattern(FormatingUtilities.decimalFormatPattern(calbnProfile.getAdjustedOCF()));
-                    ocf = df.format(calbnProfile.getAdjustedOCF());
-                    calbnProfile.setShortDescription("Normalized to 100% Emax");
+            if (calbnProfile.isExcluded()) {
+                return rundate + ": " + calbnProfile.getName() + " EXCLUDED ";
+            } else {
+                df.applyPattern(FormatingUtilities.decimalFormatPattern(calbnProfile.getOCF()));
+                ocf = df.format(calbnProfile.getOCF());
+                if (calbnProfile.isEmaxOverridden()) {
+                    df.applyPattern("##.0");
+                    calbnProfile.setShortDescription("Emax overridden");
+                    //Denote overridden Emax using asterics
+                    emax = " (**" + df.format(calbnProfile.getOverriddendEmaxValue() * 100) + "%) ";
                 } else {
-                    df.applyPattern(FormatingUtilities.decimalFormatPattern(calbnProfile.getOCF()));
-                    ocf = df.format(calbnProfile.getOCF());
                     calbnProfile.setShortDescription("");
+                    emax = " (" + df.format(calbnProfile.getEmax() * 100) + "%) ";
                 }
                 return rundate + ": " + calbnProfile.getName() + emax + " " + ocf;
             }
         }
         if (member instanceof CalibrationProfile) {
             CalibrationProfile calbnProfile = (CalibrationProfile) member;
-            String ocf = "";
-            if (calbnProfile.getEmax() > 1.00) {
-                df.applyPattern(FormatingUtilities.decimalFormatPattern(calbnProfile.getAdjustedOCF()));
-                ocf = df.format(calbnProfile.getAdjustedOCF());
-                calbnProfile.setShortDescription("Normalized to 100% Emax");
-            } else {
-                df.applyPattern(FormatingUtilities.decimalFormatPattern(calbnProfile.getOCF()));
-                ocf = df.format(calbnProfile.getOCF());
-                calbnProfile.setShortDescription("");
-            }
-            df.applyPattern("##.0");
-            String emax = " (" + df.format(calbnProfile.getEmax()*100) + "%)";
             String rundate = sdf.format(calbnProfile.getRunDate());
+            df.applyPattern(FormatingUtilities.decimalFormatPattern(calbnProfile.getOCF()));
+            String ocf = df.format(calbnProfile.getOCF());
+            String emax = "";
+            df.applyPattern("##.0");
+            if (calbnProfile.isEmaxOverridden()) {
+                    calbnProfile.setShortDescription("Emax overridden");
+                    //Denote overridden Emax using asterics
+                    emax = " (**" + df.format(calbnProfile.getOverriddendEmaxValue() * 100) + "%) ";
+                } else {
+                    calbnProfile.setShortDescription("");
+                    emax = " (" + df.format(calbnProfile.getEmax() * 100) + "%) ";
+                }
+            
             if (calbnProfile.isExcluded()) {
-                return  calbnProfile.getName() + " EXCLUDED ";
+                return calbnProfile.getName() + " EXCLUDED ";
             } else {
                 return rundate + " " + calbnProfile.getName() + emax + " " + ocf;
             }
         }
         return "";
     }
-
 }

@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2010  Bob Rutledge
- *
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -14,54 +14,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * and open the template in the editor.
  */
-package org.lreqpcr.experiment_ui.components;
+package org.lreqpcr.calibration_ui.components;
 
-import org.lreqpcr.core.data_objects.LreObject;
 import java.util.List;
 import javax.swing.Action;
-import org.lreqpcr.core.data_objects.Run;
+import org.lreqpcr.core.data_objects.CalibrationProfile;
+import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LabelFactory;
 import org.lreqpcr.core.ui_elements.LreActionFactory;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
 import org.openide.explorer.ExplorerManager;
+import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.lookup.Lookups;
 
 /**
- * Displays Run nodes for the supplied list of Runs
- *
+ * Generates child nodes for an AverageSampleProfile based on the supplied list
+ * of SampleProfiles
  * @author Bob Rutledge
  */
-public class RootRunChildren extends LreObjectChildren {
+public class AvCalibrationProfileChildren extends LreObjectChildren {
 
-    /**
-     * Generates nodes containing the Runs within the supplied experiment database.
-     * 
-     * @param mgr the manager of the view
-     * @param db the experiment database that is being viewed
-     * @param runList list of Runs to be displayed
-     * @param actionFactory the node action factory
-     * @param labelFactory the node label factory
-     */
-    public RootRunChildren(ExplorerManager mgr, DatabaseServices db, List<? extends Run> runList,
-            LreActionFactory actionFactory, LabelFactory labelFactory) {
-        super(mgr, db, runList, actionFactory, labelFactory);
+    public AvCalibrationProfileChildren(ExplorerManager mgr, DatabaseServices db, List<? extends CalibrationProfile>
+            calibrationProfileList, LreActionFactory actionFactory, LabelFactory labelFactory) {
+        super(mgr, db, calibrationProfileList, actionFactory, labelFactory);
     }
 
     /**
-     * Creates LRE nodes with children of the supplied LRE object, is any exist, 
-     * along with with the corresponding node labels, actions (if any exist) and 
-     * the corresponding Explorer manager and database which is being viewed. 
-     * 
+     * Creates SampleProfile nodes from the member list of SampleProfiles.
+     *
      * @param lreObject
      * @return
      */
     @SuppressWarnings(value = "unchecked")
     @Override
     protected Node[] createNodes(LreObject lreObject) {
-        Run run = (Run) lreObject;
+        CalibrationProfile sampleProfile = (CalibrationProfile) lreObject;
         if (nodeActionFactory == null) {
             actions = new Action[]{};//i.e. no Actions have been set
         } else {
@@ -70,9 +60,7 @@ public class RootRunChildren extends LreObjectChildren {
                 actions = new Action[]{};//i.e. there are no Actions for this Node
             }
         }
-
-        LreNode node = new LreNode(new AvSampleProfileListChildren(mgr, db, run.getAverageProfileList(), nodeActionFactory, nodeLabelFactory),
-                    Lookups.singleton(lreObject), actions);
+        LreNode node = new LreNode(Children.LEAF, Lookups.singleton(sampleProfile), actions);
         node.setExplorerManager(mgr);
         node.setDatabaseService(db);
         node.setName(lreObject.getName());

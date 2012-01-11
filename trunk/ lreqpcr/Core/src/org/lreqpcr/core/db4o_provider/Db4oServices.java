@@ -145,6 +145,7 @@ public abstract class Db4oServices implements DatabaseServices {
     public void closeDatabase() {
         if (db4o != null) {
             while (!db4o.ext().isClosed()) {
+                //Pre NetBeans Platform implementation
                 //Purging does not remove db4o instantiated objects from memory!!
 //                db4o.commit();
 //                db4o.ext().purge();

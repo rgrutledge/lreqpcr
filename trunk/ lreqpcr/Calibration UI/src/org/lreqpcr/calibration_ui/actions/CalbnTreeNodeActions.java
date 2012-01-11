@@ -41,13 +41,19 @@ public class CalbnTreeNodeActions implements LreActionFactory {
             new ExcludeAverageCalibrationProfileAction(mgr),
             new IncludeAverageCalibrationProfileAction(mgr),
             null,
-            new DeleteCalibrationProfileAction(mgr)
+            new DeleteCalibrationProfileAction(mgr),
+            null,
+            new FixCalibrationProfileEmaxTo100percentAction(mgr),
+            new ReturnCalibrationProfileEmaxToLreAction(mgr)
         };
         actionMap.put("AverageCalibrationProfile", actions);
         //Calbn Profile actions
         actions = new Action[]{
             new ExcludeCalibrationProfileAction(mgr),
             new IncludeCalibrationProfileAction(mgr),
+            null,
+            new FixCalibrationProfileEmaxTo100percentAction(mgr),
+            new ReturnCalibrationProfileEmaxToLreAction(mgr)
         };
         actionMap.put("CalibrationProfile", actions);
     }

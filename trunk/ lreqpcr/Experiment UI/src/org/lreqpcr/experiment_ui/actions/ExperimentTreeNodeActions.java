@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * and open the template in the editor.
  */
-
 package org.lreqpcr.experiment_ui.actions;
 
 import org.lreqpcr.core.ui_elements.LreActionFactory;
@@ -37,29 +36,34 @@ public class ExperimentTreeNodeActions implements LreActionFactory {
             new IncludeAverageSampleProfileAction(mgr),
             new ExcludeAverageSampleProfileAction(mgr),
             null,
-            new DeleteAverageSampleProfileAction(mgr)
+            new DeleteAverageSampleProfileAction(mgr),
+            null,
+            new FixSampleProfileEmaxTo100percentAction(mgr),
+            new ReturnSampleProfileEmaxToLreAction(mgr)
         };
         actionMap.put("AverageSampleProfile", actions);
 
         //Replicate Sample Profile actions
         actions = new Action[]{
-            new ExcludeSampleProfileAction(mgr),
-            new IncludeSampleProfileAction(mgr),
-            //Disallow SampleProfile deletion for now
-//            null,
-//            new DeleteSampleProfileAction(mgr)
-        };
+                    new ExcludeSampleProfileAction(mgr),
+                    new IncludeSampleProfileAction(mgr), //Disallow SampleProfile deletion for now
+                    null,
+                    new FixSampleProfileEmaxTo100percentAction(mgr),
+                    new ReturnSampleProfileEmaxToLreAction(mgr)
+                //            null,
+                //            new DeleteSampleProfileAction(mgr)
+                };
         actionMap.put("SampleProfile", actions);
 
         //Run actions
         actions = new Action[]{
-     //Deactivated due to a bug that can generate long delays when importing the files
-//            new SaveCyclerDatafileAction(mgr),
-//            new RetrieveDatafileAction(mgr),
-//            new RetrieveExcelImportFileAction(mgr),
-            new ApplyRunSpecficOCF(mgr),
-            null,
-            new DeleteRunAction(mgr)
+                    //Deactivated due to a bug that can generate long delays when importing the files
+                    //            new SaveCyclerDatafileAction(mgr),
+                    //            new RetrieveDatafileAction(mgr),
+                    //            new RetrieveExcelImportFileAction(mgr),
+                    new ApplyRunSpecficOCF(mgr),
+                    null,
+                    new DeleteRunAction(mgr),
                 };
         actionMap.put("RunImpl", actions);
     }
