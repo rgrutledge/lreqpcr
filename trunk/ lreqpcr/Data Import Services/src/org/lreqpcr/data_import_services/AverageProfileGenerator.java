@@ -30,7 +30,6 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
-import org.lreqpcr.core.data_objects.ReactionSetup;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.data_objects.TargetStrandedness;
 import org.openide.util.Lookup;
@@ -117,7 +116,6 @@ public class AverageProfileGenerator {
     @SuppressWarnings(value = "unchecked")
     public static ArrayList<AverageCalibrationProfile> averageCalbrationProfileConstruction(
             List<CalibrationProfile> profileList,
-            ReactionSetup rxnSetup,
             LreWindowSelectionParameters parameters) {
         ArrayList<CalibrationProfile> profileArray = new ArrayList<CalibrationProfile>(profileList);
         //Generate new AverageCalibrationProfile for each replicate profile set within the profile list
@@ -154,7 +152,6 @@ public class AverageProfileGenerator {
             }
             //Average the replicates Profile raw Fc datasets
             AverageCalibrationProfile avCalbnProfile = new AverageCalibrationProfile();
-            avCalbnProfile.setParent(rxnSetup);
             CalibrationProfile firstCalibrationProfile = calibrationProfileList.get(0);
             avCalbnProfile.setLambdaMass(firstCalibrationProfile.getLambdaMass() * 1000000);
             avCalbnProfile.setName(firstCalibrationProfile.getName());
@@ -215,7 +212,7 @@ public class AverageProfileGenerator {
         avProfile.setName(avProfile.getAmpliconName() + " @ " + avProfile.getSampleName());
         if (avProfile.getRawFcReadings().length == 0) {
             //All of the replicate profiles are excluded
-            avProfile.setLongDescription("AN LRE WINDOW COULD NOT BE FOUND");
+            avProfile.appendLongDescription("AN LRE WINDOW COULD NOT BE FOUND");
             avProfile.setShortDescription("An LRE window could not be found");
             avProfile.setExcluded(true);
         } else {

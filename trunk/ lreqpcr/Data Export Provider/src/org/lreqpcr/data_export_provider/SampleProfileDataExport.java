@@ -168,7 +168,7 @@ public class SampleProfileDataExport {
                     sheet.addCell(label);
                     if (sampleProfile.isExcluded()) {
                         //All replicate profiles have been excluded
-                        label = new Label(3, row, "nd", center);
+                        label = new Label(3, row, "0", center);
                         sheet.addCell(label);
                         label = new Label(11, row, sampleProfile.getWellLabel());
                         sheet.addCell(label);
@@ -177,13 +177,8 @@ public class SampleProfileDataExport {
                         row++;
                         continue;
                     } else {
-                        if (sampleProfile.getEmax() > 1.00) {
-                            number = new Number(3, row, sampleProfile.getAdjustedNo(), integerFormat);
-                            sheet.addCell(number);
-                        } else {
                             number = new Number(3, row, sampleProfile.getNo(), integerFormat);
                             sheet.addCell(number);
-                        }
                     }
                     if (sampleProfile.getEmax() != 0) {
                         number = new Number(4, row, sampleProfile.getEmax(), percentFormat);
@@ -274,13 +269,8 @@ public class SampleProfileDataExport {
                         row++;
                         continue;
                     }
-                    if (sampleProfile.getEmax() > 1.00) {
-                        number = new Number(3, row, sampleProfile.getAdjustedNo(), floatFormat);
-                        sheet.addCell(number);
-                    } else {
                         number = new Number(3, row, sampleProfile.getNo(), floatFormat);
                         sheet.addCell(number);
-                    }
                     if (sampleProfile.getEmax() != 0) {
                         number = new Number(4, row, sampleProfile.getEmax(), percentFormat);
                         sheet.addCell(number);
@@ -308,16 +298,10 @@ public class SampleProfileDataExport {
                     sheet.addCell(number);
                     label = new Label(11, row, sampleProfile.getWellLabel());
                     sheet.addCell(label);
-                    if (sampleProfile.getEmax() > 1.00) {
-                        number = new Number(12, row, sampleProfile.getAdjustedAvFo(), exponentialFormat);
-                        sheet.addCell(number);
-                    } else {
                         number = new Number(12, row, sampleProfile.getAvFo(), exponentialFormat);
                         sheet.addCell(number);
-                    }
                     label = new Label(13, row, sampleProfile.getLongDescription());
                     sheet.addCell(label);
-//                    row++;
                 }
             }
             pageCounter++;

@@ -63,7 +63,6 @@ public class CalibrationProfile extends Profile {
     public void updateProfile() {
         mo = (lambdaMass * getAmpliconSize()) / 48502;//Mo for lambda gDNA
         setOCF(getAvFo() / mo);
-        setAdjustedOCF(getAdjustedAvFo() / mo);
         setNo(((getAvFo() / getOCF()) * 910000000000d) / getAmpliconSize());
     }
 

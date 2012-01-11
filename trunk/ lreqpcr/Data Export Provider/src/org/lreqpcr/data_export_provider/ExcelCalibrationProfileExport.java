@@ -170,12 +170,14 @@ public class ExcelCalibrationProfileExport {
                     notes = "EXCLUDED ";
                 }
             } else {
-                notes = profile.getLongDescription();
+                if(profile.getLongDescription() != null){
+                    notes = profile.getLongDescription();
+                }else{
+                    notes = "";
+                }
             }
             label = new Label(9, row, notes);
             sheet.addCell(label);
-            number = new Number(9, row, profile.getDeltaE(), exponentialFormat);
-            sheet.addCell(number);
             row++;
         }
 

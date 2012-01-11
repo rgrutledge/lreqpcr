@@ -30,17 +30,13 @@ public class SampleProfile extends Profile {
     @Override
     /**
      * Calculate the number of target molecules (No) 
-     * based on the OCF and amplicon size.
+     * based on the profile average Fo, OCF and amplicon size. 
      */
     public void updateProfile() {
         if (getTargetStrandedness() == TargetStrandedness.SINGLESTRANDED) {
             setNo(2 * ((getAvFo() / getOCF()) * 910000000000d) / getAmpliconSize());
-            setAdjustedNo(2 * ((getAdjustedAvFo() / getOCF()) * 910000000000d) / getAmpliconSize());
         } else {
-            if(getTargetStrandedness() == TargetStrandedness.DOUBLESTRANDED){
-                setNo(((getAvFo() / getOCF()) * 910000000000d) / getAmpliconSize());
-                setAdjustedNo(((getAdjustedAvFo() / getOCF()) * 910000000000d) / getAmpliconSize());
-            }
+               setNo(((getAvFo() / getOCF()) * 910000000000d) / getAmpliconSize());
         }
     }
 

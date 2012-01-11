@@ -57,6 +57,9 @@ public class AmpliconEditPanel extends JPanel
 
             @Override
             public void keyReleased(KeyEvent evt) {
+                if (selectedAmplicon == null) {
+                    return;
+                }
                 if (evt.getComponent() == nameDisplay) {
                     if (nameDisplay.getText().equals("")) {
                         nameErrorDisplay.setText("");
@@ -249,7 +252,6 @@ public class AmpliconEditPanel extends JPanel
         notesDisplay.setLineWrap(true);
         notesDisplay.setRows(5);
         notesDisplay.setWrapStyleWord(true);
-        notesDisplay.setPreferredSize(new java.awt.Dimension(164, 100));
         jScrollPane1.setViewportView(notesDisplay);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);

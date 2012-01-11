@@ -117,7 +117,7 @@ public class IOUtilities {
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
                 "Excel file", "xls");
         fc.setFileFilter(filter);
-        int returnVal = fc.showSaveDialog(null);
+        int returnVal = fc.showDialog(WindowManager.getDefault().getMainWindow(), "New Excel File");
         File selectedFile = null;
         while (returnVal == JFileChooser.APPROVE_OPTION) {
             selectedFile = fc.getSelectedFile();

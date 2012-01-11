@@ -30,19 +30,15 @@ public abstract class Profile extends LreObject {
 
     //Profile creation parameters
     private Run run;//The run that generated this profile
-    private String wellLabel;//Well label i.e. A1-A12, A1-H1
-    private int wellNumber;//1-96 etc, also allows ordering of profiles
     private Date runDate;
+    private String wellLabel;//Plate well label i.e. A1-A12, A1-H1
+    private int wellNumber;//Plate well number 1-96, used as an alternative to well label
     private double[] rawFcReadings;//raw Fc dataset, no background subtraction
-    private Sample sample;//Not implemented
-    private String sampleName;
-    private Amplicon amplicon;//Not implemented
-    private String ampliconName;
-    private ReactionSetup reactionSetup;//Not fully implemented
-    private String reactionSetupName;//This is likely redundant to reactionSetup
+    private String sampleName;//Could be used to recover information about the sample from a database
+    private String ampliconName;//Used to recover amplicon size from the amplicon database
     private int ampliconSize = 0;
     private TargetStrandedness targetStrandedness;
-    
+        
     //Profile processing parameters
     private double ampTm;//The amplicon Tm
     private double ct, ft;//Threshold cycle and fluorescence threshold
@@ -52,20 +48,20 @@ public abstract class Profile extends LreObject {
     private int strCycleInt; //LRE window start cycle
     private int lreWinSize; //LRE window size
     private double eMax, deltaE, r2;//Linear regression values for the LRE window
+    private boolean isEmaxOverridden;//Overides LRE analysis-derived Emax
+    private double overriddenEmaxValue;//Allows fixing Emax to this value, which can then be used to calculate Fo
     private double avFo, avFoCV;//Target quantity and CV derived from the LRE window Fo values
-    private double adjustedAvFo;//Target quantity adjusted to 100% Emax
     private double nonR2;//Nonlinear r2 of predicted Fc to actual Fc within the LRE window... not very useful
     private double midC;//C1/2
     private double fbSlope, fbIntercept, fbR2;//Baseline linear regression used to test for baseline drift... under development
     private boolean excluded = false;//Allows profiles to be excluded from the analysis
-    private String whyExcluded;//Text describing why the profile was excluded... not implemented
+    private String whyExcluded;//Text describing why the profile was excluded
     
     //Target molecule (No) determination via optical calibration
     private double ocf;//The optical calibration factor used to calculate the number of target molecules
     private double no;//Number of targets molecules
-    private double adjustedNo;//Number of targets molecules adjusted to 100% Emax
 
-    private boolean isEmaxFixedTo100Percent;
+
 
     public Run getRun() {
         return run;
@@ -92,62 +88,6 @@ public abstract class Profile extends LreObject {
     public abstract void updateProfile();
 
     /**
-     * ReactionSetup is not yet implemented
-     * @return
-     */
-    public ReactionSetup getReactionSetup() {
-        return reactionSetup;
-    }
-
-    /**
-     * ReactionSetup is not yet implemented
-     * @param reactionSetup
-     */
-    public void setReactionSetup(ReactionSetup reactionSetup) {
-        this.reactionSetup = reactionSetup;
-    }
-
-    public String getReactionSetupName() {
-        return reactionSetupName;
-    }
-
-    public void setReactionSetupName(String reactionSetupName) {
-        this.reactionSetupName = reactionSetupName;
-    }
-
-    /**
-     * 
-     * @return the Amplicon used for PCR amplification.
-     */
-    public Amplicon getAmplicon() {
-        return amplicon;
-    }
-
-    /**
-     * 
-     * @param amplicon the Amplicon used for PCR amplification.
-     */
-    public void setAmplicon(Amplicon amplicon) {
-        this.amplicon = amplicon;
-    }
-
-    /**
-     * 
-     * @return the Sample used in the PCR amplification.
-     */
-    public Sample getSample() {
-        return sample;
-    }
-
-    /**
-     * 
-     * @param sample the Sample used in the PCR amplification.
-     */
-    public void setSample(Sample sample) {
-        this.sample = sample;
-    }
-
-    /**
      * 
      * @return the observed amplicon melting temperature (Tm)
      */
@@ -164,11 +104,10 @@ public abstract class Profile extends LreObject {
 
     /**
      * This was included for legacy issues. 
-     * It must be noted however, that the vagaries
-     * of positional analysis (e.g. Ct is dependent on the fluorescence
-     * threshold) makes Ct unreliable.
+     * It must be noted however, that dependent on the fluorescence
+     * threshold introduce vagaries that make Ct highly unreliable.
      * 
-     * @return the observed threshold cycle (AKA Cq)
+     * @return the observed threshold cycle
      */
     public double getCt() {
         return ct;
@@ -176,9 +115,8 @@ public abstract class Profile extends LreObject {
 
     /**
      * This was included for legacy issues. 
-     * It must be noted however, that the vagaries
-     * of positional analysis (e.g. Ct is dependent on the fluorescence
-     * threshold) makes Ct unreliable.
+     * It must be noted however, that dependent on the fluorescence
+     * threshold introduce vagaries that make Ct highly unreliable.
      * 
      * @param ct
      */
@@ -222,7 +160,7 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * 
+     * The average Fo is the primary quantitative unit for a profile. 
      * @param Fo the average of the Fo values generated 
      * by the Fc readings within the LRE window.
      */
@@ -452,44 +390,41 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     *
-     * @return average Fo adjusted to 100% Emax
+     * Indicates whether the LRE-derived Emax has been replaced by a fixed value 
+     * as specified by the overriddenEmaxValue parameter.
+     * @return
      */
-    public double getAdjustedAvFo() {
-        return adjustedAvFo;
+    public boolean isEmaxOverridden() {
+        return isEmaxOverridden;
     }
 
     /**
-     *
-     * @param adjustedAvFo average Fo adjusted to 100% Emax
+     * Allows the LRE-derived Emax to be overridden as specified by the overriddenEmaxValue parameter.
+     * @param isEmaxOverriden
      */
-    public void setAdjustedAvFo(double adjustedAvFo) {
-        this.adjustedAvFo = adjustedAvFo;
-        updateProfile();
+    public void setIsEmaxOverridden(boolean isEmaxOverriden) {
+        this.isEmaxOverridden = isEmaxOverriden;
+    }
+    
+    /**
+     * This allows the LRE-derived Emax to be overridden in order to circumvent
+     * aberrant Emax values generated by kinetic anomalies. Note that the option
+     * to use this alternative Emax value for calculating the profile's average Fo
+     * is the responsibility of the data processing service provider.
+     *
+     * @param overrideenEmaxValue the Emax value that overrides the LRE-derived Emax
+     */
+    public void setOverridentEmaxValue(double overrideenEmaxValue){
+        this.overriddenEmaxValue = overrideenEmaxValue;
     }
 
     /**
-     *
-     * @return No adjusted to 100% Emax
+     * 
+     * @return the Emax value used to calculate Fo if the LRE-derived Emax is overridden
+     * as indicated by the isEmaxFixed parameter.
      */
-    public double getAdjustedNo() {
-        return adjustedNo;
-    }
-
-    /**
-     *
-     * @param adjustedNo No adjusted to 100% Emax
-     */
-    public void setAdjustedNo(double adjustedNo) {
-        this.adjustedNo = adjustedNo;
-    }
-
-    public boolean isIsEmaxFixedTo100Percent() {
-        return isEmaxFixedTo100Percent;
-    }
-
-    public void setIsEmaxFixedTo100Percent(boolean isEmaxFixedTo100Percent) {
-        this.isEmaxFixedTo100Percent = isEmaxFixedTo100Percent;
+    public double getOverriddendEmaxValue(){
+        return overriddenEmaxValue;
     }
 
     @Override

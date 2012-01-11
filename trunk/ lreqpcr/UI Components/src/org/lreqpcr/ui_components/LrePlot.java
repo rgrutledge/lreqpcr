@@ -71,11 +71,7 @@ public class LrePlot extends javax.swing.JPanel {
         profile = prfSum.getProfile();
         df.applyPattern("###,###");
         String numTargetMolecs = "";
-        if(profile.getEmax() > 1.00){
-            numTargetMolecs = df.format(profile.getAdjustedNo());
-        } else {
-            numTargetMolecs = df.format(profile.getNo());
-        }
+        numTargetMolecs = df.format(profile.getNo());
         graphTitle.setText(sdf.format(profile.getRunDate()) + "-" + numTargetMolecs + " molecules");
         lreWinSizeDisplay.setText(String.valueOf(profile.getLreWinSize()));
         startCycleDisplay.setText(String.valueOf(profile.getStrCycleInt()));
@@ -96,7 +92,9 @@ public class LrePlot extends javax.swing.JPanel {
         /*Determine the maximum and minimum X&Y values: Dataset specific*/
         /*Determine X maximum*/
         xMaxVal = 0; //Reset
-        if(prfSum.getZeroCycle() == null) return;
+        if (prfSum.getZeroCycle() == null) {
+            return;
+        }
         runner = prfSum.getZeroCycle();
         while (runner.getNextCycle() != null) {
             if (xMaxVal < runner.getFc()) {
@@ -547,7 +545,7 @@ private void reanalyzeButtonActionPerformed(java.awt.event.ActionEvent evt) {//G
             y = yMax - (profile.getEmax() * yScalingFactor); //Emax
             Line2D.Double lreLine = new Line2D.Double(xMin, y, x, yMax);
             g2.draw(lreLine);
-            
+
             //Determine the C1/2 position and show it as a red dot on the LRE line
             double midFc = (prfSum.getProfile().getEmax() / -prfSum.getProfile().getDeltaE()) / 2;
             double midEc = midFc * prfSum.getProfile().getDeltaE() + prfSum.getProfile().getEmax();
@@ -555,24 +553,26 @@ private void reanalyzeButtonActionPerformed(java.awt.event.ActionEvent evt) {//G
             y = yMax - (midEc * yScalingFactor);
             g2.setColor(Color.RED);
             double ptSize = 30; //Point size
-    //This midEc-Fc point was used to center the LRE points (see below) onto the LRE line
+            //This midEc-Fc point was used to center the LRE points (see below) onto the LRE line
             Ellipse2D.Double pt = new Ellipse2D.Double(x + 0.13 * ptSize, y + 0.03 * ptSize, ptSize * 0.32, ptSize * 0.3);
-             g2.fill(pt);
+            g2.fill(pt);
         }
 
         /*Draw the profile and window LRE plots*/
         g2.setColor(Color.BLACK);
         double ptSize = 16; //Point size
-    //Draw the LRE points
+        //Draw the LRE points
         if (prfSum != null) {
             runner = prfSum.getStrCycle();
             if (runner == null) {
                 return;
             }
             //Run to 5 cycles below the LRE window
-            if(runner == null || runner.getPrevCycle() == null) return;
+            if (runner == null || runner.getPrevCycle() == null) {
+                return;
+            }
             for (int i = 0; i < 7; i++) {
-                if (runner.getPrevCycle() == null){
+                if (runner.getPrevCycle() == null) {
                     return;
                 }
                 runner = runner.getPrevCycle();
@@ -584,7 +584,7 @@ private void reanalyzeButtonActionPerformed(java.awt.event.ActionEvent evt) {//G
                 g2.fill(pt);
                 runner = runner.getNextCycle();
             }
-    //Draw circles around the LRE window points
+            //Draw circles around the LRE window points
             runner = prfSum.getStrCycle();
             if (runner == null) {
                 return;
