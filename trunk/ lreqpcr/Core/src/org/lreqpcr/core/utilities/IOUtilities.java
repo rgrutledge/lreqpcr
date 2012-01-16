@@ -117,7 +117,9 @@ public class IOUtilities {
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
                 "Excel file", "xls");
         fc.setFileFilter(filter);
-        int returnVal = fc.showDialog(WindowManager.getDefault().getMainWindow(), "New Excel File");
+        int returnVal = fc.showDialog(
+                WindowManager.getDefault().getMainWindow(),
+                "New Excel File");
         File selectedFile = null;
         while (returnVal == JFileChooser.APPROVE_OPTION) {
             selectedFile = fc.getSelectedFile();
@@ -189,8 +191,12 @@ public class IOUtilities {
             if (!fc.getSelectedFile().exists()) {
                 Toolkit.getDefaultToolkit().beep();
                 String msg = "The datafile could not be read...";
-                JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(), msg,
-                        "Error reading datafile", JOptionPane.OK_OPTION, JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showConfirmDialog(
+                        WindowManager.getDefault().getMainWindow(),
+                        msg,
+                        "Error reading datafile", 
+                        JOptionPane.OK_OPTION,
+                        JOptionPane.WARNING_MESSAGE);
                 return null;
             }
             return fc.getSelectedFile();

@@ -42,7 +42,8 @@ public class AmpliconImport {
         if (!ampliconDB.isDatabaseOpen()) {
             String msg = "An Amplicon database has not been opened." +
                     "Data import will be terminated.";
-            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+            JOptionPane.showMessageDialog(
+                    WindowManager.getDefault().getMainWindow(),
                     msg,
                     "No Amplicon database is available",
                     JOptionPane.ERROR_MESSAGE);
@@ -63,7 +64,8 @@ public class AmpliconImport {
         }
         if (workbook == null) {
             String msg = "The Excel import file could not be opened";
-            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+            JOptionPane.showMessageDialog(
+                    WindowManager.getDefault().getMainWindow(),
                     msg,
                     "Unable to open the Excel file ",
                     JOptionPane.ERROR_MESSAGE);
@@ -91,7 +93,8 @@ public class AmpliconImport {
             } catch (NumberFormatException e) {
                 String msg = "The size of " + amp.getName() + " does not appear to be an integer." +
                         "An amplicon size of zero will be entered instead.";
-                JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                JOptionPane.showMessageDialog(
+                        WindowManager.getDefault().getMainWindow(),
                         msg,
                         "Amplicon size is not an integer",
                         JOptionPane.ERROR_MESSAGE);

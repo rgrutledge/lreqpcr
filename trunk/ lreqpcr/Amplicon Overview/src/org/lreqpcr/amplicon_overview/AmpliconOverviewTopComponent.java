@@ -122,15 +122,18 @@ public final class AmpliconOverviewTopComponent extends TopComponent
             Amplicon facadeAmplicon = new AmpliconImpl();
             //Amplicon objects have not yet been implemented in Experiment/Calibration databases
             //That is, an Amplicon is only represented as String name
+            //Thus this facadeAmplicon is only used for display purposes
             facadeAmplicon.setName(ampName);
             //Retrieve all average profiles derived from this amplicon
             profileList = currentDB.retrieveUsingFieldValue(AverageProfile.class, "ampliconName", ampName);
+            //Compile a list of all Emax values
             ArrayList<Double> emaxArrayList = new ArrayList<Double>();
+            //Generate an average and CV for this Emax values in this list
             double emaxTotal = 0;
             int counter = 0;
             for (int i = 0; i < profileList.size(); i++) {
                 Profile profile = (Profile) profileList.get(i);
-                //Check if a profile has not been exclucded and is greater 10 molecules
+                //Check to see if the profile has not been exclucded and is greater 10 molecules
                 if (!profile.isExcluded() && profile.getNo() > 10) {
                     emaxArrayList.add(profile.getEmax());
                     emaxTotal = emaxTotal + profile.getEmax();
@@ -182,7 +185,7 @@ public final class AmpliconOverviewTopComponent extends TopComponent
         }
         if (groupList.isEmpty()){
             Toolkit.getDefaultToolkit().beep();
-            JOptionPane.showMessageDialog(null,
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
                     "No Amplicons have not been selected",
                     "Must select an Amplicon(s) to export",
                     JOptionPane.ERROR_MESSAGE);
@@ -207,6 +210,7 @@ public final class AmpliconOverviewTopComponent extends TopComponent
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(AmpliconOverviewTopComponent.class, "AmpliconOverviewTopComponent.jPanel1.border.title"))); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(exportAvProfileButton, org.openide.util.NbBundle.getMessage(AmpliconOverviewTopComponent.class, "AmpliconOverviewTopComponent.exportAvProfileButton.text")); // NOI18N
+        exportAvProfileButton.setToolTipText(org.openide.util.NbBundle.getMessage(AmpliconOverviewTopComponent.class, "AmpliconOverviewTopComponent.exportAvProfileButton.toolTipText")); // NOI18N
         exportAvProfileButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exportAvProfileButtonActionPerformed(evt);
@@ -214,6 +218,7 @@ public final class AmpliconOverviewTopComponent extends TopComponent
         });
 
         org.openide.awt.Mnemonics.setLocalizedText(exportRepPrfsButton, org.openide.util.NbBundle.getMessage(AmpliconOverviewTopComponent.class, "AmpliconOverviewTopComponent.exportRepPrfsButton.text")); // NOI18N
+        exportRepPrfsButton.setToolTipText(org.openide.util.NbBundle.getMessage(AmpliconOverviewTopComponent.class, "AmpliconOverviewTopComponent.exportRepPrfsButton.toolTipText")); // NOI18N
         exportRepPrfsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exportRepPrfsButtonActionPerformed(evt);

@@ -29,6 +29,7 @@ import jxl.write.Number;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.Run;
+import org.openide.windows.WindowManager;
 
 /**
  * NOT USED
@@ -71,7 +72,10 @@ public class ProfileWorksheetCreator {
                     + "The will cause the worksheet name to be truncated."
                     + "\nNote also that identical run names will generate an Excel error."
                     + "\nIf this occurs, select ''Yes'' in the resulting dialog box.";
-            JOptionPane.showMessageDialog(null, msg, "Run name is too long", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                    msg,
+                    "Run name is too long",
+                    JOptionPane.WARNING_MESSAGE);
         }
         WritableSheet sheet = workbook.createSheet(run.getName(), sheetNumber);
 

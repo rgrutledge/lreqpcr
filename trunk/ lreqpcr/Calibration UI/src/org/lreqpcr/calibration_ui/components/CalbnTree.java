@@ -174,7 +174,8 @@ public class CalbnTree extends JPanel {
         beanTree.setPreferredSize(new java.awt.Dimension(200, 100));
         jScrollPane1.setViewportView(beanTree);
 
-        runViewButton.setText("Run View");
+        runViewButton.setText("View all Profiles");
+        runViewButton.setToolTipText("Return to viewing all Calibration profiles");
         runViewButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 runViewButtonActionPerformed(evt);
@@ -182,10 +183,11 @@ public class CalbnTree extends JPanel {
         });
 
         jLabel2.setText("Av. OCF:");
-        jLabel2.setToolTipText("Average OCF derived from all of the average profiles");
+        jLabel2.setToolTipText("Average OCF derived from all of the average calibration profiles");
 
         avProfileOCFdisplay.setColumns(8);
         avProfileOCFdisplay.setEditable(false);
+        avProfileOCFdisplay.setToolTipText("The average OCF +/-CV");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -198,8 +200,8 @@ public class CalbnTree extends JPanel {
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(avProfileOCFdisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(22, Short.MAX_VALUE))
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 271, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 289, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

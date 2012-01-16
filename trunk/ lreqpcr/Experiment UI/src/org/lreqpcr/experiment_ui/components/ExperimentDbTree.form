@@ -26,7 +26,7 @@
                       <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="ocfDisplay" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="66" max="32767" attributes="0"/>
+                      <EmptySpace pref="86" max="32767" attributes="0"/>
                   </Group>
               </Group>
           </Group>
@@ -72,17 +72,20 @@
     </Container>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Av. OCF (FU/ng):"/>
+        <Property name="text" type="java.lang.String" value="OCF (FU/ng):"/>
+        <Property name="toolTipText" type="java.lang.String" value="Converts fluorescence target quantities to the number of molecules"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="ocfDisplay">
       <Properties>
         <Property name="columns" type="int" value="8"/>
+        <Property name="toolTipText" type="java.lang.String" value="Manually enter an OCF value that will be applied to all profiles"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JRadioButton" name="runViewButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="Run View"/>
+        <Property name="toolTipText" type="java.lang.String" value="Return to viewing Runs"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="runViewButtonActionPerformed"/>

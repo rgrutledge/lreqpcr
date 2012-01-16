@@ -8,6 +8,7 @@
                 <attr name="displayName" bundlevalue="org.lreqpcr.ab7500Ver1import.Bundle#CTL_Ab7500Ver1"/>
                 <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
                 <attr name="noIconInMenu" boolvalue="false"/>
+                <attr name="position" intvalue="20"/>
             </file>
         </folder>
     </folder>
@@ -15,6 +16,7 @@
         <folder name="Import">
             <file name="org-lreqpcr-ab7500Ver1import-Ab7500Ver1ImportProvider.shadow">
                 <attr name="originalFile" stringvalue="Actions/Tools/org-lreqpcr-ab7500Ver1import-Ab7500Ver1Action.instance"/>
+                <attr name="position" intvalue="500"/>
             </file>
         </folder>
     </folder>

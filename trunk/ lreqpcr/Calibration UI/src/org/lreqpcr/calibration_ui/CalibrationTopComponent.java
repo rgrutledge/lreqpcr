@@ -162,6 +162,7 @@ public final class CalibrationTopComponent extends TopComponent
         });
 
         org.openide.awt.Mnemonics.setLocalizedText(exportProfilesButton, org.openide.util.NbBundle.getMessage(CalibrationTopComponent.class, "CalibrationTopComponent.exportProfilesButton.text")); // NOI18N
+        exportProfilesButton.setToolTipText(org.openide.util.NbBundle.getMessage(CalibrationTopComponent.class, "CalibrationTopComponent.exportProfilesButton.toolTipText")); // NOI18N
         exportProfilesButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exportProfilesButtonActionPerformed(evt);
@@ -274,7 +275,7 @@ public final class CalibrationTopComponent extends TopComponent
     private void exportProfilesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportProfilesButtonActionPerformed
         if (!calibrationDB.isDatabaseOpen()) {
             Toolkit.getDefaultToolkit().beep();
-            JOptionPane.showMessageDialog(null,
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
                     "A calibration database is not open",
                     "",
                     JOptionPane.ERROR_MESSAGE);

@@ -37,6 +37,8 @@ import jxl.format.Colour;
 import jxl.write.*;
 import jxl.write.Number;
 import org.lreqpcr.core.data_objects.SampleProfile;
+import org.openide.windows.WindowManager;
+import java.lang.Boolean;
 
 /**
  *
@@ -54,6 +56,7 @@ public class SampleProfileDataExport {
      */
     @SuppressWarnings("unchecked")
     public static void exportProfiles(HashMap<String, List<AverageSampleProfile>> groupList) throws IOException, WriteException {
+        Boolean hasEmaxBeenOverridden = false;
         //Setup the the workbook based on the file choosen by the user
         File selectedFile = IOUtilities.newExcelFile();
         if (selectedFile == null) {
@@ -66,7 +69,11 @@ public class SampleProfileDataExport {
             Toolkit.getDefaultToolkit().beep();
             String msg = "The file '" + selectedFile.getName()
                     + "' could not be opened, possibly because it is already open.";
-            JOptionPane.showMessageDialog(null, msg, "Unable to open " + selectedFile.getName(), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(
+                    WindowManager.getDefault().getMainWindow(),
+                    msg,
+                    "Unable to open " + selectedFile.getName(),
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -109,7 +116,10 @@ public class SampleProfileDataExport {
                         + "The will cause the worksheet name to be truncated."
                         + "\nNote also that identical run names will generate an Excel error."
                         + "\nIf this occurs, select ''Yes'' in the resulting dialog box.";
-                JOptionPane.showMessageDialog(null, msg, "Parent name is too long", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                        msg,
+                        "Parent name is too long",
+                        JOptionPane.WARNING_MESSAGE);
             }
             WritableSheet sheet = workbook.createSheet(pageName, pageCounter);
 
@@ -125,7 +135,7 @@ public class SampleProfileDataExport {
             sheet.addCell(label);
             label = new Label(4, 2, "Emax", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(5, 2, "avFo CV", centerBoldUnderline);
+            label = new Label(5, 2, "LRE Emax", centerBoldUnderline);
             sheet.addCell(label);
             label = new Label(6, 2, "C1/2", centerBoldUnderline);
             sheet.addCell(label);
@@ -168,26 +178,43 @@ public class SampleProfileDataExport {
                     sheet.addCell(label);
                     if (sampleProfile.isExcluded()) {
                         //All replicate profiles have been excluded
-                        label = new Label(3, row, "0", center);
+                        label = new Label(3, row, "nd", center);
                         sheet.addCell(label);
                         label = new Label(11, row, sampleProfile.getWellLabel());
                         sheet.addCell(label);
-                        label = new Label(12, row, sampleProfile.getLongDescription());
+                        String s = "";
+                        if (avProfile.getLongDescription() != null) {
+                            s = "EXCLUDED " + sampleProfile.getLongDescription();
+                        } else {
+                            s = "EXCLUDED ";
+                        }
+                        label = new Label(12, row, s, boldLeft);
                         sheet.addCell(label);
                         row++;
                         continue;
                     } else {
-                            number = new Number(3, row, sampleProfile.getNo(), integerFormat);
-                            sheet.addCell(number);
+                        number = new Number(3, row, sampleProfile.getNo(), integerFormat);
+                        sheet.addCell(number);
                     }
-                    if (sampleProfile.getEmax() != 0) {
+                    String notes = "";
+                    String note = "";
+                    if (sampleProfile.getLongDescription() != null) {
+                        note = sampleProfile.getLongDescription();
+                    }
+                    if (sampleProfile.isEmaxOverridden()) {
+                        notes = "***Emax is fixed to " + String.valueOf(sampleProfile.getOverriddendEmaxValue() * 100) + "%... " + note;
+                        hasEmaxBeenOverridden = true;
+                        label = new Label(12, row, notes, boldLeft);
+                        number = new Number(4, row, sampleProfile.getOverriddendEmaxValue(), percentFormat);
+                    } else {
+                        notes = note;
+                        label = new Label(12, row, notes);
                         number = new Number(4, row, sampleProfile.getEmax(), percentFormat);
-                        sheet.addCell(number);
                     }
-                    if (sampleProfile.getAvFoCV() != 0) {
-                        number = new Number(5, row, sampleProfile.getAvFoCV(), percentFormat);
-                        sheet.addCell(number);
-                    }
+                    sheet.addCell(label);
+                    sheet.addCell(number);
+                    number = new Number(5, row, sampleProfile.getEmax(), percentFormat);
+                    sheet.addCell(number);
                     if (sampleProfile.getMidC() != 0) {
                         number = new Number(6, row, sampleProfile.getMidC(), floatFormat);
                         sheet.addCell(number);
@@ -206,9 +233,6 @@ public class SampleProfileDataExport {
                     number = new Number(10, row, sampleProfile.getOCF(), floatFormat);
                     sheet.addCell(number);
                     label = new Label(11, row, sampleProfile.getWellLabel());
-                    sheet.addCell(label);
-                    String s = sampleProfile.getLongDescription();
-                    label = new Label(12, row, sampleProfile.getLongDescription());
                     sheet.addCell(label);
                     row++;
                 }
@@ -269,8 +293,8 @@ public class SampleProfileDataExport {
                         row++;
                         continue;
                     }
-                        number = new Number(3, row, sampleProfile.getNo(), floatFormat);
-                        sheet.addCell(number);
+                    number = new Number(3, row, sampleProfile.getNo(), floatFormat);
+                    sheet.addCell(number);
                     if (sampleProfile.getEmax() != 0) {
                         number = new Number(4, row, sampleProfile.getEmax(), percentFormat);
                         sheet.addCell(number);
@@ -298,8 +322,8 @@ public class SampleProfileDataExport {
                     sheet.addCell(number);
                     label = new Label(11, row, sampleProfile.getWellLabel());
                     sheet.addCell(label);
-                        number = new Number(12, row, sampleProfile.getAvFo(), exponentialFormat);
-                        sheet.addCell(number);
+                    number = new Number(12, row, sampleProfile.getAvFo(), exponentialFormat);
+                    sheet.addCell(number);
                     label = new Label(13, row, sampleProfile.getLongDescription());
                     sheet.addCell(label);
                 }

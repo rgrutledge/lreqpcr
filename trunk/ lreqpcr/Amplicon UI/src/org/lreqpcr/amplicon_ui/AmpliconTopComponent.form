@@ -62,7 +62,7 @@
           <Image iconType="3" name="/org/lreqpcr/amplicon_ui/Open24.gif"/>
         </Property>
         <Property name="text" type="java.lang.String" value="null"/>
-        <Property name="toolTipText" type="java.lang.String" value="Open file"/>
+        <Property name="toolTipText" type="java.lang.String" value="Open an Amplicon database"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="openDBbuttonActionPerformed"/>
@@ -74,7 +74,7 @@
           <Image iconType="3" name="/org/lreqpcr/amplicon_ui/New24.gif"/>
         </Property>
         <Property name="text" type="java.lang.String" value="null"/>
-        <Property name="toolTipText" type="java.lang.String" value="New file"/>
+        <Property name="toolTipText" type="java.lang.String" value="Create a new Amplicon database"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="newDBbuttonActionPerformed"/>
@@ -86,7 +86,7 @@
           <Image iconType="3" name="/org/lreqpcr/amplicon_ui/Stop24.gif"/>
         </Property>
         <Property name="text" type="java.lang.String" value="null"/>
-        <Property name="toolTipText" type="java.lang.String" value="Close file"/>
+        <Property name="toolTipText" type="java.lang.String" value="Close the Amplicon database"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="closeDBbuttonActionPerformed"/>
@@ -98,6 +98,7 @@
           <Font name="Tahoma" size="11" style="1"/>
         </Property>
         <Property name="text" type="java.lang.String" value="New Amplicon"/>
+        <Property name="toolTipText" type="java.lang.String" value="Create a new Amplicon"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="newAmpliconButtonActionPerformed"/>
@@ -115,6 +116,7 @@
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
           <Image iconType="3" name="/org/lreqpcr/amplicon_ui/Back24.gif"/>
         </Property>
+        <Property name="toolTipText" type="java.lang.String" value="Open the last Amplicon database"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="loadLastDatabaseButtonActionPerformed"/>

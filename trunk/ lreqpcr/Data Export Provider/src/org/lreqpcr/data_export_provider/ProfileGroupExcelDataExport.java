@@ -37,6 +37,7 @@ import jxl.format.BorderLineStyle;
 import jxl.format.Colour;
 import jxl.write.*;
 import jxl.write.Number;
+import org.openide.windows.WindowManager;
 
 /**
  *
@@ -58,7 +59,10 @@ public class ProfileGroupExcelDataExport {
             Toolkit.getDefaultToolkit().beep();
             String msg = "The file '" + selectedFile.getName() +
                     "' could not be opened, possibly because it is already open.";
-            JOptionPane.showMessageDialog(null, msg, "Unable to open " + selectedFile.getName(), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                    msg,
+                    "Unable to open " + selectedFile.getName(),
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
 

@@ -50,6 +50,7 @@ import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import org.lreqpcr.data_import_services.RunImportService;
 import org.openide.util.Exceptions;
+import org.openide.windows.WindowManager;
 
 /**
  *
@@ -145,7 +146,7 @@ public class CalibrationProfileTemplateDataImport extends RunImportService {
         if (excelImportFile == null) {
             Toolkit.getDefaultToolkit().beep();
             String msg = "The calibration Excel data file could not be opened.";
-            JOptionPane.showMessageDialog(null, msg, "Unable to open the Calibration datafile",
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Unable to open the Calibration datafile",
                     JOptionPane.ERROR_MESSAGE);
             return null;
         }
@@ -160,7 +161,7 @@ public class CalibrationProfileTemplateDataImport extends RunImportService {
         if (workbook == null) {
             Toolkit.getDefaultToolkit().beep();
             String msg = "The selected file (" + excelImportFile.getName() + " could not be opened";
-            JOptionPane.showMessageDialog(null, msg, "Unable to open the selected file " + excelImportFile.getName(), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Unable to open the selected file " + excelImportFile.getName(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
         Sheet sheet = workbook.getSheet(0);
@@ -169,7 +170,7 @@ public class CalibrationProfileTemplateDataImport extends RunImportService {
             Toolkit.getDefaultToolkit().beep();
             String msg = "This appears not to be a calibration template file. Note " +
                     "that the Excel sheet name must be 'LRE Calibration Template'";
-            JOptionPane.showMessageDialog(null, msg, "Unable to import data " + excelImportFile.getName(), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Unable to import data " + excelImportFile.getName(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
         int colCount = sheet.getColumns();
@@ -183,7 +184,7 @@ public class CalibrationProfileTemplateDataImport extends RunImportService {
             String msg = "The Run Date appears to be invalid. Manually enter " +
                     "the run date in the Calibration template import sheet (C2), " +
                     "save the file, and try importing the xls file again.";
-            JOptionPane.showMessageDialog(null, msg,
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg,
                     "Invalid Run Date", JOptionPane.ERROR_MESSAGE);
             return null;
         }

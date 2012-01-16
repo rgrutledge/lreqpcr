@@ -12,9 +12,6 @@
         </folder>
     </folder>
     <folder name="Menu">
-        <folder name="Help">
-            <file name="master-help.xml" url="master-help.xml"/>
-        </folder>
         <folder name="Window">
             <file name="CalibrationAction.shadow">
                 <attr name="originalFile" stringvalue="Actions/Window/org-lreqpcr-calibration_ui-CalibrationAction.instance"/>
@@ -31,10 +28,5 @@
                     <attr name="position" intvalue="100"/>
             </folder>
         </folder>
-<!--        <folder name="Groups">
-            <folder name="profile_view">
-                <file name="calibration.wstcgrp" url="CalibrationTCWstcgrp.xml"/>
-            </folder>
-        </folder>-->
     </folder>
 </filesystem>
