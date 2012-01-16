@@ -23,9 +23,9 @@
               <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="avProfileOCFdisplay" min="-2" pref="119" max="-2" attributes="1"/>
-              <EmptySpace pref="22" max="32767" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
           </Group>
-          <Component id="jScrollPane1" alignment="0" pref="271" max="32767" attributes="1"/>
+          <Component id="jScrollPane1" alignment="0" pref="289" max="32767" attributes="1"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -69,7 +69,8 @@
     </Container>
     <Component class="javax.swing.JRadioButton" name="runViewButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Run View"/>
+        <Property name="text" type="java.lang.String" value="View all Profiles"/>
+        <Property name="toolTipText" type="java.lang.String" value="Return to viewing all Calibration profiles"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="runViewButtonActionPerformed"/>
@@ -78,13 +79,14 @@
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
         <Property name="text" type="java.lang.String" value="Av. OCF:"/>
-        <Property name="toolTipText" type="java.lang.String" value="Average OCF derived from all of the average profiles"/>
+        <Property name="toolTipText" type="java.lang.String" value="Average OCF derived from all of the average calibration profiles"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="avProfileOCFdisplay">
       <Properties>
         <Property name="columns" type="int" value="8"/>
         <Property name="editable" type="boolean" value="false"/>
+        <Property name="toolTipText" type="java.lang.String" value="The average OCF +/-CV"/>
       </Properties>
     </Component>
   </SubComponents>

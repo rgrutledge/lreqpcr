@@ -37,6 +37,8 @@ import jxl.format.BorderLineStyle;
 import jxl.format.Colour;
 import jxl.write.*;
 import jxl.write.Number;
+import org.openide.windows.WindowManager;
+import java.lang.Boolean;
 
 /**
  *
@@ -54,6 +56,7 @@ public class ExcelAverageSampleProfileDataExport {
      */
     @SuppressWarnings("unchecked")
     public static void exportProfiles(HashMap<String, List<AverageSampleProfile>> groupList) throws IOException, WriteException {
+        Boolean hasEmaxBeenOverridden = false;
         //Setup the the workbook based on the file choosen by the user
         File selectedFile = IOUtilities.newExcelFile();
         if (selectedFile == null) {
@@ -66,7 +69,9 @@ public class ExcelAverageSampleProfileDataExport {
             Toolkit.getDefaultToolkit().beep();
             String msg = "The file '" + selectedFile.getName()
                     + "' could not be opened, possibly because it is already open.";
-            JOptionPane.showMessageDialog(null, msg, "Unable to open " + selectedFile.getName(), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                    msg, "Unable to open " + selectedFile.getName(),
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -109,7 +114,9 @@ public class ExcelAverageSampleProfileDataExport {
                         + "The will cause the worksheet name to be truncated."
                         + "\nNote also that identical run names will generate an Excel error."
                         + "\nIf this occurs, select ''Yes'' in the resulting dialog box.";
-                JOptionPane.showMessageDialog(null, msg, "Parent name is too long", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                        msg, "Parent name is too long",
+                        JOptionPane.WARNING_MESSAGE);
             }
             WritableSheet sheet = workbook.createSheet(pageName, pageCounter);
 
@@ -125,7 +132,7 @@ public class ExcelAverageSampleProfileDataExport {
             sheet.addCell(label);
             label = new Label(4, 2, "Emax", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(5, 2, "avFo CV", centerBoldUnderline);
+            label = new Label(5, 2, "LRE-Emax", centerBoldUnderline);
             sheet.addCell(label);
             label = new Label(6, 2, "C1/2", centerBoldUnderline);
             sheet.addCell(label);
@@ -149,13 +156,12 @@ public class ExcelAverageSampleProfileDataExport {
             List<AverageSampleProfile> profileList = groupList.get(pageName);
             Collections.sort(profileList);
             ArrayList<AverageSampleProfile> belowTenMoleculeList = new ArrayList<AverageSampleProfile>();
-
             for (AverageSampleProfile avProfile : profileList) {
-                if (avProfile.getNo() < 10) {
-                    belowTenMoleculeList.add(avProfile);
-                    continue;
-                }
-                //Calculate averages for the amplicon Tm taken from the replicate profiles
+//                if (avProfile.getNo() < 10) {
+//                    belowTenMoleculeList.add(avProfile);
+//                    continue;
+//                }
+                //Calculate an average amplicon Tm taken from the replicate profiles
                 double avTm = 0;
                 int tmCnt = 0;
                 for (Profile sampleProfile : avProfile.getReplicateProfileList()) {
@@ -178,27 +184,56 @@ public class ExcelAverageSampleProfileDataExport {
                 sheet.addCell(label);
                 if (avProfile.isExcluded()) {
                     //All replicate profiles have been excluded
-                    label = new Label(3, row, "0", center);
+                    label = new Label(3, row, "nd", center);
                     sheet.addCell(label);
-                    label = new Label(11, row, avProfile.getLongDescription());
+                    String s = "";
+                    if (avProfile.getLongDescription() != null) {
+                        s = "EXCLUDED " + avProfile.getLongDescription();
+                    } else {
+                        s = "EXCLUDED ";
+                    }
+                    label = new Label(11, row, s, boldLeft);
                     sheet.addCell(label);
                     row++;
                     continue;
                 } else {
-//                    if (avProfile.getEmax() > 1.00) {
-//                        number = new Number(3, row, avProfile.getAdjustedNo(), integerFormat);
-//                        sheet.addCell(number);
-//                    } else {
-                        number = new Number(3, row, avProfile.getNo(), integerFormat);
+//Need to determine if No <10 molecules so that an average No must be calculated from the replicate profiles
+//That is an average profile is not reliable when the average No is below 10 molecules
+                    //Calculate an average No from the replicate profile No values
+                    double noSum = 0;
+                    for (Profile prf : avProfile.getReplicateProfileList()) {
+                        noSum = +prf.getNo();
+                    }
+                    if (noSum < 10) {
+                        number = new Number(3, row, noSum, integerFormat);
                         sheet.addCell(number);
-//                    }
-                }
-                if (avProfile.getEmax() != 0) {
-                    number = new Number(4, row, avProfile.getEmax(), percentFormat);
+                    //But note that all the other profile parameters are invalid...
+
+                    } else {
+                        number = new Number(3, row, avProfile.getNo(), integerFormat);
+                    }
                     sheet.addCell(number);
+
                 }
-                if (avProfile.getAvFoCV() != 0) {
-                    number = new Number(5, row, avProfile.getAvFoCV(), percentFormat);
+                String notes = "";
+                String note = "";
+                if (avProfile.getLongDescription() != null) {
+                    note = avProfile.getLongDescription();
+                }
+                if (avProfile.isEmaxOverridden()) {
+                    notes = "***Emax is fixed to " + String.valueOf(avProfile.getOverriddendEmaxValue() * 100) + "%... " + note;
+                    hasEmaxBeenOverridden = true;
+                    label = new Label(11, row, notes, boldLeft);
+                    number = new Number(4, row, avProfile.getOverriddendEmaxValue(), percentFormat);
+                } else {
+                    notes = note;
+                    label = new Label(11, row, notes);
+                    number = new Number(4, row, avProfile.getEmax(), percentFormat);
+                }
+                sheet.addCell(label);
+                sheet.addCell(number);
+                if (avProfile.getEmax() != 0) {
+                    number = new Number(5, row, avProfile.getEmax(), percentFormat);
                     sheet.addCell(number);
                 }
                 if (avProfile.getMidC() != 0) {
@@ -218,9 +253,11 @@ public class ExcelAverageSampleProfileDataExport {
                 sheet.addCell(number);
                 number = new Number(10, row, avProfile.getOCF(), floatFormat);
                 sheet.addCell(number);
-                label = new Label(11, row, avProfile.getLongDescription());
-                sheet.addCell(label);
                 row++;
+            }
+            if (hasEmaxBeenOverridden) {
+                label = new Label(1, 1, "Note that Emax has been overridden in at leaast one profile", boldLeft);
+                sheet.addCell(label);
             }
 
 //List the replicate profiles from the average profiles with No <10
@@ -278,8 +315,8 @@ public class ExcelAverageSampleProfileDataExport {
                             row++;
                             continue;
                         }
-                            number = new Number(3, row, profile.getNo(), floatFormat);
-                            sheet.addCell(number);
+                        number = new Number(3, row, profile.getNo(), floatFormat);
+                        sheet.addCell(number);
                         if (profile.getEmax() != 0) {
                             number = new Number(4, row, profile.getEmax(), percentFormat);
                             sheet.addCell(number);

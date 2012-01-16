@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
 <filesystem>
-    <attr name="Menu\Edit_hidden\position" intvalue="300"/>
-    <attr name="Menu\File\position" intvalue="100"/>
-    <attr name="Menu\GoTo_hidden\position" intvalue="400"/>
-    <attr name="Menu\Help\position" intvalue="900"/>
-    <attr name="Menu\Import\position" intvalue="200"/>
-    <attr name="Menu\Tools_hidden\position" intvalue="500"/>
-    <attr name="Menu\View_hidden\position" intvalue="600"/>
-    <attr name="Menu\Window_hidden\position" intvalue="700"/>
     <attr name="Windows2\Modes\explorer\CalibrationTopComponent.wstcref\position" intvalue="50"/>
     <folder name="Actions">
         <folder name="Tools">
@@ -40,23 +32,23 @@
         </folder>
     </folder>
     <folder name="Menu">
-        <folder name="Amplicon">
-            <attr name="org-lreqpcr-amplicon_ui-AmpliconExport.shadow/org-lreqpcr-amplicon_ui-AmpliconImportTemplate-separatorBefore.instance" boolvalue="true"/>
-            <attr name="org-lreqpcr-amplicon_ui-AmpliconExport.shadow/org-lreqpcr-amplicon_ui-AmpliconImportTemplate.shadow" boolvalue="true"/>
-            <attr name="org-lreqpcr-amplicon_ui-AmpliconImportTemplate-separatorBefore.instance/org-lreqpcr-amplicon_ui-AmpliconImportTemplate.shadow" boolvalue="true"/>
-            <attr name="org-lreqpcr-amplicon_ui-AmpliconImportTemplate.shadow/org-lreqpcr-amplicon_ui-AmpliconImportAction.shadow" boolvalue="true"/>
-            <attr name="position" intvalue="250"/>
+        <folder name="Amplicon Tools">
+            <attr name="position" intvalue="400"/>
             <file name="org-lreqpcr-amplicon_ui-AmpliconExport.shadow">
                 <attr name="originalFile" stringvalue="Actions/Tools/org-lreqpcr-amplicon_ui-AmpliconExport.instance"/>
+                <attr name="position" intvalue="100"/>
             </file>
             <file name="org-lreqpcr-amplicon_ui-AmpliconImportAction.shadow">
                 <attr name="originalFile" stringvalue="Actions/Tools/org-lreqpcr-amplicon_ui-AmpliconImportAction.instance"/>
+                <attr name="position" intvalue="500"/>
             </file>
             <file name="org-lreqpcr-amplicon_ui-AmpliconImportTemplate-separatorBefore.instance">
                 <attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
+                <attr name="position" intvalue="300"/>
             </file>
             <file name="org-lreqpcr-amplicon_ui-AmpliconImportTemplate.shadow">
                 <attr name="originalFile" stringvalue="Actions/Tools/org-lreqpcr-amplicon_ui-AmpliconImportTemplate.instance"/>
+                <attr name="position" intvalue="400"/>
             </file>
         </folder>
         <folder name="Window">

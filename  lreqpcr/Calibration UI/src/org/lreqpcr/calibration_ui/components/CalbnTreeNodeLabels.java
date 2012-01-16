@@ -52,8 +52,8 @@ public class CalbnTreeNodeLabels implements LabelFactory {
             } else {
                 df.applyPattern(FormatingUtilities.decimalFormatPattern(calbnProfile.getOCF()));
                 ocf = df.format(calbnProfile.getOCF());
+                df.applyPattern("##.0");
                 if (calbnProfile.isEmaxOverridden()) {
-                    df.applyPattern("##.0");
                     calbnProfile.setShortDescription("Emax overridden");
                     //Denote overridden Emax using asterics
                     emax = " (**" + df.format(calbnProfile.getOverriddendEmaxValue() * 100) + "%) ";

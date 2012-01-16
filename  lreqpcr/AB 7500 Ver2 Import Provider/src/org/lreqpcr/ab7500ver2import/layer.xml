@@ -13,9 +13,9 @@
     </folder>
     <folder name="Menu">
         <folder name="Import">
-            <attr name="org-lreqpcr-ab7500ver2import-Ab7500Ver2.shadow/org-lreqpcr-ab7500Ver1import-Ab7500Ver1ImportProvider.shadow" boolvalue="true"/>
             <file name="org-lreqpcr-ab7500ver2import-Ab7500Ver2.shadow">
                 <attr name="originalFile" stringvalue="Actions/Tools/org-lreqpcr-ab7500ver2import-Ab7500Ver2Action.instance"/>
+                <attr name="position" intvalue="300"/>
             </file>
         </folder>
     </folder>

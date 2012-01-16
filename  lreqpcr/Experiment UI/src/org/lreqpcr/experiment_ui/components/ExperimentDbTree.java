@@ -244,11 +244,14 @@ public class ExperimentDbTree extends JPanel {
         beanTree.setPreferredSize(new java.awt.Dimension(200, 100));
         jScrollPane1.setViewportView(beanTree);
 
-        jLabel1.setText("Av. OCF (FU/ng):");
+        jLabel1.setText("OCF (FU/ng):");
+        jLabel1.setToolTipText("Converts fluorescence target quantities to the number of molecules");
 
         ocfDisplay.setColumns(8);
+        ocfDisplay.setToolTipText("Manually enter an OCF value that will be applied to all profiles");
 
         runViewButton.setText("Run View");
+        runViewButton.setToolTipText("Return to viewing Runs");
         runViewButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 runViewButtonActionPerformed(evt);
@@ -269,7 +272,7 @@ public class ExperimentDbTree extends JPanel {
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ocfDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(66, Short.MAX_VALUE))))
+                        .addContainerGap(86, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

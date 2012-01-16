@@ -155,7 +155,7 @@ public final class AmpliconTopComponent extends TopComponent
 
         openDBbutton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/lreqpcr/amplicon_ui/Open24.gif"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(openDBbutton, null);
-        openDBbutton.setToolTipText("Open file");
+        openDBbutton.setToolTipText("Open an Amplicon database");
         openDBbutton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 openDBbuttonActionPerformed(evt);
@@ -164,7 +164,7 @@ public final class AmpliconTopComponent extends TopComponent
 
         newDBbutton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/lreqpcr/amplicon_ui/New24.gif"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(newDBbutton, null);
-        newDBbutton.setToolTipText("New file");
+        newDBbutton.setToolTipText("Create a new Amplicon database");
         newDBbutton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 newDBbuttonActionPerformed(evt);
@@ -173,15 +173,16 @@ public final class AmpliconTopComponent extends TopComponent
 
         closeDBbutton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/lreqpcr/amplicon_ui/Stop24.gif"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(closeDBbutton, null);
-        closeDBbutton.setToolTipText("Close file");
+        closeDBbutton.setToolTipText("Close the Amplicon database");
         closeDBbutton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 closeDBbuttonActionPerformed(evt);
             }
         });
 
-        newAmpliconButton.setFont(new java.awt.Font("Tahoma", 1, 11));
+        newAmpliconButton.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(newAmpliconButton, "New Amplicon");
+        newAmpliconButton.setToolTipText("Create a new Amplicon");
         newAmpliconButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 newAmpliconButtonActionPerformed(evt);
@@ -189,6 +190,7 @@ public final class AmpliconTopComponent extends TopComponent
         });
 
         loadLastDatabaseButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/lreqpcr/amplicon_ui/Back24.gif"))); // NOI18N
+        loadLastDatabaseButton.setToolTipText("Open the last Amplicon database");
         loadLastDatabaseButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 loadLastDatabaseButtonActionPerformed(evt);
@@ -265,7 +267,7 @@ public final class AmpliconTopComponent extends TopComponent
         if (!ampliconDB.isDatabaseOpen()) {
             Toolkit.getDefaultToolkit().beep();
             String msg = "An amplicon database has not been opened";
-            JOptionPane.showMessageDialog(null, msg, "No amplicon database",
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "No amplicon database",
                     JOptionPane.ERROR_MESSAGE);
             return;
         }

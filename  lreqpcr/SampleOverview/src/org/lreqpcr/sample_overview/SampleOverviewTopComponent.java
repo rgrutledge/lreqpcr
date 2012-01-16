@@ -184,7 +184,7 @@ public final class SampleOverviewTopComponent extends TopComponent
         }
         if (groupList.isEmpty()){
             Toolkit.getDefaultToolkit().beep();
-            JOptionPane.showMessageDialog(null,
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
                     "No Samples have not been selected",
                     "Must select a Sample to export",
                     JOptionPane.ERROR_MESSAGE);
@@ -208,6 +208,7 @@ public final class SampleOverviewTopComponent extends TopComponent
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(SampleOverviewTopComponent.class, "SampleOverviewTopComponent.jPanel1.border.title"))); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(exportAvProfileButton, org.openide.util.NbBundle.getMessage(SampleOverviewTopComponent.class, "SampleOverviewTopComponent.exportAvProfileButton.text")); // NOI18N
+        exportAvProfileButton.setToolTipText(org.openide.util.NbBundle.getMessage(SampleOverviewTopComponent.class, "SampleOverviewTopComponent.exportAvProfileButton.toolTipText")); // NOI18N
         exportAvProfileButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exportAvProfileButtonActionPerformed(evt);
@@ -215,6 +216,7 @@ public final class SampleOverviewTopComponent extends TopComponent
         });
 
         org.openide.awt.Mnemonics.setLocalizedText(exportRepPrfsButton, org.openide.util.NbBundle.getMessage(SampleOverviewTopComponent.class, "SampleOverviewTopComponent.exportRepPrfsButton.text")); // NOI18N
+        exportRepPrfsButton.setToolTipText(org.openide.util.NbBundle.getMessage(SampleOverviewTopComponent.class, "SampleOverviewTopComponent.exportRepPrfsButton.toolTipText")); // NOI18N
         exportRepPrfsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exportRepPrfsButtonActionPerformed(evt);

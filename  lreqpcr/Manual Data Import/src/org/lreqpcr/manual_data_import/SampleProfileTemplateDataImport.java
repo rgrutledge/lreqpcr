@@ -51,6 +51,7 @@ import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.TargetStrandedness;
 import org.lreqpcr.data_import_services.RunImportService;
 import org.openide.util.Exceptions;
+import org.openide.windows.WindowManager;
 
 /**
  *
@@ -137,7 +138,7 @@ public class SampleProfileTemplateDataImport extends RunImportService {
             desktop.open(selectedFile);
         } else {
             String msg = "File Error";
-            JOptionPane.showMessageDialog(null, msg,
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg,
                     "The file could not be opened", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -165,7 +166,7 @@ public class SampleProfileTemplateDataImport extends RunImportService {
         }
         if (workbook == null) {
             String msg = "The Excel import file could not be opened";
-            JOptionPane.showMessageDialog(null, msg, "Unable to open the Excel file ",
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Unable to open the Excel file ",
                     JOptionPane.ERROR_MESSAGE);
             return null;
         }
@@ -174,7 +175,7 @@ public class SampleProfileTemplateDataImport extends RunImportService {
         if (sheet.getName().compareTo("LRE Sample Template") != 0) {
             String msg = "This appears not to be a LRE sample template file. Note " +
                     "that the Excel sheet name must be \"LRE Sample Template\"";
-            JOptionPane.showMessageDialog(null, msg, "Invalid Excel import file",
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Invalid Excel import file",
                     JOptionPane.ERROR_MESSAGE);
             return null;
         }
@@ -186,7 +187,7 @@ public class SampleProfileTemplateDataImport extends RunImportService {
             String msg = "The Run Date appears to be invalid. Manually replace " +
                     "the run date in the Results sheet (B8), " +
                     "save the file, and try importing the xls file again.";
-            JOptionPane.showMessageDialog(null, msg,
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg,
                     "Invalid Run Date", JOptionPane.ERROR_MESSAGE);
             return null;
         }

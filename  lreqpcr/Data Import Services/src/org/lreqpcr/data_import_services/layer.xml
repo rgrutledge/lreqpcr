@@ -1,22 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
 <filesystem>
-
-    <attr name="Menu\Amplicon\position" intvalue="150"/>
-    <attr name="Menu\Import\org-lreqpcr-ab7500Ver1import-Ab7500Ver1ImportProvider.shadow\position" intvalue="400"/>
-    <attr name="Menu\Import\org-lreqpcr-ab7500ver2import-Ab7500Ver2.shadow\position" intvalue="100"/>
-    <attr name="Menu\Import\org-lreqpcr-ab7900Ver2_3Import-Ab7900Ver2_3.shadow\position" intvalue="500"/>
-    <attr name="Menu\Import\org-lreqpcr-mxpver3_4import-MxpVer3_4.shadow\position" intvalue="300"/>
     <folder name="Menu">
         <folder name="Import">
             <attr name="position" intvalue="200"/>
             <file name="Separator2.instance" url="Separator2.instance">
                 <attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
-                <attr name="position" intvalue="600"/>
-            </file>
+                <attr name="position" intvalue="110"/>
+                </file>
             <file name="org-lreqpcr-data_import_services-import_help.xml" url="import_help.xml">
-            <attr name="SystemFileSystem.localizingBundle" stringvalue="org.lreqpcr.data_import_services.Bundle"/>
-                <attr name="position" intvalue="700"/>
+                <attr name="SystemFileSystem.localizingBundle" stringvalue="org.lreqpcr.data_import_services.Bundle"/>
+                <attr name="position" intvalue="100"/>
             </file>
         </folder>
     </folder>

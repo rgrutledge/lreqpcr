@@ -23,10 +23,12 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import javax.swing.JOptionPane;
 import jxl.write.WriteException;
+import org.lreqpcr.amplicon_ui.amplicon_io.AmpliconExcelExport;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.openide.util.Exceptions;
+import org.openide.windows.WindowManager;
 
 public final class AmpliconExport implements ActionListener {
 
@@ -36,7 +38,10 @@ public final class AmpliconExport implements ActionListener {
         if(!ampliconDB.isDatabaseOpen()){
             Toolkit.getDefaultToolkit().beep();
             String msg = "An amplicon database has not been opened";
-            JOptionPane.showMessageDialog(null, msg, "No amplicon database",
+            JOptionPane.showMessageDialog(
+                    WindowManager.getDefault().getMainWindow(),
+                    msg,
+                    "No amplicon database",
                     JOptionPane.ERROR_MESSAGE);
             return;
         }

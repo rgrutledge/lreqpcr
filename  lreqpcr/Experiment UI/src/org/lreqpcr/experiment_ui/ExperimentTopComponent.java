@@ -117,7 +117,7 @@ public final class ExperimentTopComponent extends TopComponent
         }
         if (runList.isEmpty()){
             Toolkit.getDefaultToolkit().beep();
-            JOptionPane.showMessageDialog(null,
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
                     "No Runs have not been selected",
                     "Must select a Run(s)",
                     JOptionPane.ERROR_MESSAGE);

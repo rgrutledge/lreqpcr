@@ -23,6 +23,7 @@ import org.lreqpcr.core.utilities.MathFunctions;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.lang.Boolean;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +36,7 @@ import jxl.format.Colour;
 import jxl.format.Border;
 import jxl.format.BorderLineStyle;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
+import org.openide.windows.WindowManager;
 
 /**
  *
@@ -44,6 +46,7 @@ public class ExcelCalibrationProfileExport {
 
     @SuppressWarnings("unchecked")
     public static void exportCalibrationProfiles(List<AverageCalibrationProfile> prfList) throws WriteException, IOException {
+        Boolean hasEmaxBeenOverridden = false;
         if (prfList == null) {
             return;
         }
@@ -75,7 +78,10 @@ public class ExcelCalibrationProfileExport {
         } catch (Exception e) {
             String msg = "The file '" + selectedFile.getName()
                     + "' could not be opened, possibly because it is already open.";
-            JOptionPane.showMessageDialog(null, msg, "Unable to open " + selectedFile.getName(), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                    msg,
+                    "Unable to open " + selectedFile.getName(),
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -84,6 +90,8 @@ public class ExcelCalibrationProfileExport {
         WritableFont arial = new WritableFont(WritableFont.ARIAL, 10);
         WritableCellFormat boldRight = new WritableCellFormat(arialBold);
         boldRight.setAlignment(Alignment.RIGHT);
+        WritableCellFormat boldLeft = new WritableCellFormat(arialBold);
+        boldLeft.setAlignment(Alignment.LEFT);
         WritableCellFormat center = new WritableCellFormat(arial);
         center.setAlignment(Alignment.CENTRE);
         WritableCellFormat leftYellow = new WritableCellFormat(arial);
@@ -119,7 +127,7 @@ public class ExcelCalibrationProfileExport {
         sheet.addCell(label);
         label = new Label(3, 3, "Emax", centerBoldUnderline);
         sheet.addCell(label);
-        label = new Label(4, 3, "avFo CV", centerBoldUnderline);
+        label = new Label(4, 3, "LRE-Emax", centerBoldUnderline);
         sheet.addCell(label);
         label = new Label(5, 3, "C1/2", centerBoldUnderline);
         sheet.addCell(label);
@@ -129,8 +137,9 @@ public class ExcelCalibrationProfileExport {
         sheet.addCell(label);
         label = new Label(8, 3, "Lam-fg", centerBoldUnderline);
         sheet.addCell(label);
-
-        label = new Label(9, 3, "Notes", centerBoldUnderline);
+        label = new Label(9, 3, "#Molecs", centerBoldUnderline);
+        sheet.addCell(label);
+        label = new Label(10, 3, "Notes", centerBoldUnderline);
         sheet.addCell(label);
 
         //Column values
@@ -143,38 +152,67 @@ public class ExcelCalibrationProfileExport {
             sheet.addCell(dateCell);
             label = new Label(1, row, profile.getAmpliconName(), center);
             sheet.addCell(label);
-            number = new Number(2, row, profile.getOCF(), floatFormat);
-            sheet.addCell(number);
-            number = new Number(3, row, profile.getEmax(), percentFormat);
-            sheet.addCell(number);
-            number = new Number(4, row, profile.getAvFoCV(), percentFormat);
-            sheet.addCell(number);
-            number = new Number(5, row, profile.getMidC(), floatFormat);
-            sheet.addCell(number);
-            double fmax = (profile.getEmax() / profile.getDeltaE()) * -1;
-            number = new Number(6, row, fmax, floatFormat);
-            sheet.addCell(number);
-            number = new Number(7, row, profile.getAmpliconSize(), integerFormat);
-            sheet.addCell(number);
-            number = new Number(8, row, profile.getLambdaMass() * 1000000d, integerFormat);
-            sheet.addCell(number);
-            String notes = "";
             if (profile.isExcluded()) {
+                //All replicate profiles have been excluded
+                label = new Label(2, row, "nd", center);
+                sheet.addCell(label);
+                String s = "";
                 if (profile.getLongDescription() != null) {
-                    notes = "EXCLUDED " + profile.getLongDescription();
+                    s = "EXCLUDED... " + profile.getLongDescription();
                 } else {
-                    notes = "EXCLUDED ";
+                    s = "EXCLUDED ";
                 }
+                label = new Label(10, row, s, boldLeft);
+                sheet.addCell(label);
+                row++;
+                continue;
             } else {
-                if (profile.getLongDescription() != null) {
-                    notes = profile.getLongDescription();
+                number = new Number(2, row, profile.getOCF(), floatFormat);
+                sheet.addCell(number);
+                if (profile.isEmaxOverridden()) {
+                    number = new Number(3, row, 1.0, percentFormat);
+                    sheet.addCell(number);
                 } else {
-                    notes = "";
+                    number = new Number(3, row, profile.getEmax(), percentFormat);
+                    sheet.addCell(number);
                 }
+                number = new Number(4, row, profile.getEmax(), percentFormat);
+                sheet.addCell(number);
+                number = new Number(5, row, profile.getMidC(), floatFormat);
+                sheet.addCell(number);
+                double fmax = (profile.getEmax() / profile.getDeltaE()) * -1;
+                number = new Number(6, row, fmax, floatFormat);
+                sheet.addCell(number);
+                number = new Number(7, row, profile.getAmpliconSize(), integerFormat);
+                sheet.addCell(number);
+                number = new Number(8, row, profile.getLambdaMass() * 1000000d, integerFormat);
+                sheet.addCell(number);
+                double numberOfGenomes = profile.getLambdaMass() * 1000000d * 18.762;
+                number = new Number(9, row, numberOfGenomes, integerFormat);
+                sheet.addCell(number);
+                String notes = "";
+                Boolean doesThisProfileOverrideEmax = false;
+                String note = "";
+                if (profile.isEmaxOverridden()) {
+                    hasEmaxBeenOverridden = true;
+                    doesThisProfileOverrideEmax = true;
+                    notes = "***Emax is fixed to " + String.valueOf(profile.getOverriddendEmaxValue() * 100) + "%... " + note;
+                } else {
+                    notes = note;
+                }
+                if (doesThisProfileOverrideEmax) {
+                    label = new Label(10, row, notes, boldLeft);
+                    doesThisProfileOverrideEmax = false;
+                } else {
+                    label = new Label(10, row, notes);
+                }
+                sheet.addCell(label);
+                row++;
             }
-            label = new Label(9, row, notes);
+        }
+        if (hasEmaxBeenOverridden) {
+            label = new Label(1, 2, "Note that Emax has been overridden in at leaast one profile", boldLeft);
             sheet.addCell(label);
-            row++;
         }
 
         //Add formulas
