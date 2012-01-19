@@ -61,8 +61,6 @@ public abstract class Profile extends LreObject {
     private double ocf;//The optical calibration factor used to calculate the number of target molecules
     private double no;//Number of targets molecules
 
-
-
     public Run getRun() {
         return run;
     }
@@ -199,6 +197,10 @@ public abstract class Profile extends LreObject {
 
     public void setEmax(double eMax) {
         this.eMax = eMax;
+        //Some nearly flat profiles generate a negative Emax
+        if(eMax < 0 || eMax == Double.NaN || deltaE > 0){
+            setNo(0);
+        }
     }
 
     public double getFb() {

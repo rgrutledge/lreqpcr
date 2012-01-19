@@ -42,9 +42,9 @@ public class SampleChildren extends Children.Keys<Sample> {
     protected Node[] createNodes(Sample sample) {
         SampleNode node = new SampleNode(Children.LEAF, Lookups.singleton(sample), db);
             if (sample.getEmaxCV() == 0) {
-                node.setName(sample.getName() + " (" + df.format(sample.getEmaxAverage() * 100) + "%)");
+                node.setName(sample.getName() + "  (Av. Emax= " + df.format(sample.getEmaxAverage() * 100) + "%)");
             } else {
-                node.setName(sample.getName() + " (" + df.format(sample.getEmaxAverage() * 100)
+                node.setName(sample.getName() + "  (Av. Emax= " + df.format(sample.getEmaxAverage() * 100)
                         + " +/-" + df.format(sample.getEmaxCV() * 100) + "%)");
             }
              return new Node[]{node};

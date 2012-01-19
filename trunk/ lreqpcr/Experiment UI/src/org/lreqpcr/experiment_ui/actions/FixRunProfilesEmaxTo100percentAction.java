@@ -20,8 +20,10 @@ import java.awt.event.ActionEvent;
 import java.util.List;
 import javax.swing.AbstractAction;
 import org.lreqpcr.analysis_services.LreAnalysisService;
+import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
+import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.data_processing.ProfileSummary;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LreNode;
@@ -35,41 +37,56 @@ import org.openide.util.Lookup;
  *
  * @author Bob Rutledge
  */
-public class ReturnSampleProfileEmaxToLreAction extends AbstractAction {
+public class FixRunProfilesEmaxTo100percentAction extends AbstractAction {
 
     private ExplorerManager mgr;
     private DatabaseServices db;
     private LreWindowSelectionParameters selectionParameters;
     private LreAnalysisService analysisService;
 
-    public ReturnSampleProfileEmaxToLreAction(ExplorerManager mgr) {
+    public FixRunProfilesEmaxTo100percentAction(ExplorerManager mgr) {
         this.mgr = mgr;
-        putValue(NAME, "Return to LRE-derived Emax");
+        putValue(NAME, "Fix all Run Profiles' Emax to 100%");
     }
 
     @SuppressWarnings("unchecked")
     public void actionPerformed(ActionEvent e) {
         analysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
+        //Retrieve the database holding the profiles
         Node[] nodes = mgr.getSelectedNodes();
         LreNode lreNode = (LreNode) nodes[0];
         db = lreNode.getDatabaseServices();
         if (db != null) {
             if (db.isDatabaseOpen()) {
                 List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
-//This list should never be empty, as a LreWindowSelectionParameters object is created during DB creation
                 selectionParameters = l.get(0);
+            } else {
+                return;
             }
             for (Node n : nodes) {
+                //Retrieve the Run
                 LreNode node = (LreNode) n;
-                Profile profile = node.getLookup().lookup(Profile.class);
-                profile.setIsEmaxOverridden(false);
-                profile.setOverridentEmaxValue(0);
-                ProfileSummary prfSum = analysisService.initializeProfile(profile, selectionParameters);
-                db.saveObject(prfSum.getProfile());
-                node.refreshNodeLabel();
+                Run run = node.getLookup().lookup(Run.class);
+//Process all profiles within the run, including the replicate profiles
+                for (Profile profile : run.getAverageProfileList()) {
+                    profile.setIsEmaxOverridden(true);
+                    profile.setOverridentEmaxValue(1.0);
+                    ProfileSummary prfSum = analysisService.initializeProfile(profile, selectionParameters);
+                    db.saveObject(prfSum.getProfile());
+                    AverageProfile avProfile = (AverageProfile) profile;
+                    for (Profile repProfile : avProfile.getReplicateProfileList()) {
+                        repProfile.setIsEmaxOverridden(true);
+                        repProfile.setOverridentEmaxValue(1.0);
+                        prfSum = analysisService.initializeProfile(repProfile, selectionParameters);
+                        db.saveObject(prfSum.getProfile());
+                    }
+                }
             }
-            db.commitChanges();
-            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_CHANGED);
+        } else {
+            return;
         }
+        db.commitChanges();
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_CHANGED);
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_EXPERIMENT_PANELS);
     }
 }

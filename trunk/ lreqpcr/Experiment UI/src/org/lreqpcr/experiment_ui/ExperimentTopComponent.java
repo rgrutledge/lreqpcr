@@ -20,6 +20,7 @@ import java.awt.Toolkit;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import org.lreqpcr.core.data_objects.Amplicon;
 import org.lreqpcr.core.data_objects.ExperimentDbInfo;
@@ -40,6 +41,7 @@ import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.core.utilities.UniversalLookupListener;
 import org.lreqpcr.data_export_services.DataExportServices;
 import org.lreqpcr.ui_components.PanelMessages;
+import org.lreqpcr.ui_components.OpeningDatabaseDialog;
 import org.openide.util.LookupEvent;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
@@ -105,8 +107,8 @@ public final class ExperimentTopComponent extends TopComponent
         }
         settingsDB = servicesLookup.lookup(SettingsServices.class);
     }
-    
-    private ArrayList<Run> getSelectedRuns(){
+
+    private ArrayList<Run> getSelectedRuns() {
         Node[] nodes = mgr.getSelectedNodes();
         ArrayList<Run> runList = new ArrayList<Run>();
         for (Node node : nodes) {
@@ -115,7 +117,7 @@ public final class ExperimentTopComponent extends TopComponent
                 runList.add(run);
             }
         }
-        if (runList.isEmpty()){
+        if (runList.isEmpty()) {
             Toolkit.getDefaultToolkit().beep();
             JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
                     "No Runs have not been selected",
@@ -256,13 +258,17 @@ public final class ExperimentTopComponent extends TopComponent
     }// </editor-fold>//GEN-END:initComponents
 
     private void openDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openDBbuttonActionPerformed
+        JFrame message = OpeningDatabaseDialog.makeDialog();
+//The only reason this frame is painted correctly is due to the delay produced by opening of a file chooser dialog
         boolean wasNewFileOpened = experimentDB.openDatabase();
-        //False if the open was cancelled, so do nothing
+        //False if the open file was cancelled, so do nothing
         if (wasNewFileOpened) {
             experimentDbTree.createTree();
             UniversalLookup.getDefault().addSingleton(PanelMessages.DATABASE_FILE_CHANGED, experimentDB);
             UniversalLookup.getDefault().fireChangeEvent(PanelMessages.DATABASE_FILE_CHANGED);
         }
+        message.setVisible(false);
+        message.dispose();
     }//GEN-LAST:event_openDBbuttonActionPerformed
 
     private void newDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newDBbuttonActionPerformed
@@ -309,18 +315,17 @@ public final class ExperimentTopComponent extends TopComponent
 
     private void exportAverageProfileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportAverageProfileButtonActionPerformed
         ArrayList<Run> runList = getSelectedRuns();
-        if(runList != null){
+        if (runList != null) {
             Lookup.getDefault().lookup(DataExportServices.class).exportAverageSampleProfilesFromRuns(runList);
         }
     }//GEN-LAST:event_exportAverageProfileButtonActionPerformed
 
     private void exportReplicateProfilesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportReplicateProfilesButtonActionPerformed
         ArrayList<Run> runList = getSelectedRuns();
-        if(runList != null){
-        Lookup.getDefault().lookup(DataExportServices.class).exportReplicateSampleProfilesFromRuns(runList);
+        if (runList != null) {
+            Lookup.getDefault().lookup(DataExportServices.class).exportReplicateSampleProfilesFromRuns(runList);
         }
     }//GEN-LAST:event_exportReplicateProfilesButtonActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton closeDBbutton;
     private org.lreqpcr.experiment_ui.components.ExperimentDbTree experimentDbTree;

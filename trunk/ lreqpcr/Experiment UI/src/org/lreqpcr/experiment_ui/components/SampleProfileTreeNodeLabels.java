@@ -24,7 +24,8 @@ import java.text.SimpleDateFormat;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 
 /**
- * 
+ * Provides node labels for Sample-based tree
+ *
  * @author Bob Rutledge
  */
 public class SampleProfileTreeNodeLabels implements LabelFactory {
@@ -50,14 +51,14 @@ public class SampleProfileTreeNodeLabels implements LabelFactory {
                 }
                 if (counter == 0) {//All replicates are excluded
                     profile.setShortDescription("No replicate profiles available");
-                    return label + " EXCLUDED";
+                    return label + " -->No Replicate Profiles Included";
                 }
 //Assume that excluded replicate profiles are zero molecule aliquots and thus must be included into the average
-                double avNo = sum / avPrf.getReplicateProfileList().size();
+                double avNo = sum / counter;
                 if (avNo < 10) {
                     profile.setShortDescription("Replicate No average");
                     df.applyPattern("0.00");
-                    return label + " <10 Molecules (" + df.format(avNo) + ")";
+                    return label + " <10 Molecules: avReplc N= " + df.format(avNo) + ")";
                 } else {
                     profile.setShortDescription("");
                 }
@@ -67,15 +68,17 @@ public class SampleProfileTreeNodeLabels implements LabelFactory {
         if (profile.getNo() < 10) {
             df.applyPattern("0.00");
         }
-        String no = df.format(profile.getNo());
+        String no = " N= " + df.format(profile.getNo());
         String emax = "";
         //Check if the Emax has been overridden
         if (profile.isEmaxOverridden()) {
-            df.applyPattern("##.0");
+            df.applyPattern("#0.0");
             profile.setShortDescription("Emax overridden");
             //Denote overridden Emax using asterics
-            emax = " (**" + df.format(profile.getOverriddendEmaxValue() * 100) + "%) ";
+            emax = " (" + df.format(profile.getOverriddendEmaxValue() * 100)
+                    + "%<-- " + df.format(profile.getEmax() * 100) + "%)";
         } else {
+            df.applyPattern("#0.0");
             profile.setShortDescription("");
             emax = " (" + df.format(profile.getEmax() * 100) + "%) ";
         }
@@ -84,5 +87,6 @@ public class SampleProfileTreeNodeLabels implements LabelFactory {
         } else {
             return label + emax + no;
         }
+//        return "";
     }
 }

@@ -35,10 +35,10 @@ import javax.swing.JOptionPane;
 import org.lreqpcr.core.data_objects.ReactionSetupImpl;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
+import org.openide.windows.WindowManager;
 
 /**
- * The primary database service provider
- * based on DB4O.
+ * The primary database service provider based on DB4O.
  *
  * @author Bob Rutledge
  */
@@ -94,9 +94,9 @@ public abstract class Db4oServices implements DatabaseServices {
                 }
             }
             db4o.delete(run);
-        } else if (object instanceof ReactionSetupImpl){
+        } else if (object instanceof ReactionSetupImpl) {
             deleteReactionSetup((ReactionSetupImpl) object);
-        }else {
+        } else {
             db4o.delete(object);
         }
     }
@@ -113,9 +113,9 @@ public abstract class Db4oServices implements DatabaseServices {
     }
 
     @SuppressWarnings(value = "unchecked")
-    private void deleteReactionSetup(ReactionSetupImpl setup){
+    private void deleteReactionSetup(ReactionSetupImpl setup) {
         List<Profile> l = (List<Profile>) getChildren(setup, AverageProfile.class);
-        for (Profile prf : l){
+        for (Profile prf : l) {
             AverageProfile p = (AverageProfile) prf;
             deleteAverageProfile(p);
         }
@@ -136,16 +136,19 @@ public abstract class Db4oServices implements DatabaseServices {
      */
     @SuppressWarnings(value = "unchecked")
     public List getAllObjects(Class clazz) {
-        if(isDatabaseOpen()){
+        if (isDatabaseOpen()) {
             ObjectSet list = db4o.query(clazz);
-        return list;
-        } else return Collections.EMPTY_LIST;
+            return list;
+        } else {
+            return Collections.EMPTY_LIST;
+        }
     }
 
     public void closeDatabase() {
         if (db4o != null) {
             while (!db4o.ext().isClosed()) {
-                //Pre NetBeans Platform implementation
+                db4o.close();
+                //Pre NetBeans Platform implementation:
                 //Purging does not remove db4o instantiated objects from memory!!
 //                db4o.commit();
 //                db4o.ext().purge();
@@ -154,7 +157,7 @@ public abstract class Db4oServices implements DatabaseServices {
                 //That is, a active db4o object remains in memory even when the database file is closed!!
                 //Note also that closing and reopening the same database file can produce duplicates
                 //Version 7.12 (vs. 7.4) appears (but not confirmed) to have the same problem
-                db4o.close();
+
                 //Porting to the NetBeans windowing system appears to prevent duplicate object creation
                 //and so the problem has been resolved, at least for version 7.4.106. Attempting to upgrade
                 //to version 7.4.155 produces an IllegalArgumentException when attempting to open a second database file.
@@ -165,21 +168,17 @@ public abstract class Db4oServices implements DatabaseServices {
 
     public void openDatabase(File file) {
         databaseFile = file;
-        if (db4o != null) {
-            while (!db4o.ext().isClosed()) {
-                db4o.close();
-            }
-        }
+        closeDatabase();
         try {
- //This throws an IllegalArguentException for ver 7.4.155, which is not documented!!
-            db4o = Db4o.openFile(config, databaseFile.getAbsolutePath());
-        } catch (Exception e) {
-            String msg = "The database file " + databaseFile.getName() 
-                    + " could not be opened due to the error: \""
-                    + e.getClass().getSimpleName() + "\"";
-            JOptionPane.showMessageDialog(null, msg, "Unable to open the database file",
-                    JOptionPane.ERROR_MESSAGE);
-        }
+   //This throws an IllegalArguentException for ver 7.4.155, which is not documented!!
+                db4o = Db4o.openFile(config, databaseFile.getAbsolutePath());
+            } catch (Exception e) {
+                String msg = "The database file " + databaseFile.getName()
+                        + " could not be opened due to the error: \""
+                        + e.getClass().getSimpleName() + "\"";
+                JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Unable to open the database file",
+                        JOptionPane.ERROR_MESSAGE);
+            }
     }
 
     public File getDatabaseFile() {
@@ -189,7 +188,9 @@ public abstract class Db4oServices implements DatabaseServices {
     @SuppressWarnings(value = "unchecked")
     public List<? extends Family> getChildren(Family member, Class childClass) {
         Query query = db4o.query();
-        if (query == null) return Collections.EMPTY_LIST;
+        if (query == null) {
+            return Collections.EMPTY_LIST;
+        }
         query.constrain(childClass);
         query.descend("parent").constrain(member);
         List children = query.execute();

@@ -108,6 +108,6 @@ public class AmpliconImport {
             row++;
         }
         ampliconDB.commitChanges();
-        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATA_AMPLICON_PANELS);
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_AMPLICON_PANELS);
     }
 }

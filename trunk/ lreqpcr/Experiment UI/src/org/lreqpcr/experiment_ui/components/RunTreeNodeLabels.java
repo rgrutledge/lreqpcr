@@ -26,7 +26,8 @@ import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.utilities.FormatingUtilities;
 
 /**
- * 
+ * Provides node labels for the Experiment database tree
+ *
  * @author Bob Rutledge
  */
 public class RunTreeNodeLabels implements LabelFactory {
@@ -38,6 +39,7 @@ public class RunTreeNodeLabels implements LabelFactory {
         if (member instanceof Run) {
             Run run = (Run) member;
             double runOCF = run.getRunOCF();
+            //Display a Run-specific OCF if one has been applied to this Run
             if (runOCF != 0) {
                 df.applyPattern(FormatingUtilities.decimalFormatPattern(runOCF));
                 return sdf.format(run.getRunDate()) + " (" + df.format(runOCF) + ")-" + member.getName();
@@ -56,6 +58,7 @@ public class RunTreeNodeLabels implements LabelFactory {
                     double sum = 0;
                     int counter = 0;
                     for (Profile repPrf : avPrf.getReplicateProfileList()) {
+                        //It is important not to include excluded profiles
                         if (!repPrf.isExcluded()) {
                             sum = sum + repPrf.getNo();
                             counter++;
@@ -63,14 +66,14 @@ public class RunTreeNodeLabels implements LabelFactory {
                     }
                     if (counter == 0) {//All replicates are excluded
                         profile.setShortDescription("No replicate profiles available");
-                        return label + " EXCLUDED";
+                        return label + " -->No Replicate Profiles Included";
                     }
 //Assume that excluded replicate profiles are zero molecule aliquots and thus must be included into the average
-                    double avNo = sum / avPrf.getReplicateProfileList().size();
+                    double avNo = sum / counter;
                     if (avNo < 10) {
                         profile.setShortDescription("Replicate No average");
                         df.applyPattern("0.00");
-                        return label + " <10 Molecules (" + df.format(avNo) + ")";
+                        return label + " <10 Molecules: avReplc N= " + df.format(avNo);
                     } else {
                         profile.setShortDescription("");
                     }
@@ -80,16 +83,17 @@ public class RunTreeNodeLabels implements LabelFactory {
             if (profile.getNo() < 10) {
                 df.applyPattern("0.00");
             }
-            String no = df.format(profile.getNo());
+            String no = " N= " + df.format(profile.getNo());
             String emax = "";
             //Check if the Emax has been overridden
             if (profile.isEmaxOverridden()) {
-                df.applyPattern("##.0");
-                profile.setShortDescription("Emax overriddended");
+                df.applyPattern("#0.0");
+                profile.setShortDescription("Emax overridden");
                 //Denote overridden Emax using asterics
-                emax = " (**" + df.format(profile.getOverriddendEmaxValue() * 100) + "%) ";
+                emax = " (" + df.format(profile.getOverriddendEmaxValue() * 100)
+                        + "%<-- " + df.format(profile.getEmax() * 100) + "%)";
             } else {
-                df.applyPattern("##.0");
+                df.applyPattern("#0.0");
                 profile.setShortDescription("");
                 emax = " (" + df.format(profile.getEmax() * 100) + "%) ";
             }

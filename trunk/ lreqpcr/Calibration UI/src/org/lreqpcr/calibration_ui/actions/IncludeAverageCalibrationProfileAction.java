@@ -39,7 +39,7 @@ class IncludeAverageCalibrationProfileAction extends AbstractAction {
 
     public IncludeAverageCalibrationProfileAction(ExplorerManager mgr) {
         this.mgr = mgr;
-        putValue(NAME, "Include Calibration Profile");
+        putValue(NAME, "Include Calibration Profile(s)");
     }
 
     @SuppressWarnings("unchecked")
@@ -47,20 +47,23 @@ class IncludeAverageCalibrationProfileAction extends AbstractAction {
         Node[] nodes = mgr.getSelectedNodes();
         LreNode selectedNode = (LreNode) nodes[0];
         db = selectedNode.getDatabaseServices();
-        AverageCalibrationProfile selectedProfile = (AverageCalibrationProfile) selectedNode.getLookup().lookup(CalibrationProfile.class);
-        selectedProfile.setExcluded(false);
-        db.saveObject(selectedProfile);
-        //Include all replicate profiles
-        for(CalibrationProfile prf : selectedProfile.getReplicateProfileList()){
-            prf.setExcluded(false);
-            db.saveObject(prf);
-        }
-        selectedNode.refreshNodeLabel();
-        //Refresh the replicate profile node labels
-        Node[] replNodes = selectedNode.getChildren().getNodes();
-        for(int i=0; i<replNodes.length; i++){
-            LreNode n = (LreNode) replNodes[i];
-            n.refreshNodeLabel();
+        for (Node node : nodes) {
+            selectedNode = (LreNode) node;
+            AverageCalibrationProfile selectedProfile = (AverageCalibrationProfile) selectedNode.getLookup().lookup(CalibrationProfile.class);
+            selectedProfile.setExcluded(false);
+            db.saveObject(selectedProfile);
+            //Include all replicate profiles
+            for (CalibrationProfile prf : selectedProfile.getReplicateProfileList()) {
+                prf.setExcluded(false);
+                db.saveObject(prf);
+            }
+            selectedNode.refreshNodeLabel();
+            //Refresh the replicate profile node labels
+            Node[] replNodes = selectedNode.getChildren().getNodes();
+            for (int i = 0; i < replNodes.length; i++) {
+                LreNode n = (LreNode) replNodes[i];
+                n.refreshNodeLabel();
+            }
         }
         db.commitChanges();
         //Update the Calibration panels

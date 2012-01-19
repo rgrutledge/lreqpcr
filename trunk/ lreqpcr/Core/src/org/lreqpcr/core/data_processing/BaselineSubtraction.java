@@ -27,11 +27,12 @@ import org.lreqpcr.core.data_objects.Profile;
 public class BaselineSubtraction {
 
     /**
-     * This is a very crude method based on cycles 4-9.
+     * This is a very crude method based on cycles 4-9. An Analysis Service
+     * Provider are welcome to use their own baseline subtraction methodology.
      *
      * It is very important that the earliest (bottom) cycles of the profile
      * are no earlier than cycle 10. Also note that any loss in reaction 
-     * fluorescence in cycles 1-3 is assumed not to continue into cycle 4.
+     * fluorescence during cycles 1-3 is assumed not to continue into cycle 4.
      *
      * @param profile the Profile to be processed
      */

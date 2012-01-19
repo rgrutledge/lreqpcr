@@ -163,7 +163,7 @@ public class Ab7500Ver1ImportProvider extends RunImportService {
                 profile.setAmpliconName(names[0]);
                 profile.setSampleName(names[1]);
             }
-            profile.setName(profile.getAmpliconName() + " @ " + profile.getSampleName());
+            profile.setName(profile.getAmpliconName() + "@" + profile.getSampleName());
             try {
                 profile.setAmpTm(Double.valueOf(resultSheet.getCell(10, resultRow).getContents()));
             } catch (Exception e) {

@@ -34,6 +34,14 @@ public class LreAnalysisProvider extends LreAnalysisService {
     public LreAnalysisProvider() {
     }
 
+    /**
+     * Initializes the supplied Profile and constructs a ProfileSummary 
+     * which is used to display and edit the Profile.  
+     * 
+     * @param profile the profile to process
+     * @param parameters the LRE window selection parameters
+     * @return a ProfileSummary holding the profile
+     */
     public ProfileSummary initializeProfile(Profile profile, LreWindowSelectionParameters parameters) {
         if (profile.getFcReadings() == null) {//Background fluorescence has NOT been subtracted
             BaselineSubtraction.baselineSubtraction(profile);
@@ -52,18 +60,18 @@ public class LreAnalysisProvider extends LreAnalysisService {
     }
 
     /**
-     * Updates the profile based on a manual adjustment to the LRE window.
+     * Updates the supplied Profile based on a manual adjustment to the LRE window.
      *
-     * @param prfSum
+     * @param prfSum the ProfileSummary holding the Profile
      * @return true for a full reanalyze or false for a simple update
      */
     public boolean updateLreWindow(ProfileSummary prfSum, LreWindowSelectionParameters parameters) {
         if (prfSum.getProfile().getLreWinSize() == 0) {//"Reanalyze" request
             LreWindowSelector.selectLreWindow(prfSum, parameters);
-            return true;//No significance for this boolean return
+            return true;
         } else {
             ProfileInitializer.calcLreParameters(prfSum);
-            return false;//No significance for this boolean return
+            return false;
         }
     }
 }

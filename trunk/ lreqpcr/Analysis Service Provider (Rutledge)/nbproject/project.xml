@@ -34,5 +34,11 @@
             </test-dependencies>
             <public-packages/>
         </data>
+        <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
+            <word>Fb</word>
+            <word>Fc</word>
+            <word>Fo</word>
+            <word>Profle</word>
+        </spellchecker-wordlist>
     </configuration>
 </project>

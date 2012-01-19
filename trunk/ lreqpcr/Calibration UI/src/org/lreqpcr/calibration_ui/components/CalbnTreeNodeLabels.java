@@ -40,6 +40,7 @@ public class CalbnTreeNodeLabels implements LabelFactory {
         }
         if (member instanceof AverageCalibrationProfile) {
             AverageCalibrationProfile calbnProfile = (AverageCalibrationProfile) member;
+            String label = calbnProfile.getAmpliconName() + "@" + calbnProfile.getSampleName();
             String ocf = "";
             df.applyPattern("##.0");
             String emax = "";
@@ -48,25 +49,26 @@ public class CalbnTreeNodeLabels implements LabelFactory {
                 rundate = sdf.format(calbnProfile.getRunDate());
             }
             if (calbnProfile.isExcluded()) {
-                return rundate + ": " + calbnProfile.getName() + " EXCLUDED ";
+                return rundate + ": " + label + " EXCLUDED ";
             } else {
                 df.applyPattern(FormatingUtilities.decimalFormatPattern(calbnProfile.getOCF()));
-                ocf = df.format(calbnProfile.getOCF());
+                ocf = "OCF= " + df.format(calbnProfile.getOCF());
                 df.applyPattern("##.0");
                 if (calbnProfile.isEmaxOverridden()) {
                     calbnProfile.setShortDescription("Emax overridden");
-                    //Denote overridden Emax using asterics
-                    emax = " (**" + df.format(calbnProfile.getOverriddendEmaxValue() * 100) + "%) ";
+                    emax = " (" + df.format(calbnProfile.getOverriddendEmaxValue() * 100) + "%<--"
+                            + df.format(calbnProfile.getEmax() * 100) + "%)";
                 } else {
                     calbnProfile.setShortDescription("");
                     emax = " (" + df.format(calbnProfile.getEmax() * 100) + "%) ";
                 }
-                return rundate + ": " + calbnProfile.getName() + emax + " " + ocf;
+                return rundate + ": " + label + emax + " " + ocf;
             }
         }
         if (member instanceof CalibrationProfile) {
             CalibrationProfile calbnProfile = (CalibrationProfile) member;
             String rundate = sdf.format(calbnProfile.getRunDate());
+            String label = calbnProfile.getAmpliconName() + "@" + calbnProfile.getSampleName();
             df.applyPattern(FormatingUtilities.decimalFormatPattern(calbnProfile.getOCF()));
             String ocf = df.format(calbnProfile.getOCF());
             String emax = "";
@@ -81,9 +83,9 @@ public class CalbnTreeNodeLabels implements LabelFactory {
                 }
             
             if (calbnProfile.isExcluded()) {
-                return calbnProfile.getName() + " EXCLUDED ";
+                return label + " EXCLUDED ";
             } else {
-                return rundate + " " + calbnProfile.getName() + emax + " " + ocf;
+                return rundate + " " + label + emax + " " + ocf;
             }
         }
         return "";

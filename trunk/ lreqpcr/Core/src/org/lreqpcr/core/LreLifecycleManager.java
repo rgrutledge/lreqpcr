@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * and open the template in the editor.
  */
-
 package org.lreqpcr.core;
 
 import java.util.Collection;
@@ -32,7 +31,7 @@ import org.openide.util.lookup.ServiceProvider;
  * Used to ensure that all database files are closed before exiting the program.
  * @author Bob Rutledge
  */
-@ServiceProvider(service=LifecycleManager.class, position=1)
+@ServiceProvider(service = LifecycleManager.class, position = 1)
 public class LreLifecycleManager extends LifecycleManager {
 
     @Override
@@ -47,24 +46,25 @@ public class LreLifecycleManager extends LifecycleManager {
         UniversalLookup uLookup = UniversalLookup.getDefault();
         SettingsServiceProvider settingsDB = Lookup.getDefault().lookup(SettingsServiceProvider.class);
         //Cycle through all registered database types
-        for (DatabaseType type :DatabaseType.values()){
+        for (DatabaseType type : DatabaseType.values()) {
             if (uLookup.containsKey(type) && type != DatabaseType.SETTINGS) {
                 //Cycle through all exsisting database services for this type
                 List<Object> typeList = uLookup.getAll(type);
-                for (Object o : typeList){
+                for (Object o : typeList) {
                     DatabaseServices service = (DatabaseServices) o;
                     service.closeDatabase();
                 }
             }
         }
-        settingsDB.closeDatabase();
+        if (settingsDB != null) {
+            settingsDB.closeDatabase();
+        }
         Collection c = Lookup.getDefault().lookupAll(LifecycleManager.class);
-        for (Iterator i = c.iterator(); i.hasNext();){
+        for (Iterator i = c.iterator(); i.hasNext();) {
             LifecycleManager man = (LifecycleManager) i.next();
-            if (man != this){
+            if (man != this) {
                 man.exit();
             }
         }
     }
-
 }

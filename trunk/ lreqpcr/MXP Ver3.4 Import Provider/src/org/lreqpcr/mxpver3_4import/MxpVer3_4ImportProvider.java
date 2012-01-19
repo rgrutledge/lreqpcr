@@ -219,7 +219,7 @@ public class MxpVer3_4ImportProvider extends RunImportService {
                 profile.setSampleName(names[1]);
                 profile.setAmpliconName(names[0]);
             }
-            profile.setName(profile.getAmpliconName() + " @ " + profile.getSampleName());
+            profile.setName(profile.getAmpliconName() + "@" + profile.getSampleName());
             if (ctCol != columnAbsent) {
                 try {
                     profile.setCt(Double.parseDouble(reportSheet.getCell(ctCol, reportRow).getContents()));

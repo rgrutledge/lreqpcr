@@ -39,17 +39,19 @@ public class LreWindowSelector {
      * identifying the first cycle in which the LRE r2 value derived from LRE analysis
      * of a window that encompassing the two preceeding and two following Cycles
      * (5 cycles total) above the "r2 tolerance". To prevent setting
-     * the start cycle within the baseline region, the cycle Fc must be 1.5X
+     * the start cycle within the baseline region, the cycle Fc must be a specified fold
      * greater that the fluorescence background (Fb).
      *
      * The LRE window is then set to 3 cycles and the StartCycle adjusted
      * to the first cycle below C1/2, generating an LRE window in the
-     * center to the profle. The upper limit of the LRE window is then 
+     * center of the Profle. The upper limit of the LRE window is then
      * expanded based on a default Fo tolerance of 6%.
      *
      * @param prfSum the ProfileSummary to process
      */
     public static void selectLreWindow(ProfileSummary prfSum) {
+        double r2Tolerance = 0.95; //The tolerance of the LRE r2 to determine the start of the profile
+        double foldAboveFb = 0.25;
         if (prfSum.getZeroCycle() == null) {
             //There is no Fc data in this profile
             return;
@@ -98,8 +100,6 @@ public class LreWindowSelector {
                 runner = runner.getNextCycle();
             }
         }
-
-        double r2Tol = 0.95; //The tolerance of the LRE r2 to determine the start of the profile
         double fb = profile.getFb();
         /*-----Finds start cycle based on the cycle LRE r2-----*/
         Cycle strCycle = null;
@@ -108,7 +108,7 @@ public class LreWindowSelector {
         while (runner.getNextCycle().getNextCycle().getNextCycle() != null) {
 
             /*Tests for the minimum r2 >r2 tolerance across 3 cycles*/
-            if (runner.getPrevCycle().getCycLREparam()[2] > r2Tol && runner.getCycLREparam()[2] > r2Tol && runner.getNextCycle().getCycLREparam()[2] > r2Tol) {
+            if (runner.getPrevCycle().getCycLREparam()[2] > r2Tolerance && runner.getCycLREparam()[2] > r2Tolerance && runner.getNextCycle().getCycLREparam()[2] > r2Tolerance) {
                 double fbRatio = runner.getFc() / fb;
                 if (fbRatio < 0) {
                     fbRatio = fbRatio * -1;
@@ -116,7 +116,7 @@ public class LreWindowSelector {
 //Tests for the minimum Fc relative to Fb in an attempt to avoid setting the StartCycle in the baseline
 //Note that small Fmax vs. large Fb such as for MXP profiles can can fail
 //this step, resulting in a "AN LRE WINDOW COULD NOT BE FOUND" error
-                if (fbRatio > 0.25) {
+                if (fbRatio > foldAboveFb) {
                     strCycle = runner;
                     profile.setStrCycleInt(strCycle.getCycNum()); //Sets the integer start cycle
                     prfSum.setStrCycle(strCycle);
@@ -133,7 +133,7 @@ public class LreWindowSelector {
         }
         if (!foundStrCyc) {
             profile.appendLongDescription("AN LRE WINDOW COULD NOT BE FOUND");
-            profile.setExcluded(true);
+            profile.setNo(0);
             return;
         }
         //Set the initiate LRE window size to a default size
@@ -184,7 +184,6 @@ public class LreWindowSelector {
                 profile.setLongDescription(longDescription);
             }
         }
-
 //Test whether a minimum Fc has been set; if not fall back to default (first cycle below C1/2)
         if (parameters.getMinFc() == null || parameters.getMinFc() == 0) {
             selectLreWindow(prfSum);
@@ -194,7 +193,7 @@ public class LreWindowSelector {
         if (cycZero == null) {
             //Profile initialization failed
             profile.appendLongDescription("AN LRE WINDOW COULD NOT BE FOUND");
-            profile.setExcluded(true);
+            profile.setNo(0);
             return;
         }
         double minFc = parameters.getMinFc();
@@ -213,13 +212,13 @@ public class LreWindowSelector {
             if (runner.getNextCycle() == null) {
                 //Reached the end of the profile but the Fc > minFc
                 profile.appendLongDescription("AN LRE WINDOW COULD NOT BE FOUND");
-                profile.setExcluded(true);
+                profile.setNo(0);
                 return;
             }
             if (runner.getNextCycle().getNextCycle() == null) {
                 //Need at least three cycle in order to set the LRE window
                 profile.appendLongDescription("AN LRE WINDOW COULD NOT BE FOUND");
-                profile.setExcluded(true);
+                profile.setNo(0);
                 return;
             }
             //Move up one cycle

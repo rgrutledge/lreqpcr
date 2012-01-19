@@ -180,7 +180,7 @@ public class AB7900Ver2_3ImportProvider extends RunImportService {
             }
             profile.setSampleName(resultSheet.getCell(1, resultRow).getContents());
             profile.setAmpliconName(resultSheet.getCell(2, resultRow).getContents());
-            profile.setName(profile.getSampleName() + " @ " + profile.getAmpliconName());
+            profile.setName(profile.getSampleName() + "@" + profile.getAmpliconName());
 
             try {
                 profile.setCt(Double.parseDouble(resultSheet.getCell(5, resultRow).getContents()));

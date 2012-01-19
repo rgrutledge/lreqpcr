@@ -47,62 +47,65 @@ class ExcludeCalibrationProfileAction extends AbstractAction {
 
     public ExcludeCalibrationProfileAction(ExplorerManager mgr) {
         this.mgr = mgr;
-        putValue(NAME, "Exclude Calibration Profile");
+        putValue(NAME, "Exclude Calibration Profile(s)");
     }
 
-//    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     public void actionPerformed(ActionEvent e) {
         Node[] nodes = mgr.getSelectedNodes();
         LreNode selectedNode = (LreNode) nodes[0];
-        CalibrationProfile selectedProfile = selectedNode.getLookup().lookup(CalibrationProfile.class);
-        AverageCalibrationProfile parentAvProfile = (AverageCalibrationProfile) selectedProfile.getParent();
-        List<CalibrationProfile> profileList = parentAvProfile.getReplicateProfileList();
-
-        //Need to confirm that at least one Profile will remain active
-        int numberOfActiveProfiles = 0;
-        for (CalibrationProfile profile : profileList) {
-            if (!profile.isExcluded()) {
-                numberOfActiveProfiles++;
-            }
-        }
-        if (numberOfActiveProfiles < 2) {//Only one Profile active
-            String msg = "It appears that there is only one Profile that is active " +
-                    "and thus cannot be excluded.";
-            JOptionPane.showMessageDialog(null, msg, "Unable to exclude the " +
-                    "selected Profile", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
         db = selectedNode.getDatabaseServices();
         if (db != null) {
             if (db.isDatabaseOpen()) {
                 List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
 //This list should never be empty, as a LreWindowSelectionParameters object is created during DB creation
                 selectionParameters = l.get(0);
+            } else {
+                return;
             }
         }
-        selectedProfile.setExcluded(true);
-        selectedNode.refreshNodeLabel();
-        db.saveObject(selectedProfile);
-
-        //Update the parent Average Sample Profile
-        LreNode parentNode = (LreNode) nodes[0].getParentNode();
-        parentAvProfile.setFcReadings(null);//Fb will need to be recalculated
-        parentAvProfile.setRawFcReadings(GeneralUtilities.generateAverageFcDataset(profileList));
-        //Reinitialize the Average Profile
         LreAnalysisService profileIntialization =
                 Lookup.getDefault().lookup(LreAnalysisService.class);
-        //This will trigger an auto selection of the LRE window
-        parentAvProfile.setLreWinSize(0);
-        profileIntialization.initializeProfile(parentAvProfile, selectionParameters);
-        db.saveObject(parentAvProfile);
+        for (Node node : nodes) {
+            selectedNode = (LreNode) node;
+            CalibrationProfile selectedProfile = selectedNode.getLookup().lookup(CalibrationProfile.class);
+            AverageCalibrationProfile parentAvProfile = (AverageCalibrationProfile) selectedProfile.getParent();
+            List<CalibrationProfile> profileList = parentAvProfile.getReplicateProfileList();
+            //Need to confirm that at least one Profile will remain active
+            int numberOfActiveProfiles = 0;
+            for (CalibrationProfile profile : profileList) {
+                if (!profile.isExcluded()) {
+                    numberOfActiveProfiles++;
+                }
+            }
+            if (numberOfActiveProfiles < 2) {//Only one Profile active
+                String msg = "It appears that there is only one Profile that is active "
+                        + "and thus cannot be excluded.";
+                JOptionPane.showMessageDialog(null, msg, "Unable to exclude the "
+                        + "selected Profile", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            selectedProfile.setExcluded(true);
+            selectedNode.refreshNodeLabel();
+            db.saveObject(selectedProfile);
+
+            //Update the parent Average Sample Profile
+            LreNode parentNode = (LreNode) nodes[0].getParentNode();
+            parentAvProfile.setFcReadings(null);//Fb will need to be recalculated
+            parentAvProfile.setRawFcReadings(GeneralUtilities.generateAverageFcDataset(profileList));
+            //Reinitialize the Average Profile
+            //This will trigger an auto selection of the LRE window
+            parentAvProfile.setLreWinSize(0);
+            profileIntialization.initializeProfile(parentAvProfile, selectionParameters);
+            db.saveObject(parentAvProfile);
+
+            //Update the tree
+            parentNode.refreshNodeLabel();
+            LreObjectChildren parentChildren = (LreObjectChildren) parentNode.getChildren();
+            parentChildren.setLreObjectList(profileList);
+            parentChildren.addNotify();
+        }
         db.commitChanges();
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_EXCLUDED);
-
-        //Update the tree
-        parentNode.refreshNodeLabel();
-        LreObjectChildren parentChildren = (LreObjectChildren) parentNode.getChildren();
-        parentChildren.setLreObjectList(profileList);
-        parentChildren.addNotify();
     }
 }

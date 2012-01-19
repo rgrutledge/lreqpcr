@@ -101,7 +101,7 @@ public abstract class LreObject implements Family<LreObject>, Comparable {
      */
     public void appendLongDescription(String appendingString){
         if (longDescription == null) {
-            longDescription = appendingString;
+            longDescription = " \n" + appendingString;
         } else {
 //        This is necessary in order to make String.concat() work
             appendingString = "\n" + appendingString;

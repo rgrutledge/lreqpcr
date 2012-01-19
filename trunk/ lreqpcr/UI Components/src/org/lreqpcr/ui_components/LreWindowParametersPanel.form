@@ -38,20 +38,20 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="minFcDisplay" min="-2" pref="163" max="-2" attributes="0"/>
+                      <Component id="minFcDisplay" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="foThresholdDisplay" min="-2" max="-2" attributes="0"/>
+                      <Component id="foThresholdDisplay" min="-2" pref="46" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="replAvFoCvDisplay" min="-2" pref="52" max="-2" attributes="0"/>
+                      <Component id="replAvFoCvDisplay" pref="151" max="32767" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace pref="49" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -72,7 +72,7 @@
                   <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="replAvFoCvDisplay" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="14" max="32767" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -102,14 +102,14 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel3">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Av Repl-Fo CV:"/>
+        <Property name="text" type="java.lang.String" value="Av Repl CV:"/>
         <Property name="toolTipText" type="java.lang.String" value="An indicator of the overall precision of target quantification"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="replAvFoCvDisplay">
       <Properties>
         <Property name="text" type="java.lang.String" value="  "/>
-        <Property name="toolTipText" type="java.lang.String" value=""/>
+        <Property name="toolTipText" type="java.lang.String" value="Note that Replicat Profiles with &lt;10 molecules are not included"/>
       </Properties>
     </Component>
   </SubComponents>

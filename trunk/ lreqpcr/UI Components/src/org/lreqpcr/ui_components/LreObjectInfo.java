@@ -137,6 +137,7 @@ public class LreObjectInfo extends JPanel {
         ampSizeDisplay.addKeyListener(keyListener);
     }
 
+    @SuppressWarnings(value = "unchecked")
     public void iniInfo() {
         if (selectedNode == null) {
             return;
