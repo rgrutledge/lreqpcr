@@ -220,7 +220,7 @@ public class AB7500Ver2ImportProvider extends RunImportService {
                 WellLabelToWellNumber.labelToNumber96Well_AB7900(profile);
                 profile.setSampleName(resultSheet.getCell(sampleNameCol, resultRow).getContents());
                 profile.setAmpliconName(resultSheet.getCell(ampliconNameCol, resultRow).getContents());
-                profile.setName(profile.getAmpliconName() + " @ " + profile.getSampleName());
+                profile.setName(profile.getAmpliconName() + "@" + profile.getSampleName());
 
                 if (ctCol != columnAbsent) {
                     try {

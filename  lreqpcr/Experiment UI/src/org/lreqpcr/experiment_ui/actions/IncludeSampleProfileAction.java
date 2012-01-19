@@ -46,16 +46,13 @@ class IncludeSampleProfileAction extends AbstractAction {
 
     public IncludeSampleProfileAction(ExplorerManager mgr) {
         this.mgr = mgr;
-        putValue(NAME, "Include Sample Profile");
+        putValue(NAME, "Include Sample Profile(s)");
     }
 
     @SuppressWarnings("unchecked")
     public void actionPerformed(ActionEvent e) {
         Node[] nodes = mgr.getSelectedNodes();
         LreNode selectedNode = (LreNode) nodes[0];
-        SampleProfile selectedProfile = selectedNode.getLookup().lookup(SampleProfile.class);
-        AverageSampleProfile parentAvProfile = (AverageSampleProfile) selectedProfile.getParent();
-        List<SampleProfile> profileList = parentAvProfile.getReplicateProfileList();
         db = selectedNode.getDatabaseServices();
         if (db != null) {
             if (db.isDatabaseOpen()) {
@@ -63,29 +60,36 @@ class IncludeSampleProfileAction extends AbstractAction {
 //This list should never be empty, as a LreWindowSelectionParameters object is created during DB creation
                 selectionParameters = l.get(0);
             }
+        } else {
+            return;
         }
-        selectedProfile.setExcluded(false);
-        selectedNode.refreshNodeLabel();
-        db.saveObject(selectedProfile);
+        for (Node node : nodes) {
+            selectedNode = (LreNode) node;
+            SampleProfile selectedProfile = selectedNode.getLookup().lookup(SampleProfile.class);
+            AverageSampleProfile parentAvProfile = (AverageSampleProfile) selectedProfile.getParent();
+            List<SampleProfile> profileList = parentAvProfile.getReplicateProfileList();
+            selectedProfile.setExcluded(false);
+            selectedNode.refreshNodeLabel();
+            db.saveObject(selectedProfile);
 
-        //Update the parent Average Sample Profile
-        LreNode parentNode = (LreNode) nodes[0].getParentNode();
-        parentAvProfile.setFcReadings(null);//Fb will need to be recalculated
-        parentAvProfile.setRawFcReadings(GeneralUtilities.generateAverageFcDataset(profileList));
-        //Reinitialize the Average Profile
-        LreAnalysisService profileIntialization =
-                Lookup.getDefault().lookup(LreAnalysisService.class);
-        //This will trigger an auto selection of the LRE window
-        parentAvProfile.setLreWinSize(0);
-        profileIntialization.initializeProfile(parentAvProfile, selectionParameters);
-        db.saveObject(parentAvProfile);
+            //Update the parent Average Sample Profile
+            LreNode parentNode = (LreNode) nodes[0].getParentNode();
+            parentAvProfile.setFcReadings(null);//Fb will need to be recalculated
+            parentAvProfile.setRawFcReadings(GeneralUtilities.generateAverageFcDataset(profileList));
+            //Reinitialize the Average Profile
+            LreAnalysisService profileIntialization =
+                    Lookup.getDefault().lookup(LreAnalysisService.class);
+            //This will trigger an auto selection of the LRE window
+            parentAvProfile.setLreWinSize(0);
+            profileIntialization.initializeProfile(parentAvProfile, selectionParameters);
+            db.saveObject(parentAvProfile);
+            //Update the tree
+            parentNode.refreshNodeLabel();
+            LreObjectChildren parentChildren = (LreObjectChildren) parentNode.getChildren();
+            parentChildren.setLreObjectList(profileList);
+            parentChildren.addNotify();
+        }
         db.commitChanges();
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_INCLUDED);
-
-        //Update the tree
-        parentNode.refreshNodeLabel();
-        LreObjectChildren parentChildren = (LreObjectChildren) parentNode.getChildren();
-        parentChildren.setLreObjectList(profileList);
-        parentChildren.addNotify();
     }
 }

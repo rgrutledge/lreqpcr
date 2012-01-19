@@ -42,9 +42,9 @@ public class AmpliconChildren extends Children.Keys<Amplicon> {
     protected Node[] createNodes(Amplicon amplicon) {
         AmpliconNode node = new AmpliconNode(Children.LEAF, Lookups.singleton(amplicon), db);
             if (amplicon.getEmaxCV() == 0) {
-                node.setName(amplicon.getName() + " (" + df.format(amplicon.getEmaxAverage() * 100) + "%)");
+                node.setName(amplicon.getName() + "  (Av. Emax= " + df.format(amplicon.getEmaxAverage() * 100) + "%)");
             } else {
-                node.setName(amplicon.getName() + " (" + df.format(amplicon.getEmaxAverage() * 100)
+                node.setName(amplicon.getName() + "  (Av. Emax= " + df.format(amplicon.getEmaxAverage() * 100)
                         + " +/-" + df.format(amplicon.getEmaxCV() * 100) + "%)");
             }
              return new Node[]{node};

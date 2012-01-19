@@ -124,7 +124,7 @@ public class ProfileInitializer {
 
     /**
      * Calculates and assigns Fo values across the entire cycle profile
-     * using the LRE parameters are supplied by the current LRE window from
+     * using the LRE parameters supplied by the current LRE window within
      * the Profile. An average Fo value is also calculated across 
      * the LRE window, and the fractional difference of each cycle Fo value 
      * vs. the average Fo from the LRE window is set for each Cycle.
@@ -153,7 +153,7 @@ public class ProfileInitializer {
 
     /**
      * Calculates the average Fo across the LRE Window using the Cycle
-     *linked list generated from the Profile.
+     * linked list generated from the Profile.
      *
      * @param prfSum the ProfileSummary holding the Profile to be processed
      */

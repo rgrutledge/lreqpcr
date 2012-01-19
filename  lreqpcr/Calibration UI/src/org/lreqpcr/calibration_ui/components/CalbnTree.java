@@ -19,14 +19,12 @@ package org.lreqpcr.calibration_ui.components;
 import com.google.common.collect.Lists;
 import org.lreqpcr.core.utilities.MathFunctions;
 import org.lreqpcr.core.utilities.FormatingUtilities;
-import org.lreqpcr.core.data_objects.ReactionSetupImpl;
 import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.calibration_ui.actions.CalbnTreeNodeActions;
 import org.lreqpcr.core.ui_elements.LabelFactory;
 import org.lreqpcr.core.ui_elements.LreActionFactory;
 import org.lreqpcr.core.ui_elements.LreNode;
-import org.lreqpcr.core.ui_elements.LreObjectChildren;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -220,6 +218,7 @@ public class CalbnTree extends JPanel {
         createTree();
         UniversalLookup.getDefault().add(PanelMessages.RUN_VIEW_SELECTED, null);
     }//GEN-LAST:event_runViewButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField avProfileOCFdisplay;
     private javax.swing.JScrollPane beanTree;

@@ -40,7 +40,7 @@ class ExcludeAverageCalibrationProfileAction extends AbstractAction {
 
     public ExcludeAverageCalibrationProfileAction(ExplorerManager mgr) {
         this.mgr = mgr;
-        putValue(NAME, "Exclude Calibration Profile");
+        putValue(NAME, "Exclude Calibration Profile(s)");
     }
 
     @SuppressWarnings("unchecked")
@@ -48,22 +48,26 @@ class ExcludeAverageCalibrationProfileAction extends AbstractAction {
         Node[] nodes = mgr.getSelectedNodes();
         LreNode selectedNode = (LreNode) nodes[0];
         db = selectedNode.getDatabaseServices();
-        AverageCalibrationProfile selectedProfile = (AverageCalibrationProfile) selectedNode.getLookup().lookup(CalibrationProfile.class);
-        selectedProfile.setExcluded(true);
-        db.saveObject(selectedProfile);
-        //Exclude all replicate profiles
-        List l = selectedProfile.getReplicateProfileList();
-        for(CalibrationProfile prf : selectedProfile.getReplicateProfileList()){
-            prf.setExcluded(true);
-            db.saveObject(prf);
+        for (Node node : nodes) {
+            selectedNode = (LreNode) node;
+            AverageCalibrationProfile selectedProfile = (AverageCalibrationProfile) selectedNode.getLookup().lookup(CalibrationProfile.class);
+            selectedProfile.setExcluded(true);
+            db.saveObject(selectedProfile);
+            //Exclude all replicate profiles
+            List l = selectedProfile.getReplicateProfileList();
+            for (CalibrationProfile prf : selectedProfile.getReplicateProfileList()) {
+                prf.setExcluded(true);
+                db.saveObject(prf);
+            }
+            selectedNode.refreshNodeLabel();
+            //Refresh the replicate profile node labels
+            Node[] replNodes = selectedNode.getChildren().getNodes();
+            for (int i = 0; i < replNodes.length; i++) {
+                LreNode n = (LreNode) replNodes[i];
+                n.refreshNodeLabel();
+            }
         }
-        selectedNode.refreshNodeLabel();
-        //Refresh the replicate profile node labels
-        Node[] replNodes = selectedNode.getChildren().getNodes();
-        for(int i=0; i<replNodes.length; i++){
-            LreNode n = (LreNode) replNodes[i];
-            n.refreshNodeLabel();
-        }
+
         db.commitChanges();
         //Update the Calibration panels
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_EXCLUDED);

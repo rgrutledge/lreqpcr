@@ -44,7 +44,7 @@ import java.lang.Boolean;
  *
  * @author Bob Rutledge
  */
-public class SampleProfileDataExport {
+public class ExcelSampleProfileDataExport {
 
     /**
      * Exports the AverageSampleProfiles from a list of Runs. Each 

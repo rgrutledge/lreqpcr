@@ -39,6 +39,7 @@ import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
+import org.openide.windows.WindowManager;
 
 /**
  * Tree-based view of an Experiment database
@@ -90,9 +91,11 @@ public class ExperimentDbTree extends JPanel {
                         dbInfo.setOcf(averageOCF);
                         experimentDB.saveObject(dbInfo);
                         updateAllNo();
+                        //Broadcast that the Profiles have been changed
+                        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.DATABASE_FILE_CHANGED);
                     } catch (NumberFormatException nan) {
                         Toolkit.getDefaultToolkit().beep();
-                        JOptionPane.showMessageDialog(null,
+                        JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
                                 "The OCF must be a valid number" + "\n"
                                 + "   Please click on the OK button",
                                 "Invalid OCF",
@@ -142,7 +145,7 @@ public class ExperimentDbTree extends JPanel {
         root.setShortDescription(dbFile.getAbsolutePath());
 
         mgr.setRootContext(root);
-        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.CLEAR_PROFILE_EDITOR);
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_CHANGED);
     }
 
     /**

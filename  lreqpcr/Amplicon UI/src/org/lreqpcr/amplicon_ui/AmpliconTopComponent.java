@@ -95,7 +95,7 @@ public final class AmpliconTopComponent extends TopComponent
         if (ampliconDB != null) {
             universalLookup.add(DatabaseType.AMPLICON, ampliconDB);
         }
-        universalLookup.addListner(PanelMessages.UPDATA_AMPLICON_PANELS, this);
+        universalLookup.addListner(PanelMessages.UPDATE_AMPLICON_PANELS, this);
         createTree();
 
     }
@@ -396,7 +396,7 @@ public final class AmpliconTopComponent extends TopComponent
     }
 
     public void universalLookupChangeEvent(Object key) {
-        if (key == PanelMessages.UPDATA_AMPLICON_PANELS) {
+        if (key == PanelMessages.UPDATE_AMPLICON_PANELS) {
             createTree();
         }
     }

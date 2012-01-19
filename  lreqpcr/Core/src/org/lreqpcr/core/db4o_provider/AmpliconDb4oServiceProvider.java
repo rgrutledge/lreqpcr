@@ -16,9 +16,11 @@
  */
 package org.lreqpcr.core.db4o_provider;
 
+import java.awt.Cursor;
 import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.ProgressMonitor;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;

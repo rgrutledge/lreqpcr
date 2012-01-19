@@ -35,16 +35,16 @@ import org.openide.util.Lookup;
  *
  * @author Bob Rutledge
  */
-public class FixSampleProfileEmaxTo100percentAction extends AbstractAction {
+public class ReturnSampleProfileToLreDerivedEmaxAction extends AbstractAction {
 
     private ExplorerManager mgr;
     private DatabaseServices db;
     private LreWindowSelectionParameters selectionParameters;
     private LreAnalysisService analysisService;
 
-    public FixSampleProfileEmaxTo100percentAction(ExplorerManager mgr) {
+    public ReturnSampleProfileToLreDerivedEmaxAction(ExplorerManager mgr) {
         this.mgr = mgr;
-        putValue(NAME, "Fix Emax to 100%");
+        putValue(NAME, "Return to LRE-derived Emax");
     }
 
     @SuppressWarnings("unchecked")
@@ -58,14 +58,12 @@ public class FixSampleProfileEmaxTo100percentAction extends AbstractAction {
                 List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
 //This list should never be empty, as a LreWindowSelectionParameters object is created during DB creation
                 selectionParameters = l.get(0);
-            }else{
-                return;
             }
             for (Node n : nodes) {
                 LreNode node = (LreNode) n;
                 Profile profile = node.getLookup().lookup(Profile.class);
-                profile.setIsEmaxOverridden(true);
-                profile.setOverridentEmaxValue(1.0);
+                profile.setIsEmaxOverridden(false);
+                profile.setOverridentEmaxValue(0);
                 ProfileSummary prfSum = analysisService.initializeProfile(profile, selectionParameters);
                 db.saveObject(prfSum.getProfile());
                 node.refreshNodeLabel();

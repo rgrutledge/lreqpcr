@@ -87,6 +87,7 @@ public class ProfileEditor extends JPanel implements
             lreObjectInfo.displayMember(selectedNode);
             return;
         }
+
 //Display and editing of a profile is conducted through the ProfileSummary interface
         prfSum = analysisService.initializeProfile(profile, selectionParameters);
         if (profile.getLreWinSize() == 0) {

@@ -157,10 +157,6 @@ public class ExcelAverageSampleProfileDataExport {
             Collections.sort(profileList);
             ArrayList<AverageSampleProfile> belowTenMoleculeList = new ArrayList<AverageSampleProfile>();
             for (AverageSampleProfile avProfile : profileList) {
-//                if (avProfile.getNo() < 10) {
-//                    belowTenMoleculeList.add(avProfile);
-//                    continue;
-//                }
                 //Calculate an average amplicon Tm taken from the replicate profiles
                 double avTm = 0;
                 int tmCnt = 0;
@@ -188,11 +184,11 @@ public class ExcelAverageSampleProfileDataExport {
                     sheet.addCell(label);
                     String s = "";
                     if (avProfile.getLongDescription() != null) {
-                        s = "EXCLUDED " + avProfile.getLongDescription();
+                        s = "EXCLUDED... " + avProfile.getLongDescription();
                     } else {
                         s = "EXCLUDED ";
                     }
-                    label = new Label(11, row, s, boldLeft);
+                    label = new Label(11, row, s, leftYellow);
                     sheet.addCell(label);
                     row++;
                     continue;
@@ -200,60 +196,101 @@ public class ExcelAverageSampleProfileDataExport {
 //Need to determine if No <10 molecules so that an average No must be calculated from the replicate profiles
 //That is an average profile is not reliable when the average No is below 10 molecules
                     //Calculate an average No from the replicate profile No values
+                    Boolean replicateProfileEmaxIsOverridden = false;
                     double noSum = 0;
                     for (Profile prf : avProfile.getReplicateProfileList()) {
-                        noSum = +prf.getNo();
+                        //Excluded Profiles are the user-defined indicating
+                        //they are not to be used for quantification
+                        if (!prf.isExcluded()) {
+                            noSum = +prf.getNo();
+                            if (prf.isEmaxOverridden()) {
+                                replicateProfileEmaxIsOverridden = true;
+                            }
+                        }
                     }
+//If the average is <10 molecules the average profile is considered inaccurate
                     if (noSum < 10) {
+                        //Target quantity == replicate average No
                         number = new Number(3, row, noSum, integerFormat);
                         sheet.addCell(number);
-                    //But note that all the other profile parameters are invalid...
+//Leave all other values empty but put a statement in the notes denoting that the No <10
+                        String note = "";
 
+                        if (avProfile.getLongDescription() != null) {
+                            if (replicateProfileEmaxIsOverridden) {
+                                note = "<10 Molecules and Emax has been "
+                                        + "overriddenat in at least one of the "
+                                        + "replicate profiles... "
+                                        + avProfile.getLongDescription();
+                            } else {
+                                note = "<10 Molecules... " + avProfile.getLongDescription();
+                            }
+                        } else {
+                            if (replicateProfileEmaxIsOverridden) {
+                                note = "<10 Molecules <10 Emax has been "
+                                        + "overriddenat in at least one of the "
+                                        + "replicate profiles... ";
+                            } else {
+                                note = "<10 Molecules <10...";
+                            }
+                        }
+                        if (avTm != 0) {
+                            number = new Number(8, row, avTm, floatFormat);
+                            sheet.addCell(number);
+                        }
+                        label = new Label(11, row, note, boldLeft);
+                        sheet.addCell(label);
+                        number = new Number(9, row, avProfile.getAmpliconSize(), integerFormat);
+                        sheet.addCell(number);
+                        number = new Number(10, row, avProfile.getOCF(), floatFormat);
+                        sheet.addCell(number);
+                        //Move to the next average profile
+                        row++;
+                        continue;
                     } else {
                         number = new Number(3, row, avProfile.getNo(), integerFormat);
+                        sheet.addCell(number);
                     }
+                    String note2 = "";
+                    String note1 = "";
+                    if (avProfile.getLongDescription() != null) {
+                        note1 = avProfile.getLongDescription();
+                    }
+                    if (avProfile.isEmaxOverridden()) {
+                        note2 = "***Emax is fixed to " + String.valueOf(avProfile.getOverriddendEmaxValue() * 100) + "%... " + note1;
+                        hasEmaxBeenOverridden = true;
+                        label = new Label(11, row, note2, boldLeft);
+                        number = new Number(4, row, avProfile.getOverriddendEmaxValue(), percentFormat);
+                    } else {
+                        note2 = note1;
+                        label = new Label(11, row, note2);
+                        number = new Number(4, row, avProfile.getEmax(), percentFormat);
+                    }
+                    sheet.addCell(label);
                     sheet.addCell(number);
-
-                }
-                String notes = "";
-                String note = "";
-                if (avProfile.getLongDescription() != null) {
-                    note = avProfile.getLongDescription();
-                }
-                if (avProfile.isEmaxOverridden()) {
-                    notes = "***Emax is fixed to " + String.valueOf(avProfile.getOverriddendEmaxValue() * 100) + "%... " + note;
-                    hasEmaxBeenOverridden = true;
-                    label = new Label(11, row, notes, boldLeft);
-                    number = new Number(4, row, avProfile.getOverriddendEmaxValue(), percentFormat);
-                } else {
-                    notes = note;
-                    label = new Label(11, row, notes);
-                    number = new Number(4, row, avProfile.getEmax(), percentFormat);
-                }
-                sheet.addCell(label);
-                sheet.addCell(number);
-                if (avProfile.getEmax() != 0) {
-                    number = new Number(5, row, avProfile.getEmax(), percentFormat);
+                    if (avProfile.getEmax() != 0) {
+                        number = new Number(5, row, avProfile.getEmax(), percentFormat);
+                        sheet.addCell(number);
+                    }
+                    if (avProfile.getMidC() != 0) {
+                        number = new Number(6, row, avProfile.getMidC(), floatFormat);
+                        sheet.addCell(number);
+                    }
+                    if (avProfile.getEmax() != 0) {
+                        double fmax = (avProfile.getEmax() / avProfile.getDeltaE()) * -1;
+                        number = new Number(7, row, fmax, floatFormat);
+                        sheet.addCell(number);
+                    }
+                    if (avTm != 0) {
+                        number = new Number(8, row, avTm, floatFormat);
+                        sheet.addCell(number);
+                    }
+                    number = new Number(9, row, avProfile.getAmpliconSize(), integerFormat);
                     sheet.addCell(number);
-                }
-                if (avProfile.getMidC() != 0) {
-                    number = new Number(6, row, avProfile.getMidC(), floatFormat);
+                    number = new Number(10, row, avProfile.getOCF(), floatFormat);
                     sheet.addCell(number);
+                    row++;
                 }
-                if (avProfile.getEmax() != 0) {
-                    double fmax = (avProfile.getEmax() / avProfile.getDeltaE()) * -1;
-                    number = new Number(7, row, fmax, floatFormat);
-                    sheet.addCell(number);
-                }
-                if (avTm != 0) {
-                    number = new Number(8, row, avTm, floatFormat);
-                    sheet.addCell(number);
-                }
-                number = new Number(9, row, avProfile.getAmpliconSize(), integerFormat);
-                sheet.addCell(number);
-                number = new Number(10, row, avProfile.getOCF(), floatFormat);
-                sheet.addCell(number);
-                row++;
             }
             if (hasEmaxBeenOverridden) {
                 label = new Label(1, 1, "Note that Emax has been overridden in at leaast one profile", boldLeft);

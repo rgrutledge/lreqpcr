@@ -217,6 +217,22 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         for (AverageProfile prf : prfList) {
             ArrayList<Profile> replList = (ArrayList<Profile>) prf.getReplicateProfileList();
             ArrayList<Double> avFoValues = Lists.newArrayList();
+            if (currentDB.getDatabaseType() == DatabaseType.EXPERIMENT) {
+                //Exclude the AverageSampleProfile if the ReplicateProfile average No <10 molecules
+                //This should work even if an OCF has not been applied???
+                //Determine the Replicate average No
+                double avReplicateNo = 0;
+                for (Profile sampleProfile : replList) {
+                    if (sampleProfile.getNo() != Double.NaN) {
+                        avReplicateNo = +sampleProfile.getNo();
+                    }
+
+                }
+                avReplicateNo = avReplicateNo / replList.size();
+                if (avReplicateNo < 10) {
+                    continue;//Go to the next AverageProfile
+                }
+            }
             double sum = 0;
             for (Profile sampleProfile : replList) {
                 if (!sampleProfile.isExcluded()) {
@@ -229,14 +245,20 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                 replFoCvValues.add(MathFunctions.calcStDev(avFoValues) / avFo);
             }
         }
-        //Calculate the average Replicate FoCV
-        double sum = 0;
-        for (Double cv : replFoCvValues) {
-            sum = sum + cv;
+        //Check if there are any replicate Fo CV values
+        if (replFoCvValues.size() > 0) {
+            //Calculate the average Replicate FoCV
+            double sum = 0;
+            for (Double cv : replFoCvValues) {
+                sum = sum + cv;
+            }
+            double avReplCv = 0;
+            avReplCv = sum / replFoCvValues.size();
+            df.applyPattern("#.0%");
+            replAvFoCvDisplay.setText(df.format(avReplCv));
+        } else {//No replicate Fo CV values
+            replAvFoCvDisplay.setText("Insufficient # of Replicates");
         }
-        double avReplCv = sum / replFoCvValues.size();
-        df.applyPattern("#.0%");
-        replAvFoCvDisplay.setText(df.format(avReplCv));
     }
 
     /** This method is called from within the constructor to
@@ -270,11 +292,11 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
 
         foThresholdDisplay.setColumns(4);
 
-        jLabel3.setText("Av Repl-Fo CV:");
+        jLabel3.setText("Av Repl CV:");
         jLabel3.setToolTipText("An indicator of the overall precision of target quantification");
 
         replAvFoCvDisplay.setText("  ");
-        replAvFoCvDisplay.setToolTipText("");
+        replAvFoCvDisplay.setToolTipText("Note that Replicat Profiles with <10 molecules are not included");
 
         GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
@@ -286,16 +308,16 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(ComponentPlacement.RELATED)
-                        .addComponent(minFcDisplay, GroupLayout.PREFERRED_SIZE, 163, GroupLayout.PREFERRED_SIZE))
+                        .addComponent(minFcDisplay, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(ComponentPlacement.RELATED)
-                        .addComponent(foThresholdDisplay, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                        .addComponent(foThresholdDisplay, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addPreferredGap(ComponentPlacement.RELATED)
-                        .addComponent(replAvFoCvDisplay, GroupLayout.PREFERRED_SIZE, 52, GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(49, Short.MAX_VALUE))
+                        .addComponent(replAvFoCvDisplay, GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(Alignment.LEADING)
@@ -311,7 +333,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(replAvFoCvDisplay))
-                .addContainerGap(14, Short.MAX_VALUE))
+                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -352,7 +374,8 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         if (key == PanelMessages.PROFILE_INCLUDED
                 || key == PanelMessages.PROFILE_EXCLUDED
                 || key == PanelMessages.PROFILE_CHANGED
-                || key == PanelMessages.NEW_RUN_IMPORTED) {
+                || key == PanelMessages.NEW_RUN_IMPORTED
+                || key == PanelMessages.PROFILE_CHANGED) {
             //Need to update the avReplCV
             calcReplAvFoCV();
         }
@@ -379,10 +402,12 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                         updateDisplay();
                     }
                 } else {
+                    currentDB = null;
                     clearPanel();
                     return;
                 }
             } else {
+                currentDB = null;
                 clearPanel();
             }
         }

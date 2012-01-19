@@ -39,7 +39,7 @@ public class ExperimentTreeNodeActions implements LreActionFactory {
             new DeleteAverageSampleProfileAction(mgr),
             null,
             new FixSampleProfileEmaxTo100percentAction(mgr),
-            new ReturnSampleProfileEmaxToLreAction(mgr)
+            new ReturnSampleProfileToLreDerivedEmaxAction(mgr)
         };
         actionMap.put("AverageSampleProfile", actions);
 
@@ -49,7 +49,8 @@ public class ExperimentTreeNodeActions implements LreActionFactory {
                     new IncludeSampleProfileAction(mgr), //Disallow SampleProfile deletion for now
                     null,
                     new FixSampleProfileEmaxTo100percentAction(mgr),
-                    new ReturnSampleProfileEmaxToLreAction(mgr)
+                    new ReturnSampleProfileToLreDerivedEmaxAction(mgr)
+         //Rather use Exclude than to permanently deleting a replicate profile
                 //            null,
                 //            new DeleteSampleProfileAction(mgr)
                 };
@@ -57,13 +58,16 @@ public class ExperimentTreeNodeActions implements LreActionFactory {
 
         //Run actions
         actions = new Action[]{
-                    //Deactivated due to a bug that can generate long delays when importing the files
+   //Deactivated due to a bug that can generate long delays when importing the files
                     //            new SaveCyclerDatafileAction(mgr),
                     //            new RetrieveDatafileAction(mgr),
                     //            new RetrieveExcelImportFileAction(mgr),
                     new ApplyRunSpecficOCF(mgr),
                     null,
                     new DeleteRunAction(mgr),
+                    null,
+                    new FixRunProfilesEmaxTo100percentAction(mgr),
+                    new ReturnRunProfilesEmaxToLreDerivedEmaxAction(mgr)
                 };
         actionMap.put("RunImpl", actions);
     }

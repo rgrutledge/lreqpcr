@@ -33,6 +33,10 @@ public class SampleProfile extends Profile {
      * based on the profile average Fo, OCF and amplicon size. 
      */
     public void updateProfile() {
+        if(isExcluded()){
+            setNo(0);
+            return;
+        }
         if (getTargetStrandedness() == TargetStrandedness.SINGLESTRANDED) {
             setNo(2 * ((getAvFo() / getOCF()) * 910000000000d) / getAmpliconSize());
         } else {

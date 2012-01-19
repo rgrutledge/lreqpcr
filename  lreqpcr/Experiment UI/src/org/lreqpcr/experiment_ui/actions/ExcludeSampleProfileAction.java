@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2010  Bob Rutledge
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -33,6 +33,7 @@ import org.lreqpcr.ui_components.PanelMessages;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
+import org.openide.windows.WindowManager;
 
 /**
  * Only one Profile can be excluded at one time.
@@ -47,32 +48,13 @@ class ExcludeSampleProfileAction extends AbstractAction {
 
     public ExcludeSampleProfileAction(ExplorerManager mgr) {
         this.mgr = mgr;
-        putValue(NAME, "Exclude Sample Profile");
+        putValue(NAME, "Exclude Sample Profile(s)");
     }
 
     @SuppressWarnings("unchecked")
     public void actionPerformed(ActionEvent e) {
-        Node[] nodes = mgr.getSelectedNodes();
-        LreNode selectedNode = (LreNode) nodes[0];
-        SampleProfile selectedProfile = selectedNode.getLookup().lookup(SampleProfile.class);
-        AverageSampleProfile parentAvProfile = (AverageSampleProfile) selectedProfile.getParent();
-        List<SampleProfile> profileList = parentAvProfile.getReplicateProfileList();
-
-        //Need to confirm that at least one Profile will remain active
-        int numberOfActiveProfiles = 0;
-        for (SampleProfile profile: profileList) {
-            if (!profile.isExcluded()){
-                numberOfActiveProfiles++;
-            }
-        }
-        if (numberOfActiveProfiles <2){//Only one Profile active
-            String msg = "It appears that there is only one Profile that is active " +
-                    "and thus cannot be excluded. Exclude the average profile instead";
-            JOptionPane.showMessageDialog(null, msg, "Unable to exclude the " +
-                    "selected Profile", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
+        Node[] selectedNodes = mgr.getSelectedNodes();
+        LreNode selectedNode = (LreNode) selectedNodes[0];
         db = selectedNode.getDatabaseServices();
         if (db != null) {
             if (db.isDatabaseOpen()) {
@@ -80,30 +62,54 @@ class ExcludeSampleProfileAction extends AbstractAction {
 //This list should never be empty, as a LreWindowSelectionParameters object is created during DB creation
                 selectionParameters = l.get(0);
             }
+        } else {
+            return;
         }
-        selectedProfile.setExcluded(true);
-        selectedNode.refreshNodeLabel();
-        db.saveObject(selectedProfile);
+        for (Node node : selectedNodes) {
+            selectedNode = (LreNode) node;
+            SampleProfile selectedProfile = selectedNode.getLookup().lookup(SampleProfile.class);
+            AverageSampleProfile parentAvProfile = (AverageSampleProfile) selectedProfile.getParent();
+            List<SampleProfile> profileList = parentAvProfile.getReplicateProfileList();
 
-        //Update the parent Average Sample Profile
-        LreNode parentNode = (LreNode) nodes[0].getParentNode();
-        parentAvProfile.setFcReadings(null);//Fb will need to be recalculated
-        parentAvProfile.setRawFcReadings(GeneralUtilities.
-                generateAverageFcDataset(profileList));
-        //Reinitialize the Average Profile
-        LreAnalysisService profileIntialization =
-                Lookup.getDefault().lookup(LreAnalysisService.class);
-        //This will trigger an auto selection of the LRE window
-        parentAvProfile.setLreWinSize(0);
-        profileIntialization.initializeProfile(parentAvProfile, selectionParameters);
-        db.saveObject(parentAvProfile);
+            //Need to confirm that at least one Profile will remain active
+            int numberOfActiveProfiles = 0;
+            for (SampleProfile profile : profileList) {
+                if (!profile.isExcluded()) {
+                    numberOfActiveProfiles++;
+                }
+            }
+            if (numberOfActiveProfiles < 2) {//Only one Profile active
+                String msg = "It appears that there is only one Profile that is active "
+                        + "and thus cannot be excluded. Exclude the average profile instead";
+                JOptionPane.showMessageDialog(
+                        WindowManager.getDefault().getMainWindow(),
+                        msg,
+                        "Unable to exclude the "
+                        + "selected Profile", JOptionPane.ERROR_MESSAGE);
+                continue;
+            }
+            selectedProfile.setExcluded(true);
+            selectedNode.refreshNodeLabel();
+            db.saveObject(selectedProfile);
+
+            //Update the parent Average Sample Profile
+            LreNode parentNode = (LreNode) selectedNodes[0].getParentNode();
+            parentAvProfile.setFcReadings(null);//Fb will need to be recalculated
+            parentAvProfile.setRawFcReadings(GeneralUtilities.generateAverageFcDataset(profileList));
+            //Reinitialize the Average Profile
+            LreAnalysisService profileIntialization =
+                    Lookup.getDefault().lookup(LreAnalysisService.class);
+            //This will trigger an auto selection of the LRE window
+            parentAvProfile.setLreWinSize(0);
+            profileIntialization.initializeProfile(parentAvProfile, selectionParameters);
+            db.saveObject(parentAvProfile);
+            //Update the tree
+            parentNode.refreshNodeLabel();
+            LreObjectChildren parentChildren = (LreObjectChildren) parentNode.getChildren();
+            parentChildren.setLreObjectList(profileList);
+            parentChildren.addNotify();
+        }
         db.commitChanges();
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_EXCLUDED);
-
-        //Update the tree
-        parentNode.refreshNodeLabel();
-        LreObjectChildren parentChildren = (LreObjectChildren) parentNode.getChildren();
-        parentChildren.setLreObjectList(profileList);
-        parentChildren.addNotify();
     }
 }
