@@ -69,11 +69,11 @@ class ExcludeSampleProfileAction extends AbstractAction {
             selectedNode = (LreNode) node;
             SampleProfile selectedProfile = selectedNode.getLookup().lookup(SampleProfile.class);
             AverageSampleProfile parentAvProfile = (AverageSampleProfile) selectedProfile.getParent();
-            List<SampleProfile> profileList = parentAvProfile.getReplicateProfileList();
+            List<SampleProfile> repProfileList = parentAvProfile.getReplicateProfileList();
 
             //Need to confirm that at least one Profile will remain active
             int numberOfActiveProfiles = 0;
-            for (SampleProfile profile : profileList) {
+            for (SampleProfile profile : repProfileList) {
                 if (!profile.isExcluded()) {
                     numberOfActiveProfiles++;
                 }
@@ -95,18 +95,18 @@ class ExcludeSampleProfileAction extends AbstractAction {
             //Update the parent Average Sample Profile
             LreNode parentNode = (LreNode) selectedNodes[0].getParentNode();
             parentAvProfile.setFcReadings(null);//Fb will need to be recalculated
-            parentAvProfile.setRawFcReadings(GeneralUtilities.generateAverageFcDataset(profileList));
+            parentAvProfile.setRawFcReadings(GeneralUtilities.generateAverageFcDataset(repProfileList));
             //Reinitialize the Average Profile
             LreAnalysisService profileIntialization =
                     Lookup.getDefault().lookup(LreAnalysisService.class);
             //This will trigger an auto selection of the LRE window
-            parentAvProfile.setLreWinSize(0);
+            parentAvProfile.setHasAnLreWindowBeenFound(false);
             profileIntialization.initializeProfile(parentAvProfile, selectionParameters);
             db.saveObject(parentAvProfile);
             //Update the tree
             parentNode.refreshNodeLabel();
             LreObjectChildren parentChildren = (LreObjectChildren) parentNode.getChildren();
-            parentChildren.setLreObjectList(profileList);
+            parentChildren.setLreObjectList(repProfileList);
             parentChildren.addNotify();
         }
         db.commitChanges();

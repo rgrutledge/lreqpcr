@@ -121,7 +121,7 @@ public class AmpliconEditPanel extends JPanel
         nodeResult = Utilities.actionsGlobalContext().lookupResult(LreNode.class);
         nodeResult.allItems();
         nodeResult.addLookupListener(this);
-        UniversalLookup.getDefault().addListner(PanelMessages.DATABASE_FILE_CHANGED, this);
+        UniversalLookup.getDefault().addListner(PanelMessages.NEW_DATABASE, this);
     }
 
     private boolean isAmpliconNameUnique(String ampName) {
@@ -385,7 +385,7 @@ public class AmpliconEditPanel extends JPanel
     }
 
     public void universalLookupChangeEvent(Object key) {
-        if (key == PanelMessages.DATABASE_FILE_CHANGED) {//Open, New or Close database file changed
+        if (key == PanelMessages.NEW_DATABASE) {//Open, New or Close database file changed
             clearPanel();
         }
     }

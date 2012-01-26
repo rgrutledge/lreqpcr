@@ -52,7 +52,7 @@ public class DeleteRunAction extends AbstractAction {
         if (nodes.length == 1) {
             LreObject o = lreNode.getLookup().lookup(LreObject.class);
             Run run = (Run) o;
-            String msg = "Are you sure you want to delete " + run.getName() + "?";
+            String msg = "Are you sure you want to delete the '" + run.getName() + "' Run?";
             int n = JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(),
                     msg, "Delete Run",
                     JOptionPane.YES_NO_OPTION,

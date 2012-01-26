@@ -49,9 +49,9 @@ public class LreAnalysisProvider extends LreAnalysisService {
         ProfileSummaryImp prfSum = new ProfileSummaryImp(profile);
         prfSum.setZeroCycle(ProfileInitializer.makeCycleList(profile.getFcReadings()));
         //Set the startCycle
-        if (profile.getLreWinSize() == 0) {//Signifies new window is needed; if fcMin = 0 the start cycle = first cycle below C1/2
-            LreWindowSelector.selectLreWindow(prfSum, parameters);
-            if (profile.getLreWinSize() == 0) {//Is a bad profile, e.g. is flat
+        if (!profile.hasAnLreWindowBeenFound()) {//Signifies new window is needed
+            LreWindowSelector.selectLreWindowUsingMinFc(prfSum, parameters);
+            if (!profile.hasAnLreWindowBeenFound()) {//Is a bad profile, e.g. is flat
                 return prfSum;
             }
         }
@@ -66,12 +66,12 @@ public class LreAnalysisProvider extends LreAnalysisService {
      * @return true for a full reanalyze or false for a simple update
      */
     public boolean updateLreWindow(ProfileSummary prfSum, LreWindowSelectionParameters parameters) {
-        if (prfSum.getProfile().getLreWinSize() == 0) {//"Reanalyze" request
-            LreWindowSelector.selectLreWindow(prfSum, parameters);
+        if (!prfSum.getProfile().hasAnLreWindowBeenFound()) {
+            //Full reanalysis requested
+            LreWindowSelector.selectLreWindowUsingMinFc(prfSum, parameters);
             return true;
-        } else {
+        } //Only an update required
             ProfileInitializer.calcLreParameters(prfSum);
             return false;
-        }
     }
 }

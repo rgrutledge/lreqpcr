@@ -20,6 +20,7 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
 import org.lreqpcr.core.database_services.SettingsServices;
@@ -30,14 +31,14 @@ import org.openide.windows.WindowManager;
  * 
  * @author Bob Rutledge
  */
-public class CalibrationDb4oServiceProvider extends Db4oServices implements DatabaseServices {
+public class CalibrationDb4oServiceProvider extends Db4oDatabaseServices implements DatabaseServices {
 
     private SettingsServices settingsDB = Lookup.getDefault().lookup(SettingsServices.class);
 
     public CalibrationDb4oServiceProvider() {
     }
 
-    public boolean createNewDatabase() {
+    public boolean createNewDatabaseFile() {
         JFileChooser fc = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
                 "Calibration database files", "cal");
@@ -53,11 +54,11 @@ public class CalibrationDb4oServiceProvider extends Db4oServices implements Data
             fc.setCurrentDirectory(directory);
         }
         int returnVal = fc.showDialog(WindowManager.getDefault().getMainWindow(), "New Calbn DB");
-        File selectedFile = null;
         while (returnVal == JFileChooser.APPROVE_OPTION) {
             if (returnVal == JFileChooser.APPROVE_OPTION) {
+                File previousDatabaseFile = getDatabaseFile();
                 settingsDB.setLastCalibrationDatabaseDirectory(fc.getCurrentDirectory().getAbsolutePath());
-                selectedFile = fc.getSelectedFile();
+                File selectedFile = fc.getSelectedFile();
                 String fileName = selectedFile.getAbsolutePath();
                 if (!fileName.endsWith(".cal")) {
                     selectedFile = new File(selectedFile.getAbsolutePath() + ".cal");
@@ -80,28 +81,37 @@ public class CalibrationDb4oServiceProvider extends Db4oServices implements Data
                             JOptionPane.WARNING_MESSAGE);
 
                     if (n == JOptionPane.OK_OPTION) {
-                        returnVal = fc.showDialog(null, "New Calbn DB");
-                        continue;
+                        return createNewDatabaseFile();//Start again
                     } else {
                         return false;//Abort new database creation
                     }
                 }
+                if (openDatabaseFile(selectedFile)) {
+                    saveObject(new LreWindowSelectionParameters());
+                    commitChanges();
+                    settingsDB.setLastCalibrationDatabaseFile(previousDatabaseFile);
+                    return true;
+                }
             }
-            break;
         }
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            if (getDatabaseFile() != null) {
-                settingsDB.setLastCalibrationDatabaseFile(getDatabaseFile());
-            }
-            settingsDB.setLastCalibrationDatabaseDirectory(fc.getCurrentDirectory().getAbsolutePath());
-            openDatabase(selectedFile);
-            return true;
-        } else {
-            return false;
-        }
+        return false;
     }
 
-    public boolean openDatabase() {
+    /**
+     * Records the current database file as the last open database and 
+     * then closes the database file.
+     */
+    @Override
+    public boolean closeDatabase() {
+        File previousDatabaseFile = getDatabaseFile();
+        if (closeDb4oDatabase()) {
+            settingsDB.setLastCalibrationDatabaseFile(previousDatabaseFile);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean openUserSelectDatabaseFile() {
         JFileChooser fc = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
                 "Calibration database files", "cal");
@@ -119,24 +129,32 @@ public class CalibrationDb4oServiceProvider extends Db4oServices implements Data
         }
         int returnVal = fc.showDialog(WindowManager.getDefault().getMainWindow(), "Open Calbn DB");
         if (returnVal == JFileChooser.APPROVE_OPTION && fc.getSelectedFile().exists()) {
-            if (getDatabaseFile() != null) {
-                settingsDB.setLastCalibrationDatabaseFile(getDatabaseFile());
-            }
+            closeDatabase();
             settingsDB.setLastCalibrationDatabaseDirectory(fc.getCurrentDirectory().getAbsolutePath());
-            openDatabase(fc.getSelectedFile());
-            return true;
+            return openDatabaseFile(fc.getSelectedFile());
         } else {
             return false;
         }
     }
 
     @Override
-    public void closeDatabase() {
-        //This requires a Calibration DB specific call due to the clumpsy implementation
-        if (getDatabaseFile() != null) {
-            settingsDB.setLastCalibrationDatabaseFile(getDatabaseFile());
+    public boolean openLastDatabaseFile() {
+        //At startup, no database file will be open
+        if (getDatabaseFile() == null) {
+            if (openDatabaseFile(settingsDB.getLastExperimentDatabaseFile())) {
+                return true;
+            } else {
+                return false;
+            }
         }
-        super.closeDatabase();
+        //Opening a database file resets the datafile to this new file
+        File currentDatabaseFile = getDatabaseFile();
+        if (openDatabaseFile(settingsDB.getLastCalibrationDatabaseFile())) {
+            //the last file was opened successfully
+            settingsDB.setLastCalibrationDatabaseFile(currentDatabaseFile);
+            return true;
+        }
+        return false;
     }
 
     public DatabaseType getDatabaseType() {

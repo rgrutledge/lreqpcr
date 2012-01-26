@@ -20,6 +20,8 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import org.lreqpcr.core.data_objects.ExperimentDbInfo;
+import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.database_services.DatabaseType;
 import org.lreqpcr.core.database_services.SettingsServices;
 import org.openide.util.Lookup;
@@ -29,15 +31,14 @@ import org.openide.windows.WindowManager;
  * 
  * @author Bob Rutledge
  */
-public class ExperimentDb4oServiceProvider extends Db4oServices {
-//    implements DatabaseServices {
+public class ExperimentDb4oDatabaseServiceProvider extends Db4oDatabaseServices {
 
     private SettingsServices settingsDB = Lookup.getDefault().lookup(SettingsServices.class);
 
-    public ExperimentDb4oServiceProvider() {
+    public ExperimentDb4oDatabaseServiceProvider() {
     }
 
-    public boolean createNewDatabase() {
+    public boolean createNewDatabaseFile() {
         JFileChooser fc = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
                 "Experiment database files", "exp");
@@ -53,11 +54,11 @@ public class ExperimentDb4oServiceProvider extends Db4oServices {
             fc.setCurrentDirectory(directory);
         }
         int returnVal = fc.showDialog(WindowManager.getDefault().getMainWindow(), "New Expt DB");
-        File selectedFile = null;
         while (returnVal == JFileChooser.APPROVE_OPTION) {
             if (returnVal == JFileChooser.APPROVE_OPTION) {
+                File previousDatabaseFile = getDatabaseFile();
                 settingsDB.setLastExperimentDatabaseDirectory(fc.getCurrentDirectory().getAbsolutePath());
-                selectedFile = fc.getSelectedFile();
+                File selectedFile = fc.getSelectedFile();
                 String fileName = selectedFile.getAbsolutePath();
                 if (!fileName.endsWith(".exp")) {
                     selectedFile = new File(selectedFile.getAbsolutePath() + ".exp");
@@ -80,28 +81,45 @@ public class ExperimentDb4oServiceProvider extends Db4oServices {
                             JOptionPane.WARNING_MESSAGE);
 
                     if (n == JOptionPane.OK_OPTION) {
-                        returnVal = fc.showDialog(null, "New Expt DB");
-                        continue;
+                        return createNewDatabaseFile();//Start again
                     } else {
                         return false;//Abort new file creation
                     }
                 }
+                if (openDatabaseFile(selectedFile)) {
+                    saveObject(new LreWindowSelectionParameters());
+                    saveObject(new ExperimentDbInfo());
+                    commitChanges();
+                    settingsDB.setLastExperimentDatabaseFile(previousDatabaseFile);
+                    return true;
+                }
             }
-            break;
         }
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            //Save the previously open file location to the settings database
-            if (getDatabaseFile() != null) {
-                settingsDB.setLastExperimentDatabaseFile(getDatabaseFile());
-            }
-            settingsDB.setLastExperimentDatabaseDirectory(fc.getCurrentDirectory().getAbsolutePath());
-            openDatabase(selectedFile);
+        return false;//Default if true is not returned...
+    }
+
+    /**
+     * Records the current database file as the last open database and 
+     * then closes the database file.
+     */
+    @Override
+    public boolean closeDatabase() {
+        File previousDatabaseFile = getDatabaseFile();
+        if (closeDb4oDatabase()) {
+            settingsDB.setLastExperimentDatabaseFile(previousDatabaseFile);
             return true;
         }
         return false;
     }
 
-    public boolean openDatabase() {
+    /**
+     * Opens an Experiment database file as chosen by the user. Once a valid file
+     * is selected, the current database file is closed and this new file is opened. 
+     * If opened successfully, the old file is stored as the last database to be retrieved
+     * 
+     * @return true if a new database file is successfully opened, false if not
+     */
+    public boolean openUserSelectDatabaseFile() {
         JFileChooser fc = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
                 "Experiment database files", "exp");
@@ -119,24 +137,34 @@ public class ExperimentDb4oServiceProvider extends Db4oServices {
         }
         int returnVal = fc.showDialog(WindowManager.getDefault().getMainWindow(), "Open Expt DB");
         if (returnVal == JFileChooser.APPROVE_OPTION && fc.getSelectedFile().exists()) {
-            if (getDatabaseFile() != null) {
-                settingsDB.setLastExperimentDatabaseFile(getDatabaseFile());
-            }
+            //Close the current database file
+            closeDatabase();//This stores the last exp database file location in the Settings database
+            //Store the last exp database directory in settings
             settingsDB.setLastExperimentDatabaseDirectory(fc.getCurrentDirectory().getAbsolutePath());
-            openDatabase(fc.getSelectedFile());
-            return true;
+            return openDatabaseFile(fc.getSelectedFile());//Open the DB4O file via Db4oDatabaseServices;
         } else {
             return false;
         }
     }
 
     @Override
-    public void closeDatabase() {
-        //Save the previously open file location to the settings database
-        if (getDatabaseFile() != null) {
-            settingsDB.setLastExperimentDatabaseFile(getDatabaseFile());
+    public boolean openLastDatabaseFile() {
+        //Load the last database file upon startup
+        //At startup, no database file will be open
+        if (getDatabaseFile() == null) {
+            if (openDatabaseFile(settingsDB.getLastExperimentDatabaseFile())) {
+                return true;
+            } else {
+                return false;
+            }
         }
-        super.closeDatabase();
+        //Opening a file resets the database file so it needs to be recorded
+        File currentDatabaseFile = getDatabaseFile();
+        if (openDatabaseFile(settingsDB.getLastExperimentDatabaseFile())) {
+            settingsDB.setLastExperimentDatabaseFile(currentDatabaseFile);
+            return true;
+        }
+        return false;
     }
 
     public DatabaseType getDatabaseType() {

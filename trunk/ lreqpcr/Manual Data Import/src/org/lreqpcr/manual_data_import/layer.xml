@@ -4,33 +4,29 @@
     <attr name="Menu\Help\position" intvalue="550"/>
     <folder name="Actions">
         <folder name="Tools">
-            <file name="org-lreqpcr-manual_data_import-CalbnProfileImportAction.instance">
-                <attr name="delegate" newvalue="org.lreqpcr.manual_data_import.CalbnProfileImportAction"/>
-                <attr name="displayName" bundlevalue="org.lreqpcr.manual_data_import.Bundle#CTL_CalbnProfileImportAction"/>
+            <file name="org-lreqpcr-manual_data_import-CalibrationProfileImportTemplateAction.instance">
+                <attr name="delegate" newvalue="org.lreqpcr.manual_data_import.CalibrationProfileImportTemplateAction"/>
+                <attr name="displayName" bundlevalue="org.lreqpcr.manual_data_import.Bundle#CTL_CalibrationProfileImportTemplateAction"/>
                 <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
                 <attr name="noIconInMenu" boolvalue="false"/>
-                <attr name="position" intvalue="400"/>
             </file>
-            <file name="org-lreqpcr-manual_data_import-CalibrationImportTemplateCreationAction.instance">
-                <attr name="delegate" newvalue="org.lreqpcr.manual_data_import.CalibrationImportTemplateCreationAction"/>
-                <attr name="displayName" bundlevalue="org.lreqpcr.manual_data_import.Bundle#CTL_CalibrationImportTemplateCreationAction"/>
+            <file name="org-lreqpcr-manual_data_import-CalibrationProfileTemplateImportAction.instance">
+                <attr name="delegate" newvalue="org.lreqpcr.manual_data_import.CalibrationProfileTemplateImportAction"/>
+                <attr name="displayName" bundlevalue="org.lreqpcr.manual_data_import.Bundle#CTL_CalibrationProfileManualImportAction"/>
                 <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
                 <attr name="noIconInMenu" boolvalue="false"/>
-                <attr name="position" intvalue="300"/>
             </file>
-            <file name="org-lreqpcr-manual_data_import-SampleProfileImportAction.instance">
-                <attr name="delegate" newvalue="org.lreqpcr.manual_data_import.SampleProfileImportAction"/>
-                <attr name="displayName" bundlevalue="org.lreqpcr.manual_data_import.Bundle#CTL_SampleProfileImportAction"/>
+            <file name="org-lreqpcr-manual_data_import-SampleProfileImportTemplateCreationAction.instance">
+                <attr name="delegate" newvalue="org.lreqpcr.manual_data_import.SampleProfileImportTemplateCreationAction"/>
+                <attr name="displayName" bundlevalue="org.lreqpcr.manual_data_import.Bundle#CTL_SampleProfileImportTemplateCreationAction"/>
                 <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
                 <attr name="noIconInMenu" boolvalue="false"/>
-                <attr name="position" intvalue="200"/>
             </file>
-            <file name="org-lreqpcr-manual_data_import-SampleTemplateCreationAction.instance">
-                <attr name="delegate" newvalue="org.lreqpcr.manual_data_import.SampleTemplateCreationAction"/>
-                <attr name="displayName" bundlevalue="org.lreqpcr.manual_data_import.Bundle#CTL_SampleTemplateCreationAction"/>
+            <file name="org-lreqpcr-manual_data_import-SampleProfileTemplateImportAction.instance">
+                <attr name="delegate" newvalue="org.lreqpcr.manual_data_import.SampleProfileTemplateImportAction"/>
+                <attr name="displayName" bundlevalue="org.lreqpcr.manual_data_import.Bundle#CTL_SampleProfileManualEntryAction"/>
                 <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
                 <attr name="noIconInMenu" boolvalue="false"/>
-                <attr name="position" intvalue="100"/>
             </file>
         </folder>
     </folder>
@@ -42,26 +38,27 @@
                 <attr name="position" intvalue="250"/>
             </file>
             <folder name="Manual Data Enrty">
+                <attr name="org-lreqpcr-manual_data_import-CalibrationProfileImportTemplateAction.shadow/org-lreqpcr-manual_data_import-SampleProfileImportTemplateCreationAction.shadow" boolvalue="true"/>
+                <attr name="org-lreqpcr-manual_data_import-CalibrationProfileManualImportAction.shadow/org-lreqpcr-manual_data_import-SampleProfileManualEntryAction.shadow" boolvalue="true"/>
+                <attr name="org-lreqpcr-manual_data_import-SampleProfileImportTemplateCreationAction-separatorAfter.instance/org-lreqpcr-manual_data_import-CalibrationProfileManualImportAction.shadow" boolvalue="true"/>
+                <attr name="org-lreqpcr-manual_data_import-SampleProfileImportTemplateCreationAction-separatorAfter.instance/org-lreqpcr-manual_data_import-SampleProfileManualEntryAction.shadow" boolvalue="true"/>
+                <attr name="org-lreqpcr-manual_data_import-SampleProfileImportTemplateCreationAction.shadow/org-lreqpcr-manual_data_import-SampleProfileImportTemplateCreationAction-separatorAfter.instance" boolvalue="true"/>
+                <attr name="org-lreqpcr-manual_data_import-SampleProfileImportTemplateCreationAction.shadow/org-lreqpcr-manual_data_import-SampleProfileManualEntryAction.shadow" boolvalue="true"/>
                 <attr name="position" intvalue="200"/>
-                <file name="org-lreqpcr-manual_data_import-CalbnProfileImportAction.shadow" url="org-lreqpcr-manual_data_import-CalbnProfileImportAction.shadow">
-                    <attr name="originalFile" stringvalue="Actions/Tools/org-lreqpcr-manual_data_import-CalbnProfileImportAction.instance"/>
-                    <attr name="position" intvalue="400"/>
+                <file name="org-lreqpcr-manual_data_import-CalibrationProfileImportTemplateAction.shadow">
+                    <attr name="originalFile" stringvalue="Actions/Tools/org-lreqpcr-manual_data_import-CalibrationProfileImportTemplateAction.instance"/>
                 </file>
-                <file name="org-lreqpcr-manual_data_import-CalibrationImportTemplateCreationAction-separatorBefore_1.instance" url="org-lreqpcr-manual_data_import-CalibrationImportTemplateCreationAction-separatorBefore_1_1.instance">
+                <file name="org-lreqpcr-manual_data_import-CalibrationProfileManualImportAction.shadow">
+                    <attr name="originalFile" stringvalue="Actions/Tools/org-lreqpcr-manual_data_import-CalibrationProfileTemplateImportAction.instance"/>
+                </file>
+                <file name="org-lreqpcr-manual_data_import-SampleProfileImportTemplateCreationAction-separatorAfter.instance">
                     <attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
-                    <attr name="position" intvalue="300"/>
                 </file>
-                <file name="org-lreqpcr-manual_data_import-CalibrationImportTemplateCreationAction.shadow" url="org-lreqpcr-manual_data_import-CalibrationImportTemplateCreationAction.shadow">
-                    <attr name="originalFile" stringvalue="Actions/Tools/org-lreqpcr-manual_data_import-CalibrationImportTemplateCreationAction.instance"/>
-                    <attr name="position" intvalue="100"/>
+                <file name="org-lreqpcr-manual_data_import-SampleProfileImportTemplateCreationAction.shadow">
+                    <attr name="originalFile" stringvalue="Actions/Tools/org-lreqpcr-manual_data_import-SampleProfileImportTemplateCreationAction.instance"/>
                 </file>
-                <file name="org-lreqpcr-manual_data_import-SampleProfileImportAction.shadow" url="org-lreqpcr-manual_data_import-SampleProfileImportAction.shadow">
-                    <attr name="originalFile" stringvalue="Actions/Tools/org-lreqpcr-manual_data_import-SampleProfileImportAction.instance"/>
-                    <attr name="position" intvalue="500"/>
-                </file>
-                <file name="org-lreqpcr-manual_data_import-SampleTemplateCreationAction.shadow" url="org-lreqpcr-manual_data_import-SampleTemplateCreationAction_1.shadow">
-                    <attr name="originalFile" stringvalue="Actions/Tools/org-lreqpcr-manual_data_import-SampleTemplateCreationAction.instance"/>
-                    <attr name="position" intvalue="200"/>
+                <file name="org-lreqpcr-manual_data_import-SampleProfileManualEntryAction.shadow">
+                    <attr name="originalFile" stringvalue="Actions/Tools/org-lreqpcr-manual_data_import-SampleProfileTemplateImportAction.instance"/>
                 </file>
             </folder>
         </folder>

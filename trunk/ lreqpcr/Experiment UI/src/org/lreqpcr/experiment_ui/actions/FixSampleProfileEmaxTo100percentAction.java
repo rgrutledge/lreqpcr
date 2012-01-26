@@ -20,8 +20,10 @@ import java.awt.event.ActionEvent;
 import java.util.List;
 import javax.swing.AbstractAction;
 import org.lreqpcr.analysis_services.LreAnalysisService;
+import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
+import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.data_processing.ProfileSummary;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LreNode;
@@ -58,9 +60,10 @@ public class FixSampleProfileEmaxTo100percentAction extends AbstractAction {
                 List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
 //This list should never be empty, as a LreWindowSelectionParameters object is created during DB creation
                 selectionParameters = l.get(0);
-            }else{
+            } else {
                 return;
             }
+            boolean parentAverageProfileLabelNeedsUpdating = false;
             for (Node n : nodes) {
                 LreNode node = (LreNode) n;
                 Profile profile = node.getLookup().lookup(Profile.class);
@@ -69,8 +72,19 @@ public class FixSampleProfileEmaxTo100percentAction extends AbstractAction {
                 ProfileSummary prfSum = analysisService.initializeProfile(profile, selectionParameters);
                 db.saveObject(prfSum.getProfile());
                 node.refreshNodeLabel();
+                if (!(profile instanceof AverageSampleProfile)) {
+                    //Need to update the parent AverageProfile
+                    AverageSampleProfile avProfile = (AverageSampleProfile) profile.getParent();
+                    avProfile.updateProfile();
+                    parentAverageProfileLabelNeedsUpdating = true;
+                }
             }
             db.commitChanges();
+            if (parentAverageProfileLabelNeedsUpdating) {
+                //Update the parent AverageProfile node label
+                LreNode parentNode = (LreNode) nodes[0].getParentNode();
+                parentNode.refreshNodeLabel();
+            }
             UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_CHANGED);
         }
     }

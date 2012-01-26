@@ -22,12 +22,11 @@ import java.io.IOException;
 import jxl.write.WriteException;
 import org.openide.util.Exceptions;
 
-public final class SampleTemplateCreationAction implements ActionListener {
+public final class CalibrationProfileImportTemplateAction implements ActionListener {
 
-    @Override
     public void actionPerformed(ActionEvent e) {
         try {
-            SampleProfileTemplateDataImport.createSampleProfileImportTemplate();
+            CalibrationProfileTemplateImport.createCalbnProfileTemplate();
         } catch (WriteException ex) {
             Exceptions.printStackTrace(ex);
         } catch (IOException ex) {

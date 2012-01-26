@@ -33,7 +33,6 @@ import org.lreqpcr.core.database_services.DatabaseProvider;
 import org.lreqpcr.core.database_services.DatabaseServiceFactory;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
-import org.lreqpcr.core.database_services.SettingsServices;
 import org.lreqpcr.core.ui_elements.LabelFactory;
 import org.lreqpcr.core.ui_elements.LreActionFactory;
 import org.lreqpcr.core.ui_elements.LreNode;
@@ -69,7 +68,6 @@ public final class AmpliconTopComponent extends TopComponent
 //    static final String ICON_PATH = "SET/PATH/TO/ICON/HERE";
     private static final String PREFERRED_ID = "AmpliconTopComponent";
     private UniversalLookup universalLookup = UniversalLookup.getDefault();
-    private SettingsServices settingsDB = Lookup.getDefault().lookup(SettingsServices.class);
     private DatabaseServices ampliconDB;
     private ExplorerManager mgr = new ExplorerManager();
     private AmpliconDbInfo dbInfo;
@@ -180,7 +178,7 @@ public final class AmpliconTopComponent extends TopComponent
             }
         });
 
-        newAmpliconButton.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        newAmpliconButton.setFont(new java.awt.Font("Tahoma", 1, 11));
         org.openide.awt.Mnemonics.setLocalizedText(newAmpliconButton, "New Amplicon");
         newAmpliconButton.setToolTipText("Create a new Amplicon");
         newAmpliconButton.addActionListener(new java.awt.event.ActionListener() {
@@ -190,7 +188,7 @@ public final class AmpliconTopComponent extends TopComponent
         });
 
         loadLastDatabaseButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/lreqpcr/amplicon_ui/Back24.gif"))); // NOI18N
-        loadLastDatabaseButton.setToolTipText("Open the last Amplicon database");
+        loadLastDatabaseButton.setToolTipText("Open the previoust Amplicon database");
         loadLastDatabaseButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 loadLastDatabaseButtonActionPerformed(evt);
@@ -239,25 +237,19 @@ public final class AmpliconTopComponent extends TopComponent
 
     @SuppressWarnings(value = "unchecked")
     private void openDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openDBbuttonActionPerformed
-        boolean wasNewFileCreated = ampliconDB.openDatabase();
-        //False if the open was cancelled, so do nothing
-        if (wasNewFileCreated) {
+        if (ampliconDB.openUserSelectDatabaseFile()){
             createTree();
         }
     }//GEN-LAST:event_openDBbuttonActionPerformed
 
     private void newDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newDBbuttonActionPerformed
-        boolean wasNewFileOpened = ampliconDB.createNewDatabase();
-        //False if the action was cancelled, so do nothing
-        if (wasNewFileOpened) {
+        if (ampliconDB.createNewDatabaseFile()){
             createTree();
         }
     }//GEN-LAST:event_newDBbuttonActionPerformed
 
     private void closeDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeDBbuttonActionPerformed
-        if (ampliconDB.isDatabaseOpen()) {
-            settingsDB.setLastAmpliconDatabaseFile(ampliconDB.getDatabaseFile());
-            ampliconDB.closeDatabase();
+        if (ampliconDB.closeDatabase()) {
             createTree();
         }
     }//GEN-LAST:event_closeDBbuttonActionPerformed
@@ -294,16 +286,8 @@ public final class AmpliconTopComponent extends TopComponent
     }//GEN-LAST:event_newAmpliconButtonActionPerformed
 
     private void loadLastDatabaseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadLastDatabaseButtonActionPerformed
-        File previousFile = ampliconDB.getDatabaseFile();
-        File lastDBfile = settingsDB.getLastAmpliconDatabaseFile();
-        if (lastDBfile != null) {
-            if (lastDBfile.exists()) {
-                if (previousFile != null) {
-                    settingsDB.setLastAmpliconDatabaseFile(previousFile);
-                }
-                ampliconDB.openDatabase(lastDBfile);
-                createTree();
-            }
+        if(ampliconDB.openLastDatabaseFile()){
+            createTree();
         }
     }//GEN-LAST:event_loadLastDatabaseButtonActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -69,4 +69,8 @@ public class AverageCalibrationProfile extends CalibrationProfile implements Ave
         }
         return 0;
     }
+
+    public boolean isReplicateAverageNoLessThan10Molecules() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

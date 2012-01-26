@@ -45,6 +45,7 @@ public abstract class Profile extends LreObject {
     private int fbStart, fbWindow;//Start and size of the Fb window for determining background fluorescence
     private double[] fcReadings; //Fluorescence dataset (Background subtracted)
     private double fb;//Average fluorescence backgroung
+    private boolean hasAnLreWindowBeenFound;
     private int strCycleInt; //LRE window start cycle
     private int lreWinSize; //LRE window size
     private double eMax, deltaE, r2;//Linear regression values for the LRE window
@@ -371,6 +372,12 @@ public abstract class Profile extends LreObject {
         this.no = no;
     }
 
+    /**
+     * The number target molecules as determined by LRE analysis in .
+     * in combination with the optical calibration factor (OCF). 
+     * 
+     * return number of target molecules
+     */
     public double getNo() {
         return no;
     }
@@ -427,6 +434,25 @@ public abstract class Profile extends LreObject {
      */
     public double getOverriddendEmaxValue(){
         return overriddenEmaxValue;
+    }
+
+    /**
+     * If an LRE window has not been found the Profile is not displayable.
+     * 
+     * @return whether an LRE window has been found
+     */
+    public boolean hasAnLreWindowBeenFound() {
+        return hasAnLreWindowBeenFound;
+    }
+
+    /**
+     * Indicates whether a this is a valid Profile. If an LRE window has 
+     * not been found the Profile is not displayable.
+     * 
+     * @param hasAnLreWindowFound determines whether an LRE window has been found
+     */
+    public void setHasAnLreWindowBeenFound(boolean hasAnLreWindowFound) {
+        this.hasAnLreWindowBeenFound = hasAnLreWindowFound;
     }
 
     @Override

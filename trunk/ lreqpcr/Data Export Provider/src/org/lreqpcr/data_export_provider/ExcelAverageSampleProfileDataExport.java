@@ -227,7 +227,7 @@ public class ExcelAverageSampleProfileDataExport {
                             }
                         } else {
                             if (replicateProfileEmaxIsOverridden) {
-                                note = "<10 Molecules <10 Emax has been "
+                                note = "<10 Molecules and Emax has been "
                                         + "overriddenat in at least one of the "
                                         + "replicate profiles... ";
                             } else {

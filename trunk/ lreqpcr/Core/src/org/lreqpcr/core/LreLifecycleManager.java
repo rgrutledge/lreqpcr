@@ -21,7 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
-import org.lreqpcr.core.db4o_provider.SettingsServiceProvider;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.openide.LifecycleManager;
 import org.openide.util.Lookup;
@@ -44,10 +43,9 @@ public class LreLifecycleManager extends LifecycleManager {
     @Override
     public void exit() {
         UniversalLookup uLookup = UniversalLookup.getDefault();
-        SettingsServiceProvider settingsDB = Lookup.getDefault().lookup(SettingsServiceProvider.class);
         //Cycle through all registered database types
         for (DatabaseType type : DatabaseType.values()) {
-            if (uLookup.containsKey(type) && type != DatabaseType.SETTINGS) {
+            if (uLookup.containsKey(type)) {
                 //Cycle through all exsisting database services for this type
                 List<Object> typeList = uLookup.getAll(type);
                 for (Object o : typeList) {
@@ -55,9 +53,6 @@ public class LreLifecycleManager extends LifecycleManager {
                     service.closeDatabase();
                 }
             }
-        }
-        if (settingsDB != null) {
-            settingsDB.closeDatabase();
         }
         Collection c = Lookup.getDefault().lookupAll(LifecycleManager.class);
         for (Iterator i = c.iterator(); i.hasNext();) {

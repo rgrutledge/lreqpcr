@@ -71,7 +71,7 @@ public class RootRunChildren extends LreObjectChildren {
             }
         }
 
-        LreNode node = new LreNode(new AvSampleProfileListChildren(mgr, db, run.getAverageProfileList(), nodeActionFactory, nodeLabelFactory),
+        LreNode node = new LreNode(new RunChildren(mgr, db, run.getAverageProfileList(), nodeActionFactory, nodeLabelFactory),
                     Lookups.singleton(lreObject), actions);
         node.setExplorerManager(mgr);
         node.setDatabaseService(db);

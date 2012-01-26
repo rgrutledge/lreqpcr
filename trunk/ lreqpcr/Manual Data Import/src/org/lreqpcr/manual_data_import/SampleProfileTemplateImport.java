@@ -17,14 +17,13 @@
 package org.lreqpcr.manual_data_import;
 
 import java.awt.Desktop;
-import java.awt.Toolkit;
 import org.lreqpcr.data_import_services.RunImportData;
 import org.lreqpcr.data_import_services.RunImportUtilities;
-import org.lreqpcr.core.data_objects.*;
+import org.lreqpcr.core.data_objects.RunImpl;
+import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.utilities.IOUtilities;
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -48,6 +47,8 @@ import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
+import org.lreqpcr.core.data_objects.CalibrationProfile;
+import org.lreqpcr.core.data_objects.TargetStrandedness;
 import org.lreqpcr.data_import_services.RunImportService;
 import org.openide.util.Exceptions;
 import org.openide.windows.WindowManager;
@@ -56,23 +57,18 @@ import org.openide.windows.WindowManager;
  *
  * @author Bob Rutledge
  */
-public class CalibrationProfileTemplateDataImport extends RunImportService {
+public class SampleProfileTemplateImport extends RunImportService {
 
-     /**
-     * Creates a calibration Excel template xls file in a directory
-     * selected by the user.
+    /**
+     * Creates an Excel template xls file in a directory selected by the user.
      *
      * @return the template xls file
      * @throws jxl.write.WriteException
      */
-    public static void createCalbnProfileTemplate() throws WriteException, IOException {
-        // TODO implement the new Run import severvice
-
+    public static void createSampleProfileImportTemplate() throws WriteException, IOException {
         File selectedFile = IOUtilities.newExcelFile();
         if(selectedFile != null){
-
             WritableWorkbook workbook = Workbook.createWorkbook(selectedFile);
-
             //Setup cell formatting
             WritableFont arialBold = new WritableFont(WritableFont.ARIAL, 10, WritableFont.BOLD);
             WritableFont arial = new WritableFont(WritableFont.ARIAL, 10);
@@ -81,7 +77,7 @@ public class CalibrationProfileTemplateDataImport extends RunImportService {
             WritableCellFormat center = new WritableCellFormat(arial);
             center.setAlignment(Alignment.CENTRE);
             WritableCellFormat right = new WritableCellFormat(arial);
-            center.setAlignment(Alignment.RIGHT);
+            right.setAlignment(Alignment.RIGHT);
             WritableCellFormat leftYellow = new WritableCellFormat(arial);
             leftYellow.setAlignment(Alignment.LEFT);
             leftYellow.setBackground(Colour.YELLOW);
@@ -89,40 +85,47 @@ public class CalibrationProfileTemplateDataImport extends RunImportService {
             centerUnderline.setAlignment(Alignment.CENTRE);
             centerUnderline.setBorder(Border.BOTTOM, BorderLineStyle.DOUBLE, Colour.BLACK);
             //Construct the sheet
-            WritableSheet sheet = workbook.createSheet("LRE Calibration Template", 0);
-            Label label = new Label(1, 0, "Run Date, Amplicon Name, Amplicon Size and fg lambda must be provided for each Fc dataset ");
+            WritableSheet sheet = workbook.createSheet("LRE Sample Template", 0);
+            Label label = new Label(1, 0, "Run Date(required):", boldRight);
             sheet.addCell(label);
-            label = new Label(1, 1, "Run Date:", boldRight);
+            label = new Label(1, 1, "Run Name:", boldRight);
             sheet.addCell(label);
-            label = new Label(1, 2, "Amplicon Name:", boldRight);
+            label = new Label(2, 1, "Run 1");
             sheet.addCell(label);
-            label = new Label(1, 3, "Amplicon Size:", boldRight);
+            label = new Label(1, 2, "Profile Name(optnl):", boldRight);
             sheet.addCell(label);
-            label = new Label(1, 4, "Lambda gDNA (fg):", boldRight);
+            label = new Label(4, 0, "Note that Amplicon Name, Amplicon Size and Sample Name must be provided for each Fc dataset." +
+                    " Profile Name is optional.");
             sheet.addCell(label);
-            label = new Label(1, 5, "Cycle", centerUnderline);
+            label = new Label(1, 3, "Amplicon Name:", boldRight);
             sheet.addCell(label);
-            label = new Label(2, 5, "Fc", centerUnderline);
+            label = new Label(1, 4, "Amplicon Size:", boldRight);
             sheet.addCell(label);
-            label = new Label(3, 5, "Fc", centerUnderline);
+            label = new Label(1, 5, "Sample Name:", boldRight);
             sheet.addCell(label);
-            label = new Label(4, 5, "Fc", centerUnderline);
+            label = new Label(1, 6, "Is Target dsDNA:", boldRight);
             sheet.addCell(label);
-            label = new Label(5, 5, "etc.", centerUnderline);
+            label = new Label(1, 7, "Paste Fc datasets starting with cell C10 ");
             sheet.addCell(label);
-            label = new Label(1, 6, "1", center);
+            label = new Label(1, 8, "Cycle", centerUnderline);
             sheet.addCell(label);
-            label = new Label(1, 7, "2", center);
+            for (int i = 1; i < 183; i++) {
+                label = new Label(i + 1, 8, "Fc" + String.valueOf(i), centerUnderline);
+                sheet.addCell(label);
+            }
+            label = new Label(184, 8, "Do Not paste data beyond this point");
             sheet.addCell(label);
-            label = new Label(1, 8, "3", center);
+            label = new Label(2, 9, "Paste Here", leftYellow);
             sheet.addCell(label);
-            label = new Label(1, 9, "etc.", center);
-            sheet.addCell(label);
+            for (int i = 1; i < 71; i++) {
+                label = new Label(1, i + 8, String.valueOf(i), center);
+                sheet.addCell(label);
+            }
             Date now = Calendar.getInstance().getTime();
             DateFormat customDateFormat = new DateFormat("ddMMMyy");
             WritableCellFormat dateFormat = new WritableCellFormat(customDateFormat);
             dateFormat.setAlignment(Alignment.CENTRE);
-            DateTime dateCell = new DateTime(2, 1, now, dateFormat);
+            DateTime dateCell = new DateTime(2, 0, now, dateFormat);
             sheet.addCell(dateCell);
             //That's it!!!!!
             workbook.write();
@@ -131,23 +134,22 @@ public class CalibrationProfileTemplateDataImport extends RunImportService {
             Desktop desktop = null;
             if (Desktop.isDesktopSupported()) {
                 desktop = Desktop.getDesktop();
-                desktop.open(selectedFile);
             }
-        }else {
-            //TODO present an error dialog
+            desktop.open(selectedFile);
         }
     }
 
-    @SuppressWarnings(value = "unchecked")
+    /**
+     * Imports data using the SAMPLE Excel template.
+     *
+     * @param execelFile the Excel file
+     * @return the Run of Excel type
+     */
     @Override
     public RunImportData importRunData() {
         //Retrieve the Excel sample profile import file
-        File excelImportFile = IOUtilities.openImportExcelFile("***Calibration Template Data Import");
+        File excelImportFile = IOUtilities.openImportExcelFile("Sample Template Data Import");
         if (excelImportFile == null) {
-            Toolkit.getDefaultToolkit().beep();
-            String msg = "The calibration Excel data file could not be opened.";
-            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Unable to open the Calibration datafile",
-                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
         Workbook workbook = null;
@@ -159,63 +161,70 @@ public class CalibrationProfileTemplateDataImport extends RunImportService {
             Exceptions.printStackTrace(ex);
         }
         if (workbook == null) {
-            Toolkit.getDefaultToolkit().beep();
-            String msg = "The selected file (" + excelImportFile.getName() + " could not be opened";
-            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Unable to open the selected file " + excelImportFile.getName(), JOptionPane.ERROR_MESSAGE);
+            String msg = "The Excel import file could not be opened";
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Unable to open the Excel file ",
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
         Sheet sheet = workbook.getSheet(0);
-        //Check if this is an LRE Calibration Template sheet
-        if (sheet.getName().compareTo("LRE Calibration Template") != 0) {
-            Toolkit.getDefaultToolkit().beep();
-            String msg = "This appears not to be a calibration template file. Note " +
-                    "that the Excel sheet name must be 'LRE Calibration Template'";
-            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Unable to import data " + excelImportFile.getName(), JOptionPane.ERROR_MESSAGE);
+        //Check if this is an LRE Template sheet
+        if (sheet.getName().compareTo("LRE Sample Template") != 0) {
+            String msg = "This appears not to be a LRE sample template file. Note " +
+                    "that the Excel sheet name must be \"LRE Sample Template\"";
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Invalid Excel import file",
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
-        int colCount = sheet.getColumns();
-        int rowCount = sheet.getRows();
-        int col = 2;//Start column
+        
         DateCell date = null;
         try {
-            date = date = (DateCell) sheet.getCell(col, 1);
+            date = date = (DateCell) sheet.getCell(2, 0);
         } catch (Exception e) {
-            Toolkit.getDefaultToolkit().beep();
-            String msg = "The Run Date appears to be invalid. Manually enter " +
-                    "the run date in the Calibration template import sheet (C2), " +
+            String msg = "The Run Date appears to be invalid. Manually replace " +
+                    "the run date in the Results sheet (B8), " +
                     "save the file, and try importing the xls file again.";
             JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg,
                     "Invalid Run Date", JOptionPane.ERROR_MESSAGE);
             return null;
         }
-        
+        RunImpl run = new RunImpl();
+        run.setName(sheet.getCell(2, 1).getContents());
+        run.setRunDate(RunImportUtilities.importExcelDate(date));
+
         //Import the data
-        List<SampleProfile> sampleProfileList = new ArrayList<SampleProfile>();//Not used
-        List<CalibrationProfile> calbnProfileList = new ArrayList<CalibrationProfile>();
+        List<SampleProfile> sampleProfileList = new ArrayList<SampleProfile>();
+        List<CalibrationProfile> calbnProfileList = new ArrayList<CalibrationProfile>();//Empty
         NumberFormat numFormat = NumberFormat.getInstance();
 
-        while (col < colCount && sheet.getCell(col, 2).getType() != CellType.EMPTY) {
-            CalibrationProfile calbnProfile = new CalibrationProfile();
-            calbnProfile.setTargetStrandedness(TargetStrandedness.DOUBLESTRANDED);
-            calbnProfile.setRunDate(RunImportUtilities.importExcelDate(date));
-            calbnProfile.setAmpliconName(sheet.getCell(col, 2).getContents());
-            calbnProfile.setSampleName(sheet.getCell(col, 4).getContents() + " fg");
+        int colCount = sheet.getColumns();
+        int rowCount = sheet.getRows();
+        int col = 2;//Start column
+        int wellNumber = 1;//Used to preserve ordering of the profiles
+        while (col < colCount && sheet.getCell(col, 3).getType() != CellType.EMPTY) {
+            SampleProfile profile = new SampleProfile();
+            profile.setWellNumber(wellNumber);
+            profile.setRunDate(run.getRunDate());
+            profile.setName(sheet.getCell(col, 2).getContents());
+            profile.setAmpliconName(sheet.getCell(col, 3).getContents());
             try {
-                calbnProfile.setAmpliconSize(Integer.valueOf(sheet.getCell(col, 3).getContents()));
+                profile.setAmpliconSize(Integer.valueOf(sheet.getCell(col, 4).getContents()));
+
             } catch (NumberFormatException e) {
 //Do nothing... Run intialization service will try to retrieve Amplicon size if an Amplicon database is open
             }
-            try {
-                //NumberFormat needed to prevent locale differences in numbers (e.g. comma vs period)
-                Number value = numFormat.parse(sheet.getCell(col, 4).getContents());
-                calbnProfile.setLambdaMass(value.doubleValue());
-            } catch (Exception e) {
-                calbnProfile.setLambdaMass(0.0);
+            profile.setSampleName(sheet.getCell(col, 5).getContents());
+            String dsDNA = sheet.getCell(col, 6).getContents();
+            if (dsDNA.equalsIgnoreCase("yes")) {
+                profile.setTargetStrandedness(TargetStrandedness.DOUBLESTRANDED);
+            } else{
+                profile.setTargetStrandedness(TargetStrandedness.SINGLESTRANDED);
             }
-            DecimalFormat df = new DecimalFormat("###,###");
-            calbnProfile.setName(calbnProfile.getAmpliconName() + "-" + df.format(calbnProfile.getLambdaMass() * 1000000));
+            //If Profile name is empty, generate a name based on amp and sample names
+            if (profile.getName().equals("")) {
+                profile.setName(profile.getAmpliconName() + " @ " + profile.getSampleName());
+            }
             //Move down the column to collect Fc readings until null cell reached
-            int row = 6;
+            int row = 9;
             ArrayList<Double> fcReadings = new ArrayList<Double>();
             while (row < rowCount && sheet.getCell(col, row).getType() != CellType.EMPTY) {
                 try {
@@ -230,15 +239,13 @@ public class CalibrationProfileTemplateDataImport extends RunImportService {
             for (int i = 0; i < d.length; i++) {
                 d[i] = fcReadings.get(i);
             }
-            calbnProfile.setRawFcReadings(d);
-            calbnProfileList.add(calbnProfile);
+            profile.setRawFcReadings(d);
+            sampleProfileList.add(profile);
             col++;
+            wellNumber++;
         }
         workbook.close();
 
-        RunImpl run = new RunImpl();
-        run.setRunDate(RunImportUtilities.importExcelDate(date));
-        
         RunImportData importData = new RunImportData();
         importData.setRun(run);
         importData.setCalibrationProfileList(calbnProfileList);

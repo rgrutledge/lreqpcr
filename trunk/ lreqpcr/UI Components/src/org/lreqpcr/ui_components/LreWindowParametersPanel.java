@@ -36,6 +36,7 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageProfile;
+import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.database_services.DatabaseProvider;
@@ -72,7 +73,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         minFcDisplay.addKeyListener(keyAdapter);
         foThresholdDisplay.addKeyListener(keyAdapter);
         WindowManager.getDefault().getRegistry().addPropertyChangeListener(this);
-        universalLookup.addListner(PanelMessages.DATABASE_FILE_CHANGED, this);
+        universalLookup.addListner(PanelMessages.NEW_DATABASE, this);
         UniversalLookup.getDefault().addListner(PanelMessages.PROFILE_EXCLUDED, this);
         UniversalLookup.getDefault().addListner(PanelMessages.PROFILE_INCLUDED, this);
         UniversalLookup.getDefault().addListner(PanelMessages.PROFILE_CHANGED, this);
@@ -144,6 +145,8 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                     currentDB.saveObject(selectionParameters);
                     reinitializeAllProfiles();
                     updateDisplay();
+                    //Clear the profile editor display
+                    universalLookup.fireChangeEvent(PanelMessages.CLEAR_PROFILE_EDITOR);
                     //Triggers parent panel updates
                     if (currentDB.getDatabaseType() == DatabaseType.EXPERIMENT) {
                         universalLookup.fireChangeEvent(PanelMessages.UPDATE_EXPERIMENT_PANELS);
@@ -161,7 +164,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         if (!currentDB.isDatabaseOpen()) {
             return;
         }
-        if (foThreshold == 0) {
+        if (foThreshold <= 0) {
             return;
         }
         List<Profile> profileList = currentDB.getAllObjects(Profile.class);
@@ -169,7 +172,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
             return;
         }
         for (Profile profile : profileList) {
-            //If minFc=0, first cycle below C1/2 will be used as the start cycle during profile intialization
+//If minFc=0, first cycle below C1/2 will be used as the start cycle during profile intialization
             profile.setLreWinSize(0);
             profileInitialization.initializeProfile(profile, selectionParameters);
             currentDB.saveObject(profile);
@@ -218,19 +221,22 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
             ArrayList<Profile> replList = (ArrayList<Profile>) prf.getReplicateProfileList();
             ArrayList<Double> avFoValues = Lists.newArrayList();
             if (currentDB.getDatabaseType() == DatabaseType.EXPERIMENT) {
-                //Exclude the AverageSampleProfile if the ReplicateProfile average No <10 molecules
-                //This should work even if an OCF has not been applied???
-                //Determine the Replicate average No
-                double avReplicateNo = 0;
-                for (Profile sampleProfile : replList) {
-                    if (sampleProfile.getNo() != Double.NaN) {
-                        avReplicateNo = +sampleProfile.getNo();
+                //All profiles must be sample profiles
+                //Do not include the AverageSampleProfile if the ReplicateProfile average No <10 molecules
+                //However, this will only work if an OCF has been applied, i.e. OCF >0
+                AverageSampleProfile avProfile = (AverageSampleProfile) prf;
+                if (avProfile.getOCF() != 0) {
+                    //Determine the Replicate average No
+                    double avReplicateNo = 0;
+                    for (Profile sampleProfile : replList) {
+                        if (sampleProfile.getNo() != Double.NaN) {
+                            avReplicateNo = +sampleProfile.getNo();
+                        }
                     }
-
-                }
-                avReplicateNo = avReplicateNo / replList.size();
-                if (avReplicateNo < 10) {
-                    continue;//Go to the next AverageProfile
+                    avReplicateNo = avReplicateNo / replList.size();
+                    if (avReplicateNo < 10) {
+                        continue;//Go to the next AverageProfile
+                    }
                 }
             }
             double sum = 0;
@@ -308,7 +314,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(ComponentPlacement.RELATED)
-                        .addComponent(minFcDisplay, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                        .addComponent(minFcDisplay, GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(ComponentPlacement.RELATED)
@@ -350,8 +356,8 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
      * @param key the event key
      */
     public void universalLookupChangeEvent(Object key) {
-        if (key == PanelMessages.DATABASE_FILE_CHANGED) {//Open, New or Close database file change
-            currentDB = (DatabaseServices) universalLookup.getAll(PanelMessages.DATABASE_FILE_CHANGED).get(0);
+        if (key == PanelMessages.NEW_DATABASE) {//Open, New or Close database file change
+            currentDB = (DatabaseServices) universalLookup.getAll(PanelMessages.NEW_DATABASE).get(0);
             if (currentDB == null) {
                 clearPanel();
             } else {

@@ -116,7 +116,7 @@
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
           <Image iconType="3" name="/org/lreqpcr/amplicon_ui/Back24.gif"/>
         </Property>
-        <Property name="toolTipText" type="java.lang.String" value="Open the last Amplicon database"/>
+        <Property name="toolTipText" type="java.lang.String" value="Open the previoust Amplicon database"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="loadLastDatabaseButtonActionPerformed"/>
