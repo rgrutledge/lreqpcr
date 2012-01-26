@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import java.util.List;
 import javax.swing.AbstractAction;
 import org.lreqpcr.analysis_services.LreAnalysisService;
+import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_processing.ProfileSummary;
@@ -58,7 +59,10 @@ public class ReturnSampleProfileToLreDerivedEmaxAction extends AbstractAction {
                 List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
 //This list should never be empty, as a LreWindowSelectionParameters object is created during DB creation
                 selectionParameters = l.get(0);
+            }else{
+                return;
             }
+            boolean parentAverageProfileLabelNeedsUpdating = false;
             for (Node n : nodes) {
                 LreNode node = (LreNode) n;
                 Profile profile = node.getLookup().lookup(Profile.class);
@@ -67,8 +71,19 @@ public class ReturnSampleProfileToLreDerivedEmaxAction extends AbstractAction {
                 ProfileSummary prfSum = analysisService.initializeProfile(profile, selectionParameters);
                 db.saveObject(prfSum.getProfile());
                 node.refreshNodeLabel();
+                if (!(profile instanceof AverageSampleProfile)) {
+                    //Need to update the parent AverageSampleProfile
+                    AverageSampleProfile avProfile = (AverageSampleProfile) profile.getParent();
+                    avProfile.updateProfile();
+                    parentAverageProfileLabelNeedsUpdating = true;
+                }
             }
             db.commitChanges();
+            if (parentAverageProfileLabelNeedsUpdating) {
+                //Update the parent AverageProfile node label
+                LreNode parentNode = (LreNode) nodes[0].getParentNode();
+                parentNode.refreshNodeLabel();
+            }
             UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_CHANGED);
         }
     }

@@ -36,9 +36,9 @@ import org.openide.util.lookup.Lookups;
  *
  * @author Bob Rutledge
  */
-public class AvSampleProfileListChildren extends LreObjectChildren{
+public class RunChildren extends LreObjectChildren{
 
-    public AvSampleProfileListChildren(ExplorerManager mgr, DatabaseServices db,
+    public RunChildren(ExplorerManager mgr, DatabaseServices db,
             List<AverageSampleProfile> avSampleProfileList,
             LreActionFactory actionFactory, LabelFactory labelFactory) {
         super(mgr, db, avSampleProfileList, actionFactory, labelFactory);

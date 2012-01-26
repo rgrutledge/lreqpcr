@@ -29,7 +29,8 @@ public class Installer extends ModuleInstall {
     public void restored() {
         WindowManager.getDefault().invokeWhenUIReady(new Runnable() {
             public void run(){
-                WindowManager.getDefault().getMainWindow().setTitle("LRE Analyzer Ver 0.8.0 Working Copy");
+                //This appears not to be functional in the Mac OS...instead modified the projects bundle (2 under Branding)
+//                WindowManager.getDefault().getMainWindow().setTitle("LRE Analyzer Ver 0.8.0 Working Copy");
             }
         });
     }

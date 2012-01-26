@@ -55,7 +55,7 @@ public final class ProfileEditorTopComponent extends TopComponent
 
         setName("Profile Editor");
         WindowManager.getDefault().getRegistry().addPropertyChangeListener(this);
-        UniversalLookup.getDefault().addListner(PanelMessages.DATABASE_FILE_CHANGED, this);
+        UniversalLookup.getDefault().addListner(PanelMessages.NEW_DATABASE, this);
     }
 
     /** This method is called from within the constructor to
@@ -159,8 +159,8 @@ public final class ProfileEditorTopComponent extends TopComponent
 
     @Override
     public void universalLookupChangeEvent(Object key) {
-        if (key == PanelMessages.DATABASE_FILE_CHANGED) {//Open, New or Close database file change
-           DatabaseServices db = (DatabaseServices)UniversalLookup.getDefault().getAll(PanelMessages.DATABASE_FILE_CHANGED).get(0);
+        if (key == PanelMessages.NEW_DATABASE) {//Open, New or Close database file change
+           DatabaseServices db = (DatabaseServices)UniversalLookup.getDefault().getAll(PanelMessages.NEW_DATABASE).get(0);
             if (db == null) {
                 return;
             } else {

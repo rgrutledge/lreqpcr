@@ -31,5 +31,5 @@ public enum PanelMessages {
     PROFILE_EXCLUDED,
     PROFILE_INCLUDED,
     CLEAR_PROFILE_EDITOR,
-    DATABASE_FILE_CHANGED
+    NEW_DATABASE //Database Open, Close or newly created database...note that this is linked to the new database
 }

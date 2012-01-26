@@ -32,9 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.swing.JOptionPane;
-import org.lreqpcr.core.data_objects.ReactionSetupImpl;
 import org.lreqpcr.core.database_services.DatabaseServices;
-import org.lreqpcr.core.database_services.DatabaseType;
 import org.openide.windows.WindowManager;
 
 /**
@@ -42,22 +40,74 @@ import org.openide.windows.WindowManager;
  *
  * @author Bob Rutledge
  */
-public abstract class Db4oServices implements DatabaseServices {
+public abstract class Db4oDatabaseServices implements DatabaseServices {
 
     private ObjectContainer db4o;
     private Configuration config = Db4o.newConfiguration();
-    private File databaseFile;
+    private File currentDatabaseFile;
 
-    public Db4oServices() {
+    public Db4oDatabaseServices() {
         config.reflectWith(new JdkReflector(LreObject.class.getClassLoader()));
         config.optimizeNativeQueries(false);
 //Indexing greatly increases speed of retrieval of all profiles holding a specific amplicon or sample
         config.objectClass(AverageProfile.class).objectField("ampliconName").indexed(true);
         config.objectClass(AverageProfile.class).objectField("sampleName").indexed(true);
-//        Likely redundant...
         config.objectClass(Profile.class).objectField("ampliconName").indexed(true);
         config.objectClass(Profile.class).objectField("sampleName").indexed(true);
-        config.activationDepth(2);//This greatly increases display performance within NetBeans
+        config.activationDepth(2);//This is necessary for instantiation of ArrayLists used to display profiles
+    }
+
+    /**
+     * Opens a DB4O database file. If successful, the current database file is set
+     * to the supplied database file.
+     *
+     * @param db4oDatabaseFile the DB4O database file to be opened
+     */
+    public boolean openDatabaseFile(File db4oDatabaseFile) {
+        if(db4oDatabaseFile == null) return false;
+        closeDatabase();
+        try {
+            //This throws an IllegalArguentException for ver 7.4.155, which is not documented!!
+            db4o = Db4o.openFile(config, db4oDatabaseFile.getAbsolutePath());
+        } catch (Exception e) {
+            String msg = "The database file " + db4oDatabaseFile.getName()
+                    + " could not be opened due to the error: \""
+                    + e.getClass().getSimpleName() + "\"";
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Unable to open the database file",
+                    JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        currentDatabaseFile = db4oDatabaseFile;
+        return true;
+    }
+
+    /**
+     * Closes the current DB4O database file, which also triggers a full commit of data 
+     * in memory to disk. Note also that getDatabaseFile() will return null
+     * once the current database file is closed.
+     */
+    public boolean closeDb4oDatabase() {
+        if (db4o != null) {
+            while (!db4o.ext().isClosed()) {
+                db4o.close();
+                //Pre NetBeans Platform implementation:
+                //Purging does not remove db4o instantiated objects from memory!!
+//                db4o.commit();
+//                db4o.ext().purge();
+                //Closing the database file does not remove db4o instantiated objects from memory!!
+                //db4o accepts queries and returns objects even if the database files is closed!!
+                //That is, a active db4o object remains in memory even when the database file is closed!!
+                //Note also that closing and reopening the same database file can produce duplicates
+                //Version 7.12 (vs. 7.4) appears (but not confirmed) to have the same problem
+
+                //Porting to the NetBeans windowing system appears to prevent duplicate object creation
+                //and so the problem has been resolved, at least for version 7.4.106. Attempting to upgrade
+                //to version 7.4.155 produces an IllegalArgumentException when attempting to open a second database file.
+                //This appears to be undocumented and does not occur with ver 106
+            }
+        }
+        currentDatabaseFile = null;
+        return true;
     }
 
     public void saveObject(Object object) {
@@ -94,8 +144,6 @@ public abstract class Db4oServices implements DatabaseServices {
                 }
             }
             db4o.delete(run);
-        } else if (object instanceof ReactionSetupImpl) {
-            deleteReactionSetup((ReactionSetupImpl) object);
         } else {
             db4o.delete(object);
         }
@@ -110,16 +158,6 @@ public abstract class Db4oServices implements DatabaseServices {
             }
             db4o.delete(averageProfile);
         }
-    }
-
-    @SuppressWarnings(value = "unchecked")
-    private void deleteReactionSetup(ReactionSetupImpl setup) {
-        List<Profile> l = (List<Profile>) getChildren(setup, AverageProfile.class);
-        for (Profile prf : l) {
-            AverageProfile p = (AverageProfile) prf;
-            deleteAverageProfile(p);
-        }
-        db4o.delete(setup);
     }
 
     public void commitChanges() {
@@ -144,45 +182,8 @@ public abstract class Db4oServices implements DatabaseServices {
         }
     }
 
-    public void closeDatabase() {
-        if (db4o != null) {
-            while (!db4o.ext().isClosed()) {
-                db4o.close();
-                //Pre NetBeans Platform implementation:
-                //Purging does not remove db4o instantiated objects from memory!!
-//                db4o.commit();
-//                db4o.ext().purge();
-                //Closing the database file does not remove db4o instantiated objects from memory!!
-                //db4o accepts queries and returns objects even if the database files is closed!!
-                //That is, a active db4o object remains in memory even when the database file is closed!!
-                //Note also that closing and reopening the same database file can produce duplicates
-                //Version 7.12 (vs. 7.4) appears (but not confirmed) to have the same problem
-
-                //Porting to the NetBeans windowing system appears to prevent duplicate object creation
-                //and so the problem has been resolved, at least for version 7.4.106. Attempting to upgrade
-                //to version 7.4.155 produces an IllegalArgumentException when attempting to open a second database file.
-                //This appears to be undocumented and does not occur with ver 106
-            }
-        }
-    }
-
-    public void openDatabase(File file) {
-        databaseFile = file;
-        closeDatabase();
-        try {
-   //This throws an IllegalArguentException for ver 7.4.155, which is not documented!!
-                db4o = Db4o.openFile(config, databaseFile.getAbsolutePath());
-            } catch (Exception e) {
-                String msg = "The database file " + databaseFile.getName()
-                        + " could not be opened due to the error: \""
-                        + e.getClass().getSimpleName() + "\"";
-                JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Unable to open the database file",
-                        JOptionPane.ERROR_MESSAGE);
-            }
-    }
-
     public File getDatabaseFile() {
-        return databaseFile;
+        return currentDatabaseFile;
     }
 
     @SuppressWarnings(value = "unchecked")
@@ -212,31 +213,4 @@ public abstract class Db4oServices implements DatabaseServices {
         List list = query.execute();
         return list;
     }
-
-    /*
-     * Each database type must implement these methods to generate
-     * type-specific database files
-     */
-    /**
-     * Allows a database-specific file to be created
-     * Return false if the new file creation was canceled
-     *
-     * @return indicates whether a new database file was created
-     */
-    public abstract boolean createNewDatabase();
-
-    /**
-     * Allows an existing database-specific file to be selected.
-     * Returns false if the file selection was canceled.
-     * 
-     * @return indicates whether a database file was opened
-     */
-    public abstract boolean openDatabase();
-
-    /**
-     * Allows the database type to be determined based on the enum DatabaseType
-     * 
-     * @return the database type of this database service
-     */
-    public abstract DatabaseType getDatabaseType();
 }

@@ -49,14 +49,16 @@ public class LreWindowSelector {
      *
      * @param prfSum the ProfileSummary to process
      */
-    public static void selectLreWindow(ProfileSummary prfSum) {
+    public static void findLreWindow(ProfileSummary prfSum) {
         double r2Tolerance = 0.95; //The tolerance of the LRE r2 to determine the start of the profile
         double foldAboveFb = 0.25;
+        double foThreshold = 0.06;
         if (prfSum.getZeroCycle() == null) {
             //There is no Fc data in this profile
             return;
         }
         Profile profile = prfSum.getProfile();
+        profile.setHasAnLreWindowBeenFound(false);
         //Find the start of the profile by running a 5 cycle window up
         //the profile until an LRE linear region is found based on the r2
         Cycle cycZero = prfSum.getZeroCycle();
@@ -87,7 +89,7 @@ public class LreWindowSelector {
                 runner.setFo(LREmath.calcFo(
                         cycNum,
                         fc,
-                        regressionValues[0], 
+                        regressionValues[0],
                         regressionValues[1],
                         profile.getOverriddendEmaxValue()));
                 runner = runner.getNextCycle();
@@ -108,7 +110,9 @@ public class LreWindowSelector {
         while (runner.getNextCycle().getNextCycle().getNextCycle() != null) {
 
             /*Tests for the minimum r2 >r2 tolerance across 3 cycles*/
-            if (runner.getPrevCycle().getCycLREparam()[2] > r2Tolerance && runner.getCycLREparam()[2] > r2Tolerance && runner.getNextCycle().getCycLREparam()[2] > r2Tolerance) {
+            if (runner.getPrevCycle().getCycLREparam()[2] > r2Tolerance
+                    && runner.getCycLREparam()[2] > r2Tolerance
+                    && runner.getNextCycle().getCycLREparam()[2] > r2Tolerance) {
                 double fbRatio = runner.getFc() / fb;
                 if (fbRatio < 0) {
                     fbRatio = fbRatio * -1;
@@ -132,75 +136,75 @@ public class LreWindowSelector {
             runner = runner.getNextCycle(); //Advances to the next cycle
         }
         if (!foundStrCyc) {
-            profile.appendLongDescription("AN LRE WINDOW COULD NOT BE FOUND");
-            profile.setNo(0);
+            processFailedProfile(profile);
             return;
         }
+        profile.setHasAnLreWindowBeenFound(true);
         //Set the initiate LRE window size to a default size
         int defaultLREwinSize = 3;
         profile.setLreWinSize(defaultLREwinSize);
         //Need a preliminary C1/2 value
         ProfileInitializer.calcLreParameters(prfSum);
-        if (profile.getWellLabel() != null) {
-        }
-
-        optimizeLreWin(prfSum, 0.06);//6% default threshold cutoff
+        optimizeLreWin(prfSum, foThreshold);
 //Use C1/2 as a reference point to adjust the initial start cycle
         double midC = (int) profile.getMidC();
         runner = prfSum.getZeroCycle();
         //Move the strCyclestart cycle to 1 cycle below C1/2
-        while (midC > runner.getCycNum()) {
+        try {
+            while (midC > runner.getCycNum()) {
             runner = runner.getNextCycle();
+            profile.setStrCycleInt(runner.getCycNum());
         }
+        } catch (Exception e) {
+            int stop = 0;
+        }
+        
         //This moves the run to one cycle below C1/2, which is what is wanted
-        profile.setStrCycleInt(runner.getCycNum());
+        
         prfSum.setStrCycle(runner);
         //Reoptimize the LRE window
         profile.setLreWinSize(3);
         //Reoptimize the LRE window which tries to add cycles to the top of the LRE window
         ProfileInitializer.calcLreParameters(prfSum);
-        optimizeLreWin(prfSum, 0.06);//6% default threshold cutoff
+        optimizeLreWin(prfSum, foThreshold);
     }
 
     /**
      * This method sets the Start Cycle at the first cycle which has an Fc reading 
      * above the minimum fluorescence value provided. A default 3 cycle LRE window
      * is then applied, and the upper limit of the LRE window expanded until the 
-     * Fo threshold is exceeded. 
+     * Fo threshold is exceeded.
      *
      * @param prfSum the ProfileSummary to be processed
      * @param minFc the minimum fluorescence for setting the Start Cycle
      * @param threshold maximum fractional difference (%) between cycle Fo and the average Fo
      */
-    public static void selectLreWindow(ProfileSummary prfSum, LreWindowSelectionParameters parameters) {
+    public static void selectLreWindowUsingMinFc(ProfileSummary prfSum, LreWindowSelectionParameters parameters) {
 //Reset to "Include" and remove "AN LRE WINDOW COULD NOT BE FOUND" from the long description
         Profile profile = prfSum.getProfile();
-        profile.setExcluded(false);
+//        profile.setHasAnLreWindowBeenFound(false);
         if (profile.getLongDescription() != null) {
             String longDescription = profile.getLongDescription();
-            if (longDescription.contains("\nAN LRE WINDOW COULD NOT BE FOUND")) {
-                int index = longDescription.indexOf("\nAN LRE WINDOW COULD NOT BE FOUND");
+            if (longDescription.contains(" AN LRE WINDOW COULD NOT BE FOUND")) {
+                int index = longDescription.indexOf(" AN LRE WINDOW COULD NOT BE FOUND");
                 longDescription = longDescription.substring(0, index) + longDescription.substring(index + 33);
                 profile.setLongDescription(longDescription);
             }
         }
-//Test whether a minimum Fc has been set; if not fall back to default (first cycle below C1/2)
-        if (parameters.getMinFc() == null || parameters.getMinFc() == 0) {
-            selectLreWindow(prfSum);
-            return;
-        }
+//See if an LRE window can be found
+        findLreWindow(prfSum);
         Cycle cycZero = prfSum.getZeroCycle();
-        if (cycZero == null) {
+//See if an LRE window can be found...if not, abort looking for a minFc
+//This is needed to avoid artifacts generated by late partial profiles
+        if (!profile.hasAnLreWindowBeenFound()) {
             //Profile initialization failed
-            profile.appendLongDescription("AN LRE WINDOW COULD NOT BE FOUND");
-            profile.setNo(0);
+//            profile.appendLongDescription("AN LRE WINDOW COULD NOT BE FOUND");
             return;
         }
         double minFc = parameters.getMinFc();
         double foThreshold = parameters.getFoThreshold();
-
         if (minFc <= 0) {//Zero signifies that no minimum Fc has been set
-            selectLreWindow(prfSum);
+//The profile has already be initialized without a minFc...so just abort looking for a minFc
             return;
         }
         if (foThreshold <= 0) {
@@ -211,14 +215,12 @@ public class LreWindowSelector {
         while (runner.getFc() < minFc) {
             if (runner.getNextCycle() == null) {
                 //Reached the end of the profile but the Fc > minFc
-                profile.appendLongDescription("AN LRE WINDOW COULD NOT BE FOUND");
-                profile.setNo(0);
+                processFailedProfile(profile);
                 return;
             }
             if (runner.getNextCycle().getNextCycle() == null) {
                 //Need at least three cycle in order to set the LRE window
-                profile.appendLongDescription("AN LRE WINDOW COULD NOT BE FOUND");
-                profile.setNo(0);
+                processFailedProfile(profile);
                 return;
             }
             //Move up one cycle
@@ -232,12 +234,40 @@ public class LreWindowSelector {
     }
 
     /**
-     * Expands the upper LRE window boundary based upon the 
-     * difference between the average LRE window Fo and 
+     * Process a profile for which an LRE window could not be found by 
+     * resetting all LRE parameters to zero,
+     * and entering "AN LRE WINDOW COULD NOT BE FOUND" into Notes.
+     *
+     * @param failedProfile
+     */
+    private static void processFailedProfile(Profile failedProfile) {
+        failedProfile.setHasAnLreWindowBeenFound(false);
+        failedProfile.setStrCycleInt(0);
+        failedProfile.setLreWinSize(0);
+        failedProfile.setEmax(0);
+        failedProfile.setDeltaE(0);
+        failedProfile.setR2(0);
+        failedProfile.setIsEmaxOverridden(false);
+        failedProfile.setOverridentEmaxValue(0);
+        failedProfile.setMidC(0);
+        failedProfile.setNo(0);
+        if (failedProfile.getLongDescription() != null) {
+            //Avoids duplicate errors being entered
+            if (!failedProfile.getLongDescription().contains(" AN LRE WINDOW COULD NOT BE FOUND")) {
+                failedProfile.appendLongDescription("AN LRE WINDOW COULD NOT BE FOUND");
+            } else {//Long description is empty
+                failedProfile.appendLongDescription("AN LRE WINDOW COULD NOT BE FOUND");
+            }
+        }
+    }
+
+    /**
+     * Expands the upper LRE window boundary based upon the
+     * difference between the average LRE window Fo and
      * the Fo value derived from the first cycle above
      * the LRE window. If this difference is smaller than the Fo threshold,
      * this next cycle is added to the LRE window and the analysis repeated.
-     * 
+     *
      * @param prfSum the ProfileSummary to be processed
      * @param foThreshold the Fo threshold
      */

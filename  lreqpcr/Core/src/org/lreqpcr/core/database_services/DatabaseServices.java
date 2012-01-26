@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * and open the template in the editor.
  */
-
 package org.lreqpcr.core.database_services;
 
 import org.lreqpcr.core.data_objects.Family;
@@ -31,23 +30,65 @@ import java.util.List;
 public interface DatabaseServices {
 
     /**
-     * Create a new database
+     * Create a new user specified database file.
+     *
      * @return indicates whether creation of the new database was successful
      */
-    public boolean createNewDatabase();
+    public boolean createNewDatabaseFile();
 
     /**
-     * Open a database. Note that this assumes that a file chooser dialog will
-     * be provided by this method in order to allow a database file to be specified.
-     * @return indicates whether the database was opened successfully
+     * Open the database specified by the user. Note that it is the responsiblity
+     * of the database service provider to close the previous database file,
+     * if one is already open.
+     *
+     * @param file the database file to be opened
+     * @return true if a database file was opened
      */
-    public boolean openDatabase();
+    public boolean openUserSelectDatabaseFile();
+
+    /**
+     * Opens the specified database file.
+     * 
+     * @param file the database file to be opened
+     * @return true if the database file was successfully opened
+     */
+    public boolean openDatabaseFile(File file);
+
+    /**
+     * Open the last database file. This provides the ability to quickly return
+     * the last database file.
+     *
+     * @return true if the last database file was opened
+     */
+    public boolean openLastDatabaseFile();
+
+    /**
+     * Close the current database file.
+     *
+     * @param true is the database was closed
+     */
+    public boolean closeDatabase();
+
+    /**
+     * Used to determine whether a database file is currently open.
+     * 
+     * @return returns true if a database file is open
+     */
+    public boolean isDatabaseOpen();
+
+    /**
+     * Retrieves the current database file. This must only be used for retrieving information 
+     * about the current database file, such as the file name, path or size.
+     * 
+     * @return the current database file or null if no file is open
+     */
+    public File getDatabaseFile();
 
     /**
      * The enum DatabaseType is used to specify the identity of each database
      * @return the database type
      */
-    public DatabaseType getDatabaseType();
+    public abstract DatabaseType getDatabaseType();
 
     /**
      * Returns all stored objects of the specified Class
@@ -97,34 +138,4 @@ public interface DatabaseServices {
      * Commits changes to the database file to disk.
      */
     public void commitChanges();
-
-    /**
-     * Open the database specified by the file. Note that it is the responsiblity
-     * of the database service provider to close the previous database file,
-     * if one is already open.
-     *
-     * @param file the database to be opened
-     */
-    public void openDatabase(File file);
-
-    /**
-     * Close the database file.
-     * 
-     */
-    public void closeDatabase();
-
-    /**
-     * The database file. This should only be used for retrieving information 
-     * about the current database file, such as the file name, path or size.
-     * @return the database file or null if no file is open
-     */
-    public File getDatabaseFile();
-
-    /**
-     * Used to determine whether a database file is currently open.
-     * 
-     * @return returns true if a database file is open
-     */
-    public boolean isDatabaseOpen();
-
 }

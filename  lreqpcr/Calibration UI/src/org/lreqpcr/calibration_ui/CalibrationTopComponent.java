@@ -19,20 +19,16 @@ package org.lreqpcr.calibration_ui;
 import java.awt.Toolkit;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import org.lreqpcr.core.data_objects.Amplicon;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
-import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
-import org.lreqpcr.core.data_objects.ReactionSetupImpl;
 import org.lreqpcr.core.data_objects.Sample;
 import org.lreqpcr.core.database_services.DatabaseProvider;
 import org.lreqpcr.core.database_services.DatabaseServiceFactory;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
-import org.lreqpcr.core.database_services.SettingsServices;
 import org.lreqpcr.core.ui_elements.AmpliconNode;
 import org.lreqpcr.core.ui_elements.SampleNode;
 import org.lreqpcr.core.utilities.UniversalLookup;
@@ -65,7 +61,6 @@ public final class CalibrationTopComponent extends TopComponent
 //    static final String ICON_PATH = "SET/PATH/TO/ICON/HERE";
     private static final String PREFERRED_ID = "CalibrationTopComponent";
     private UniversalLookup universalLookup = UniversalLookup.getDefault();
-    private SettingsServices settingsDB;
     private DatabaseServices calibrationDB;
     private ExplorerManager mgr = new ExplorerManager();
     private DataExportServices exportServices;
@@ -102,7 +97,6 @@ public final class CalibrationTopComponent extends TopComponent
     private void initServices() {
         // TODO Could throw an exception of any of the services are null??
         Lookup servicesLookup = Lookup.getDefault();
-        settingsDB = servicesLookup.lookup(SettingsServices.class);
         exportServices = servicesLookup.lookup(DataExportServices.class);
         calibrationDB = servicesLookup.lookup(DatabaseServiceFactory.class).createDatabaseService(DatabaseType.CALIBRATION);
         if (calibrationDB != null) {
@@ -121,7 +115,7 @@ public final class CalibrationTopComponent extends TopComponent
         calbnTree = new org.lreqpcr.calibration_ui.components.CalbnTree();
         openDBbutton = new javax.swing.JButton();
         newDBbutton = new javax.swing.JButton();
-        lastDBbutton = new javax.swing.JButton();
+        openLastDBbutton = new javax.swing.JButton();
         closeDBbutton = new javax.swing.JButton();
         exportProfilesButton = new javax.swing.JButton();
 
@@ -143,12 +137,12 @@ public final class CalibrationTopComponent extends TopComponent
             }
         });
 
-        lastDBbutton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/lreqpcr/calibration_ui/Back24.gif"))); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(lastDBbutton, org.openide.util.NbBundle.getMessage(CalibrationTopComponent.class, "CalibrationTopComponent.lastDBbutton.text")); // NOI18N
-        lastDBbutton.setToolTipText(org.openide.util.NbBundle.getMessage(CalibrationTopComponent.class, "CalibrationTopComponent.lastDBbutton.toolTipText")); // NOI18N
-        lastDBbutton.addActionListener(new java.awt.event.ActionListener() {
+        openLastDBbutton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/lreqpcr/calibration_ui/Back24.gif"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(openLastDBbutton, org.openide.util.NbBundle.getMessage(CalibrationTopComponent.class, "CalibrationTopComponent.openLastDBbutton.text")); // NOI18N
+        openLastDBbutton.setToolTipText(org.openide.util.NbBundle.getMessage(CalibrationTopComponent.class, "CalibrationTopComponent.openLastDBbutton.toolTipText")); // NOI18N
+        openLastDBbutton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                lastDBbuttonActionPerformed(evt);
+                openLastDBbuttonActionPerformed(evt);
             }
         });
 
@@ -178,7 +172,7 @@ public final class CalibrationTopComponent extends TopComponent
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(calbnTree, javax.swing.GroupLayout.DEFAULT_SIZE, 366, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(lastDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(openLastDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(openDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -190,14 +184,14 @@ public final class CalibrationTopComponent extends TopComponent
                 .addContainerGap())
         );
 
-        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {closeDBbutton, lastDBbutton, newDBbutton, openDBbutton});
+        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {closeDBbutton, newDBbutton, openDBbutton, openLastDBbutton});
 
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lastDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(openLastDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(openDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(newDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(closeDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -210,66 +204,42 @@ public final class CalibrationTopComponent extends TopComponent
 
     @SuppressWarnings(value = "unchecked")
     private void openDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openDBbuttonActionPerformed
-        boolean wasNewFileOpened = calibrationDB.openDatabase();
-        //False if the action was cancelled
-        if (wasNewFileOpened) {
+        if(calibrationDB.openUserSelectDatabaseFile()){
             calbnTree.createTree();
             calbnTree.calcAverageOCF();
-            UniversalLookup.getDefault().addSingleton(PanelMessages.DATABASE_FILE_CHANGED, calibrationDB);
-            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.DATABASE_FILE_CHANGED);
-        }
+            UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, calibrationDB);
+            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_DATABASE);
+        }//If a new file was not opened, do nothing
     }//GEN-LAST:event_openDBbuttonActionPerformed
 
     @SuppressWarnings(value = "unchecked")
     private void newDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newDBbuttonActionPerformed
-        boolean wasNewFileCreated = calibrationDB.createNewDatabase();
-        //False if the action was cancelled
-        if (wasNewFileCreated) {
-            //All profile DBs must contain a lre window parameters object
-            calibrationDB.saveObject(new LreWindowSelectionParameters());
-            //Create a single reaction setup and save to the calibration database
-            ReactionSetupImpl rxnSetup = new ReactionSetupImpl();
-            rxnSetup.setName("Reaction Setup");
-            rxnSetup.setShortDescription("A Reaction Setup holding a calbration profile dataset");
-            calibrationDB.saveObject(rxnSetup);
-            calibrationDB.commitChanges();
+        if(calibrationDB.createNewDatabaseFile()){
             calbnTree.createTree();
             calbnTree.calcAverageOCF();
-            UniversalLookup.getDefault().addSingleton(PanelMessages.DATABASE_FILE_CHANGED, calibrationDB);
-            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.DATABASE_FILE_CHANGED);
+            UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, calibrationDB);
+            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_DATABASE);
         }
     }//GEN-LAST:event_newDBbuttonActionPerformed
 
     private void closeDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeDBbuttonActionPerformed
-        if (calibrationDB.isDatabaseOpen()) {
-            settingsDB.setLastCalibrationDatabaseFile(calibrationDB.getDatabaseFile());
-            calibrationDB.closeDatabase();
+        if (calibrationDB.closeDatabase()) {
             calbnTree.createTree();
-            UniversalLookup.getDefault().addSingleton(PanelMessages.DATABASE_FILE_CHANGED, null);
-            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.DATABASE_FILE_CHANGED);
+            UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, null);
+            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_DATABASE);
         }
     }//GEN-LAST:event_closeDBbuttonActionPerformed
 
     @SuppressWarnings(value = "unchecked")
-    private void lastDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lastDBbuttonActionPerformed
-        if (calibrationDB != null) {
-            File previousFile = calibrationDB.getDatabaseFile();
-            File lastDBfile = settingsDB.getLastCalibrationDatabaseFile();
-            if (lastDBfile != null) {
-                if (lastDBfile.exists()) {
-                    if (previousFile != null) {
-                        settingsDB.setLastCalibrationDatabaseFile(previousFile);
-                    }
-                    calibrationDB.openDatabase(lastDBfile);
+    private void openLastDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openLastDBbuttonActionPerformed
+        if (calibrationDB.openLastDatabaseFile()) {
                     calbnTree.createTree();
-                    UniversalLookup.getDefault().addSingleton(PanelMessages.DATABASE_FILE_CHANGED, calibrationDB);
-                    UniversalLookup.getDefault().fireChangeEvent(PanelMessages.DATABASE_FILE_CHANGED);
-                }
-            }
+                    UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, calibrationDB);
+                    UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_DATABASE);
         } else {
             // TODO present an error dialog...this might not be necessary
         }
-    }//GEN-LAST:event_lastDBbuttonActionPerformed
+    }//GEN-LAST:event_openLastDBbuttonActionPerformed
 
     @SuppressWarnings("unchecked")
     private void exportProfilesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportProfilesButtonActionPerformed
@@ -298,9 +268,9 @@ public final class CalibrationTopComponent extends TopComponent
     private org.lreqpcr.calibration_ui.components.CalbnTree calbnTree;
     private javax.swing.JButton closeDBbutton;
     private javax.swing.JButton exportProfilesButton;
-    private javax.swing.JButton lastDBbutton;
     private javax.swing.JButton newDBbutton;
     private javax.swing.JButton openDBbutton;
+    private javax.swing.JButton openLastDBbutton;
     // End of variables declaration//GEN-END:variables
 
     /**
@@ -380,7 +350,6 @@ public final class CalibrationTopComponent extends TopComponent
     public void universalLookupChangeEvent(Object key) {
         if (key == PanelMessages.UPDATE_CALIBRATION_PANELS) {
             calbnTree.createTree();
-            calbnTree.calcAverageOCF();
         }
     }
 

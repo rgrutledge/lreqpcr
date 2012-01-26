@@ -28,13 +28,13 @@ import org.lreqpcr.core.database_services.SettingsServices;
  *
  * @author Bob Rutledge
  */
-public class SettingsServiceProvider extends Db4oServices implements SettingsServices {
+public class SettingsServiceProvider extends Db4oDatabaseServices implements SettingsServices {
 
     private Settings settings;//The object holding the settings
 
     @SuppressWarnings(value = "unchecked")
     public SettingsServiceProvider() {
-        openDatabase(new File("Settings.lre"));
+        openDatabaseFile(new File("Settings.lre"));
         List<Settings> list = (List<Settings>) getAllObjects(Settings.class);
         if (list.isEmpty()) {
             settings = new Settings();
@@ -128,17 +128,37 @@ public class SettingsServiceProvider extends Db4oServices implements SettingsSer
         return settings.getLastCyclerDataImportDirectory();
     }
 
-    public boolean createNewDatabase() {
-        //Not used
-        return false;
+    /**
+     * Not implement.. throws an UnsupportedOperationException event if called
+     * @return
+     */
+    public boolean createNewDatabaseFile() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public boolean openDatabase() {
-        //Not used
-        return false;
-    }
-
+    /**
+     * @return Settings database type
+     */
     public DatabaseType getDatabaseType() {
         return DatabaseType.SETTINGS;
+    }
+
+    /**
+     * Not implement.. throws an UnsupportedOperationException event if called
+     *
+     */
+    public boolean openUserSelectDatabaseFile() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    /**
+     * Not implement.. throws an UnsupportedOperationException event if called
+     *
+     */
+    public boolean openLastDatabaseFile() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public boolean closeDatabase() {
+        return closeDb4oDatabase();
     }
 }

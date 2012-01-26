@@ -16,12 +16,11 @@
  */
 package org.lreqpcr.core.db4o_provider;
 
-import java.awt.Cursor;
 import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.ProgressMonitor;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import org.lreqpcr.core.data_objects.AmpliconDbInfo;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
 import org.lreqpcr.core.database_services.SettingsServices;
@@ -33,14 +32,14 @@ import org.openide.windows.WindowManager;
  *
  * @author Bob Rutledge
  */
-public class AmpliconDb4oServiceProvider extends Db4oServices implements DatabaseServices {
+public class AmpliconDb4oServiceProvider extends Db4oDatabaseServices implements DatabaseServices {
 
     private SettingsServices settingsDB = Lookup.getDefault().lookup(SettingsServices.class);
 
     public AmpliconDb4oServiceProvider() {
     }
 
-    public boolean createNewDatabase() {
+    public boolean createNewDatabaseFile() {
         JFileChooser fc = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
                 "Amplicon database files", "amp");
@@ -59,7 +58,8 @@ public class AmpliconDb4oServiceProvider extends Db4oServices implements Databas
         File selectedFile = null;
         while (returnVal == JFileChooser.APPROVE_OPTION) {
             if (returnVal == JFileChooser.APPROVE_OPTION) {
-                settingsDB.setLastCalibrationDatabaseDirectory(fc.getCurrentDirectory().getAbsolutePath());
+                File previousDatabaseFile = getDatabaseFile();
+                settingsDB.setLastAmpliconDatabaseDirectory(fc.getCurrentDirectory().getAbsolutePath());
                 selectedFile = fc.getSelectedFile();
                 String fileName = selectedFile.getAbsolutePath();
                 if (!fileName.endsWith(".amp")) {
@@ -83,28 +83,33 @@ public class AmpliconDb4oServiceProvider extends Db4oServices implements Databas
                             JOptionPane.WARNING_MESSAGE);
 
                     if (n == JOptionPane.OK_OPTION) {
-                        returnVal = fc.showDialog(null, "New CalbnDB");
-                        continue;
+                        return createNewDatabaseFile();//Start again
                     } else {
                         return false;//Abort new file creation
                     }
                 }
+                if (openDatabaseFile(selectedFile)) {
+                    saveObject(new AmpliconDbInfo());
+                    commitChanges();
+                    settingsDB.setLastAmpliconDatabaseFile(previousDatabaseFile);
+                    return true;
+                }
             }
-            break;
         }
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            if (getDatabaseFile() != null) {
-                settingsDB.setLastAmpliconDatabaseFile(getDatabaseFile());
-            }
-            settingsDB.setLastAmpliconDatabaseDirectory(fc.getCurrentDirectory().getAbsolutePath());
-            openDatabase(selectedFile);
-            return true;
-        } else {
-            return false;
-        }
+        return false;//Default if true is not returned...
     }
 
-    public boolean openDatabase() {
+    @Override
+    public boolean closeDatabase() {
+        File previousDatabaseFile = getDatabaseFile();
+        if (closeDb4oDatabase()) {
+            settingsDB.setLastAmpliconDatabaseFile(previousDatabaseFile);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean openUserSelectDatabaseFile() {
         JFileChooser fc = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
                 "Amplicon database files", "amp");
@@ -122,24 +127,32 @@ public class AmpliconDb4oServiceProvider extends Db4oServices implements Databas
         }
         int returnVal = fc.showDialog(WindowManager.getDefault().getMainWindow(), "Open AmpliconDB");
         if (returnVal == JFileChooser.APPROVE_OPTION && fc.getSelectedFile().exists()) {
-            if (getDatabaseFile() != null) {
-                settingsDB.setLastAmpliconDatabaseFile(getDatabaseFile());
-            }
+            File newDatabaseFile = fc.getSelectedFile();
+            closeDatabase();
             settingsDB.setLastAmpliconDatabaseDirectory(fc.getCurrentDirectory().getAbsolutePath());
-            openDatabase(fc.getSelectedFile());
-            return true;
+            return openDatabaseFile(newDatabaseFile);
         } else {
             return false;
         }
     }
 
     @Override
-    public void closeDatabase() {
-        if (getDatabaseFile() != null) {
-            settingsDB.setLastAmpliconDatabaseFile(getDatabaseFile());
+    public boolean openLastDatabaseFile() {
+        //At startup, no database file will be open
+        if (getDatabaseFile() == null) {
+            if (openDatabaseFile(settingsDB.getLastExperimentDatabaseFile())) {
+                return true;
+            } else {
+                return false;
+            }
         }
-        super.closeDatabase();
-
+        //Opening a file resets the datafile to this new file
+        File currentDatabaseFile = getDatabaseFile();
+        if (openDatabaseFile(settingsDB.getLastAmpliconDatabaseFile())) {
+            settingsDB.setLastAmpliconDatabaseFile(currentDatabaseFile);
+            return true;
+        }
+        return false;
     }
 
     public DatabaseType getDatabaseType() {

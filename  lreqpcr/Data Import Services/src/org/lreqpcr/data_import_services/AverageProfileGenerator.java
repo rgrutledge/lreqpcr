@@ -215,7 +215,6 @@ public class AverageProfileGenerator {
             avProfile.appendLongDescription("AN LRE WINDOW COULD NOT BE FOUND");
             avProfile.setNo(0);
             avProfile.setShortDescription("An LRE window could not be found");
-            avProfile.setExcluded(true);
         } else {
             profileIntialization.initializeProfile(avProfile, parameters);
         }

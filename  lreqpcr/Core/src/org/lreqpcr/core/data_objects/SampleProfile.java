@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * and open the template in the editor.
  */
-
 package org.lreqpcr.core.data_objects;
 
 /**
@@ -33,30 +32,41 @@ public class SampleProfile extends Profile {
      * based on the profile average Fo, OCF and amplicon size. 
      */
     public void updateProfile() {
-        if(isExcluded()){
+        if (isExcluded()) {
             setNo(0);
             return;
         }
         if (getTargetStrandedness() == TargetStrandedness.SINGLESTRANDED) {
             setNo(2 * ((getAvFo() / getOCF()) * 910000000000d) / getAmpliconSize());
         } else {
-               setNo(((getAvFo() / getOCF()) * 910000000000d) / getAmpliconSize());
+            setNo(((getAvFo() / getOCF()) * 910000000000d) / getAmpliconSize());
         }
     }
 
     /**
-     * Sorted to place excluded profiles last
+     * Sort Profile --> NoLreWindow --> Excluded profiles respectively
+     * 
      * @param o the Profile to compare to
      * @return the comparator integer
      */
     @Override
     public int compareTo(Object o) {
         Profile profile = (Profile) o;
-        if(!profile.isExcluded()){
-            if(isExcluded()){
-                return 1;
-            }else {
+        //Both have no LRE window...fall to sorting on exclusion
+        if (profile.isExcluded()) {
+            if (!isExcluded()) {
                 return -1;
+            }
+        } else {
+            if (isExcluded()) {
+                return 1;
+            }
+            if (!profile.hasAnLreWindowBeenFound()) {
+                if (hasAnLreWindowBeenFound()) {
+                    return -1;
+                }
+            } else {
+                return 1;
             }
         }
         return 0;

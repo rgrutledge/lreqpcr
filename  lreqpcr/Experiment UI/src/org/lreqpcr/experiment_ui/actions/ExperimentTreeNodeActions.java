@@ -33,13 +33,13 @@ public class ExperimentTreeNodeActions implements LreActionFactory {
 
         //Average Sample Profile actions
         Action[] actions = new Action[]{
-            new IncludeAverageSampleProfileAction(mgr),
-            new ExcludeAverageSampleProfileAction(mgr),
+            new FixSampleProfileEmaxTo100percentAction(mgr),
+            new ReturnSampleProfileToLreDerivedEmaxAction(mgr),
             null,
             new DeleteAverageSampleProfileAction(mgr),
             null,
-            new FixSampleProfileEmaxTo100percentAction(mgr),
-            new ReturnSampleProfileToLreDerivedEmaxAction(mgr)
+            new IncludeAverageSampleProfileAction(mgr),
+            new ExcludeAverageSampleProfileAction(mgr)
         };
         actionMap.put("AverageSampleProfile", actions);
 

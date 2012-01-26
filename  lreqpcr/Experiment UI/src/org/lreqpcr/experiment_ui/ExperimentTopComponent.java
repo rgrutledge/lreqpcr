@@ -17,14 +17,11 @@
 package org.lreqpcr.experiment_ui;
 
 import java.awt.Toolkit;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import org.lreqpcr.core.data_objects.Amplicon;
-import org.lreqpcr.core.data_objects.ExperimentDbInfo;
-import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.data_objects.RunImpl;
 import org.lreqpcr.core.data_objects.Sample;
@@ -32,7 +29,6 @@ import org.lreqpcr.core.database_services.DatabaseProvider;
 import org.lreqpcr.core.database_services.DatabaseServiceFactory;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
-import org.lreqpcr.core.database_services.SettingsServices;
 import org.lreqpcr.core.ui_elements.AmpliconNode;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
@@ -70,7 +66,6 @@ public final class ExperimentTopComponent extends TopComponent
     private ExplorerManager mgr = new ExplorerManager();
     private Lookup servicesLookup = Lookup.getDefault();
     private DatabaseServices experimentDB;
-    private SettingsServices settingsDB;
     private final Result<SampleNode> sampleNodeResult;
     private final Result<AmpliconNode> ampliconNodeResult;
 
@@ -94,6 +89,7 @@ public final class ExperimentTopComponent extends TopComponent
         sampleNodeResult = Utilities.actionsGlobalContext().lookupResult(SampleNode.class);
         sampleNodeResult.allItems();
         sampleNodeResult.addLookupListener(this);
+        experimentDB.openLastDatabaseFile();
         experimentDbTree.initTreeView(mgr, experimentDB);
         UniversalLookup.getDefault().addListner(PanelMessages.NEW_RUN_IMPORTED, this);
         UniversalLookup.getDefault().addListner(PanelMessages.UPDATE_EXPERIMENT_PANELS, this);
@@ -105,7 +101,6 @@ public final class ExperimentTopComponent extends TopComponent
         if (experimentDB != null) {
             UniversalLookup.getDefault().add(DatabaseType.EXPERIMENT, experimentDB);
         }
-        settingsDB = servicesLookup.lookup(SettingsServices.class);
     }
 
     private ArrayList<Run> getSelectedRuns() {
@@ -260,56 +255,36 @@ public final class ExperimentTopComponent extends TopComponent
     private void openDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openDBbuttonActionPerformed
         JFrame message = OpeningDatabaseDialog.makeDialog();
 //The only reason this frame is painted correctly is due to the delay produced by opening of a file chooser dialog
-        boolean wasNewFileOpened = experimentDB.openDatabase();
-        //False if the open file was cancelled, so do nothing
-        if (wasNewFileOpened) {
+        if (experimentDB.openUserSelectDatabaseFile()) {
             experimentDbTree.createTree();
-            UniversalLookup.getDefault().addSingleton(PanelMessages.DATABASE_FILE_CHANGED, experimentDB);
-            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.DATABASE_FILE_CHANGED);
-        }
+            UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, experimentDB);
+            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_DATABASE);
+        }//If a new file was not opened, do nothing
         message.setVisible(false);
         message.dispose();
     }//GEN-LAST:event_openDBbuttonActionPerformed
 
     private void newDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newDBbuttonActionPerformed
-        boolean wasNewFileCreated = experimentDB.createNewDatabase();
-        //False if the action was cancelled, so do nothing
-        if (wasNewFileCreated) {
-//All Experiment databases must contain a lre window parameters and db info object
-            experimentDB.saveObject(new LreWindowSelectionParameters());
-            experimentDB.saveObject(new ExperimentDbInfo());
-            experimentDB.commitChanges();
+        if (experimentDB.createNewDatabaseFile()) {
             experimentDbTree.createTree();
-            UniversalLookup.getDefault().addSingleton(PanelMessages.DATABASE_FILE_CHANGED, experimentDB);
-            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.DATABASE_FILE_CHANGED);
-        }
+            UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, experimentDB);
+            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_DATABASE);
+        }//False if the action was cancelled, so do nothing
     }//GEN-LAST:event_newDBbuttonActionPerformed
 
     private void openLastDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openLastDBbuttonActionPerformed
-        File previousFile = experimentDB.getDatabaseFile();
-        File lastDBfile = settingsDB.getLastExperimentDatabaseFile();
-        if (lastDBfile != null) {
-            if (lastDBfile.exists()) {
-                if (previousFile != null) {
-                    settingsDB.setLastExperimentDatabaseFile(previousFile);
-                }
-                experimentDB.openDatabase(lastDBfile);
-                experimentDbTree.createTree();
-                UniversalLookup.getDefault().addSingleton(PanelMessages.DATABASE_FILE_CHANGED, experimentDB);
-                UniversalLookup.getDefault().fireChangeEvent(PanelMessages.DATABASE_FILE_CHANGED);
-            }
-        } else {
-            // TODO present an error dialog
-        }
+        if (experimentDB.openLastDatabaseFile()) {
+            experimentDbTree.createTree();
+            UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, experimentDB);
+            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_DATABASE);
+        }//If not opened, do nothing
     }//GEN-LAST:event_openLastDBbuttonActionPerformed
 
     private void closeDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeDBbuttonActionPerformed
-        if (experimentDB.isDatabaseOpen()) {
-            settingsDB.setLastExperimentDatabaseFile(experimentDB.getDatabaseFile());
-            experimentDB.closeDatabase();
+        if (experimentDB.closeDatabase()) {
             experimentDbTree.createTree();
-            UniversalLookup.getDefault().addSingleton(PanelMessages.DATABASE_FILE_CHANGED, null);
-            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.DATABASE_FILE_CHANGED);
+            UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, null);
+            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_DATABASE);
         }
     }//GEN-LAST:event_closeDBbuttonActionPerformed
 

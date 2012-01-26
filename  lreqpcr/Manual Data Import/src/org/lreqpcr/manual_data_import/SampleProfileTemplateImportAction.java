@@ -19,10 +19,10 @@ package org.lreqpcr.manual_data_import;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public final class CalbnProfileImportAction implements ActionListener {
+public final class SampleProfileTemplateImportAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-       new CalibrationProfileTemplateDataImport();
+        new SampleProfileTemplateImport();
     }
 }

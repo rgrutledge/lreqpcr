@@ -84,7 +84,7 @@ public final class SampleOverviewTopComponent extends TopComponent
         //Listens to changes in TC window selection
         WindowManager.getDefault().getRegistry().addPropertyChangeListener(this);
         UniversalLookup.getDefault().addListner(PanelMessages.RUN_VIEW_SELECTED, this);
-        UniversalLookup.getDefault().addListner(PanelMessages.DATABASE_FILE_CHANGED, this);
+        UniversalLookup.getDefault().addListner(PanelMessages.NEW_DATABASE, this);
     }
 
     @SuppressWarnings("unchecked")
@@ -390,9 +390,9 @@ public final class SampleOverviewTopComponent extends TopComponent
         if (key == PanelMessages.RUN_VIEW_SELECTED) {
             clearTree();
         }
-        if (key == PanelMessages.DATABASE_FILE_CHANGED) {//Open, Close, New database file change
+        if (key == PanelMessages.NEW_DATABASE) {//Open, Close, New database file change
             clearTree();
-            DatabaseServices newDB = (DatabaseServices) UniversalLookup.getDefault().getAll(PanelMessages.DATABASE_FILE_CHANGED).get(0);
+            DatabaseServices newDB = (DatabaseServices) UniversalLookup.getDefault().getAll(PanelMessages.NEW_DATABASE).get(0);
             if (newDB == null) {
                 return;
             }

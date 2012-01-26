@@ -23,6 +23,8 @@ import org.lreqpcr.core.ui_elements.LreNode;
 import java.util.Collection;
 import java.util.List;
 import javax.swing.JPanel;
+import org.lreqpcr.core.data_objects.AverageProfile;
+import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.database_services.DatabaseServices;
@@ -63,7 +65,7 @@ public class ProfileEditor extends JPanel implements
     private void initProfileView() {
         analysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
         universalLookup = UniversalLookup.getDefault();
-        universalLookup.addListner(PanelMessages.DATABASE_FILE_CHANGED, this);
+        universalLookup.addListner(PanelMessages.NEW_DATABASE, this);
         universalLookup.addListner(PanelMessages.CLEAR_PROFILE_EDITOR, this);
         universalLookup.addListner(PanelMessages.PROFILE_EXCLUDED, this);
         universalLookup.addListner(PanelMessages.PROFILE_INCLUDED, this);
@@ -82,15 +84,10 @@ public class ProfileEditor extends JPanel implements
     }
 
     private void displayNewProfile(Profile profile) {
-        if (profile.isExcluded()) {
-            clearPanels();
-            lreObjectInfo.displayMember(selectedNode);
-            return;
-        }
-
 //Display and editing of a profile is conducted through the ProfileSummary interface
         prfSum = analysisService.initializeProfile(profile, selectionParameters);
-        if (profile.getLreWinSize() == 0) {
+        this.profile = prfSum.getProfile();
+        if (!profile.hasAnLreWindowBeenFound() || profile.isExcluded()) {
             clearPanels();
             lreObjectInfo.displayMember(selectedNode);
             return;
@@ -99,6 +96,31 @@ public class ProfileEditor extends JPanel implements
     }
 
     private void updatePanels() {
+        //Test to see if this is an AverageProfile with just one replicate
+        if (profile instanceof AverageSampleProfile) {
+            AverageSampleProfile avSampleProfile = (AverageSampleProfile) profile;
+            if (avSampleProfile.getNumberOfActiveReplicateProfiles() == 1 
+                    && avSampleProfile.hasAnLreWindowBeenFound()
+                    && !avSampleProfile.isExcluded()) {
+                //Display the Profile
+                plotLREs.iniPlotLREs(prfSum);
+                numericalTable.iniNumTable(prfSum);
+                plotFc.iniPlot(prfSum);
+                plotFo.iniPlot(prfSum);
+                lreObjectInfo.displayMember(selectedNode);
+                return;
+            }
+        }
+        if (profile instanceof AverageProfile) {
+            AverageProfile avProfile = (AverageProfile) profile;
+            if (avProfile.isReplicateAverageNoLessThan10Molecules()
+                    || profile.isExcluded()
+                    || !profile.hasAnLreWindowBeenFound()) {
+                clearPanels();
+                lreObjectInfo.displayMember(selectedNode);
+                return;
+            }
+        }
         plotLREs.iniPlotLREs(prfSum);
         numericalTable.iniNumTable(prfSum);
         plotFc.iniPlot(prfSum);
@@ -258,20 +280,27 @@ public class ProfileEditor extends JPanel implements
             LreObject member = selectedNode.getLookup().lookup(LreObject.class);
             if (member instanceof Profile) {
                 profile = (Profile) member;
-                displayNewProfile(profile);
+                if (prfSum == null){
+                    displayNewProfile(profile);
+                }else{
+                    updatePanels();
+                }
             } else {
                 clearPanels();
             }
             selectedNode.refreshNodeLabel();
         }
         if (key == PanelMessages.PROFILE_CHANGED) {
-            if(prfSum == null) return;
+            if (prfSum == null) {
+                return;
+            }
             analysisService.updateLreWindow(prfSum, selectionParameters);
+            profile = prfSum.getProfile();
             selectedNode.refreshNodeLabel();
             updatePanels();
         }
-        if (key == PanelMessages.DATABASE_FILE_CHANGED) {
-            currentDB = (DatabaseServices) universalLookup.getAll(PanelMessages.DATABASE_FILE_CHANGED).get(0);
+        if (key == PanelMessages.NEW_DATABASE) {
+            currentDB = (DatabaseServices) universalLookup.getAll(PanelMessages.NEW_DATABASE).get(0);
             if (currentDB == null) {
                 selectionParameters = null;
                 clearPanels();

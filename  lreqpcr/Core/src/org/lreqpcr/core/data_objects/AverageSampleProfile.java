@@ -28,6 +28,8 @@ import java.util.List;
 public class AverageSampleProfile extends SampleProfile implements AverageProfile {
 
     private List<SampleProfile> sampleProfileList;
+    private boolean isTheAverageReplicateNoLessThan10Molecules;
+    private int numberOfActiveReplicateProfiles;
 
     /**
      * An average sample profile constructed from its sample replicate profiles.
@@ -58,6 +60,7 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
     @Override
     public void updateProfile() {
         super.updateProfile();
+        determineIfTheAverageReplicateNoIsLessThan10Molecules();
     }
 
     @Override
@@ -65,5 +68,57 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
         SampleProfile prf = (AverageSampleProfile) o;
         //Sort by name
         return getName().compareToIgnoreCase(prf.getName());
+    }
+
+    /**
+     * Determines if the AverageProfile is valid, due to the fact that if  
+     * the number of target molecules is less than 10, the AverageProfile 
+     * can be distorted due to profile scattering caused by Poison Distribution.
+     * If so, the
+     * average No of the AverageProfile is set to the average of the ReplicateProfile 
+     * No values. 
+     * 
+     * @return whether the average No is less than 10 molecules
+     */
+    public boolean isReplicateAverageNoLessThan10Molecules() {
+        return isTheAverageReplicateNoLessThan10Molecules;
+    }
+
+    /**
+     * If the average No is less than 10 molecules, that AverageProfile can be 
+     * distorted, and thus it must be invalidated. If so,
+     * the average No for the AverageProfile is determined by
+     * averaging the No values from each of the ReplicateProfiles. 
+     */
+    private void determineIfTheAverageReplicateNoIsLessThan10Molecules() {
+        double sum = 0;
+        int counter = 0;
+        for (Profile repPrf : getReplicateProfileList()) {
+            //It is important not to include excluded profiles
+            if (!repPrf.isExcluded()) {
+                if (!repPrf.hasAnLreWindowBeenFound()) {
+//Without an LRE Window, a valid LRE-derived avNo is not available
+//However, such profiles (i.e. flat profiles) default to zero molecules and thus must be counted
+                    counter++;
+                } else {
+                    sum = sum + repPrf.getNo();
+                    counter++;
+                }
+            }
+        }
+        numberOfActiveReplicateProfiles = counter;
+        double averageReplicateNo = sum / counter;
+        if (averageReplicateNo < 10) {
+            isTheAverageReplicateNoLessThan10Molecules = true;
+            if (numberOfActiveReplicateProfiles > 1) {
+                setNo(averageReplicateNo);
+            }
+        } else {
+            isTheAverageReplicateNoLessThan10Molecules = false;
+        }
+    }
+
+    public int getNumberOfActiveReplicateProfiles() {
+        return numberOfActiveReplicateProfiles;
     }
 }

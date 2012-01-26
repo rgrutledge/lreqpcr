@@ -18,7 +18,6 @@ package org.lreqpcr.experiment_ui.actions;
 
 import org.lreqpcr.core.ui_elements.LreNode;
 import java.awt.event.ActionEvent;
-import java.util.List;
 import javax.swing.AbstractAction;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.SampleProfile;

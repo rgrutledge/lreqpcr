@@ -44,7 +44,7 @@ public class LrePlot extends javax.swing.JPanel {
     private DecimalFormat dfE = new DecimalFormat("0.00E0");
     private boolean clearPlot;
     private SimpleDateFormat sdf = new SimpleDateFormat("dMMMyy");
-    private UniversalLookup universalLookup;
+    private UniversalLookup universalLookup = UniversalLookup.getDefault();
 
     /** 
      * Generates a plot of reaction fluorescence and predicted fluorescence
@@ -56,12 +56,12 @@ public class LrePlot extends javax.swing.JPanel {
     }
 
     /**
-     * Initializes the LrePlot panel using the supplied ProfileSummary
+     * Initializes the LrePlot panel using the supplied ProfileSummary. Note
+     * that it is assumed that the provided Profile has a valid LRE window.
      * 
      * @param prfSum the ProfileSummary holding the Profile that is to be displayed
      */
     public void iniPlotLREs(ProfileSummary prfSum) {
-        universalLookup = UniversalLookup.getDefault();
         if (prfSum == null) {
             clearPlot();
             return;
@@ -509,7 +509,7 @@ private void reanalyzeButtonActionPerformed(java.awt.event.ActionEvent evt) {//G
     if (profile == null) {
         return;
     }
-    profile.setLreWinSize(0);
+    profile.setHasAnLreWindowBeenFound(false);
     universalLookup.fireChangeEvent(PanelMessages.PROFILE_CHANGED);
 }//GEN-LAST:event_reanalyzeButtonActionPerformed
 

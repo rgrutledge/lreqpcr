@@ -41,7 +41,7 @@ public class DatabaseServiceProvider implements DatabaseServiceFactory {
     }
 
     private DatabaseServices createExptDbService() {
-        return new ExperimentDb4oServiceProvider();
+        return new ExperimentDb4oDatabaseServiceProvider();
     }
 
     private DatabaseServices createCalbnDbService() {
