@@ -24,7 +24,17 @@ import java.awt.*;
 import java.awt.geom.*;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.List;
+import org.lreqpcr.analysis_services.LreAnalysisService;
+import org.lreqpcr.core.data_objects.AverageProfile;
+import org.lreqpcr.core.data_objects.AverageSampleProfile;
+import org.lreqpcr.core.data_objects.CalibrationProfile;
+import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
+import org.lreqpcr.core.data_objects.SampleProfile;
+import org.lreqpcr.core.data_processing.ProfileInitializer;
+import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.utilities.UniversalLookup;
+import org.openide.util.Lookup;
 
 /**
  * LRE Plot Panel using a small font
@@ -45,6 +55,7 @@ public class LrePlot extends javax.swing.JPanel {
     private boolean clearPlot;
     private SimpleDateFormat sdf = new SimpleDateFormat("dMMMyy");
     private UniversalLookup universalLookup = UniversalLookup.getDefault();
+    private DatabaseServices db;//The database in which the Profile is stored
 
     /** 
      * Generates a plot of reaction fluorescence and predicted fluorescence
@@ -61,18 +72,35 @@ public class LrePlot extends javax.swing.JPanel {
      * 
      * @param prfSum the ProfileSummary holding the Profile that is to be displayed
      */
-    public void iniPlotLREs(ProfileSummary prfSum) {
+    public void iniPlotLREs(ProfileSummary prfSum, DatabaseServices db) {
         if (prfSum == null) {
             clearPlot();
             return;
         }
+        this.db = db;
         clearPlot = false;
         this.prfSum = prfSum;
         profile = prfSum.getProfile();
-        df.applyPattern("###,###");
-        String numTargetMolecs = "";
-        numTargetMolecs = df.format(profile.getNo());
-        graphTitle.setText(sdf.format(profile.getRunDate()) + "-" + numTargetMolecs + " molecules");
+        if (profile instanceof SampleProfile) {
+            double no = profile.getNo();
+            if (no < 10) {
+                df.applyPattern("#0.00");
+            } else {
+                df.applyPattern("###,###");
+            }
+            String numTargetMolecs = df.format(profile.getNo()) + " molecules";
+            graphTitle.setText(sdf.format(profile.getRunDate()) + "  " + numTargetMolecs);
+        }
+        if (profile instanceof CalibrationProfile) {
+            double ocf = profile.getOCF();
+            if (ocf < 10) {
+                df.applyPattern("#0.00");
+            } else {
+                df.applyPattern("###,###");
+            }
+            String ocfLabel = "  OCF= " + df.format(profile.getOCF());
+            graphTitle.setText(sdf.format(profile.getRunDate()) + ocfLabel);
+        }
         lreWinSizeDisplay.setText(String.valueOf(profile.getLreWinSize()));
         startCycleDisplay.setText(String.valueOf(profile.getStrCycleInt()));
         dEdisplay.setText(dfE.format(profile.getDeltaE()));
@@ -86,7 +114,7 @@ public class LrePlot extends javax.swing.JPanel {
         startCycleLabel.setVisible(true);
         winSizeLabel.setVisible(true);
         lreParametersPanel.setVisible(true);
-        reanalyzeButton.setVisible(true);
+        resetButton.setVisible(true);
         upperWindowAdjustPanel.setVisible(true);
         lowerWindowAdjustPanel.setVisible(true);
         /*Determine the maximum and minimum X&Y values: Dataset specific*/
@@ -118,7 +146,7 @@ public class LrePlot extends javax.swing.JPanel {
         startCycleLabel.setVisible(false);
         winSizeLabel.setVisible(false);
         lreParametersPanel.setVisible(false);
-        reanalyzeButton.setVisible(false);
+        resetButton.setVisible(false);
         upperWindowAdjustPanel.setVisible(false);
         lowerWindowAdjustPanel.setVisible(false);
         Dimension size = this.getSize();
@@ -127,6 +155,26 @@ public class LrePlot extends javax.swing.JPanel {
             clearPlot = true;
             repaint();
         }
+    }
+
+    private void processModifiedLreWindow() {
+//This function relies on the assumption that this profile has a valid LRE window
+//which should be true if the profile is being displayed so that the user can modify it
+        //Update ProfileSummary using the new LRE parameters
+        ProfileInitializer.calcLreParameters(prfSum);
+        profile.updateProfile();
+        db.saveObject(profile);
+        //More may need to be done if it is a SampleProfile
+        if (profile instanceof SampleProfile && !(profile instanceof AverageProfile)) {
+            AverageSampleProfile avProfile = (AverageSampleProfile) profile.getParent();
+            if (avProfile.isReplicateAverageNoLessThan10Molecules()) {
+//Need to update the AverageProfile No because it is determined from the average
+//No from the replicate profiles
+                avProfile.updateProfile();
+                db.saveObject(avProfile);
+            }
+        }
+        universalLookup.fireChangeEvent(PanelMessages.PROFILE_CHANGED);
     }
 
     /** This method is called from within the constructor to
@@ -140,7 +188,7 @@ public class LrePlot extends javax.swing.JPanel {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         graphTitle = new javax.swing.JLabel();
-        reanalyzeButton = new javax.swing.JButton();
+        resetButton = new javax.swing.JButton();
         lreParametersPanel = new javax.swing.JPanel();
         r2display = new javax.swing.JLabel();
         fmaxDisplay = new javax.swing.JLabel();
@@ -196,13 +244,13 @@ public class LrePlot extends javax.swing.JPanel {
         graphTitle.setForeground(new java.awt.Color(204, 0, 51));
         graphTitle.setText("LRE Plot (Ec vs. Fc)");
 
-        reanalyzeButton.setFont(new java.awt.Font("Tahoma", 0, 10));
-        reanalyzeButton.setText("Reset");
-        reanalyzeButton.setToolTipText("Performs an automated LRE window selection");
-        reanalyzeButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
-        reanalyzeButton.addActionListener(new java.awt.event.ActionListener() {
+        resetButton.setFont(new java.awt.Font("Tahoma", 0, 10));
+        resetButton.setText("Reset");
+        resetButton.setToolTipText("Performs an automated LRE window selection");
+        resetButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
+        resetButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                reanalyzeButtonActionPerformed(evt);
+                resetButtonActionPerformed(evt);
             }
         });
 
@@ -436,7 +484,7 @@ public class LrePlot extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(77, 77, 77)
-                        .addComponent(reanalyzeButton))
+                        .addComponent(resetButton))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addContainerGap(260, Short.MAX_VALUE)
                         .addComponent(lreParametersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -455,7 +503,7 @@ public class LrePlot extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(reanalyzeButton)
+                        .addComponent(resetButton)
                         .addGroup(layout.createSequentialGroup()
                             .addComponent(lowerWindowAdjustPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(18, 18, 18)
@@ -471,7 +519,7 @@ public class LrePlot extends javax.swing.JPanel {
             return;
         }
         profile.setLreWinSize(profile.getLreWinSize() - 1);
-        universalLookup.fireChangeEvent(PanelMessages.PROFILE_CHANGED);
+        processModifiedLreWindow();
     }//GEN-LAST:event_removeTopActionPerformed
 
     private void addTopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addTopActionPerformed
@@ -480,7 +528,7 @@ public class LrePlot extends javax.swing.JPanel {
             return;
         }
         profile.setLreWinSize(profile.getLreWinSize() + 1);
-        universalLookup.fireChangeEvent(PanelMessages.PROFILE_CHANGED);
+        processModifiedLreWindow();
     }//GEN-LAST:event_addTopActionPerformed
 
     private void removeBottomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeBottomActionPerformed
@@ -491,6 +539,7 @@ public class LrePlot extends javax.swing.JPanel {
         profile.setStrCycleInt(profile.getStrCycleInt() + 1);
         prfSum.setStrCycle(prfSum.getStrCycle().getNextCycle());
         profile.setLreWinSize(profile.getLreWinSize() - 1);
+        processModifiedLreWindow();
         universalLookup.fireChangeEvent(PanelMessages.PROFILE_CHANGED);
     }//GEN-LAST:event_removeBottomActionPerformed
 
@@ -502,16 +551,21 @@ public class LrePlot extends javax.swing.JPanel {
         profile.setStrCycleInt(profile.getStrCycleInt() - 1);
         prfSum.setStrCycle(prfSum.getStrCycle().getPrevCycle());
         profile.setLreWinSize(profile.getLreWinSize() + 1);
-        universalLookup.fireChangeEvent(PanelMessages.PROFILE_CHANGED);
+        processModifiedLreWindow();
     }//GEN-LAST:event_addBottomActionPerformed
 
-private void reanalyzeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reanalyzeButtonActionPerformed
+private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
     if (profile == null) {
         return;
     }
+    //Need to conduct a new automated LRE window selection
     profile.setHasAnLreWindowBeenFound(false);
-    universalLookup.fireChangeEvent(PanelMessages.PROFILE_CHANGED);
-}//GEN-LAST:event_reanalyzeButtonActionPerformed
+    List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
+    LreWindowSelectionParameters selectionParameters = l.get(0);
+    LreAnalysisService analysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
+    analysisService.initializeProfile(profile, selectionParameters);
+    processModifiedLreWindow();
+}//GEN-LAST:event_resetButtonActionPerformed
 
     /**
      *Three elements: the LRE line (axis to axis), the LRE window
@@ -619,9 +673,9 @@ private void reanalyzeButtonActionPerformed(java.awt.event.ActionEvent evt) {//G
     private javax.swing.JLabel lreWinSizeDisplay;
     private javax.swing.JLabel maxEdisplay;
     private javax.swing.JLabel r2display;
-    private javax.swing.JButton reanalyzeButton;
     private javax.swing.JRadioButton removeBottom;
     private javax.swing.JRadioButton removeTop;
+    private javax.swing.JButton resetButton;
     private javax.swing.JLabel startCycleDisplay;
     private javax.swing.JLabel startCycleLabel;
     private javax.swing.JPanel upperWindowAdjustPanel;

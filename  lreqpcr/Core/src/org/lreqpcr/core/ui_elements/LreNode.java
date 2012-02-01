@@ -18,6 +18,7 @@ package org.lreqpcr.core.ui_elements;
 
 import org.lreqpcr.core.data_objects.LreObject;
 import javax.swing.Action;
+import org.lreqpcr.core.database_services.DatabaseProvider;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.AbstractNode;
@@ -34,7 +35,7 @@ import org.openide.util.Lookup;
  *
  * @author Bob Rutledge
  */
-public class LreNode extends AbstractNode implements ExplorerManager.Provider {
+public class LreNode extends AbstractNode implements ExplorerManager.Provider, DatabaseProvider {
 
     private Action[] actions;
     private ExplorerManager mgr;//Defines the tree holding this node
@@ -85,7 +86,7 @@ public class LreNode extends AbstractNode implements ExplorerManager.Provider {
     }
 
     /**
-     * Refreshes the node label.
+     * Updates the node label.
      */
     public void refreshNodeLabel() {
 //The children object provides the necessary nodeLabelFactory

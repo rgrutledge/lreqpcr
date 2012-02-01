@@ -141,7 +141,7 @@ public class CalibrationDb4oServiceProvider extends Db4oDatabaseServices impleme
     public boolean openLastDatabaseFile() {
         //At startup, no database file will be open
         if (getDatabaseFile() == null) {
-            if (openDatabaseFile(settingsDB.getLastExperimentDatabaseFile())) {
+            if (openDatabaseFile(settingsDB.getLastCalibrationDatabaseFile())) {
                 return true;
             } else {
                 return false;

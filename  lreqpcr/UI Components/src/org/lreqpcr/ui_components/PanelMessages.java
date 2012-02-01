@@ -22,7 +22,8 @@ package org.lreqpcr.ui_components;
  * @author Bob Rutledge
  */
 public enum PanelMessages {
-    NEW_RUN_IMPORTED, 
+    NEW_RUN_IMPORTED,
+    PROFILE_DELETED,
     UPDATE_CALIBRATION_PANELS,
     UPDATE_EXPERIMENT_PANELS,
     UPDATE_AMPLICON_PANELS,

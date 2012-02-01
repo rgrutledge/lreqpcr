@@ -38,6 +38,8 @@ public abstract class Profile extends LreObject {
     private String ampliconName;//Used to recover amplicon size from the amplicon database
     private int ampliconSize = 0;
     private TargetStrandedness targetStrandedness;
+    //This is a very clumsy method for maintaiing back compatability...a better versioning method is clearly needed
+    private boolean isProfileVer0_8_0 = false;//This must be set to true during data import!!!!!
         
     //Profile processing parameters
     private double ampTm;//The amplicon Tm
@@ -55,7 +57,7 @@ public abstract class Profile extends LreObject {
     private double nonR2;//Nonlinear r2 of predicted Fc to actual Fc within the LRE window... not very useful
     private double midC;//C1/2
     private double fbSlope, fbIntercept, fbR2;//Baseline linear regression used to test for baseline drift... under development
-    private boolean excluded = false;//Allows profiles to be excluded from the analysis
+    private boolean excluded;//Allows profiles to be excluded from the analysis
     private String whyExcluded;//Text describing why the profile was excluded
     
     //Target molecule (No) determination via optical calibration
@@ -453,6 +455,25 @@ public abstract class Profile extends LreObject {
      */
     public void setHasAnLreWindowBeenFound(boolean hasAnLreWindowFound) {
         this.hasAnLreWindowBeenFound = hasAnLreWindowFound;
+    }
+
+    /**
+     * Implemented in version 0.8.0 in order to maintain
+     * back compatability, which requires that pre 0.8.0 profiles be reinitialized.
+     * @return whether this Profile is version 0.8.0 or later
+     */
+    public boolean isProfileVer0_8_0() {
+        return isProfileVer0_8_0;
+    }
+
+    /**
+     * Used for back compatability, it is necessary to set to true for all 
+     * new Profiles during Profile creation.
+     * 
+     * @param isProfileVer0_8_0 true for all new Profiles
+     */
+    public void isProfileVer0_8_0(boolean isProfileVer0_8_0) {
+        this.isProfileVer0_8_0 = isProfileVer0_8_0;
     }
 
     @Override

@@ -48,8 +48,8 @@ public class AverageProfileGenerator {
      *
      * @param profileList a list of the Profiles to be processed
      * @param parentRun the Run from which this Profile dataset was derived
-     * @param ocf the average OCF
-     * @param parameters the LRE window parameters
+     * @param ocf the Experiment database OCF
+     * @param parameters the LRE window selection parameters
      * @return a list containing generated AverageSampleProfiles
      */
     @SuppressWarnings(value = "unchecked")
@@ -67,6 +67,7 @@ public class AverageProfileGenerator {
         while (!listCopy.isEmpty()) {
             SampleProfile profile = listCopy.get(0);
             AverageSampleProfile avSampleProfile = new AverageSampleProfile();
+            avSampleProfile.isProfileVer0_8_0(true);
             avSampleProfile.setTargetStrandedness(profile.getTargetStrandedness());
             ArrayList<SampleProfile> replicateProfileList = new ArrayList<SampleProfile>();
             for (SampleProfile prf : listCopy) {
@@ -94,9 +95,9 @@ public class AverageProfileGenerator {
             }
             avSampleProfile.setParent(parentRun);
             avSampleProfile.setOCF(ocf);
-            avSampleProfile.updateProfile();
             avSampleProfile.setReplicateProfileList(replicateProfileList);
             avSampleProfile.setRawFcReadings(generateAverageFcDataset(replicateProfileList));
+            avSampleProfile.updateProfile();
             intializeAverageProfile(avSampleProfile, parameters);
             averageProfileList.add(avSampleProfile);
         }
@@ -152,6 +153,7 @@ public class AverageProfileGenerator {
             }
             //Average the replicates Profile raw Fc datasets
             AverageCalibrationProfile avCalbnProfile = new AverageCalibrationProfile();
+            avCalbnProfile.isProfileVer0_8_0(true);
             CalibrationProfile firstCalibrationProfile = calibrationProfileList.get(0);
             avCalbnProfile.setLambdaMass(firstCalibrationProfile.getLambdaMass() * 1000000);
             avCalbnProfile.setName(firstCalibrationProfile.getName());
@@ -209,17 +211,18 @@ public class AverageProfileGenerator {
         avProfile.setAmpliconSize(firstRepProfile.getAmpliconSize());
         avProfile.setSampleName(firstRepProfile.getSampleName());
         avProfile.setAmpTm(0);
-        avProfile.setName(avProfile.getAmpliconName() + " @ " + avProfile.getSampleName());
+        avProfile.setName(avProfile.getAmpliconName() + "@" + avProfile.getSampleName());
         if (avProfile.getRawFcReadings().length == 0) {
-            //All of the replicate profiles are excluded
-            avProfile.appendLongDescription("AN LRE WINDOW COULD NOT BE FOUND");
+            //All of the replicate profiles are excluded...thus the Average Profile must be excluded
+            //Not sure if this will ever happen...do not have time to determine
             avProfile.setNo(0);
-            avProfile.setShortDescription("An LRE window could not be found");
         } else {
+            //Note the the replicate sample profiles have already been processed
             profileIntialization.initializeProfile(avProfile, parameters);
         }
         for (Profile profile : replicateList) {
             profile.setParent(avProfile);
         }
     }
+    
 }

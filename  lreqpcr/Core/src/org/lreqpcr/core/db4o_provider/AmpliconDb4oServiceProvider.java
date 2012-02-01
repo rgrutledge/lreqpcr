@@ -140,7 +140,7 @@ public class AmpliconDb4oServiceProvider extends Db4oDatabaseServices implements
     public boolean openLastDatabaseFile() {
         //At startup, no database file will be open
         if (getDatabaseFile() == null) {
-            if (openDatabaseFile(settingsDB.getLastExperimentDatabaseFile())) {
+            if (openDatabaseFile(settingsDB.getLastAmpliconDatabaseFile())) {
                 return true;
             } else {
                 return false;

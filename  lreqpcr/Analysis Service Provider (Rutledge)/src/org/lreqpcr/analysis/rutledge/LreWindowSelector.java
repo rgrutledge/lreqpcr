@@ -49,7 +49,7 @@ public class LreWindowSelector {
      *
      * @param prfSum the ProfileSummary to process
      */
-    public static void findLreWindow(ProfileSummary prfSum) {
+    public static void findLreWindowUsingDefaultParameters(ProfileSummary prfSum) {
         double r2Tolerance = 0.95; //The tolerance of the LRE r2 to determine the start of the profile
         double foldAboveFb = 0.25;
         double foThreshold = 0.06;
@@ -106,7 +106,7 @@ public class LreWindowSelector {
         /*-----Finds start cycle based on the cycle LRE r2-----*/
         Cycle strCycle = null;
         runner = cycZero.getNextCycle().getNextCycle().getNextCycle(); //Start at cycle 3
-        boolean foundStrCyc = false; //Used to test if the profile is flat
+//        boolean foundStrCyc = false; //Used to test if the profile is flat
         while (runner.getNextCycle().getNextCycle().getNextCycle() != null) {
 
             /*Tests for the minimum r2 >r2 tolerance across 3 cycles*/
@@ -124,22 +124,16 @@ public class LreWindowSelector {
                     strCycle = runner;
                     profile.setStrCycleInt(strCycle.getCycNum()); //Sets the integer start cycle
                     prfSum.setStrCycle(strCycle);
-                    foundStrCyc = true;
+                    profile.setHasAnLreWindowBeenFound(true);
+                    break;
                 }
             }
-            if (foundStrCyc) {
-                break;
-            }
             if (runner.getNextCycle() == null) {
-                break;
+                profile.setHasAnLreWindowBeenFound(false);
+                return;
             }
             runner = runner.getNextCycle(); //Advances to the next cycle
         }
-        if (!foundStrCyc) {
-            processFailedProfile(profile);
-            return;
-        }
-        profile.setHasAnLreWindowBeenFound(true);
         //Set the initiate LRE window size to a default size
         int defaultLREwinSize = 3;
         profile.setLreWinSize(defaultLREwinSize);
@@ -153,14 +147,12 @@ public class LreWindowSelector {
         try {
             while (midC > runner.getCycNum()) {
             runner = runner.getNextCycle();
-            profile.setStrCycleInt(runner.getCycNum());
+//            profile.setStrCycleInt(runner.getCycNum());
         }
         } catch (Exception e) {
-            int stop = 0;
-        }
-        
-        //This moves the run to one cycle below C1/2, which is what is wanted
-        
+            //Do nothing
+        }      
+        profile.setStrCycleInt(runner.getCycNum());
         prfSum.setStrCycle(runner);
         //Reoptimize the LRE window
         profile.setLreWinSize(3);
@@ -170,8 +162,9 @@ public class LreWindowSelector {
     }
 
     /**
-     * This method sets the Start Cycle at the first cycle which has an Fc reading 
-     * above the minimum fluorescence value provided. A default 3 cycle LRE window
+     * This method sets the Start Cycle as the first cycle with an Fc reading 
+     * above the minimum fluorescence (Min Fc). Once a start cycle has 
+     * been found, a default 3 cycle LRE window
      * is then applied, and the upper limit of the LRE window expanded until the 
      * Fo threshold is exceeded.
      *
@@ -180,47 +173,45 @@ public class LreWindowSelector {
      * @param threshold maximum fractional difference (%) between cycle Fo and the average Fo
      */
     public static void selectLreWindowUsingMinFc(ProfileSummary prfSum, LreWindowSelectionParameters parameters) {
-//Reset to "Include" and remove "AN LRE WINDOW COULD NOT BE FOUND" from the long description
         Profile profile = prfSum.getProfile();
-//        profile.setHasAnLreWindowBeenFound(false);
+//This is only applicable to pre 0.8.0; adding a message to the notes has since been abandoned
+        //Remove "AN LRE WINDOW COULD NOT BE FOUND" from the long description
         if (profile.getLongDescription() != null) {
             String longDescription = profile.getLongDescription();
-            if (longDescription.contains(" AN LRE WINDOW COULD NOT BE FOUND")) {
-                int index = longDescription.indexOf(" AN LRE WINDOW COULD NOT BE FOUND");
-                longDescription = longDescription.substring(0, index) + longDescription.substring(index + 33);
+            if (longDescription.contains("AN LRE WINDOW COULD NOT BE FOUND")) {
+                int index = longDescription.indexOf("AN LRE WINDOW COULD NOT BE FOUND");
+                //Remove this text
+                longDescription = longDescription.substring(0, index) + longDescription.substring(index + 32);
                 profile.setLongDescription(longDescription);
             }
         }
 //See if an LRE window can be found
-        findLreWindow(prfSum);
-        Cycle cycZero = prfSum.getZeroCycle();
+        findLreWindowUsingDefaultParameters(prfSum);
+        profile.updateProfile();
 //See if an LRE window can be found...if not, abort looking for a minFc
-//This is needed to avoid artifacts generated by late partial profiles
+//This is needed to avoid artifacts generated by late partial profiles which reach min Fc
         if (!profile.hasAnLreWindowBeenFound()) {
-            //Profile initialization failed
-//            profile.appendLongDescription("AN LRE WINDOW COULD NOT BE FOUND");
+//LRE window not found using automated selection and thus abort using a min Fc
             return;
         }
+        //Reselect the LRE window using the min Fc
         double minFc = parameters.getMinFc();
         double foThreshold = parameters.getFoThreshold();
-        if (minFc <= 0) {//Zero signifies that no minimum Fc has been set
-//The profile has already be initialized without a minFc...so just abort looking for a minFc
+        if (minFc == 0) {//Zero signifies that no minimum Fc has been set
+//The profile has already been initialized without a minFc...so just abort looking for a min Fc
             return;
         }
-        if (foThreshold <= 0) {
-            return;//Reject negative numbers
-        }
+        Cycle cycZero = prfSum.getZeroCycle();
         //Run to the first cycle above the minFc and set it as the start cycle
         Cycle runner = cycZero.getNextCycle().getNextCycle(); //Go to cycle 2
         while (runner.getFc() < minFc) {
-            if (runner.getNextCycle() == null) {
-                //Reached the end of the profile but the Fc > minFc
-                processFailedProfile(profile);
-                return;
-            }
-            if (runner.getNextCycle().getNextCycle() == null) {
-                //Need at least three cycle in order to set the LRE window
-                processFailedProfile(profile);
+            if (runner.getNextCycle() == null 
+                    || runner.getNextCycle().getNextCycle() == null) {
+                //Reached the end of the profile...
+                //This should never happen unless the min Fc is set too high
+//Dislike doing this, but it is necessary to alert the user the the min Fc is too high
+//Generating an error dialog is not an option due to the potentially large numbers of profiles being processed
+                profile.setHasAnLreWindowBeenFound(false);
                 return;
             }
             //Move up one cycle
@@ -231,34 +222,6 @@ public class LreWindowSelector {
         profile.setStrCycleInt(runner.getNextCycle().getCycNum());
         profile.setLreWinSize(3);
         optimizeLreWin(prfSum, foThreshold);
-    }
-
-    /**
-     * Process a profile for which an LRE window could not be found by 
-     * resetting all LRE parameters to zero,
-     * and entering "AN LRE WINDOW COULD NOT BE FOUND" into Notes.
-     *
-     * @param failedProfile
-     */
-    private static void processFailedProfile(Profile failedProfile) {
-        failedProfile.setHasAnLreWindowBeenFound(false);
-        failedProfile.setStrCycleInt(0);
-        failedProfile.setLreWinSize(0);
-        failedProfile.setEmax(0);
-        failedProfile.setDeltaE(0);
-        failedProfile.setR2(0);
-        failedProfile.setIsEmaxOverridden(false);
-        failedProfile.setOverridentEmaxValue(0);
-        failedProfile.setMidC(0);
-        failedProfile.setNo(0);
-        if (failedProfile.getLongDescription() != null) {
-            //Avoids duplicate errors being entered
-            if (!failedProfile.getLongDescription().contains(" AN LRE WINDOW COULD NOT BE FOUND")) {
-                failedProfile.appendLongDescription("AN LRE WINDOW COULD NOT BE FOUND");
-            } else {//Long description is empty
-                failedProfile.appendLongDescription("AN LRE WINDOW COULD NOT BE FOUND");
-            }
-        }
     }
 
     /**

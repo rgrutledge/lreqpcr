@@ -164,7 +164,7 @@ public final class AmpliconEditorTopComponent extends TopComponent implements Pr
         TopComponent tc = getRegistry().getActivated();
         if (tc instanceof DatabaseProvider) {
             DatabaseProvider dbProvider = (DatabaseProvider) tc;
-            DatabaseType type = dbProvider.getDatabase().getDatabaseType();
+            DatabaseType type = dbProvider.getDatabaseServices().getDatabaseType();
             if (type == DatabaseType.AMPLICON){
                 requestVisible();
             }

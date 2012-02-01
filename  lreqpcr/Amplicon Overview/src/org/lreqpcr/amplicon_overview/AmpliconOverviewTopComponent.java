@@ -107,16 +107,16 @@ public final class AmpliconOverviewTopComponent extends TopComponent
     private List<Amplicon> getAmpliconList() {
         List<Amplicon> ampliconList = new ArrayList<Amplicon>();
         //Retrieve all amplicon names from the database
-        List profileList = currentDB.getAllObjects(AverageProfile.class);
+        List avProfileList = currentDB.getAllObjects(AverageProfile.class);
         ArrayList<String> ampNameList = new ArrayList<String>();
-        for (Object o : profileList) {
+        for (Object o : avProfileList) {
             Profile profile = (Profile) o;
             String ampName = profile.getAmpliconName();
             if (!ampNameList.contains(ampName)) {
                 ampNameList.add(ampName);
             }
         }
-        //Determine average Emax and its CV...
+        //Determine average Emax and its CV based only on AverageSampleProfiles with No >10 molecules
         //Construct a list of Amplicons using the ampList name
         for (String ampName : ampNameList) {
             Amplicon facadeAmplicon = new AmpliconImpl();
@@ -125,34 +125,25 @@ public final class AmpliconOverviewTopComponent extends TopComponent
             //Thus this facadeAmplicon is only used for display purposes
             facadeAmplicon.setName(ampName);
             //Retrieve all average profiles derived from this amplicon
-            profileList = currentDB.retrieveUsingFieldValue(AverageProfile.class, "ampliconName", ampName);
+            avProfileList = currentDB.retrieveUsingFieldValue(AverageProfile.class, "ampliconName", ampName);
             //Compile a list of all Emax values
             ArrayList<Double> emaxArrayList = new ArrayList<Double>();
-            //Generate an average and CV for this Emax values in this list
+   //Generate an average and CV for this Emax values in this list
             double emaxTotal = 0;
             int counter = 0;
-            for (int i = 0; i < profileList.size(); i++) {
-                Profile profile = (Profile) profileList.get(i);
-                //Check to see if the profile has not been exclucded and is greater 10 molecules
-                if (!profile.isExcluded() && profile.getNo() > 10) {
+            for (int i = 0; i < avProfileList.size(); i++) {
+                //Ignore the replicate profiles, i.e. this is based only on AverageSampleProfiles
+                Profile profile = (Profile) avProfileList.get(i);
+           //If the profile is exclucded, do not include it
+                if (!profile.isExcluded() 
+                    //Check if a profile is present i.e. not flat
+                        && profile.hasAnLreWindowBeenFound()
+//Ignore AverageSampleProfiles with <10 molecules as they can generate invalid average profiles
+                        && profile.getNo() >= 10) {
                     emaxArrayList.add(profile.getEmax());
                     emaxTotal = emaxTotal + profile.getEmax();
                     counter++;
                 }
-//Subsequent work has shown that using replicate profile with <10 molecules can lead to inaccuracies in av. Emax determination
-                //This excludes calibration profiles as they will never be <10 molecules
-                //This is necessary as profiles <10 cannot generate accurate average profiles
-                //Thus it is necessary to average the Emax from the replication profiles
-//                if (profile.getNo() < 10 && profile instanceof AverageSampleProfile) {
-//                    AverageSampleProfile avProfile = (AverageSampleProfile) profile;
-//                    for (SampleProfile prf : avProfile.getReplicateProfileList()) {
-//                        if (!prf.isExcluded()) {
-//                            emaxArrayList.add(prf.getEmax());
-//                            emaxTotal = emaxTotal + prf.getEma
-//                            counter++;
-//                        }
-//                    }
-//                }
             }
             facadeAmplicon.setEmaxAverage(emaxTotal / counter);
             if (counter > 1) {
@@ -381,9 +372,9 @@ public final class AmpliconOverviewTopComponent extends TopComponent
         TopComponent tc = getRegistry().getActivated();
         if (tc instanceof DatabaseProvider) {
             DatabaseProvider dbProvider = (DatabaseProvider) tc;
-            if (dbProvider.getDatabase() != currentDB) {
+            if (dbProvider.getDatabaseServices() != currentDB) {
                 //A new explorer window has been selected
-                currentDB = dbProvider.getDatabase();
+                currentDB = dbProvider.getDatabaseServices();
                 clearTree();
             }
         }

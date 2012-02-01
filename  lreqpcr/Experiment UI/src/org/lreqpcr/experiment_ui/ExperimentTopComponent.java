@@ -89,10 +89,10 @@ public final class ExperimentTopComponent extends TopComponent
         sampleNodeResult = Utilities.actionsGlobalContext().lookupResult(SampleNode.class);
         sampleNodeResult.allItems();
         sampleNodeResult.addLookupListener(this);
-        experimentDB.openLastDatabaseFile();
         experimentDbTree.initTreeView(mgr, experimentDB);
         UniversalLookup.getDefault().addListner(PanelMessages.NEW_RUN_IMPORTED, this);
         UniversalLookup.getDefault().addListner(PanelMessages.UPDATE_EXPERIMENT_PANELS, this);
+        UniversalLookup.getDefault().addListner(PanelMessages.PROFILE_DELETED, this);
     }
 
     @SuppressWarnings(value = "unchecked")
@@ -253,8 +253,9 @@ public final class ExperimentTopComponent extends TopComponent
     }// </editor-fold>//GEN-END:initComponents
 
     private void openDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openDBbuttonActionPerformed
+//The only reason this frame is painted at all is due to the delay produced by opening of a file chooser dialog
+//Many, many attempts were made unsuccefully to have this JFrame paint correctly while the database file was being opened
         JFrame message = OpeningDatabaseDialog.makeDialog();
-//The only reason this frame is painted correctly is due to the delay produced by opening of a file chooser dialog
         if (experimentDB.openUserSelectDatabaseFile()) {
             experimentDbTree.createTree();
             UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, experimentDB);
@@ -391,7 +392,7 @@ public final class ExperimentTopComponent extends TopComponent
         return mgr;
     }
 
-    public DatabaseServices getDatabase() {
+    public DatabaseServices getDatabaseServices() {
         return experimentDB;
     }
 
@@ -403,7 +404,7 @@ public final class ExperimentTopComponent extends TopComponent
             if (c[0] instanceof AmpliconNode) {
                 AmpliconNode ampNode = (AmpliconNode) c[0];
                 //Test to be sure that this node was derived from this window's database
-                if (ampNode.getDatabase() != experimentDB) {
+                if (ampNode.getDatabaseServices() != experimentDB) {
                     return;
                 }
                 Amplicon amplicon = ampNode.getLookup().lookup(Amplicon.class);
@@ -413,7 +414,7 @@ public final class ExperimentTopComponent extends TopComponent
             if (c[0] instanceof SampleNode) {
                 SampleNode sampleNode = (SampleNode) c[0];
                 //Test to be sure that this node was derived from this window's database
-                if (sampleNode.getDatabase() != experimentDB) {
+                if (sampleNode.getDatabaseServices() != experimentDB) {
                     return;
                 }
                 Sample sample = sampleNode.getLookup().lookup(Sample.class);
@@ -434,6 +435,12 @@ public final class ExperimentTopComponent extends TopComponent
         }
         if (key == PanelMessages.UPDATE_EXPERIMENT_PANELS) {
             experimentDbTree.createTree();
+        }
+        if (key == PanelMessages.NEW_DATABASE) {
+            experimentDbTree.createTree();
+        }
+         if (key == PanelMessages.PROFILE_DELETED) {
+            experimentDbTree.displayTotalNumberOfProfilesInTheDatabase();
         }
     }
 }

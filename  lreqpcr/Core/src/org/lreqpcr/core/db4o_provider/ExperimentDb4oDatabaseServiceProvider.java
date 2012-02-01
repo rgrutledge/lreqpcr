@@ -149,15 +149,6 @@ public class ExperimentDb4oDatabaseServiceProvider extends Db4oDatabaseServices 
 
     @Override
     public boolean openLastDatabaseFile() {
-        //Load the last database file upon startup
-        //At startup, no database file will be open
-        if (getDatabaseFile() == null) {
-            if (openDatabaseFile(settingsDB.getLastExperimentDatabaseFile())) {
-                return true;
-            } else {
-                return false;
-            }
-        }
         //Opening a file resets the database file so it needs to be recorded
         File currentDatabaseFile = getDatabaseFile();
         if (openDatabaseFile(settingsDB.getLastExperimentDatabaseFile())) {

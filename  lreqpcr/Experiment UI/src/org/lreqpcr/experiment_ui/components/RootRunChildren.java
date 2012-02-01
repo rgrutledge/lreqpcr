@@ -19,6 +19,10 @@ package org.lreqpcr.experiment_ui.components;
 import org.lreqpcr.core.data_objects.LreObject;
 import java.util.List;
 import javax.swing.Action;
+import org.lreqpcr.analysis_services.LreAnalysisService;
+import org.lreqpcr.core.data_objects.AverageSampleProfile;
+import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
+import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LabelFactory;
@@ -27,6 +31,7 @@ import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
+import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 
 /**
@@ -36,8 +41,11 @@ import org.openide.util.lookup.Lookups;
  */
 public class RootRunChildren extends LreObjectChildren {
 
+    private LreAnalysisService analysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
+    private LreWindowSelectionParameters selectionParameters;
+
     /**
-     * Generates nodes containing the Runs within the supplied experiment database.
+     * Generates AverageProfile nodes for a Run.
      * 
      * @param mgr the manager of the view
      * @param db the experiment database that is being viewed
@@ -48,6 +56,9 @@ public class RootRunChildren extends LreObjectChildren {
     public RootRunChildren(ExplorerManager mgr, DatabaseServices db, List<? extends Run> runList,
             LreActionFactory actionFactory, LabelFactory labelFactory) {
         super(mgr, db, runList, actionFactory, labelFactory);
+        List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
+//This list should never be empty, as a LreWindowSelectionParameters object is created during DB creation
+                selectionParameters = l.get(0);
     }
 
     /**
@@ -69,6 +80,27 @@ public class RootRunChildren extends LreObjectChildren {
             if (actions == null) {
                 actions = new Action[]{};//i.e. there are no Actions for this Node
             }
+        }
+
+        //Check the version of the AverageProfiles...if not 0.8.0 then all the
+        //profiles need to be updated.
+        List<AverageSampleProfile> avProfileList = run.getAverageProfileList();
+   //Assume that the first profile is indicative of all the profiles in the Run
+        if (!avProfileList.get(0).isProfileVer0_8_0()){
+            List<AverageSampleProfile> allAvSampleProfiles = db.getAllObjects(AverageSampleProfile.class);
+//All of the profiles within this run need to be converted to version 0.8.0
+            for (AverageSampleProfile avProfile : allAvSampleProfiles){
+        //Note that this function will also updates the replicate SampleProfiles
+                analysisService.convertProfileToNewVersion(avProfile, selectionParameters);
+                //Must save the Profiles, including that replicate SampleProfiles
+                avProfile.isProfileVer0_8_0(true);
+                db.saveObject(avProfile);
+                for (Profile repProfile : avProfile.getReplicateProfileList()){
+                    repProfile.isProfileVer0_8_0(true);
+                    db.saveObject(repProfile);
+                }
+            }
+            db.commitChanges();
         }
 
         LreNode node = new LreNode(new RunChildren(mgr, db, run.getAverageProfileList(), nodeActionFactory, nodeLabelFactory),

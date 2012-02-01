@@ -80,7 +80,7 @@ class IncludeSampleProfileAction extends AbstractAction {
             LreAnalysisService profileIntialization =
                     Lookup.getDefault().lookup(LreAnalysisService.class);
             //This will trigger an auto selection of the LRE window
-            parentAvProfile.setLreWinSize(0);
+            parentAvProfile.setHasAnLreWindowBeenFound(false);
             profileIntialization.initializeProfile(parentAvProfile, selectionParameters);
             db.saveObject(parentAvProfile);
             //Update the tree

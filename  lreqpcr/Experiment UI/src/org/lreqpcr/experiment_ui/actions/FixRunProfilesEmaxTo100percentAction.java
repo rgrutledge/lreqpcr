@@ -69,16 +69,22 @@ public class FixRunProfilesEmaxTo100percentAction extends AbstractAction {
                 Run run = node.getLookup().lookup(Run.class);
 //Process all profiles within the run, including the replicate profiles
                 for (Profile profile : run.getAverageProfileList()) {
-                    profile.setIsEmaxOverridden(true);
-                    profile.setOverridentEmaxValue(1.0);
-                    ProfileSummary prfSum = analysisService.initializeProfile(profile, selectionParameters);
-                    db.saveObject(prfSum.getProfile());
-                    AverageProfile avProfile = (AverageProfile) profile;
-                    for (Profile repProfile : avProfile.getReplicateProfileList()) {
-                        repProfile.setIsEmaxOverridden(true);
-                        repProfile.setOverridentEmaxValue(1.0);
-                        prfSum = analysisService.initializeProfile(repProfile, selectionParameters);
+                    //Ignore profiles that do not have an LRE window
+                    if (profile.hasAnLreWindowBeenFound()) {
+                        profile.setIsEmaxOverridden(true);
+                        profile.setOverridentEmaxValue(1.0);
+                        ProfileSummary prfSum = analysisService.initializeProfile(profile, selectionParameters);
                         db.saveObject(prfSum.getProfile());
+                        AverageProfile avProfile = (AverageProfile) profile;
+                        //Ignore profiles that do not have an LRE window
+                        for (Profile repProfile : avProfile.getReplicateProfileList()) {
+                            if (repProfile.hasAnLreWindowBeenFound()) {
+                                repProfile.setIsEmaxOverridden(true);
+                                repProfile.setOverridentEmaxValue(1.0);
+                                prfSum = analysisService.initializeProfile(repProfile, selectionParameters);
+                                db.saveObject(prfSum.getProfile());
+                            }
+                        }
                     }
                 }
             }

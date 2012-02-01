@@ -19,7 +19,10 @@ package org.lreqpcr.calibration_ui.components;
 import org.lreqpcr.core.data_objects.LreObject;
 import java.util.List;
 import javax.swing.Action;
+import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
+import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
+import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LabelFactory;
 import org.lreqpcr.core.ui_elements.LreActionFactory;
@@ -27,6 +30,7 @@ import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
+import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 
 /**
@@ -35,6 +39,9 @@ import org.openide.util.lookup.Lookups;
  * @author Bob Rutledge
  */
 public class RootAvCalibrationProfileChildren extends LreObjectChildren {
+
+    private LreAnalysisService analysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
+    private LreWindowSelectionParameters selectionParameters;
 
     /**
      * Generates nodes containing the Runs within the supplied experiment database.
@@ -45,9 +52,31 @@ public class RootAvCalibrationProfileChildren extends LreObjectChildren {
      * @param actionFactory the node action factory
      * @param labelFactory the node label factory
      */
+    @SuppressWarnings(value="unchecked")
     public RootAvCalibrationProfileChildren(ExplorerManager mgr, DatabaseServices db, List<AverageCalibrationProfile> avCalProfileList,
             LreActionFactory actionFactory, LabelFactory labelFactory) {
         super(mgr, db, avCalProfileList, actionFactory, labelFactory);
+
+//Check the version of the AverageProfiles...if not 0.8.0 then all the profiles need to be updated.
+        //Assume that the first profile is indicative of all the profiles in the database
+        if (!avCalProfileList.get(0).isProfileVer0_8_0()) {
+            List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
+//This list should never be empty, as a LreWindowSelectionParameters object is created during DB creation
+            selectionParameters = l.get(0);
+            //All of the profiles within this database need to be converted to version 0.8.0
+            for (AverageCalibrationProfile avProfile : avCalProfileList) {
+                //Note that this function will also updates the replicate SampleProfiles
+                analysisService.convertProfileToNewVersion(avProfile, selectionParameters);
+                //Must save the Profiles, including that replicate SampleProfiles
+                avProfile.isProfileVer0_8_0(true);
+                db.saveObject(avProfile);
+                for (Profile repProfile : avProfile.getReplicateProfileList()) {
+                    repProfile.isProfileVer0_8_0(true);
+                    db.saveObject(repProfile);
+                }
+            }
+            db.commitChanges();
+        }
     }
 
     /**
@@ -72,7 +101,7 @@ public class RootAvCalibrationProfileChildren extends LreObjectChildren {
         }
 
         LreNode node = new LreNode(new AvCalibrationProfileChildren(mgr, db, avCalProfile.getReplicateProfileList(), nodeActionFactory, nodeLabelFactory),
-                    Lookups.singleton(lreObject), actions);
+                Lookups.singleton(lreObject), actions);
         node.setExplorerManager(mgr);
         node.setDatabaseService(db);
         node.setName(lreObject.getName());

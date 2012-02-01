@@ -31,7 +31,6 @@ import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.Sample;
 import org.lreqpcr.core.data_objects.SampleImpl;
-import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.database_services.DatabaseProvider;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
@@ -119,7 +118,7 @@ public final class SampleOverviewTopComponent extends TopComponent
                 sampleNameList.add(sampleName);
             }
         }
-        //Determine average Emax and its CV...
+        //Determine average Emax and its CV based only on AverageSampleProfiles with No >10 molecules
         //Construct a list of Amplicons using the ampList name
         for (String sampleName : sampleNameList) {
             Sample facadeSample = new SampleImpl();
@@ -134,23 +133,14 @@ public final class SampleOverviewTopComponent extends TopComponent
             for (int i = 0; i < profileList.size(); i++) {
                 Profile profile = (Profile) profileList.get(i);
                 //Check if a profile is present i.e. not flat
-                if (!profile.isExcluded() && profile.getNo() > 10) {
+                if (!profile.isExcluded() 
+                 //Check if a profile is present i.e. not flat
+                        && profile.hasAnLreWindowBeenFound()
+//Ignore AverageSampleProfiles with <10 molecules as they can generate invalid average profiles
+                        && profile.getNo() > 10) {
                     emaxArrayList.add(profile.getEmax());
                     emaxTotal = emaxTotal + profile.getEmax();
                     counter++;
-                }
-                //This excludes calibration profiles as they will never be <10 molecules
-                //This is necessary as profiles <10 cannot generate accurate average profiles
-                //Thus it is necessary to average the Emax from the replication profiles
-                if (profile.getNo() < 10 && profile instanceof AverageSampleProfile) {
-                    AverageSampleProfile avProfile = (AverageSampleProfile) profile;
-                    for (SampleProfile prf : avProfile.getReplicateProfileList()) {
-                        if (!prf.isExcluded()) {
-                            emaxArrayList.add(prf.getEmax());
-                            emaxTotal = emaxTotal + prf.getEmax();
-                            counter++;
-                        }
-                    }
                 }
             }
             facadeSample.setEmaxAverage(emaxTotal / counter);
@@ -376,9 +366,9 @@ public final class SampleOverviewTopComponent extends TopComponent
         TopComponent tc = getRegistry().getActivated();
         if (tc instanceof DatabaseProvider) {
             DatabaseProvider dbProvider = (DatabaseProvider) tc;
-            if (dbProvider.getDatabase() != currentDB) {
+            if (dbProvider.getDatabaseServices() != currentDB) {
                 //A new TC window has been selected
-                currentDB = dbProvider.getDatabase();
+                currentDB = dbProvider.getDatabaseServices();
                 clearTree();
                 //The tree will be recreated when this TC window is selected
             }

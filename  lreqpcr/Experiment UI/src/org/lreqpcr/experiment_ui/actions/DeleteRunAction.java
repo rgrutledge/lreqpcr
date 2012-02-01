@@ -26,6 +26,8 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import org.lreqpcr.core.database_services.DatabaseServices;
+import org.lreqpcr.core.utilities.UniversalLookup;
+import org.lreqpcr.ui_components.PanelMessages;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 import org.openide.windows.WindowManager;
@@ -81,5 +83,6 @@ public class DeleteRunAction extends AbstractAction {
         LreObjectChildren children = (LreObjectChildren) parentNode.getChildren();
         children.setLreObjectList((List<? extends LreObject>) db.getAllObjects(RunImpl.class));
         children.addNotify();
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_DELETED);
     }
 }

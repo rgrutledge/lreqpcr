@@ -55,11 +55,11 @@ public class ExperimentDbTree extends JPanel {
 
     private ExplorerManager mgr;
     private DatabaseServices experimentDB;
-    private double averageOCF;
+    private double newOcf;
     private ExperimentDbInfo dbInfo;
     private LreActionFactory nodeActionFactory;
     private LabelFactory runNodeLabelFactory;
-    private LabelFactory sortNodeLabelFactory;
+    private LabelFactory sortedNodeLabelFactory;
     private DecimalFormat df = new DecimalFormat();
 
     /** Creates new form ExperimentDbTree */
@@ -79,16 +79,16 @@ public class ExperimentDbTree extends JPanel {
                 }
                 if (e.getKeyCode() == 10) {//"Return" key
                     //Remove any commas
-                    String ocf = ocfDisplay.getText();
-                    while (ocf.contains(",")) {
-                        int index = ocf.indexOf(",");
-                        ocf = ocf.substring(0, index) + ocf.substring(index + 1);
+                    String userSuppliedOcf = ocfDisplay.getText();
+                    while (userSuppliedOcf.contains(",")) {
+                        int index = userSuppliedOcf.indexOf(",");
+                        userSuppliedOcf = userSuppliedOcf.substring(0, index) + userSuppliedOcf.substring(index + 1);
                     }
                     try {
-                        averageOCF = Double.valueOf(ocf);
-                        df.applyPattern(FormatingUtilities.decimalFormatPattern(averageOCF));
-                        ocfDisplay.setText(df.format(averageOCF));
-                        dbInfo.setOcf(averageOCF);
+                        newOcf = Double.valueOf(userSuppliedOcf);
+                        df.applyPattern(FormatingUtilities.decimalFormatPattern(newOcf));
+                        ocfDisplay.setText(df.format(newOcf));
+                        dbInfo.setOcf(newOcf);
                         experimentDB.saveObject(dbInfo);
                         updateAllNo();
                     } catch (NumberFormatException nan) {
@@ -109,7 +109,7 @@ public class ExperimentDbTree extends JPanel {
         experimentDB = db;
         nodeActionFactory = new ExperimentTreeNodeActions(mgr);
         runNodeLabelFactory = (LabelFactory) new RunTreeNodeLabels();
-        sortNodeLabelFactory = (LabelFactory) new SampleProfileTreeNodeLabels();
+        sortedNodeLabelFactory = (LabelFactory) new SortedProfileTreeNodeLabels();
         createTree();
     }
 
@@ -123,17 +123,19 @@ public class ExperimentDbTree extends JPanel {
             AbstractNode root = new AbstractNode(Children.LEAF);
             root.setName("No Experiment database is open");
             mgr.setRootContext(root);
+            totalNumberOfProfiles.setText("n/a");
             return;
         }
         dbInfo = (ExperimentDbInfo) experimentDB.getAllObjects(ExperimentDbInfo.class).get(0);
         File dbFile = experimentDB.getDatabaseFile();
         String dbFileName = dbFile.getName();
         int length = dbFileName.length();
+        displayTotalNumberOfProfilesInTheDatabase();
         String displayName = dbFileName.substring(0, length - 4);
-        averageOCF = dbInfo.getOcf();
-        df.applyPattern(FormatingUtilities.decimalFormatPattern(averageOCF));
-        ocfDisplay.setText(df.format(averageOCF));
-//      Retrieval all Runs from the database
+        newOcf = dbInfo.getOcf();
+        df.applyPattern(FormatingUtilities.decimalFormatPattern(newOcf));
+        ocfDisplay.setText(df.format(newOcf));
+        //Retrieval all Runs from the database
         List<? extends Run> runList =
                 (List<? extends Run>) experimentDB.getAllObjects(Run.class);
         LreNode root = new LreNode(new RootRunChildren(mgr, experimentDB, runList, nodeActionFactory,
@@ -144,6 +146,12 @@ public class ExperimentDbTree extends JPanel {
 
         mgr.setRootContext(root);
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_CHANGED);
+    }
+
+    public void displayTotalNumberOfProfilesInTheDatabase(){
+        //Determine the total number of profiles in the database
+        List profiles = experimentDB.getAllObjects(Profile.class);
+        totalNumberOfProfiles.setText(String.valueOf(profiles.size()));
     }
 
     /**
@@ -158,7 +166,7 @@ public class ExperimentDbTree extends JPanel {
             List avSampleProfileList = experimentDB.retrieveUsingFieldValue(AverageSampleProfile.class, "ampliconName", ampName);
             //Display the list of AverageSampleProfiles
             LreNode root = new LreNode(new RunChildren(mgr, experimentDB, avSampleProfileList, nodeActionFactory,
-                    sortNodeLabelFactory), Lookups.singleton(dbInfo), new Action[]{});
+                    sortedNodeLabelFactory), Lookups.singleton(dbInfo), new Action[]{});
             root.setName(ampName + " (" + String.valueOf(avSampleProfileList.size()) + ")");
             root.setDatabaseService(experimentDB);
             mgr.setRootContext(root);
@@ -179,8 +187,8 @@ public class ExperimentDbTree extends JPanel {
             //Retrieve all AverageSampleProfiles generated by the sample "sampleName
             List avSampleProfileList = experimentDB.retrieveUsingFieldValue(AverageSampleProfile.class, "sampleName", sampleName);
             //Display the list of AverageSampleProfiles
-            LreNode root = new LreNode(new RunChildren(mgr, experimentDB, avSampleProfileList, nodeActionFactory, sortNodeLabelFactory),
-                    Lookups.singleton(dbInfo), new Action[]{});
+            LreNode root = new LreNode(new RunChildren(mgr, experimentDB, avSampleProfileList, nodeActionFactory,
+                    sortedNodeLabelFactory), Lookups.singleton(dbInfo), new Action[]{});
             root.setName(sampleName + " (" + String.valueOf(avSampleProfileList.size()) + ")");
             root.setDatabaseService(experimentDB);
             mgr.setRootContext(root);
@@ -207,22 +215,18 @@ public class ExperimentDbTree extends JPanel {
             if (profile.getRun() != null) {
                 //If the runOCF > 0 then a run-specific ocf has been set, so do nothing
                 if (profile.getRun().getRunOCF() == 0) {
-                    //Reset the profile ocf to the average ocf
-                    profile.setOCF(averageOCF);
+                    //Reset the profile ocf to the new ocf
+                    profile.setOCF(newOcf);
                     profile.updateProfile();
                     experimentDB.saveObject(profile);
                 }
             } else {
-                profile.setOCF(averageOCF);
+                profile.setOCF(newOcf);
                 profile.updateProfile();
                 experimentDB.saveObject(profile);
             }
         }
         createTree();
-    }
-
-    public double getOCF() {
-        return averageOCF;
     }
 
     /** This method is called from within the constructor to
@@ -239,6 +243,8 @@ public class ExperimentDbTree extends JPanel {
         jLabel1 = new javax.swing.JLabel();
         ocfDisplay = new javax.swing.JTextField();
         runViewButton = new javax.swing.JRadioButton();
+        jLabel2 = new javax.swing.JLabel();
+        totalNumberOfProfiles = new javax.swing.JLabel();
 
         jScrollPane1.setPreferredSize(new java.awt.Dimension(400, 100));
 
@@ -259,6 +265,11 @@ public class ExperimentDbTree extends JPanel {
             }
         });
 
+        jLabel2.setText("Total # of Profiles:");
+        jLabel2.setToolTipText("The total number of profiles present in the database");
+
+        totalNumberOfProfiles.setText("       ");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -266,22 +277,28 @@ public class ExperimentDbTree extends JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 312, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 409, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(runViewButton)
                         .addGap(18, 18, 18)
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ocfDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(86, Short.MAX_VALUE))))
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(totalNumberOfProfiles, javax.swing.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(ocfDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(runViewButton)
                     .addComponent(jLabel1)
-                    .addComponent(runViewButton))
+                    .addComponent(ocfDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2)
+                    .addComponent(totalNumberOfProfiles))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE))
         );
@@ -295,8 +312,10 @@ public class ExperimentDbTree extends JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane beanTree;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField ocfDisplay;
     private javax.swing.JRadioButton runViewButton;
+    private javax.swing.JLabel totalNumberOfProfiles;
     // End of variables declaration//GEN-END:variables
 }

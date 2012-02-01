@@ -42,7 +42,6 @@ public class PlotFc extends javax.swing.JPanel {
     private Cycle strCycle,  zeroCycle; //LRE window start cycle
     private Profile profile;
     private boolean clearPlot;
-
     /** 
      *Generates a plot of reaction fluorescence and predicted fluorescence
      *versus cycle number
@@ -151,7 +150,7 @@ public class PlotFc extends javax.swing.JPanel {
         graphTitle.setText("C1/2: " + df.format(profile.getMidC()));
         df.applyPattern("0.0000");
         //Determine the height of the profile
-        Cycle runner = prfSum.getStrCycle();
+        Cycle runner = prfSum.getZeroCycle();
         //Run to the end of the profile
         while (runner.getNextCycle() != null) {
             runner = runner.getNextCycle();
@@ -169,6 +168,7 @@ public class PlotFc extends javax.swing.JPanel {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+        //Not sure why this is here
         if(strCycle == null){
             clearPlot();
             return;
@@ -189,6 +189,18 @@ public class PlotFc extends javax.swing.JPanel {
         double ptSize = 10;
         if (isInitiated) {
             Cycle runner = zeroCycle.getNextCycle();//Cycle #1
+            //This is an aborted attempt to view flat profiles; determining scale was very problematic
+//            if (!profile.hasAnLreWindowBeenFound()){
+//                do {
+//                double x = (runner.getCycNum() * scalingFactorX) - offsetX;
+//                double y = height - (runner.getFc() * 0.000001) - offsetY;
+//                Ellipse2D.Double pt = new Ellipse2D.Double(x + 0.08 * ptSize, y + 0.08 * ptSize, ptSize * 0.32, ptSize * 0.32); //XY offset = 25% of ptSize
+//                g2.setColor(Color.BLUE);
+//                g2.fill(pt); //Actual Fc
+//                runner = runner.getNextCycle();
+//            }while (runner != null);
+//                return;
+//            }
              do {
                 double x = (runner.getCycNum() * scalingFactorX) - offsetX;
                 double y = height - (runner.getFc() * scalingFactorY) - offsetY;

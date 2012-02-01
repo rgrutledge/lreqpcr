@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * and open the template in the editor.
  */
-
 package org.lreqpcr.sample_overview.ui_components;
 
 import java.text.DecimalFormat;
@@ -30,6 +29,7 @@ import org.openide.util.lookup.Lookups;
  * @author Bob Rutledge
  */
 public class SampleChildren extends Children.Keys<Sample> {
+
     private final DatabaseServices db;
     private DecimalFormat df = new DecimalFormat("#0.0");
 
@@ -41,13 +41,19 @@ public class SampleChildren extends Children.Keys<Sample> {
     @Override
     protected Node[] createNodes(Sample sample) {
         SampleNode node = new SampleNode(Children.LEAF, Lookups.singleton(sample), db);
-            if (sample.getEmaxCV() == 0) {
-                node.setName(sample.getName() + "  (Av. Emax= " + df.format(sample.getEmaxAverage() * 100) + "%)");
-            } else {
-                node.setName(sample.getName() + "  (Av. Emax= " + df.format(sample.getEmaxAverage() * 100)
-                        + " +/-" + df.format(sample.getEmaxCV() * 100) + "%)");
-            }
-             return new Node[]{node};
-    }
+        String s = String.valueOf(sample.getEmaxAverage());
+        if (s.contentEquals("NaN")) {
+            node.setName(sample.getName() + "  (Av. Emax= n.d." + ")");
+            node.setShortDescription("An average Emax could not be determined");
+            return new Node[]{node};
+        }
+        if (sample.getEmaxCV() == 0) {
+            node.setName(sample.getName() + "  (Av. Emax= " + df.format(sample.getEmaxAverage() * 100) + "%)");
+        } else {
+            node.setName(sample.getName() + "  (Av. Emax= " + df.format(sample.getEmaxAverage() * 100)
+                    + " +/-" + df.format(sample.getEmaxCV() * 100) + "%)");
+        }
 
+        return new Node[]{node};
+    }
 }
