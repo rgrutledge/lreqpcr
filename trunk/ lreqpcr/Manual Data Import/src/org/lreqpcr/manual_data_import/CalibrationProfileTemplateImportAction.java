@@ -18,20 +18,11 @@ package org.lreqpcr.manual_data_import;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import jxl.write.WriteException;
-import org.openide.util.Exceptions;
 
 public final class CalibrationProfileTemplateImportAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        try {
-            CalibrationProfileTemplateImport.createCalbnProfileTemplate();
-        } catch (WriteException ex) {
-            Exceptions.printStackTrace(ex);
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+       new CalibrationProfileTemplateImport();
     }
 }

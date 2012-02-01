@@ -247,6 +247,7 @@ public class SampleProfileTemplateImport extends RunImportService {
         workbook.close();
 
         RunImportData importData = new RunImportData();
+        importData.setIsThisAManualDataImport(true);
         importData.setRun(run);
         importData.setCalibrationProfileList(calbnProfileList);
         importData.setSampleProfileList(sampleProfileList);

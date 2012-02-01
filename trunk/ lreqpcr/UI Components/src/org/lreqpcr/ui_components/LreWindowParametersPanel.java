@@ -46,6 +46,7 @@ import org.lreqpcr.core.utilities.FormatingUtilities;
 import org.lreqpcr.core.utilities.MathFunctions;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.core.utilities.UniversalLookupListener;
+import org.lreqpcr.data_import_services.RunImportUtilities;
 import org.openide.util.Lookup;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
@@ -65,6 +66,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
     private LreAnalysisService profileInitialization =
             Lookup.getDefault().lookup(LreAnalysisService.class);
     private UniversalLookup universalLookup = UniversalLookup.getDefault();
+    private double averageFmax;
 
     /** Creates new form LreWindowParametersPanel */
     public LreWindowParametersPanel() {
@@ -124,6 +126,23 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                                 JOptionPane.ERROR_MESSAGE);
                         return;
                     }
+                    determineAverageFmax();
+                    if (minFc > averageFmax){
+                        Toolkit.getDefaultToolkit().beep();
+                        boolean yes = RunImportUtilities.requestYesNoAnswer("Minimum Fc too high?",
+                                "The Minimum Fc appears to be too high. Do you want to continue?");
+                        if (!yes){
+                            return;
+                        }
+                    }
+                    if (minFc < (averageFmax * 0.05)){//<5%
+                        Toolkit.getDefaultToolkit().beep();
+                        boolean yes = RunImportUtilities.requestYesNoAnswer("Minimum Fc too low?",
+                                "The Minimum Fc appears to be too low. Do you want to continue?");
+                        if (!yes){
+                            return;
+                        }
+                    }
 
                     //Remove "%" at the end of the Fo threshold string, if one exsists
                     if (foThresholdString.contains("%")) {
@@ -137,6 +156,14 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                         JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
                                 "The Fo Threshold must be a valid number",
                                 "Invalid Number",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    if(foThreshold <= 0){
+                        Toolkit.getDefaultToolkit().beep();
+                        JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                                "The Fo Theshold must be greater than zero",
+                                "Invalid Fo Theshold",
                                 JOptionPane.ERROR_MESSAGE);
                         return;
                     }
@@ -160,6 +187,21 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
     }
 
     @SuppressWarnings("unchecked")
+    private void determineAverageFmax(){
+        List<Profile> profileList = currentDB.getAllObjects(Profile.class);
+        double sum = 0;
+        int counter = 0;
+        for (Profile profile : profileList){
+            if (profile.hasAnLreWindowBeenFound()){
+                double fmax = profile.getEmax() / (-1 * profile.getDeltaE());
+                sum += fmax;
+                counter++;
+            }
+        }
+        averageFmax = sum/counter;
+    }
+    
+    @SuppressWarnings("unchecked")
     private void reinitializeAllProfiles() {
         if (!currentDB.isDatabaseOpen()) {
             return;
@@ -173,7 +215,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         }
         for (Profile profile : profileList) {
 //If minFc=0, first cycle below C1/2 will be used as the start cycle during profile intialization
-            profile.setLreWinSize(0);
+            profile.setHasAnLreWindowBeenFound(false);
             profileInitialization.initializeProfile(profile, selectionParameters);
             currentDB.saveObject(profile);
         }
@@ -289,7 +331,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         setPreferredSize(new Dimension(230, 100));
 
         jLabel1.setText("Min Fc:");
-        jLabel1.setToolTipText("Minimum Fc for the Start Cycle: set to zero for automated selection");
+        jLabel1.setToolTipText("Minimum Fc is used to select the Start Cycle or set to zero for automated selection");
 
         minFcDisplay.setColumns(12);
 
@@ -392,11 +434,11 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         TopComponent tc = WindowManager.getDefault().getRegistry().getActivated();
         if (tc instanceof DatabaseProvider) {
             DatabaseProvider dbProvider = (DatabaseProvider) tc;
-            DatabaseType type = dbProvider.getDatabase().getDatabaseType();
+            DatabaseType type = dbProvider.getDatabaseServices().getDatabaseType();
             //Test if the database holds profiles
             if (type == DatabaseType.EXPERIMENT || type == DatabaseType.CALIBRATION) {
                 //A new experiment or calibration DB has been selected thus the parameters need to be updated
-                currentDB = dbProvider.getDatabase();
+                currentDB = dbProvider.getDatabaseServices();
                 if (currentDB.isDatabaseOpen()) {
                     selectionParameters = (LreWindowSelectionParameters) currentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
                     if (selectionParameters == null) {

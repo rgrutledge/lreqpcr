@@ -16,24 +16,19 @@
  */
 package org.lreqpcr.ui_components;
 
-import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.ui_elements.LreNode;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.text.DecimalFormat;
-import java.util.List;
 import javax.swing.JPanel;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreObject;
-import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.data_objects.TargetStrandedness;
-import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
 import org.openide.nodes.Node;
-import org.openide.util.Lookup;
 
 /**
  * Multi-functional panel for displaying LRE object information.
@@ -52,8 +47,6 @@ public class LreObjectInfo extends JPanel {
     private KeyAdapter keyListener;
     private LreNode selectedNode;
     private DecimalFormat df = new DecimalFormat("00.0");
-    private DatabaseServices db;
-    private LreWindowSelectionParameters selectionParameters;
 
     public LreObjectInfo() {
         initComponents();
@@ -141,14 +134,6 @@ public class LreObjectInfo extends JPanel {
     public void iniInfo() {
         if (selectedNode == null) {
             return;
-        }
-        db = selectedNode.getDatabaseServices();
-        if (db != null) {
-            if (db.isDatabaseOpen()) {
-                List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
-//This list should never be empty, as a LreWindowSelectionParameters object is created during DB creation
-                selectionParameters = l.get(0);
-            }
         }
         member = selectedNode.getLookup().lookup(LreObject.class);
         if (member == null) {
@@ -412,10 +397,8 @@ public class LreObjectInfo extends JPanel {
         } else {
             profile.setTargetStrandedness(TargetStrandedness.DOUBLESTRANDED);
         }
-        //Reinitialize the Profile
-        LreAnalysisService initService = Lookup.getDefault().lookup(LreAnalysisService.class);
-        initService.initializeProfile(profile, selectionParameters);
-        selectedNode.getDatabaseServices().saveObject(profile);
+        profile.updateProfile();
+        selectedNode.saveLreObject();
         selectedNode.refreshNodeLabel();
     }//GEN-LAST:event_ssDNAcheckBox1ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables

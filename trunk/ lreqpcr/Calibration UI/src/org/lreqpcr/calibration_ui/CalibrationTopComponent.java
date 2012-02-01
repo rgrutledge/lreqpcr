@@ -357,7 +357,7 @@ public final class CalibrationTopComponent extends TopComponent
         return mgr;
     }
 
-    public DatabaseServices getDatabase() {
+    public DatabaseServices getDatabaseServices() {
         return calibrationDB;
     }
 
@@ -368,7 +368,7 @@ public final class CalibrationTopComponent extends TopComponent
             if (c[0] instanceof AmpliconNode) {
                 AmpliconNode ampNode = (AmpliconNode) c[0];
                 //Test to be sure that this node was derived from this window's database
-                if (ampNode.getDatabase() != calibrationDB) {
+                if (ampNode.getDatabaseServices() != calibrationDB) {
                     return;
                 }
                 Amplicon amplicon = ampNode.getLookup().lookup(Amplicon.class);
@@ -378,7 +378,7 @@ public final class CalibrationTopComponent extends TopComponent
             if (c[0] instanceof SampleNode) {
                 SampleNode sampleNode = (SampleNode) c[0];
                 //Test to be sure that this node was derived from this window's database
-                if (sampleNode.getDatabase() != calibrationDB) {
+                if (sampleNode.getDatabaseServices() != calibrationDB) {
                     return;
                 }
                 Sample sample = sampleNode.getLookup().lookup(Sample.class);

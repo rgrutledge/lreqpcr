@@ -26,6 +26,8 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import org.lreqpcr.core.database_services.DatabaseServices;
+import org.lreqpcr.core.utilities.UniversalLookup;
+import org.lreqpcr.ui_components.PanelMessages;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 import org.openide.windows.WindowManager;
@@ -81,6 +83,7 @@ public class DeleteAverageSampleProfileAction extends AbstractAction {
         LreObject parentLreObject = parentNode.getLookup().lookup(LreObject.class);
         parentChildren.setLreObjectList((List<? extends LreObject>) db.getChildren(parentLreObject, parentLreObject.getChildClass()));
         parentChildren.addNotify();
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_DELETED);
     }
 
     @SuppressWarnings("unchecked")

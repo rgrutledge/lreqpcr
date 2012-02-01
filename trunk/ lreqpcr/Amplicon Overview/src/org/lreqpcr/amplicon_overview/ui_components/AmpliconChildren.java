@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * and open the template in the editor.
  */
-
 package org.lreqpcr.amplicon_overview.ui_components;
 
 import java.text.DecimalFormat;
@@ -30,6 +29,7 @@ import org.openide.util.lookup.Lookups;
  * @author Bob Rutledge
  */
 public class AmpliconChildren extends Children.Keys<Amplicon> {
+
     private final DatabaseServices db;
     private DecimalFormat df = new DecimalFormat("#0.0");
 
@@ -41,13 +41,18 @@ public class AmpliconChildren extends Children.Keys<Amplicon> {
     @Override
     protected Node[] createNodes(Amplicon amplicon) {
         AmpliconNode node = new AmpliconNode(Children.LEAF, Lookups.singleton(amplicon), db);
-            if (amplicon.getEmaxCV() == 0) {
-                node.setName(amplicon.getName() + "  (Av. Emax= " + df.format(amplicon.getEmaxAverage() * 100) + "%)");
-            } else {
-                node.setName(amplicon.getName() + "  (Av. Emax= " + df.format(amplicon.getEmaxAverage() * 100)
-                        + " +/-" + df.format(amplicon.getEmaxCV() * 100) + "%)");
-            }
-             return new Node[]{node};
+        String s = String.valueOf(amplicon.getEmaxAverage());
+        if (s.contentEquals("NaN")) {
+            node.setName(amplicon.getName() + "  (Av. Emax= n.d." + ")");
+            node.setShortDescription("An average Emax could not be determined");
+            return new Node[]{node};
+        }
+        if (amplicon.getEmaxCV() == 0) {
+            node.setName(amplicon.getName() + "  (Av. Emax= " + df.format(amplicon.getEmaxAverage() * 100) + "%)");
+        } else {
+            node.setName(amplicon.getName() + "  (Av. Emax= " + df.format(amplicon.getEmaxAverage() * 100)
+                    + " +/-" + df.format(amplicon.getEmaxCV() * 100) + "%)");
+        }
+        return new Node[]{node};
     }
-
 }

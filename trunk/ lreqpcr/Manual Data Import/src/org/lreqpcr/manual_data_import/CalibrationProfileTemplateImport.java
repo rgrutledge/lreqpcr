@@ -48,6 +48,9 @@ import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
+import org.lreqpcr.core.database_services.DatabaseServices;
+import org.lreqpcr.core.database_services.DatabaseType;
+import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.data_import_services.RunImportService;
 import org.openide.util.Exceptions;
 import org.openide.windows.WindowManager;
@@ -138,15 +141,29 @@ public class CalibrationProfileTemplateImport extends RunImportService {
         }
     }
 
-    @SuppressWarnings(value = "unchecked")
+//    @SuppressWarnings(value = "unchecked")
     @Override
     public RunImportData importRunData() {
+        //Determine if a Calibration database is open
+        UniversalLookup uLookup = UniversalLookup.getDefault();
+        if (uLookup.containsKey(DatabaseType.CALIBRATION)) {
+            DatabaseServices calbnDB = (DatabaseServices) uLookup.getAll(DatabaseType.CALIBRATION).get(0);
+            if (!calbnDB.isDatabaseOpen()) {
+                String msg = "A Calibration database is not open";
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "No Calibration database is open",
+                    JOptionPane.ERROR_MESSAGE);
+            return null;
+            }
+        }else{//No Calibration database service is available...this should never happen
+            //Throw some type of error
+            return null;
+        }
         //Retrieve the Excel sample profile import file
-        File excelImportFile = IOUtilities.openImportExcelFile("***Calibration Template Data Import");
+        File excelImportFile = IOUtilities.openImportExcelFile("Manual Calibration Data Import");
         if (excelImportFile == null) {
             Toolkit.getDefaultToolkit().beep();
-            String msg = "The calibration Excel data file could not be opened.";
-            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Unable to open the Calibration datafile",
+            String msg = "The Calibration Excel data import file could not be opened.";
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Unable to open the Calibration import datafile",
                     JOptionPane.ERROR_MESSAGE);
             return null;
         }
@@ -190,7 +207,7 @@ public class CalibrationProfileTemplateImport extends RunImportService {
         }
         
         //Import the data
-        List<SampleProfile> sampleProfileList = new ArrayList<SampleProfile>();//Not used
+        List<SampleProfile> sampleProfileList = new ArrayList<SampleProfile>();//Not used***************************************
         List<CalibrationProfile> calbnProfileList = new ArrayList<CalibrationProfile>();
         NumberFormat numFormat = NumberFormat.getInstance();
 

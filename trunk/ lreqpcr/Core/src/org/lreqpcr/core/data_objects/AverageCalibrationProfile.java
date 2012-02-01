@@ -55,22 +55,15 @@ public class AverageCalibrationProfile extends CalibrationProfile implements Ave
     }
 
     /**
-     * Sort by run date
-     * @param o
-     * @return
+     * The issue of profile scattering due to less than 10 target molecules is
+     * not applicable to AverageCalibrationProfiles due to the fact that sample is
+     * predefined. That is, calibration profiles are generated using a known
+     * number of lambda genomes.
+     *
+     * @return always false
      */
-    @Override
-    public int compareTo(Object o) {
-        CalibrationProfile prf = (AverageCalibrationProfile) o;
-        if (getRunDate() != null) {
-            if (prf.getRunDate() != null) {
-                return getRunDate().compareTo(prf.getRunDate());
-            }
-        }
-        return 0;
-    }
-
     public boolean isReplicateAverageNoLessThan10Molecules() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        //Always false
+        return false;
     }
 }

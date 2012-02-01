@@ -29,21 +29,14 @@ import org.lreqpcr.core.data_processing.ProfileSummary;
  */
 public abstract class LreAnalysisService {
 
-//    /**
-//     * Provides all the functions necessary initialize both
-//     * the supplied Profile and to encapsulate within a ProfileSummary.
-//     * This primarily involves baseline subtraction and automated
-//     * LRE window selection. Note that these
-//     * methods do not save the modifications made to the Profile.
-//     *
-//     * @param profile the Profile to initialize
-//     * @return a fully initialized ProfileSummary
-//     */
-//    public abstract ProfileSummary initializeProfile(Profile profile);
-
     /**
-     * Profile initialization using the user defined parameters provided by
-     * the LreWindowSelectionParameters object for automated LRE window selection.
+     * Provides all the functions necessary initialize 
+     * the supplied Profile and to encapsulate it within a ProfileSummary.
+     * This primarily involves baseline subtraction and automated
+     * LRE window selection using the user defined parameters provided by
+     * LreWindowSelectionParameters. Note that these
+     * methods do not save the modifications made to the Profile and thus
+     * the caller must take responsibility for saving the changes to the Profile.
      *
      * @param profile the Profile to initialize
      * @param parameters the LRE window parameters which cannot be null
@@ -52,12 +45,22 @@ public abstract class LreAnalysisService {
     public abstract ProfileSummary initializeProfile(Profile profile, LreWindowSelectionParameters parameters);
 
     /**
-     * Provides the necessary functions to update the LRE window,
-     * along with recalculation of all of the associated LRE parameters.
+     * Provides the necessary functions to update the ProfileSummary when the user
+     * manually changes the LRE window.
      * The boolean denotes whether the update was successful.
+     *
      * @param profileSummary the ProfileSummary to update
      * @param parameters LRE window parameters
      * @return returns true if the ProfileSummary has been updated, false if not
      */
-    public abstract boolean updateLreWindow(ProfileSummary profileSummary, LreWindowSelectionParameters parameters);
+    public abstract boolean updateLreWindow(ProfileSummary profileSummary);
+
+    /**
+     * Primarily for back compatability, provides all the needed actions to
+     * update a preexisting Profile to a new version.
+     *
+     * @param profile the profile to update to a new version
+     * @return true if the update was successful
+     */
+    public abstract boolean convertProfileToNewVersion(Profile profile, LreWindowSelectionParameters parameters);
 }

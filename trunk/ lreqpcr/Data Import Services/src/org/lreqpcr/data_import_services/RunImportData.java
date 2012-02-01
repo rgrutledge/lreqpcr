@@ -35,6 +35,7 @@ public class RunImportData {
     private Run run;
     private List<SampleProfile> sampleProfileList;
     private List<CalibrationProfile> calibrationProfileList;
+    private boolean isThisAManualDataImport;
 
     public List<CalibrationProfile> getCalibrationProfileList() {
         return calibrationProfileList;
@@ -83,5 +84,12 @@ public class RunImportData {
         this.sampleProfileList = sampleProfileList;
     }
 
+    public boolean isThisAManualDataImport() {
+        return isThisAManualDataImport;
+    }
+
+    public void setIsThisAManualDataImport(boolean isThisAManualDataImport) {
+        this.isThisAManualDataImport = isThisAManualDataImport;
+    }
 
 }

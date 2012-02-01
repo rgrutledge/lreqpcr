@@ -35,7 +35,7 @@ public class SampleNode extends AbstractNode implements org.lreqpcr.core.ui_elem
         }
 
     @Override
-        public DatabaseServices getDatabase() {
+        public DatabaseServices getDatabaseServices() {
             return db;
         }
 

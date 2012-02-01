@@ -81,7 +81,7 @@ class IncludeCalibrationProfileAction extends AbstractAction {
             parentAvProfile.setRawFcReadings(GeneralUtilities.generateAverageFcDataset(profileList));
             //Reinitialize the Average Profile
             //This will trigger an auto selection of the LRE window
-            parentAvProfile.setLreWinSize(0);
+            parentAvProfile.setHasAnLreWindowBeenFound(false);
             profileIntialization.initializeProfile(parentAvProfile, selectionParameters);
             db.saveObject(parentAvProfile);
 

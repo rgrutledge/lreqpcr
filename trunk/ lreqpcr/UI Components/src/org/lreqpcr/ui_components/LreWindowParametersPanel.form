@@ -81,7 +81,7 @@
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
         <Property name="text" type="java.lang.String" value="Min Fc:"/>
-        <Property name="toolTipText" type="java.lang.String" value="Minimum Fc for the Start Cycle: set to zero for automated selection"/>
+        <Property name="toolTipText" type="java.lang.String" value="Minimum Fc is used to select the Start Cycle or set to zero for automated selection"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="minFcDisplay">

@@ -23,7 +23,6 @@ import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
-import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.data_processing.ProfileSummary;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LreNode;
@@ -67,6 +66,10 @@ public class FixSampleProfileEmaxTo100percentAction extends AbstractAction {
             for (Node n : nodes) {
                 LreNode node = (LreNode) n;
                 Profile profile = node.getLookup().lookup(Profile.class);
+                //Ignore profiles that do not have an LRE window
+                if (!profile.hasAnLreWindowBeenFound()){
+                    return;
+                }
                 profile.setIsEmaxOverridden(true);
                 profile.setOverridentEmaxValue(1.0);
                 ProfileSummary prfSum = analysisService.initializeProfile(profile, selectionParameters);

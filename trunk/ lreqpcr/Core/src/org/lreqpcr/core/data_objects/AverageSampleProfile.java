@@ -60,14 +60,28 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
     @Override
     public void updateProfile() {
         super.updateProfile();
-        determineIfTheAverageReplicateNoIsLessThan10Molecules();
+        //Without an OCF, No values cannot be calculated
+        if (getOCF() >0 ){
+            determineIfTheAverageReplicateNoIsLessThan10Molecules();
+        }
     }
 
+    /**
+     * Sort By Sample Name, then Amplicon name 
+     * @param o
+     * @return
+     */
     @Override
     public int compareTo(Object o) {
-        SampleProfile prf = (AverageSampleProfile) o;
+        SampleProfile profile = (AverageSampleProfile) o;
         //Sort by name
-        return getName().compareToIgnoreCase(prf.getName());
+        if (getSampleName().compareTo(profile.getSampleName()) == 0) {
+            //They have the same Sample name
+            //Sort by Amplicon name
+            return getAmpliconName().compareTo(profile.getAmpliconName());
+        }
+        //They have different Sample names, to use Sample name to sort
+        return getSampleName().compareTo(profile.getSampleName());
     }
 
     /**
@@ -91,6 +105,10 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
      * averaging the No values from each of the ReplicateProfiles. 
      */
     private void determineIfTheAverageReplicateNoIsLessThan10Molecules() {
+//This is necessary during data import which calls this function before the replicate profiles have been initiated
+//        if (getReplicateProfileList() == null){
+//            return;
+//        }
         double sum = 0;
         int counter = 0;
         for (Profile repPrf : getReplicateProfileList()) {
@@ -108,10 +126,17 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
         }
         numberOfActiveReplicateProfiles = counter;
         double averageReplicateNo = sum / counter;
+        int i = 0;
         if (averageReplicateNo < 10) {
             isTheAverageReplicateNoLessThan10Molecules = true;
-            if (numberOfActiveReplicateProfiles > 1) {
+//This allows the AverageProfile to function as if No >10 when there is a single replicate
+            if (sampleProfileList.size() != 1){
                 setNo(averageReplicateNo);
+            }
+//This allows single replicates to be viewed and edited from the AverageSampleReplicate node
+//This is valid because the average Profile Fc is derived from a single Profile and thus is not impacted by profile scattering
+            if (sampleProfileList.size() != 1){
+                setHasAnLreWindowBeenFound(false);
             }
         } else {
             isTheAverageReplicateNoLessThan10Molecules = false;

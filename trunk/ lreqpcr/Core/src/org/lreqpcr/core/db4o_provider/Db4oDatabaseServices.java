@@ -64,7 +64,18 @@ public abstract class Db4oDatabaseServices implements DatabaseServices {
      * @param db4oDatabaseFile the DB4O database file to be opened
      */
     public boolean openDatabaseFile(File db4oDatabaseFile) {
-        if(db4oDatabaseFile == null) return false;
+        if (db4oDatabaseFile == null) {
+            return false;
+        }
+//Note that the file MUST exsist or DB4O will create an empty database file as its default action
+//This will generate a major exception when the program tries to process this empty file
+        if (!db4oDatabaseFile.exists()) {
+            String msg = "The database file \"" + db4oDatabaseFile.getName()
+                    + "\" could not be opened. \n This is likely due to fact that it has been deleted or moved.";
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Unable to open database file",
+                    JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
         closeDatabase();
         try {
             //This throws an IllegalArguentException for ver 7.4.155, which is not documented!!

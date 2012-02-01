@@ -375,7 +375,7 @@ public final class AmpliconTopComponent extends TopComponent
         return mgr;
     }
 
-    public DatabaseServices getDatabase() {
+    public DatabaseServices getDatabaseServices() {
         return ampliconDB;
     }
 

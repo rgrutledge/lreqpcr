@@ -35,7 +35,7 @@ public class AmpliconNode extends AbstractNode implements org.lreqpcr.core.ui_el
         }
 
     @Override
-        public DatabaseServices getDatabase() {
+        public DatabaseServices getDatabaseServices() {
             return db;
         }
 

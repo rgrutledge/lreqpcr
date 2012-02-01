@@ -16,6 +16,7 @@
  */
 package org.lreqpcr.run_initialization_provider;
 
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.List;
 import org.lreqpcr.data_import_services.AverageProfileGenerator;
@@ -29,6 +30,7 @@ import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.database_services.DatabaseServices;
+import org.lreqpcr.core.database_services.DatabaseType;
 import org.lreqpcr.data_import_services.RunImportUtilities;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.data_import_services.RunImportData;
@@ -37,39 +39,48 @@ import org.lreqpcr.ui_components.PanelMessages;
 import org.openide.util.Lookup;
 
 /**
- * 
+ * Processes RunImportData objects, storing the resulting Run and its profiles into
+ * the appropriate database files. 
  *
  * @author Bob Rutledge
  */
 public class RunInializationProvider implements RunInitializationService {
+
+    private boolean isThisAManualDataImport;
+    private DatabaseServices ampliconDB;
+    private DatabaseServices calbnDB;
+    private DatabaseServices experimentDB;
 
     @SuppressWarnings(value = "unchecked")
     public void intializeRun(RunImportData importData) {
         if (importData == null || importData.getRun() == null) {
             return;
         }
+        isThisAManualDataImport = importData.isThisAManualDataImport();
         Run run = importData.getRun();
         List<SampleProfile> sampleProfileList = importData.getSampleProfileList();
         List<CalibrationProfile> calibnProfileList = importData.getCalibrationProfileList();
         //Try to retrieve the three database files which are in alphabetic order
-        DatabaseServices[] dbArray = RunImportUtilities.getDatabases();
-        if(dbArray == null){
-            //The run import has been aborted
-            return;
+        if (!getDatabases()) {//Continue??
+            return;//Abort Run import
         }
-        DatabaseServices ampliconDB = dbArray[0];
-        DatabaseServices calbnDB = dbArray[1];
-        DatabaseServices experimentDB = dbArray[2];
+//        if (dbArray == null) {
+//            //The run import has been aborted
+//            return;
+//        }
+//        DatabaseServices ampliconDB = dbArray[0];
+//        DatabaseServices calbnDB = dbArray[1];
+//        DatabaseServices experimentDB = dbArray[2];
         LreAnalysisService prfIntlz = Lookup.getDefault().lookup(LreAnalysisService.class);
 
 //Process the SampleProfiles if an experiment database is open
         if (!sampleProfileList.isEmpty()) {
             if (experimentDB.isDatabaseOpen()) {
-                LreWindowSelectionParameters winParameters = (LreWindowSelectionParameters)
-                        experimentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
+                LreWindowSelectionParameters winParameters = (LreWindowSelectionParameters) experimentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
                 ExperimentDbInfo dbInfo = (ExperimentDbInfo) experimentDB.getAllObjects(ExperimentDbInfo.class).get(0);
                 double averageOCF = dbInfo.getOcf();
                 for (Profile profile : sampleProfileList) {
+                    profile.isProfileVer0_8_0(true);//Needed for back compatablity 
                     profile.setParent(run);
                     profile.setRun(run);//This is NOT redundant to setParent 
                     profile.setRunDate(run.getRunDate());
@@ -92,7 +103,7 @@ public class RunInializationProvider implements RunInitializationService {
                         run,
                         averageOCF,
                         winParameters);
-                if(averageSampleProfileList == null){
+                if (averageSampleProfileList == null) {
                     return;
                 }
                 experimentDB.saveObject(averageSampleProfileList);
@@ -112,10 +123,10 @@ public class RunInializationProvider implements RunInitializationService {
         //Process the CalibnProfileList
         if (!calibnProfileList.isEmpty()) {
             if (calbnDB.isDatabaseOpen()) {
-                LreWindowSelectionParameters calbnParameters = (LreWindowSelectionParameters)
-                        calbnDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
+                LreWindowSelectionParameters calbnParameters = (LreWindowSelectionParameters) calbnDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
                 //Process the CalibnProfiles
                 for (Profile profile : calibnProfileList) {
+                    profile.isProfileVer0_8_0(true);
                     profile.setRunDate(run.getRunDate());
                     if (ampliconDB != null) {
                         if (ampliconDB.isDatabaseOpen()
@@ -127,7 +138,7 @@ public class RunInializationProvider implements RunInitializationService {
                     prfIntlz.initializeProfile(profile, calbnParameters);
                     if (profile.getStrCycleInt() != 0) {
                         profile.updateProfile();
-                    } 
+                    }
                     calbnDB.saveObject(profile);
                 }
                 //Process the AverageCalibnProfiles
@@ -141,5 +152,89 @@ public class RunInializationProvider implements RunInitializationService {
                 UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_CALIBRATION_PANELS);
             }
         }
+    }
+    
+    /**
+     * Retrieves the three LRE databases via universal lookup.
+     * This version assumes only one database file is open for each of the database
+     * types.
+     *
+     * @return yes if to continue with the Run import or false to abandon the import
+     */
+    @SuppressWarnings(value = "unchecked")
+    public boolean getDatabases() {
+        UniversalLookup uLookup = UniversalLookup.getDefault();
+        //This assumes only one database file is open for each database type
+
+        //Check if the necessary database services have active databases
+        //This is done via the universal lookup which stores database service instances as a list
+        //associated with a key, which here is defined by the enum DatabaseType
+        if (uLookup.containsKey(DatabaseType.EXPERIMENT)) {
+            //Assumes that only one of each database will be open...this will have to be modified
+            //if multiple database files are implemented
+            experimentDB = (DatabaseServices) uLookup.getAll(DatabaseType.EXPERIMENT).get(0);
+            if (!experimentDB.isDatabaseOpen() && !isThisAManualDataImport) {
+                //Provide the ability to continue Run import without a exptDB
+                Toolkit.getDefaultToolkit().beep();
+                String msg = "Experiment database not available"
+                        + "Do you want to continue with the data import?";
+                boolean yes = RunImportUtilities.requestYesNoAnswer("Experiment database not available?",
+                        msg);
+                if (!yes) {
+                    return false;
+                }
+//                
+//                int n = JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(), msg, "Calibration database not available. ",
+//                        JOptionPane.YES_NO_OPTION);
+//                if (n != JOptionPane.YES_OPTION) {
+//                    return null;//Abort the Run import
+//                }
+//            }else{//No experiment database service is available
+//                //This type of error should be handled by the Database Window, not here
+            }
+        }
+
+        if (uLookup.containsKey(DatabaseType.CALIBRATION)) {
+            calbnDB = (DatabaseServices) uLookup.getAll(DatabaseType.CALIBRATION).get(0);
+            if (!calbnDB.isDatabaseOpen() && !isThisAManualDataImport) {
+                //Provide the ability to continue Run import without a calbnDB
+                Toolkit.getDefaultToolkit().beep();
+                String msg = "A Calibration database has not been opened. "
+                        + "Do you want to continue with the data import?";
+                boolean yes = RunImportUtilities.requestYesNoAnswer("Calibration database not available?",
+                        msg);
+                if (!yes) {
+                    return false;
+                }
+//                int n = JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(), msg, "Calibration database not available. ",
+//                        JOptionPane.YES_NO_OPTION);
+//                if (n != JOptionPane.YES_OPTION) {
+//                    return null;//Abort the Run import
+//                }
+            }
+        }
+        if (uLookup.containsKey(DatabaseType.AMPLICON)) {
+            ampliconDB = (DatabaseServices) uLookup.getAll(DatabaseType.AMPLICON).get(0);
+            //Provide the ability to continue Run import without a calbnDB
+            if (!ampliconDB.isDatabaseOpen() && !isThisAManualDataImport) {
+                Toolkit.getDefaultToolkit().beep();
+                String msg = "An Amplicon database has not been opened. "
+                        + "Do you want to continue with the data import?";
+                boolean yes = RunImportUtilities.requestYesNoAnswer("Amplicon database not available?",
+                        msg);
+                if (!yes) {
+                    return false;
+                }
+//                int n = JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(), msg, "Amplicon database not available. ",
+//                        JOptionPane.YES_NO_OPTION);
+//                if (n != JOptionPane.YES_OPTION) {
+//                    return null;//Abort the Run import
+//                }
+//            }
+//        } else {//No amplicon database service is available
+//            //This type of error should be handled by the Database Window, not here
+            }
+        }
+        return true;
     }
 }

@@ -32,7 +32,7 @@ public class SampleProfile extends Profile {
      * based on the profile average Fo, OCF and amplicon size. 
      */
     public void updateProfile() {
-        if (isExcluded()) {
+        if (isExcluded() || !hasAnLreWindowBeenFound()) {
             setNo(0);
             return;
         }
@@ -52,7 +52,6 @@ public class SampleProfile extends Profile {
     @Override
     public int compareTo(Object o) {
         Profile profile = (Profile) o;
-        //Both have no LRE window...fall to sorting on exclusion
         if (profile.isExcluded()) {
             if (!isExcluded()) {
                 return -1;

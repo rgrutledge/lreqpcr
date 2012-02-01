@@ -79,7 +79,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jPanel5" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="77" max="-2" attributes="0"/>
-                      <Component id="reanalyzeButton" min="-2" max="-2" attributes="0"/>
+                      <Component id="resetButton" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace pref="260" max="32767" attributes="0"/>
@@ -104,7 +104,7 @@
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="103" groupAlignment="1" attributes="0">
-                      <Component id="reanalyzeButton" alignment="1" min="-2" max="-2" attributes="0"/>
+                      <Component id="resetButton" alignment="1" min="-2" max="-2" attributes="0"/>
                       <Group type="102" alignment="1" attributes="0">
                           <Component id="lowerWindowAdjustPanel" min="-2" max="-2" attributes="1"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -130,7 +130,7 @@
         <Property name="text" type="java.lang.String" value="LRE Plot (Ec vs. Fc)"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="reanalyzeButton">
+    <Component class="javax.swing.JButton" name="resetButton">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Tahoma" size="10" style="0"/>
@@ -142,7 +142,7 @@
         </Property>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="reanalyzeButtonActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="resetButtonActionPerformed"/>
       </Events>
     </Component>
     <Container class="javax.swing.JPanel" name="lreParametersPanel">

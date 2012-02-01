@@ -23,9 +23,9 @@ import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.utilities.MathFunctions;
 
 /**
- * Provides static functions for basic LRE initialization, excluding automated LRE
- * window selection. This approach facilitates modification
- * to the algorithms used to select the LRE window.
+ * Provides static functions for basic LRE initialization, except for automated LRE
+ * window selection, which is provided as a separate service.
+ * This facilitates modification to the algorithms used to select the LRE window.
  *
  * @author Bob Rutledge
  */
@@ -73,13 +73,6 @@ public class ProfileInitializer {
         }
         prfSum.setStrCycle(runner);
         int winSize = profile.getLreWinSize();
-        if (profile.getLreWinSize() == 0) {//New Profile
-            winSize = 3;
-            profile.setLreWinSize(winSize);
-        }
-        if (winSize < 1) {
-            return;//Not sure why this is here
-        }
         double[][] lreWinPts = new double[2][winSize];
         for (int i = 0; i < winSize; i++) {
             try {
