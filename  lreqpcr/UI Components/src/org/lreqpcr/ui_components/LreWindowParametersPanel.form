@@ -32,23 +32,23 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
+                      <Component id="calcAvReplCV" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="avReplCvDisplay" pref="109" max="32767" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
                       <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="minFcDisplay" pref="156" max="32767" attributes="0"/>
+                      <Component id="minFcDisplay" pref="176" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="foThresholdDisplay" min="-2" pref="46" max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="replAvFoCvDisplay" pref="131" max="32767" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -69,10 +69,10 @@
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="replAvFoCvDisplay" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="avReplCvDisplay" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="calcAvReplCV" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace pref="34" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -100,17 +100,23 @@
         <Property name="columns" type="int" value="4"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="jLabel3">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Av Repl CV:"/>
-        <Property name="toolTipText" type="java.lang.String" value="An indicator of the overall precision of target quantification"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="replAvFoCvDisplay">
+    <Component class="javax.swing.JLabel" name="avReplCvDisplay">
       <Properties>
         <Property name="text" type="java.lang.String" value="  "/>
         <Property name="toolTipText" type="java.lang.String" value="Note that Replicat Profiles with &lt;10 molecules are not included"/>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JRadioButton" name="calcAvReplCV">
+      <Properties>
+        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="f7" green="f5" red="f4" type="rgb"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Calc Av Repl CV:"/>
+        <Property name="toolTipText" type="java.lang.String" value="Calculates the average quantitative CV produced by each set of replicate profiles"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="calcAvReplCVActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

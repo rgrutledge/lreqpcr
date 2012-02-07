@@ -24,7 +24,6 @@ import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.Run;
-import org.lreqpcr.core.data_processing.ProfileSummary;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.utilities.UniversalLookup;
@@ -73,16 +72,17 @@ public class FixRunProfilesEmaxTo100percentAction extends AbstractAction {
                     if (profile.hasAnLreWindowBeenFound()) {
                         profile.setIsEmaxOverridden(true);
                         profile.setOverridentEmaxValue(1.0);
-                        ProfileSummary prfSum = analysisService.initializeProfile(profile, selectionParameters);
-                        db.saveObject(prfSum.getProfile());
+                        //Need to update avFo and avNo
+                        analysisService.initializeProfileSummary(profile, selectionParameters);
+                        db.saveObject(profile);
                         AverageProfile avProfile = (AverageProfile) profile;
                         //Ignore profiles that do not have an LRE window
                         for (Profile repProfile : avProfile.getReplicateProfileList()) {
                             if (repProfile.hasAnLreWindowBeenFound()) {
                                 repProfile.setIsEmaxOverridden(true);
                                 repProfile.setOverridentEmaxValue(1.0);
-                                prfSum = analysisService.initializeProfile(repProfile, selectionParameters);
-                                db.saveObject(prfSum.getProfile());
+                                analysisService.initializeProfileSummary(repProfile, selectionParameters);
+                                db.saveObject(repProfile);
                             }
                         }
                     }

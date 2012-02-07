@@ -16,15 +16,14 @@
  */
 package org.lreqpcr.analysis.rutledge;
 
-import java.util.List;
 import org.lreqpcr.core.data_processing.BaselineSubtraction;
 import org.lreqpcr.core.data_processing.ProfileInitializer;
 import org.lreqpcr.core.data_processing.ProfileSummaryImp;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
-import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
+import org.lreqpcr.core.data_processing.Cycle;
 import org.lreqpcr.core.data_processing.ProfileSummary;
 
 /**
@@ -37,23 +36,45 @@ public class LreAnalysisProvider extends LreAnalysisService {
     public LreAnalysisProvider() {
     }
 
-    public ProfileSummary initializeProfile(Profile profile, LreWindowSelectionParameters parameters) {
-        if (profile.getFcReadings() == null) {//Background fluorescence has NOT been subtracted
+    @Override
+    public boolean conductAutomatedLreWindowSelection(Profile profile, LreWindowSelectionParameters parameters) {
+        profile.setHasAnLreWindowBeenFound(false);
+        //Construct a ProfileSummary which is used for automated LRE window selection 
+        //Subtract background fluorescence
+        if (profile.getFcReadings() == null){
+            //A new profile that requires baseline substraction
             BaselineSubtraction.baselineSubtraction(profile);
         }
         ProfileSummaryImp prfSum = new ProfileSummaryImp(profile);
         prfSum.setZeroCycle(ProfileInitializer.makeCycleList(profile.getFcReadings()));
+        //Try to find an LRE window
+        LreWindowSelector.selectLreWindowUsingMinFc(prfSum, parameters);
         if (!profile.hasAnLreWindowBeenFound()) {
-            //Try to find an LRE window...this is necessary to cover situations 
-            //when the LRE window was lost e.g. by incorrect minFc settings.
-            LreWindowSelector.selectLreWindowUsingMinFc(prfSum, parameters);
-            if (!profile.hasAnLreWindowBeenFound()) {
 //Failed to find a window, thus return as updating the LRE parameters is not relevant
-                return prfSum;
-            }
+            return false;
         }
-        //Recalculate the LRE parameters
         ProfileInitializer.calcLreParameters(prfSum);
+        return true;
+    }
+
+    public ProfileSummary initializeProfileSummary(Profile profile, LreWindowSelectionParameters parameters) {
+        ProfileSummaryImp prfSum = new ProfileSummaryImp(profile);
+        //Initialize the linked Cycle list
+        prfSum.setZeroCycle(ProfileInitializer.makeCycleList(profile.getFcReadings()));
+        //Set the start cycle within the linked Cycle list
+        Cycle runner = prfSum.getZeroCycle();
+        //Without an LRE window, nothing can be calculated
+        if (profile.hasAnLreWindowBeenFound()) {
+            //Run to the start cycle
+            for (int i = 0; i < profile.getStrCycleInt(); i++) {
+                runner = runner.getNextCycle();
+            }
+            prfSum.setStrCycle(runner);
+            //Calculate the cycle parameters for Cycle list
+            ProfileInitializer.calcAllFo(prfSum);
+            ProfileInitializer.calcAverageFo(prfSum);
+            ProfileInitializer.calcAllpFc(prfSum);
+        }
         return prfSum;
     }
 
@@ -64,44 +85,25 @@ public class LreAnalysisProvider extends LreAnalysisService {
     }
 
     /**
-     * Converts to the profile 0.8.0. Note also that if the Profile is an 
-     * AverageSampleProfile, the replicate profiles will also be updated. 
-     * However, it is the responsibility of the calling function to save the 
-     * Profiles into the corresponding database. 
+     * Converts the profile to version 0.8.0. Note it is the responsibility
+     * of the calling function to save the  Profiles into the corresponding database.
      * 
      * @param profile
      * @param parameters
      * @return
      */
     @Override
-    public boolean convertProfileToNewVersion(Profile profile, LreWindowSelectionParameters parameters) {
+    public boolean convertProfileToNewVersion(Profile profile) {
+        profile.isProfileVer0_8_0(true);
         //See if an LRE window is present
         if (profile.getLreWinSize() > 2) {
             //This should preserve any user modifications to the LRE window
             profile.setHasAnLreWindowBeenFound(true);
         }
-        //For AverageSampleProfiles it must determined if replicate average No <10
-        //This is not necessary for AverageCalibrationProfiles
-
-        //See if an OCF has been applied or of this is a calibration profile
-        if (profile.getOCF() <= 0 || profile instanceof CalibrationProfile) {
-            //Number of molecules not available so abort
-            return true;
-        }
+//For AverageSampleProfiles it must determined if replicate average No <10
         if (profile instanceof AverageSampleProfile) {
             AverageSampleProfile avProfile = (AverageSampleProfile) profile;
-            List<? extends Profile> replicateProfileList = avProfile.getReplicateProfileList();
-            for (Profile repProfile : replicateProfileList) {
-                if(repProfile.getLreWinSize() >2){
-                    repProfile.setHasAnLreWindowBeenFound(true);
-                }else{
-                    repProfile.setNo(0);
-                }
-            }
-            avProfile.updateProfile();
-            if (avProfile.isReplicateAverageNoLessThan10Molecules()){
-                avProfile.setHasAnLreWindowBeenFound(false);
-            }
+            avProfile.updateProfile();//This is all that is needed
         }
         return true;
     }

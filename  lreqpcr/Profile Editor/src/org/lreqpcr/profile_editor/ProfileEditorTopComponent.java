@@ -172,7 +172,8 @@ public final class ProfileEditorTopComponent extends TopComponent
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        //A new TC window has been selected
+        //Maybe a new TC window has been selected but selection of any node cases 2-3 events...
+        //Be sure to never include anything that is time intensive
         TopComponent tc = getRegistry().getActivated();
         if (tc instanceof DatabaseProvider) {
             DatabaseProvider dbProvider = (DatabaseProvider) tc;

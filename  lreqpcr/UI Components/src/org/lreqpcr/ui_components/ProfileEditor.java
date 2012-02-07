@@ -92,7 +92,7 @@ public class ProfileEditor extends JPanel implements
         }
         if (profile.hasAnLreWindowBeenFound()) {
 //Display and editing of a profile is conducted through the ProfileSummary interface
-            prfSum = analysisService.initializeProfile(profile, selectionParameters);
+            prfSum = analysisService.initializeProfileSummary(profile, selectionParameters);
             updatePanels();
         }else {//LRE window not found
             clearPanels();
@@ -101,14 +101,12 @@ public class ProfileEditor extends JPanel implements
         }
         
     }
-//        this.profile = prfSum.getProfile();
-//        if (!profile.hasAnLreWindowBeenFound() || profile.isExcluded()) {
 
     private void updatePanels() {
         //Test to see if this is an AverageProfile with just one replicate
         if (profile instanceof AverageSampleProfile) {
             AverageSampleProfile avSampleProfile = (AverageSampleProfile) profile;
-            if (avSampleProfile.getNumberOfActiveReplicateProfiles() == 1
+            if (avSampleProfile.numberOfActiveReplicateProfiles() == 1
                     && !avSampleProfile.isExcluded()) {
 //Display the AverageSampleProfile because it has only one replicate SampleProfile
                 plotLREs.iniPlotLREs(prfSum, currentDB);
@@ -303,7 +301,6 @@ public class ProfileEditor extends JPanel implements
                 return;
             }
 //Note that it is assumed that all necessary data processing has been conducted by the broadcasting function
-//            profile = prfSum.getProfile();//Is this necessary
             selectedNode.refreshNodeLabel();
             if (!(profile instanceof AverageProfile)) {
                 AverageProfile avProfile = (AverageProfile) profile.getParent();

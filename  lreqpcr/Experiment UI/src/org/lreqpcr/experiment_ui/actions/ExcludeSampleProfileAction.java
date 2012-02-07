@@ -72,13 +72,7 @@ class ExcludeSampleProfileAction extends AbstractAction {
             List<SampleProfile> repProfileList = parentAvProfile.getReplicateProfileList();
 
             //Need to confirm that at least one Profile will remain active
-            int numberOfActiveProfiles = 0;
-            for (SampleProfile profile : repProfileList) {
-                if (!profile.isExcluded()) {
-                    numberOfActiveProfiles++;
-                }
-            }
-            if (numberOfActiveProfiles < 2) {//Only one Profile active
+            if (parentAvProfile.numberOfActiveReplicateProfiles() == 1) {//Only one Profile active
                 String msg = "It appears that there is only one Profile that is active "
                         + "and thus cannot be excluded. Exclude the average profile instead";
                 JOptionPane.showMessageDialog(
@@ -94,14 +88,13 @@ class ExcludeSampleProfileAction extends AbstractAction {
 
             //Update the parent Average Sample Profile
             LreNode parentNode = (LreNode) selectedNodes[0].getParentNode();
-            parentAvProfile.setFcReadings(null);//Fb will need to be recalculated
             parentAvProfile.setRawFcReadings(GeneralUtilities.generateAverageFcDataset(repProfileList));
+            parentAvProfile.setFcReadings(null);//This will trigger a new Fc dataset to be generated from the raw Fc dataset
             //Reinitialize the Average Profile
             LreAnalysisService profileIntialization =
                     Lookup.getDefault().lookup(LreAnalysisService.class);
-            //This will trigger an auto selection of the LRE window
-            parentAvProfile.setHasAnLreWindowBeenFound(false);
-            profileIntialization.initializeProfile(parentAvProfile, selectionParameters);
+            //Conduct automated LRE window selection
+            profileIntialization.conductAutomatedLreWindowSelection(parentAvProfile, selectionParameters);
             db.saveObject(parentAvProfile);
             //Update the tree
             parentNode.refreshNodeLabel();

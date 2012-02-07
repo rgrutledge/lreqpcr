@@ -21,6 +21,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import org.lreqpcr.core.data_objects.Amplicon;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
@@ -34,6 +35,7 @@ import org.lreqpcr.core.ui_elements.SampleNode;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.core.utilities.UniversalLookupListener;
 import org.lreqpcr.data_export_services.DataExportServices;
+import org.lreqpcr.ui_components.OpeningDatabaseDialog;
 import org.lreqpcr.ui_components.PanelMessages;
 import org.openide.util.Lookup.Result;
 import org.openide.util.LookupEvent;
@@ -204,19 +206,24 @@ public final class CalibrationTopComponent extends TopComponent
 
     @SuppressWarnings(value = "unchecked")
     private void openDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openDBbuttonActionPerformed
+        //The only reason this frame is painted at all is due to the delay produced by opening of a file chooser dialog
+//Many, many attempts were made unsuccefully to have this JFrame paint correctly while the database file was being opened
+        JFrame message = OpeningDatabaseDialog.makeDialog();
         if(calibrationDB.openUserSelectDatabaseFile()){
             calbnTree.createTree();
-            calbnTree.calcAverageOCF();
+//            calbnTree.calcAverageOCF();
             UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, calibrationDB);
             UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_DATABASE);
         }//If a new file was not opened, do nothing
+        message.setVisible(false);
+        message.dispose();
     }//GEN-LAST:event_openDBbuttonActionPerformed
 
     @SuppressWarnings(value = "unchecked")
     private void newDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newDBbuttonActionPerformed
         if(calibrationDB.createNewDatabaseFile()){
             calbnTree.createTree();
-            calbnTree.calcAverageOCF();
+//            calbnTree.calcAverageOCF();
             UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, calibrationDB);
             UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_DATABASE);
         }

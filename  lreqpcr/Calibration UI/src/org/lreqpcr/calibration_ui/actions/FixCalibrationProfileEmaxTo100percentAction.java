@@ -22,7 +22,6 @@ import javax.swing.AbstractAction;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
-import org.lreqpcr.core.data_processing.ProfileSummary;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.utilities.UniversalLookup;
@@ -58,14 +57,17 @@ public class FixCalibrationProfileEmaxTo100percentAction extends AbstractAction 
                 List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
 //This list should never be empty, as a LreWindowSelectionParameters object is created during DB creation
                 selectionParameters = l.get(0);
+            } else {
+                //This should never happen
+                return;
             }
             for (Node n : nodes) {
                 LreNode node = (LreNode) n;
                 Profile profile = node.getLookup().lookup(Profile.class);
                 profile.setIsEmaxOverridden(true);
                 profile.setOverridentEmaxValue(1.0);
-                ProfileSummary prfSum = analysisService.initializeProfile(profile, selectionParameters);
-                db.saveObject(prfSum.getProfile());
+                analysisService.initializeProfileSummary(profile, selectionParameters);
+                db.saveObject(profile);
                 node.refreshNodeLabel();
             }
             db.commitChanges();

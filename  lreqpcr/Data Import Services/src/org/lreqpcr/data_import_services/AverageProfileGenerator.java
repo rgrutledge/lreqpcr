@@ -66,7 +66,7 @@ public class AverageProfileGenerator {
         ArrayList<SampleProfile> listCopy = (ArrayList<SampleProfile>) profileArray.clone();
         while (!listCopy.isEmpty()) {
             SampleProfile profile = listCopy.get(0);
-            AverageSampleProfile avSampleProfile = new AverageSampleProfile();
+            AverageSampleProfile avSampleProfile = new AverageSampleProfile(parentRun);
             avSampleProfile.isProfileVer0_8_0(true);
             avSampleProfile.setTargetStrandedness(profile.getTargetStrandedness());
             ArrayList<SampleProfile> replicateProfileList = new ArrayList<SampleProfile>();
@@ -93,7 +93,6 @@ public class AverageProfileGenerator {
             for (SampleProfile prf : replicateProfileList) {
                 listCopy.remove(prf);
             }
-            avSampleProfile.setParent(parentRun);
             avSampleProfile.setOCF(ocf);
             avSampleProfile.setReplicateProfileList(replicateProfileList);
             avSampleProfile.setRawFcReadings(generateAverageFcDataset(replicateProfileList));
@@ -112,12 +111,14 @@ public class AverageProfileGenerator {
      * @param profileList the list of CalibrationProfiles 
      * @param rxnSetup the ReactionSetup object for this calibration
      * @param parameters the LRE window parameters
+     * @param run the Run that generated the Profiles
      * @return a list of AverageCalibrationProfiles
      */
     @SuppressWarnings(value = "unchecked")
     public static ArrayList<AverageCalibrationProfile> averageCalbrationProfileConstruction(
             List<CalibrationProfile> profileList,
-            LreWindowSelectionParameters parameters) {
+            LreWindowSelectionParameters parameters,
+            Run run) {
         ArrayList<CalibrationProfile> profileArray = new ArrayList<CalibrationProfile>(profileList);
         //Generate new AverageCalibrationProfile for each replicate profile set within the profile list
         ArrayList<AverageCalibrationProfile> averageCalbnProfileList =
@@ -152,7 +153,7 @@ public class AverageProfileGenerator {
                 listCopy.remove(prf);
             }
             //Average the replicates Profile raw Fc datasets
-            AverageCalibrationProfile avCalbnProfile = new AverageCalibrationProfile();
+            AverageCalibrationProfile avCalbnProfile = new AverageCalibrationProfile(run);
             avCalbnProfile.isProfileVer0_8_0(true);
             CalibrationProfile firstCalibrationProfile = calibrationProfileList.get(0);
             avCalbnProfile.setLambdaMass(firstCalibrationProfile.getLambdaMass() * 1000000);
@@ -206,7 +207,6 @@ public class AverageProfileGenerator {
                 new ArrayList<Profile>(averageProfile.getReplicateProfileList());
         Profile avProfile = (Profile) averageProfile;
         Profile firstRepProfile = replicateList.get(0);
-        avProfile.setRunDate(firstRepProfile.getRunDate());
         avProfile.setAmpliconName(firstRepProfile.getAmpliconName());
         avProfile.setAmpliconSize(firstRepProfile.getAmpliconSize());
         avProfile.setSampleName(firstRepProfile.getSampleName());
@@ -217,8 +217,8 @@ public class AverageProfileGenerator {
             //Not sure if this will ever happen...do not have time to determine
             avProfile.setNo(0);
         } else {
-            //Note the the replicate sample profiles have already been processed
-            profileIntialization.initializeProfile(avProfile, parameters);
+            //Note the the replicate sample profiles have already been initialized
+            profileIntialization.conductAutomatedLreWindowSelection(avProfile, parameters);
         }
         for (Profile profile : replicateList) {
             profile.setParent(avProfile);

@@ -64,12 +64,18 @@ public abstract class Profile extends LreObject {
     private double ocf;//The optical calibration factor used to calculate the number of target molecules
     private double no;//Number of targets molecules
 
-    public Run getRun() {
-        return run;
+    /**
+     * Holds all basic parameters of a Profile
+     * @param run the Run from which the Profile was generated. Note that Run date is retrieved from the provide Run.
+     */
+    public Profile(Run run) {
+        this.run = run;
+        setParent(run);
+        this.runDate = run.getRunDate();
     }
 
-    public void setRun(Run run) {
-        this.run = run;
+    public Run getRun() {
+        return run;
     }
 
     public int getWellNumber() {
@@ -341,10 +347,16 @@ public abstract class Profile extends LreObject {
     public Date getRunDate() {
         return runDate;
     }
-
-    public void setRunDate(Date runDate) {
-        this.runDate = runDate;
-    }
+//
+//    /**
+//     * Note that Run data is set via the constructor so that setting the Run date
+//     * is redundant. It is provided solely for future options that could allow
+//     * the Run date to be changed.
+//     * @param runDate
+//     */
+//    public void setRunDate(Date runDate) {
+//        this.runDate = runDate;
+//    }
 
     public double getFbIntercept() {
         return fbIntercept;

@@ -563,7 +563,7 @@ private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
     LreWindowSelectionParameters selectionParameters = l.get(0);
     LreAnalysisService analysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
-    analysisService.initializeProfile(profile, selectionParameters);
+    analysisService.conductAutomatedLreWindowSelection(profile, selectionParameters);
     processModifiedLreWindow();
 }//GEN-LAST:event_resetButtonActionPerformed
 

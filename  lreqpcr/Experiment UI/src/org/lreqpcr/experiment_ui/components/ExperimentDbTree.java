@@ -55,7 +55,7 @@ public class ExperimentDbTree extends JPanel {
 
     private ExplorerManager mgr;
     private DatabaseServices experimentDB;
-    private double newOcf;
+    private double ocf;
     private ExperimentDbInfo dbInfo;
     private LreActionFactory nodeActionFactory;
     private LabelFactory runNodeLabelFactory;
@@ -85,17 +85,16 @@ public class ExperimentDbTree extends JPanel {
                         userSuppliedOcf = userSuppliedOcf.substring(0, index) + userSuppliedOcf.substring(index + 1);
                     }
                     try {
-                        newOcf = Double.valueOf(userSuppliedOcf);
-                        df.applyPattern(FormatingUtilities.decimalFormatPattern(newOcf));
-                        ocfDisplay.setText(df.format(newOcf));
-                        dbInfo.setOcf(newOcf);
+                        ocf = Double.valueOf(userSuppliedOcf);
+                        df.applyPattern(FormatingUtilities.decimalFormatPattern(ocf));
+                        ocfDisplay.setText(df.format(ocf));
+                        dbInfo.setOcf(ocf);
                         experimentDB.saveObject(dbInfo);
-                        updateAllNo();
+                        resetToNewOcf();
                     } catch (NumberFormatException nan) {
                         Toolkit.getDefaultToolkit().beep();
                         JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
-                                "The OCF must be a valid number" + "\n"
-                                + "   Please click on the OK button",
+                                "The OCF must be a valid number",
                                 "Invalid OCF",
                                 JOptionPane.ERROR_MESSAGE);
                     }
@@ -132,9 +131,9 @@ public class ExperimentDbTree extends JPanel {
         int length = dbFileName.length();
         displayTotalNumberOfProfilesInTheDatabase();
         String displayName = dbFileName.substring(0, length - 4);
-        newOcf = dbInfo.getOcf();
-        df.applyPattern(FormatingUtilities.decimalFormatPattern(newOcf));
-        ocfDisplay.setText(df.format(newOcf));
+        ocf = dbInfo.getOcf();
+        df.applyPattern(FormatingUtilities.decimalFormatPattern(ocf));
+        ocfDisplay.setText(df.format(ocf));
         //Retrieval all Runs from the database
         List<? extends Run> runList =
                 (List<? extends Run>) experimentDB.getAllObjects(Run.class);
@@ -143,12 +142,11 @@ public class ExperimentDbTree extends JPanel {
         root.setDatabaseService(experimentDB);
         root.setDisplayName(displayName);
         root.setShortDescription(dbFile.getAbsolutePath());
-
         mgr.setRootContext(root);
-        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_CHANGED);
+//        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_CHANGED);
     }
 
-    public void displayTotalNumberOfProfilesInTheDatabase(){
+    public void displayTotalNumberOfProfilesInTheDatabase() {
         //Determine the total number of profiles in the database
         List profiles = experimentDB.getAllObjects(Profile.class);
         totalNumberOfProfiles.setText(String.valueOf(profiles.size()));
@@ -204,26 +202,33 @@ public class ExperimentDbTree extends JPanel {
     }
 
     @SuppressWarnings(value = "unchecked")
-    private void updateAllNo() {
+    private void resetToNewOcf() {
         if (!experimentDB.isDatabaseOpen()) {
             return;
         }
-        List<Profile> profileList =
-                (List<Profile>) experimentDB.getAllObjects(Profile.class);
-        for (Profile profile : profileList) {
-            //Necessary for prerelease compatiblity 
-            if (profile.getRun() != null) {
-                //If the runOCF > 0 then a run-specific ocf has been set, so do nothing
-                if (profile.getRun().getRunOCF() == 0) {
-                    //Reset the profile ocf to the new ocf
-                    profile.setOCF(newOcf);
-                    profile.updateProfile();
-                    experimentDB.saveObject(profile);
+        List<Profile> avSampleProfileList =
+                (List<Profile>) experimentDB.getAllObjects(AverageSampleProfile.class);
+        for (Profile profile : avSampleProfileList) {
+            AverageSampleProfile avProfile = (AverageSampleProfile) profile;
+            //This is needed for back compatability due to Run not being set < version 0.8.0
+            Run run = null;
+            if (profile.getRun() == null){
+                run = (Run) profile.getParent();
+            }else {
+                run = profile.getRun();
+            }
+            if (run.getRunOCF() == 0) {
+                //Reset the profile ocf to the new ocf
+                //Neeed to update the replicate profiles before updating the average profiles
+                //This is because average profile updating depends on replicate profile No values
+                for (Profile repProfile : avProfile.getReplicateProfileList()) {
+                    repProfile.setOCF(ocf);
+                    repProfile.updateProfile();
+                    experimentDB.saveObject(repProfile);
                 }
-            } else {
-                profile.setOCF(newOcf);
-                profile.updateProfile();
-                experimentDB.saveObject(profile);
+                avProfile.setOCF(ocf);
+                avProfile.updateProfile();
+                experimentDB.saveObject(avProfile);
             }
         }
         createTree();
@@ -308,7 +313,6 @@ public class ExperimentDbTree extends JPanel {
         createTree();
         UniversalLookup.getDefault().add(PanelMessages.RUN_VIEW_SELECTED, null);
 }//GEN-LAST:event_runViewButtonActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane beanTree;
     private javax.swing.JLabel jLabel1;

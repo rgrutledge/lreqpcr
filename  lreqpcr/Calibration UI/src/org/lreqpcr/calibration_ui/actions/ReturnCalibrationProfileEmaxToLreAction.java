@@ -22,7 +22,6 @@ import javax.swing.AbstractAction;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
-import org.lreqpcr.core.data_processing.ProfileSummary;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.utilities.UniversalLookup;
@@ -64,8 +63,8 @@ public class ReturnCalibrationProfileEmaxToLreAction extends AbstractAction {
                 Profile profile = node.getLookup().lookup(Profile.class);
                 profile.setIsEmaxOverridden(false);
                 profile.setOverridentEmaxValue(0);
-                ProfileSummary prfSum = analysisService.initializeProfile(profile, selectionParameters);
-                db.saveObject(prfSum.getProfile());
+                analysisService.initializeProfileSummary(profile, selectionParameters);
+                db.saveObject(profile);
                 node.refreshNodeLabel();
             }
             db.commitChanges();

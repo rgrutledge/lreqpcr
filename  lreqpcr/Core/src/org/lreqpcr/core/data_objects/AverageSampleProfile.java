@@ -29,12 +29,13 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
 
     private List<SampleProfile> sampleProfileList;
     private boolean isTheAverageReplicateNoLessThan10Molecules;
-    private int numberOfActiveReplicateProfiles;
+//    private int numberOfActiveReplicateProfiles;
 
     /**
      * An average sample profile constructed from its sample replicate profiles.
      */
-    public AverageSampleProfile() {
+    public AverageSampleProfile(Run run) {
+        super(run);
         setChildClass(SampleProfile.class);
     }
 
@@ -60,9 +61,12 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
     @Override
     public void updateProfile() {
         super.updateProfile();
+//        determineNumberofActiveReplicateProfiles();
         //Without an OCF, No values cannot be calculated
-        if (getOCF() >0 ){
+        if (getOCF() > 0) {
             determineIfTheAverageReplicateNoIsLessThan10Molecules();
+        } else {
+            isTheAverageReplicateNoLessThan10Molecules = false;
         }
     }
 
@@ -85,11 +89,11 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
     }
 
     /**
-     * Determines if the AverageProfile is valid, due to the fact that if  
-     * the number of target molecules is less than 10, the AverageProfile 
+     * Determines if the AverageProfile is valid, due to the fact that if
+     * the number of target molecules is less than 10, the AverageProfile
      * can be distorted due to profile scattering caused by Poison Distribution.
      * If so, the
-     * average No of the AverageProfile is set to the average of the ReplicateProfile 
+     * average No of the AverageProfile is set to the average of the ReplicateProfile
      * No values. 
      * 
      * @return whether the average No is less than 10 molecules
@@ -99,16 +103,22 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
     }
 
     /**
-     * If the average No is less than 10 molecules, that AverageProfile can be 
+     * If the average No is less than 10 molecules, that AverageProfile can be
      * distorted, and thus it must be invalidated. If so,
      * the average No for the AverageProfile is determined by
      * averaging the No values from each of the ReplicateProfiles. 
      */
     private void determineIfTheAverageReplicateNoIsLessThan10Molecules() {
-//This is necessary during data import which calls this function before the replicate profiles have been initiated
-//        if (getReplicateProfileList() == null){
-//            return;
-//        }
+        if (isExcluded()) {
+            return;
+        }
+        if (sampleProfileList.size() == 1) {
+//This allows the AverageProfile to function as if No >10 when there is a single replicate
+//This allows single replicates to be viewed and edited from the AverageSampleReplicate node
+//This is valid because the average Profile Fc is derived from a single Profile and thus is not impacted by profile scattering    
+            isTheAverageReplicateNoLessThan10Molecules = false;
+            return;
+        }
         double sum = 0;
         int counter = 0;
         for (Profile repPrf : getReplicateProfileList()) {
@@ -124,26 +134,26 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
                 }
             }
         }
-        numberOfActiveReplicateProfiles = counter;
+//        if (sum == 0) {
+//            //Some type of error has occurred
+//            return;
+//        }
         double averageReplicateNo = sum / counter;
-        int i = 0;
         if (averageReplicateNo < 10) {
             isTheAverageReplicateNoLessThan10Molecules = true;
-//This allows the AverageProfile to function as if No >10 when there is a single replicate
-            if (sampleProfileList.size() != 1){
-                setNo(averageReplicateNo);
-            }
-//This allows single replicates to be viewed and edited from the AverageSampleReplicate node
-//This is valid because the average Profile Fc is derived from a single Profile and thus is not impacted by profile scattering
-            if (sampleProfileList.size() != 1){
-                setHasAnLreWindowBeenFound(false);
-            }
+            setNo(averageReplicateNo);
         } else {
             isTheAverageReplicateNoLessThan10Molecules = false;
         }
     }
 
-    public int getNumberOfActiveReplicateProfiles() {
+    public int numberOfActiveReplicateProfiles() {
+        int numberOfActiveReplicateProfiles = 0;
+        for (Profile profile : sampleProfileList) {
+            if (!profile.isExcluded()) {
+                numberOfActiveReplicateProfiles++;
+            }
+        }
         return numberOfActiveReplicateProfiles;
     }
 }

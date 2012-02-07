@@ -54,35 +54,25 @@ public abstract class Db4oDatabaseServices implements DatabaseServices {
         config.objectClass(AverageProfile.class).objectField("sampleName").indexed(true);
         config.objectClass(Profile.class).objectField("ampliconName").indexed(true);
         config.objectClass(Profile.class).objectField("sampleName").indexed(true);
-        config.activationDepth(2);//This is necessary for instantiation of ArrayLists used to display profiles
     }
 
     /**
      * Opens a DB4O database file. If successful, the current database file is set
      * to the supplied database file.
      *
-     * @param db4oDatabaseFile the DB4O database file to be opened
+     * @param db4oDatabaseFile the DB4O database file was opened or false if it failed to open
      */
     public boolean openDatabaseFile(File db4oDatabaseFile) {
         if (db4oDatabaseFile == null) {
             return false;
         }
-//Note that the file MUST exsist or DB4O will create an empty database file as its default action
-//This will generate a major exception when the program tries to process this empty file
-        if (!db4oDatabaseFile.exists()) {
-            String msg = "The database file \"" + db4oDatabaseFile.getName()
-                    + "\" could not be opened. \n This is likely due to fact that it has been deleted or moved.";
-            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Unable to open database file",
-                    JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
         closeDatabase();
         try {
-            //This throws an IllegalArguentException for ver 7.4.155, which is not documented!!
+//This throws an IllegalArguentException for ver 7.4.155, which is not documented when a second file is opened!!
             db4o = Db4o.openFile(config, db4oDatabaseFile.getAbsolutePath());
         } catch (Exception e) {
-            String msg = "The database file " + db4oDatabaseFile.getName()
-                    + " could not be opened due to the error: \""
+            String msg = "The database file \"" + db4oDatabaseFile.getName()
+                    + "\" could not be opened due to the error: \""
                     + e.getClass().getSimpleName() + "\"";
             JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Unable to open the database file",
                     JOptionPane.ERROR_MESSAGE);
@@ -224,4 +214,7 @@ public abstract class Db4oDatabaseServices implements DatabaseServices {
         List list = query.execute();
         return list;
     }
+//    public void activateObject(){
+//        db4o.
+//    }
 }

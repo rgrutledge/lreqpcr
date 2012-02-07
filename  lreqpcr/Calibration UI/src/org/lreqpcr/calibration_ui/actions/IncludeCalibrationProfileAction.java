@@ -79,10 +79,8 @@ class IncludeCalibrationProfileAction extends AbstractAction {
             LreNode parentNode = (LreNode) nodes[0].getParentNode();
             parentAvProfile.setFcReadings(null);//Fb will need to be recalculated
             parentAvProfile.setRawFcReadings(GeneralUtilities.generateAverageFcDataset(profileList));
-            //Reinitialize the Average Profile
-            //This will trigger an auto selection of the LRE window
-            parentAvProfile.setHasAnLreWindowBeenFound(false);
-            profileIntialization.initializeProfile(parentAvProfile, selectionParameters);
+                        //Conduct automated LRE window selection
+            profileIntialization.conductAutomatedLreWindowSelection(parentAvProfile, selectionParameters);
             db.saveObject(parentAvProfile);
 
             //Update the tree

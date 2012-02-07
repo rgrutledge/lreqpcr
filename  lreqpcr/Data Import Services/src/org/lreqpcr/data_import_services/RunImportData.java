@@ -32,10 +32,20 @@ import org.lreqpcr.core.data_objects.SampleProfile;
  */
 public class RunImportData {
 
-    private Run run;
     private List<SampleProfile> sampleProfileList;
     private List<CalibrationProfile> calibrationProfileList;
-    private boolean isThisAManualDataImport;
+    private DataImportType importType;
+    private final Run run;
+
+    /**
+     * Interface for Run data import.
+     * 
+     * @param importType the type of import which cannot be null
+     */
+    public RunImportData(DataImportType importType, Run run) {
+        this.importType = importType;
+        this.run = run;
+    }
 
     public List<CalibrationProfile> getCalibrationProfileList() {
         return calibrationProfileList;
@@ -46,25 +56,13 @@ public class RunImportData {
      * The Calibration Profiles must contain the Amplicon name
      * and quantity of Lambda gDNA in picograms,
      * along with the raw Fc dataset (i.e. not baseline subtracted). Well number
-     * and label (e.g. A1) should also be included.      * Target strandedness will be set to double stranded during run initialization.
+     * and label (e.g. A1) should also be included.      
+     * Target strandedness is set to double stranded during run initialization.
      * 
      * @param calibrationProfileList
      */
     public void setCalibrationProfileList(List<CalibrationProfile> calibrationProfileList) {
         this.calibrationProfileList = calibrationProfileList;
-    }
-
-    public Run getRun() {
-        return run;
-    }
-
-    /**
-     * The Run must include the Run date and Run name.
-     *
-     * @param run the run which contains run information such as run date
-     */
-    public void setRun(Run run) {
-        this.run = run;
     }
 
     public List<SampleProfile> getSampleProfileList() {
@@ -84,12 +82,12 @@ public class RunImportData {
         this.sampleProfileList = sampleProfileList;
     }
 
-    public boolean isThisAManualDataImport() {
-        return isThisAManualDataImport;
+    public DataImportType getImportType() {
+        return importType;
     }
 
-    public void setIsThisAManualDataImport(boolean isThisAManualDataImport) {
-        this.isThisAManualDataImport = isThisAManualDataImport;
+    public Run getRun() {
+        return run;
     }
-
+    
 }

@@ -54,7 +54,7 @@ public class ProfileInitializer {
     }
 
     /**
-     * Initializes a LRE window based upon a the supplied LRE start cycle
+     * Calculates LRE window parameters.
      *
      *<p>Generates a new LRE window using the supplied start cycle. This is 
      * used for initializing a new Profile, or for adjusting
@@ -64,14 +64,15 @@ public class ProfileInitializer {
      *
      **/
     public static void calcLreParameters(ProfileSummary prfSum) {
-        //Reset the StartCycle in prfSum
         Profile profile = prfSum.getProfile();
         Cycle runner = prfSum.getZeroCycle();
-        //Run to the start cycle
+        //Assume that the start cycle has be changed
+        //Run to the start cycle and reset the ProfileSummary Start Cycle
         for (int i = 0; i < profile.getStrCycleInt(); i++) {
             runner = runner.getNextCycle();
         }
         prfSum.setStrCycle(runner);
+        //Gather Fc and Ec from the LRE window
         int winSize = profile.getLreWinSize();
         double[][] lreWinPts = new double[2][winSize];
         for (int i = 0; i < winSize; i++) {
@@ -89,14 +90,7 @@ public class ProfileInitializer {
         profile.setDeltaE(regressionValues[0]);
         profile.setEmax(regressionValues[1]);
         profile.setR2(regressionValues[2]);
-        if (profile.getDeltaE() > 0) {//Start cycle selection is corrupted by Fb drift
-            profile.setStrCycleInt(profile.getStrCycleInt() + 1);
-            calcLreParameters(prfSum);
-        }
-        //Update the linked cycle list
-        calcAllFo(prfSum);
-        calcAverageFo(prfSum);
-        calcAllpFc(prfSum);
+        //Gather the LRE window Fc and predicted Fc
         //Start at the cycle immediately preceeding the start cycle
         runner = prfSum.getStrCycle().getPrevCycle();
         double[][] winFcpFc = new double[2][winSize + 1];
@@ -108,11 +102,14 @@ public class ProfileInitializer {
                 runner = runner.getNextCycle();
             }
         } catch (Exception e) {
+            //Not sure if this is necessary
         }
-
+        ProfileInitializer.calcAllFo(prfSum);
+        ProfileInitializer.calcAverageFo(prfSum);
+        ProfileInitializer.calcAllpFc(prfSum);
         profile.setNonR2(LREmath.calcNonLinearR2(winFcpFc));
         profile.setMidC(LREmath.getMidC(profile.getDeltaE(), profile.getEmax(), profile.getAvFo()));
-        profile.updateProfile();
+        profile.updateProfile();//General rule to update the Profile whenever the LRE parameters have changed
     }
 
     /**
@@ -124,7 +121,7 @@ public class ProfileInitializer {
      * 
      * @param prfSum the ProfileSummary holding the Profile to be processed
      */
-    private static void calcAllFo(ProfileSummary prfSum) {
+    public static void calcAllFo(ProfileSummary prfSum) {
         //The Linked Cycle List is traversed & Fo values assigned to each cycle
         //The Cycle#-Fo Point2D.Double is also initialized 
         Cycle runner = prfSum.getZeroCycle().getNextCycle();//Start at cycle #1
@@ -150,7 +147,7 @@ public class ProfileInitializer {
      *
      * @param prfSum the ProfileSummary holding the Profile to be processed
      */
-    private static void calcAverageFo(ProfileSummary prfSum) {
+    public static void calcAverageFo(ProfileSummary prfSum) {
         Profile profile = prfSum.getProfile();
         //The current LRE window is traversed and the average Fo calculated
         double sumFo = 0;
@@ -183,7 +180,7 @@ public class ProfileInitializer {
      * 
      * @param prfSum the ProfileSummary holding the Profile to be processed
      */
-    private static void calcAllpFc(ProfileSummary prfSum) {
+    public static void calcAllpFc(ProfileSummary prfSum) {
         Profile profile = prfSum.getProfile();
         //The cycle linked-list is traversed & predicted Fc values assigned to each cycle
         Cycle runner = prfSum.getZeroCycle().getNextCycle();//Goto cycle #1
