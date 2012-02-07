@@ -32,6 +32,7 @@ import jxl.DateCell;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
+import org.lreqpcr.data_import_services.DataImportType;
 import org.lreqpcr.data_import_services.RunImportData;
 import org.lreqpcr.data_import_services.RunImportService;
 import org.openide.util.Exceptions;
@@ -192,7 +193,7 @@ public class MxpVer3_4ImportProvider extends RunImportService {
             //Determine if this is a calibration profile
             if (reportSheet.getCell(wellType, reportRow).getContents().equals("Standard")) {
                 //This is a calibration profile
-                profile = new CalibrationProfile();//Target strandedness is set to double during instantiation
+                profile = new CalibrationProfile(run);//Target strandedness is set to double during instantiation
                 CalibrationProfile calbnProfile = (CalibrationProfile) profile;
                 if (quantityCol != columnAbsent) {
                     try {
@@ -203,7 +204,7 @@ public class MxpVer3_4ImportProvider extends RunImportService {
                     }
                 }
             } else {//Must be a Sample Profile
-                profile = new SampleProfile();
+                profile = new SampleProfile(run);
                 profile.setTargetStrandedness(targetStrandedness);
             }
 
@@ -277,8 +278,7 @@ public class MxpVer3_4ImportProvider extends RunImportService {
                 }
             }
         }
-        RunImportData importData = new RunImportData();
-        importData.setRun(run);
+        RunImportData importData = new RunImportData(DataImportType.STANDARD, run);
         importData.setCalibrationProfileList(calbnProfileList);
         importData.setSampleProfileList(sampleProfileList);
         return importData;

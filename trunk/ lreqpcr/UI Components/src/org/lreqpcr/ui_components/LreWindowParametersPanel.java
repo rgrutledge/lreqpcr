@@ -20,6 +20,8 @@ import com.google.common.collect.Lists;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
@@ -32,10 +34,11 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import org.lreqpcr.analysis_services.LreAnalysisService;
-import org.lreqpcr.core.data_objects.AverageProfile;
+import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
@@ -63,7 +66,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
     private DecimalFormat df = new DecimalFormat();
     private DatabaseServices currentDB;//Experiment or Calibration database
     private LreWindowSelectionParameters selectionParameters;
-    private LreAnalysisService profileInitialization =
+    private LreAnalysisService lreAnalysisService =
             Lookup.getDefault().lookup(LreAnalysisService.class);
     private UniversalLookup universalLookup = UniversalLookup.getDefault();
     private double averageFmax;
@@ -76,10 +79,8 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         foThresholdDisplay.addKeyListener(keyAdapter);
         WindowManager.getDefault().getRegistry().addPropertyChangeListener(this);
         universalLookup.addListner(PanelMessages.NEW_DATABASE, this);
-        UniversalLookup.getDefault().addListner(PanelMessages.PROFILE_EXCLUDED, this);
-        UniversalLookup.getDefault().addListner(PanelMessages.PROFILE_INCLUDED, this);
-        UniversalLookup.getDefault().addListner(PanelMessages.PROFILE_CHANGED, this);
         updateDisplay();
+        avReplCvDisplay.setText("");
     }
 
     @SuppressWarnings("unchecked")
@@ -92,12 +93,14 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         if (!currentDB.isDatabaseOpen()) {
             minFcDisplay.setText("");
             foThresholdDisplay.setText("");
-            replAvFoCvDisplay.setText("");
+            avReplCvDisplay.setText("");
+            avReplCvDisplay.setText("");
             return;
         }
         if (selectionParameters != null) {
             foThreshold = selectionParameters.getFoThreshold();
             minFc = selectionParameters.getMinFc();
+            avReplCvDisplay.setText("");
             updateDisplay();
         }
     }
@@ -126,20 +129,20 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                                 JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-                    determineAverageFmax();
-                    if (minFc > averageFmax){
+                    calcAverageFmax();
+                    if (minFc > averageFmax) {
                         Toolkit.getDefaultToolkit().beep();
                         boolean yes = RunImportUtilities.requestYesNoAnswer("Minimum Fc too high?",
-                                "The Minimum Fc appears to be too high. Do you want to continue?");
-                        if (!yes){
+                                "The Minimum Fc appears to be too high.\n Do you want to continue?");
+                        if (!yes) {
                             return;
                         }
                     }
-                    if (minFc < (averageFmax * 0.05)){//<5%
+                    if (minFc < (averageFmax * 0.05) && minFc != 0d) {//<5%
                         Toolkit.getDefaultToolkit().beep();
                         boolean yes = RunImportUtilities.requestYesNoAnswer("Minimum Fc too low?",
-                                "The Minimum Fc appears to be too low. Do you want to continue?");
-                        if (!yes){
+                                "The Minimum Fc appears to be too low.\n Do you want to continue?");
+                        if (!yes) {
                             return;
                         }
                     }
@@ -159,7 +162,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                                 JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-                    if(foThreshold <= 0){
+                    if (foThreshold <= 0) {
                         Toolkit.getDefaultToolkit().beep();
                         JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
                                 "The Fo Theshold must be greater than zero",
@@ -187,20 +190,29 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
     }
 
     @SuppressWarnings("unchecked")
-    private void determineAverageFmax(){
-        List<Profile> profileList = currentDB.getAllObjects(Profile.class);
-        double sum = 0;
-        int counter = 0;
-        for (Profile profile : profileList){
-            if (profile.hasAnLreWindowBeenFound()){
-                double fmax = profile.getEmax() / (-1 * profile.getDeltaE());
-                sum += fmax;
-                counter++;
+    private void calcAverageFmax() {
+        //This is limited to the first 100 profiles as this is very time intensive when the database is large
+        if (currentDB != null) {
+            if (currentDB.isDatabaseOpen()) {
+                List<Profile> profileList = currentDB.getAllObjects(Profile.class);
+                double sum = 0;
+                int counter = 0;
+                for (Profile profile : profileList) {
+                    if (profile.hasAnLreWindowBeenFound()) {
+                        double fmax = profile.getEmax() / (-1 * profile.getDeltaE());
+                        sum += fmax;
+                        counter++;
+                        if (counter > 100) {
+                            averageFmax = sum / counter;
+                            return;
+                        }
+                    }
+                }
+                averageFmax = sum / counter;
             }
         }
-        averageFmax = sum/counter;
     }
-    
+
     @SuppressWarnings("unchecked")
     private void reinitializeAllProfiles() {
         if (!currentDB.isDatabaseOpen()) {
@@ -215,12 +227,12 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         }
         for (Profile profile : profileList) {
 //If minFc=0, first cycle below C1/2 will be used as the start cycle during profile intialization
-            profile.setHasAnLreWindowBeenFound(false);
-            profileInitialization.initializeProfile(profile, selectionParameters);
+//            profile.setHasAnLreWindowBeenFound(false);
+            lreAnalysisService.conductAutomatedLreWindowSelection(profile, selectionParameters);
             currentDB.saveObject(profile);
         }
         currentDB.commitChanges();
-        calcReplAvFoCV();
+//        calcReplAvFoCV();
     }
 
     private void updateDisplay() {
@@ -240,73 +252,82 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
             df.applyPattern("#.0%");
             foThresholdDisplay.setText(df.format(foThreshold));
         }
-        calcReplAvFoCV();
+//        calcReplAvFoCV();//This can be very intensive when the database is large
     }
 
     void clearPanel() {
         minFcDisplay.setText("");
         foThresholdDisplay.setText("");
-        replAvFoCvDisplay.setText("");
+        avReplCvDisplay.setText("");
     }
 
+    /**
+     * Provides an indicate of quantitative variance based on variance of the 
+     * replicate profile CV, that is average No CV for sample profiles when an OCF 
+     * has been applied (necessary to exclude replicates less than 10 molecules, 
+     * or average Fo CV for replicate calibration profiles where it is expected that 
+     * target quantity will never be below 10 molecules. 
+     */
     @SuppressWarnings(value = "unchecked")
-    private void calcReplAvFoCV() {
+    private double calcReplicateFoCV() {
         if (currentDB == null) {
-            replAvFoCvDisplay.setText("");
-            return;
+            return 0;
         }
-        //Retrieve all Average Profiles
-        List<AverageProfile> prfList = currentDB.getAllObjects(AverageProfile.class);
-        //Calculate and collect the Replicate Fo CVs
-        ArrayList<Double> replFoCvValues = Lists.newArrayList();
-        for (AverageProfile prf : prfList) {
-            ArrayList<Profile> replList = (ArrayList<Profile>) prf.getReplicateProfileList();
-            ArrayList<Double> avFoValues = Lists.newArrayList();
-            if (currentDB.getDatabaseType() == DatabaseType.EXPERIMENT) {
-                //All profiles must be sample profiles
-                //Do not include the AverageSampleProfile if the ReplicateProfile average No <10 molecules
-                //However, this will only work if an OCF has been applied, i.e. OCF >0
-                AverageSampleProfile avProfile = (AverageSampleProfile) prf;
-                if (avProfile.getOCF() != 0) {
-                    //Determine the Replicate average No
-                    double avReplicateNo = 0;
-                    for (Profile sampleProfile : replList) {
-                        if (sampleProfile.getNo() != Double.NaN) {
-                            avReplicateNo = +sampleProfile.getNo();
+        ArrayList<Double> replCvValues = Lists.newArrayList();
+        if (currentDB.getDatabaseType() == DatabaseType.EXPERIMENT) {
+            //Retrieve all Average Sample Profiles
+            List<AverageSampleProfile> avSampleProfileList = currentDB.getAllObjects(AverageSampleProfile.class);
+            if (!(avSampleProfileList.get(0).getOCF() > 0)) {
+                //An OCF has not been applied and thus No values are not available
+                //TO DO present an error dialog******************************************************************************************
+                return 0;
+            }
+            //Calculate and collect the Replicate Fo CVs
+
+            for (AverageSampleProfile avProfile : avSampleProfileList) {
+                List<Double> noValues = Lists.newArrayList();
+                if (!avProfile.isReplicateAverageNoLessThan10Molecules()) {
+//Only include replicate that are >10 molecules in order to avoid scattering produced by Poisson distribution 
+                    double sum = 0;
+                    for (Profile profile : avProfile.getReplicateProfileList()) {
+                        if (profile.hasAnLreWindowBeenFound() && !profile.isExcluded()) {
+                            noValues.add(profile.getNo());
+                            sum += profile.getNo();
+                        }
+                        if (noValues.size() > 1) {
+                            double avNo = sum / noValues.size();
+                            replCvValues.add(MathFunctions.calcStDev(noValues) / avNo);
                         }
                     }
-                    avReplicateNo = avReplicateNo / replList.size();
-                    if (avReplicateNo < 10) {
-                        continue;//Go to the next AverageProfile
+                }
+            }
+        }
+        if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION) {
+            List<AverageCalibrationProfile> avCalProfileList = currentDB.getAllObjects(AverageCalibrationProfile.class);
+            for (AverageCalibrationProfile avProfile : avCalProfileList) {
+                List<Double> foValues = Lists.newArrayList();
+                //Don't be concerned about target quantity, so focus solely on avFo
+                double sum = 0;
+                for (Profile profile : avProfile.getReplicateProfileList()) {
+                    if (profile.hasAnLreWindowBeenFound() && !profile.isExcluded()) {
+                        foValues.add(profile.getAvFo());
+                        sum += profile.getAvFo();
                     }
                 }
-            }
-            double sum = 0;
-            for (Profile sampleProfile : replList) {
-                if (!sampleProfile.isExcluded()) {
-                    sum = sum + sampleProfile.getAvFo();
-                    avFoValues.add(sampleProfile.getAvFo());
+                if (foValues.size() > 1) {
+                    double avFo = sum / foValues.size();
+                    replCvValues.add(MathFunctions.calcStDev(foValues) / avFo);
                 }
             }
-            if (avFoValues.size() > 1) {
-                double avFo = sum / avFoValues.size();
-                replFoCvValues.add(MathFunctions.calcStDev(avFoValues) / avFo);
-            }
         }
-        //Check if there are any replicate Fo CV values
-        if (replFoCvValues.size() > 0) {
-            //Calculate the average Replicate FoCV
-            double sum = 0;
-            for (Double cv : replFoCvValues) {
-                sum = sum + cv;
+        if (replCvValues.size() > 1) {
+            double cvSum = 0;
+            for (Double cv : replCvValues) {
+                cvSum += cv;
             }
-            double avReplCv = 0;
-            avReplCv = sum / replFoCvValues.size();
-            df.applyPattern("#.0%");
-            replAvFoCvDisplay.setText(df.format(avReplCv));
-        } else {//No replicate Fo CV values
-            replAvFoCvDisplay.setText("Insufficient # of Replicates");
+            return cvSum / replCvValues.size();
         }
+        return 0;
     }
 
     /** This method is called from within the constructor to
@@ -322,8 +343,8 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         minFcDisplay = new JTextField();
         jLabel2 = new JLabel();
         foThresholdDisplay = new JTextField();
-        jLabel3 = new JLabel();
-        replAvFoCvDisplay = new JLabel();
+        avReplCvDisplay = new JLabel();
+        calcAvReplCV = new JRadioButton();
 
         setBackground(new Color(244, 245, 247));
         setBorder(BorderFactory.createTitledBorder("LRE Window Selection Parameters"));
@@ -340,11 +361,17 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
 
         foThresholdDisplay.setColumns(4);
 
-        jLabel3.setText("Av Repl CV:");
-        jLabel3.setToolTipText("An indicator of the overall precision of target quantification");
+        avReplCvDisplay.setText("  ");
+        avReplCvDisplay.setToolTipText("Note that Replicat Profiles with <10 molecules are not included");
 
-        replAvFoCvDisplay.setText("  ");
-        replAvFoCvDisplay.setToolTipText("Note that Replicat Profiles with <10 molecules are not included");
+        calcAvReplCV.setBackground(new Color(244, 245, 247));
+        calcAvReplCV.setText("Calc Av Repl CV:");
+        calcAvReplCV.setToolTipText("Calculates the average quantitative CV produced by each set of replicate profiles");
+        calcAvReplCV.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                calcAvReplCVActionPerformed(evt);
+            }
+        });
 
         GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
@@ -354,17 +381,17 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(calcAvReplCV)
+                        .addPreferredGap(ComponentPlacement.RELATED)
+                        .addComponent(avReplCvDisplay, GroupLayout.DEFAULT_SIZE, 109, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(ComponentPlacement.RELATED)
                         .addComponent(minFcDisplay, GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(ComponentPlacement.RELATED)
-                        .addComponent(foThresholdDisplay, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addPreferredGap(ComponentPlacement.RELATED)
-                        .addComponent(replAvFoCvDisplay, GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE)))
+                        .addComponent(foThresholdDisplay, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -379,18 +406,30 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                     .addComponent(jLabel2))
                 .addPreferredGap(ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(replAvFoCvDisplay))
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(avReplCvDisplay)
+                    .addComponent(calcAvReplCV))
+                .addContainerGap(34, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void calcAvReplCVActionPerformed(ActionEvent evt) {//GEN-FIRST:event_calcAvReplCVActionPerformed
+        calcAvReplCV.setSelected(false);
+        df.applyPattern("#0.0%");
+        double avCV = calcReplicateFoCV();
+        if (avCV != 0){
+            avReplCvDisplay.setText(df.format(avCV));
+        }else {
+            avReplCvDisplay.setText("Too few replicates");
+        }
+        
+    }//GEN-LAST:event_calcAvReplCVActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private JLabel avReplCvDisplay;
+    private JRadioButton calcAvReplCV;
     private JTextField foThresholdDisplay;
     private JLabel jLabel1;
     private JLabel jLabel2;
-    private JLabel jLabel3;
     private JTextField minFcDisplay;
-    private JLabel replAvFoCvDisplay;
     // End of variables declaration//GEN-END:variables
 
     /**
@@ -406,7 +445,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                 if (currentDB.isDatabaseOpen()) {
                     selectionParameters = (LreWindowSelectionParameters) currentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
                     if (selectionParameters == null) {
-                        //This should not ever happen
+                        //This should never happen
                         clearPanel();
                     } else {
                         minFc = selectionParameters.getMinFc();
@@ -419,44 +458,39 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                 }
             }
         }
-        if (key == PanelMessages.PROFILE_INCLUDED
-                || key == PanelMessages.PROFILE_EXCLUDED
-                || key == PanelMessages.PROFILE_CHANGED
-                || key == PanelMessages.NEW_RUN_IMPORTED
-                || key == PanelMessages.PROFILE_CHANGED) {
-            //Need to update the avReplCV
-            calcReplAvFoCV();
-        }
     }
 
     public void propertyChange(PropertyChangeEvent evt) {
-        //A new Top Component window has been selected
+        //This called everytime a node is selected, which is redundant most of the time
+        //This initiates an updateDisplay call which can be very intensive when the database is large
+        //Actually, it is called twice everytime a node is selected!!!!
+        //Maybe a new Top Component window has been selected but not necessarily
+        //Be sure to never include anything that is time intensive
         TopComponent tc = WindowManager.getDefault().getRegistry().getActivated();
         if (tc instanceof DatabaseProvider) {
             DatabaseProvider dbProvider = (DatabaseProvider) tc;
             DatabaseType type = dbProvider.getDatabaseServices().getDatabaseType();
             //Test if the database holds profiles
             if (type == DatabaseType.EXPERIMENT || type == DatabaseType.CALIBRATION) {
-                //A new experiment or calibration DB has been selected thus the parameters need to be updated
-                currentDB = dbProvider.getDatabaseServices();
-                if (currentDB.isDatabaseOpen()) {
-                    selectionParameters = (LreWindowSelectionParameters) currentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
-                    if (selectionParameters == null) {
+                if (currentDB != dbProvider.getDatabaseServices()) {
+                    //A new Experiment or Calibration TC has been selected thus the parameters need to be updated
+                    currentDB = dbProvider.getDatabaseServices();
+                    if (currentDB.isDatabaseOpen()) {
+                        selectionParameters = (LreWindowSelectionParameters) currentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
+                        if (selectionParameters == null) {
+                            clearPanel();
+                            return;
+                        } else {
+                            minFc = selectionParameters.getMinFc();
+                            foThreshold = selectionParameters.getFoThreshold();
+                            updateDisplay();
+                        }
+                    } else {
+                        currentDB = null;
                         clearPanel();
                         return;
-                    } else {
-                        minFc = selectionParameters.getMinFc();
-                        foThreshold = selectionParameters.getFoThreshold();
-                        updateDisplay();
                     }
-                } else {
-                    currentDB = null;
-                    clearPanel();
-                    return;
                 }
-            } else {
-                currentDB = null;
-                clearPanel();
             }
         }
     }

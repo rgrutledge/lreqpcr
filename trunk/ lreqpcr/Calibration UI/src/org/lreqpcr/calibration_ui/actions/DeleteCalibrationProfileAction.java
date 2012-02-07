@@ -100,7 +100,7 @@ public class DeleteCalibrationProfileAction extends AbstractAction {
         }
         parentChildren.addNotify();
         //Trigger Calibration panel update
-        UniversalLookup.getDefault().add(PanelMessages.UPDATE_CALIBRATION_PANELS, null);
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_CALIBRATION_PANELS);
     }
 
     private void deleteProfile(Profile profile) {
@@ -138,7 +138,7 @@ public class DeleteCalibrationProfileAction extends AbstractAction {
             //Reinitialize the Average Profile
             LreAnalysisService profileIntialization =
                     Lookup.getDefault().lookup(LreAnalysisService.class);
-            profileIntialization.initializeProfile(avProfile, selectionParameters);
+            profileIntialization.initializeProfileSummary(avProfile, selectionParameters);
             db.deleteObject(profile);
             db.commitChanges();
         }

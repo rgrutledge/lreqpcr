@@ -23,13 +23,14 @@ package org.lreqpcr.core.data_objects;
  */
 public class SampleProfile extends Profile {
 
-    public SampleProfile() {
+    public SampleProfile(Run run) {
+        super(run);
     }
 
     @Override
     /**
      * Calculate the number of target molecules (No) 
-     * based on the profile average Fo, OCF and amplicon size. 
+     * based on the profile average Fo, OCF, amplicon size and target strandedness.
      */
     public void updateProfile() {
         if (isExcluded() || !hasAnLreWindowBeenFound()) {

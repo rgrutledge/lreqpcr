@@ -82,10 +82,6 @@ class ApplyRunSpecficOCF extends AbstractAction {
         ExperimentDbInfo dbInfo = (ExperimentDbInfo) db.getAllObjects(ExperimentDbInfo.class).get(0);
         double avOCF = dbInfo.getOcf();
         for (AverageSampleProfile avProfile : averageSampleProfileList) {
-     //This is a hack to fix old profiles that lack a pointer to its parent Run 
-            if (avProfile.getRun() == null) {
-                avProfile.setRun(selectedRun);
-            }
             //Zero indicates to revert the OCF back to the average OCF
             if (runOCF == 0) {
                 avProfile.setOCF(avOCF);
@@ -97,10 +93,6 @@ class ApplyRunSpecficOCF extends AbstractAction {
             db.saveObject(avProfile);
             List<SampleProfile> sampleProfileList = avProfile.getReplicateProfileList();
             for (SampleProfile sampleProfile : sampleProfileList) {
-    //This is a hack to fix old profiles that lack a pointer to its parent Run
-                if (sampleProfile.getRun() == null) {
-                    sampleProfile.setRun(selectedRun);
-                }
                 if (!sampleProfile.isExcluded()) {
                     if (runOCF == 0) {
                         //This resets the ocf to the average OCF

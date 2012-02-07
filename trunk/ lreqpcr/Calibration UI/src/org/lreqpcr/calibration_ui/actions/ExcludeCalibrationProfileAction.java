@@ -72,13 +72,7 @@ class ExcludeCalibrationProfileAction extends AbstractAction {
             AverageCalibrationProfile parentAvProfile = (AverageCalibrationProfile) selectedProfile.getParent();
             List<CalibrationProfile> profileList = parentAvProfile.getReplicateProfileList();
             //Need to confirm that at least one Profile will remain active
-            int numberOfActiveProfiles = 0;
-            for (CalibrationProfile profile : profileList) {
-                if (!profile.isExcluded()) {
-                    numberOfActiveProfiles++;
-                }
-            }
-            if (numberOfActiveProfiles < 2) {//Only one Profile active
+            if (parentAvProfile.numberOfActiveReplicateProfiles() < 2) {//Only one Profile active
                 String msg = "It appears that there is only one Profile that is active "
                         + "and thus cannot be excluded.";
                 JOptionPane.showMessageDialog(null, msg, "Unable to exclude the "
@@ -93,10 +87,8 @@ class ExcludeCalibrationProfileAction extends AbstractAction {
             LreNode parentNode = (LreNode) nodes[0].getParentNode();
             parentAvProfile.setFcReadings(null);//Fb will need to be recalculated
             parentAvProfile.setRawFcReadings(GeneralUtilities.generateAverageFcDataset(profileList));
-            //Reinitialize the Average Profile
-            //This will trigger an auto selection of the LRE window
-            parentAvProfile.setHasAnLreWindowBeenFound(false);
-            profileIntialization.initializeProfile(parentAvProfile, selectionParameters);
+            //Conduct automated LRE window selection
+            profileIntialization.conductAutomatedLreWindowSelection(parentAvProfile, selectionParameters);
             db.saveObject(parentAvProfile);
 
             //Update the tree

@@ -14,10 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * and open the template in the editor.
  */
-
 package org.lreqpcr.core.data_objects;
 
 import java.io.File;
+import javax.swing.JOptionPane;
+import org.openide.windows.WindowManager;
 
 /**
  * Stores program settings such as last database file.
@@ -39,41 +40,58 @@ public class Settings {
     public Settings() {
     }
 
+    private void fileDoesNotExsist(File file) {
+        String msg = "The database file \"" + file.getName()
+                + "\" could not be opened. \n This is likely due to fact that it has been deleted or moved.";
+        JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Unable to open database file",
+                JOptionPane.ERROR_MESSAGE);
+    }
+
     public String getLastExperimentDatabaseDirectory() {
         return lastExperimentDirectory;
     }
 
     public void setLastExperimentDatabaseDirectory(String lastDirectory) {
-        if(lastDirectory != null){
+        if (lastDirectory != null) {
             this.lastExperimentDirectory = lastDirectory;
         }
     }
 
     public File getLastExperimentDatabaseFile() {
-        if(lastExperimentDbFile != null){
-            return new File(lastExperimentDbFile);
-        }else {
-            return null;
-        }        
+        if (lastExperimentDbFile != null) {
+            File file = new File(lastExperimentDbFile);
+            if (!file.exists()) {
+                fileDoesNotExsist(file);
+                return null;
+            } else {
+                return file;
+            }
+        }
+        return null;
     }
 
     public void setLastExperimentDatabaseFile(File lastDatabaseFile) {
-        if(lastDatabaseFile != null){
+        if (lastDatabaseFile != null) {
             this.lastExperimentDbFile = lastDatabaseFile.getAbsolutePath();
         }
     }
 
     public File getLastAmpliconDatabaseFile() {
-        if(lastAmpliconDbFile != null){
-            return new File(lastAmpliconDbFile);
-        }else {
-            return null;
+        if (lastAmpliconDbFile != null) {
+            File file = new File(lastAmpliconDbFile);
+            if (!file.exists()) {
+                fileDoesNotExsist(file);
+                return null;
+            } else {
+                return file;
+            }
         }
+        return null;
     }
 
     public void setLastAmpliconDatabaseFile(File lastAmpliconDbFile) {
-        if(lastAmpliconDbFile != null){
-             this.lastAmpliconDbFile = lastAmpliconDbFile.getAbsolutePath();
+        if (lastAmpliconDbFile != null) {
+            this.lastAmpliconDbFile = lastAmpliconDbFile.getAbsolutePath();
         }
     }
 
@@ -82,33 +100,38 @@ public class Settings {
     }
 
     public void setLastAmpliconDatabaseDirectory(String lastAmpliconDirectory) {
-        if(lastAmpliconDirectory != null){
+        if (lastAmpliconDirectory != null) {
             this.lastAmpliconDirectory = lastAmpliconDirectory;
         }
     }
 
-    public void setLastCalibrationDatabaseDirectory(String directory){
-        if(directory != null){
+    public void setLastCalibrationDatabaseDirectory(String directory) {
+        if (directory != null) {
             lastCalbnDirectory = directory;
         }
     }
 
-    public String getLastCalibrationDatabaseDirectory(){
+    public String getLastCalibrationDatabaseDirectory() {
         return lastCalbnDirectory;
     }
 
-    public void setLastCalibrationDatabaseFile(File file){
-        if (file != null){
+    public void setLastCalibrationDatabaseFile(File file) {
+        if (file != null) {
             lastCalbnDbFile = file.getAbsolutePath();
         }
     }
 
-    public File getLastCalibrationDatabaseFile(){
-        if(lastCalbnDbFile != null){
-            return new File(lastCalbnDbFile);
-        }else {
-            return null;
+    public File getLastCalibrationDatabaseFile() {
+        if (lastCalbnDbFile != null) {
+            File file = new File(lastCalbnDbFile);
+            if (!file.exists()) {
+                fileDoesNotExsist(file);
+                return null;
+            } else {
+                return file;
+            }
         }
+        return null;
     }
 
     public String getLastDataImportDirectory() {
@@ -116,21 +139,26 @@ public class Settings {
     }
 
     public void setLastDataImportDirectory(String directory) {
-        if (directory != null){
+        if (directory != null) {
             lastDataImportDirectory = directory;
         }
     }
 
     public File getLastCyclerDataFile() {
-       if(lastCyclerDataFile != null){
-            return new File(lastCyclerDataFile);
-        }else {
-            return null;
+        if (lastCyclerDataFile != null) {
+            File file = new File(lastCyclerDataFile);
+            if (!file.exists()) {
+                fileDoesNotExsist(file);
+                return null;
+            } else {
+                return file;
+            }
         }
+        return null;
     }
 
     public void setLastCyclerDataFile(File file) {
-        if (file != null){
+        if (file != null) {
             this.lastCyclerDataFile = file.getAbsolutePath();
         }
     }
@@ -140,7 +168,7 @@ public class Settings {
     }
 
     public void setLastCyclerDataImportDirectory(String lastCyclerDataImportDirectory) {
-        if (lastCyclerDataImportDirectory != null){
+        if (lastCyclerDataImportDirectory != null) {
             this.lastCyclerDataImportDirectory = lastCyclerDataImportDirectory;
         }
     }

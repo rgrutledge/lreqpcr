@@ -30,16 +30,19 @@ public class CalibrationProfile extends Profile {
     private double mo;//Mo calculated from the lambdaMass
 
     /**
-     *  Target strandedness is set to double stranded by default
+     * Target strandedness is set to double stranded by default because it is 
+     * assumed that lambda gDNA is the quantitative standard. 
      */
-    public CalibrationProfile() {
+    public CalibrationProfile(Run run) {
+        super(run);
         setTargetStrandedness(TargetStrandedness.DOUBLESTRANDED);
     }
 
     /**
-     * Retrieves the quantity of the lambda standard that was amplified
+     * Retrieves the quantity of the lambda standard that was amplified expressed
+     * in nanograms
      * 
-     * @return the mass of lambda gDNA in picograms
+     * @return nanograms of lambda gDNA used to generate this profile
      */
     public double getLambdaMass() {
         return lambdaMass;
@@ -48,7 +51,7 @@ public class CalibrationProfile extends Profile {
     /**
      * Sets the quantity of the lambda standard that was amplified
      * 
-     * @param lambdaMass the mass of lambda gDNA in PICOGRAMS (pg)
+     * @param lambdaMass picograms of lambda gDNA used to generate this calibration profile
      */
     public void setLambdaMass(double lambdaMass) {
         this.lambdaMass = lambdaMass / 1000000;//convert to nanograms
@@ -60,7 +63,7 @@ public class CalibrationProfile extends Profile {
      * based on the amount of lambda gDNA (Mo) and the average Fo. 
      */
     public void updateProfile() {
-        mo = (lambdaMass * getAmpliconSize()) / 48502;//Mo for lambda gDNA
+        mo = (lambdaMass * getAmpliconSize()) / 48502;//Mo for lambda gDNA expressed in nanograms
         setOCF(getAvFo() / mo);
         setNo(((getAvFo() / getOCF()) * 910000000000d) / getAmpliconSize());
     }

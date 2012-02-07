@@ -19,6 +19,7 @@ package org.lreqpcr.run_initialization_provider;
 import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 import org.lreqpcr.data_import_services.AverageProfileGenerator;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
@@ -33,10 +34,12 @@ import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
 import org.lreqpcr.data_import_services.RunImportUtilities;
 import org.lreqpcr.core.utilities.UniversalLookup;
+import org.lreqpcr.data_import_services.DataImportType;
 import org.lreqpcr.data_import_services.RunImportData;
 import org.lreqpcr.data_import_services.RunInitializationService;
 import org.lreqpcr.ui_components.PanelMessages;
 import org.openide.util.Lookup;
+import org.openide.windows.WindowManager;
 
 /**
  * Processes RunImportData objects, storing the resulting Run and its profiles into
@@ -46,195 +49,184 @@ import org.openide.util.Lookup;
  */
 public class RunInializationProvider implements RunInitializationService {
 
-    private boolean isThisAManualDataImport;
+    private UniversalLookup uLookup = UniversalLookup.getDefault();
     private DatabaseServices ampliconDB;
     private DatabaseServices calbnDB;
     private DatabaseServices experimentDB;
+    private DataImportType importType;
 
+    public RunInializationProvider() {
+        //Retrieve the databases
+        //This assumes that only one database file is open for each database type
+        //Thus the first entry is the active database for each 
+        experimentDB = (DatabaseServices) uLookup.getAll(DatabaseType.EXPERIMENT).get(0);
+        calbnDB = (DatabaseServices) uLookup.getAll(DatabaseType.CALIBRATION).get(0);
+        ampliconDB = (DatabaseServices) uLookup.getAll(DatabaseType.AMPLICON).get(0);
+    }
+
+    /**
+     * Initialized the Run using the supplied ImportData object
+     * 
+     * @param importData the ImportData which cannot be null
+     */
     @SuppressWarnings(value = "unchecked")
     public void intializeRun(RunImportData importData) {
-        if (importData == null || importData.getRun() == null) {
+        if (importData == null){
+            //Run import has been cancelled
             return;
         }
-        isThisAManualDataImport = importData.isThisAManualDataImport();
+        importType = importData.getImportType();
+        //This is obviously inefficient, but it is expected that data import will be limited
+        //to very few types, with the manual data import being rare exceptions
+        //Check for the necessary databases for each type of import format
+        if (importType == DataImportType.STANDARD) {
+            //All three databases will likely be needed
+            if (!experimentDB.isDatabaseOpen()) {
+                if (!experimentDatabaseNotOpen()) {
+                    return;
+                }
+            }
+            if (!calbnDB.isDatabaseOpen()) {
+                if (!calibrationDatabaseNotOpen()) {
+                    return;
+                }
+            }
+            if (!ampliconDB.isDatabaseOpen()) {
+                if (!ampliconDatabaseNotOpen()) {
+                    return;
+                }
+            }
+        }
+        if (importType == DataImportType.MANUAL_SAMPLE_PROFILE) {
+            //Absolutely need an active Experiment database
+            if (!calbnDB.isDatabaseOpen()) {
+                String msg = "An Experiment database is not open. \n"
+                        + "Data import will be terminated.";
+                JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "No Experiemtn database is open",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+        if (importType == DataImportType.MANUAL_CALIBRATION_PROFILE) {
+            //Absolutely need an active Experiment database
+            if (!calbnDB.isDatabaseOpen()) {
+                String msg = "A Calibration database is not open. \n"
+                        + "Data import will be terminated.";
+                JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "No Calibration database is open",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+
         Run run = importData.getRun();
         List<SampleProfile> sampleProfileList = importData.getSampleProfileList();
         List<CalibrationProfile> calibnProfileList = importData.getCalibrationProfileList();
-        //Try to retrieve the three database files which are in alphabetic order
-        if (!getDatabases()) {//Continue??
-            return;//Abort Run import
-        }
-//        if (dbArray == null) {
-//            //The run import has been aborted
-//            return;
-//        }
-//        DatabaseServices ampliconDB = dbArray[0];
-//        DatabaseServices calbnDB = dbArray[1];
-//        DatabaseServices experimentDB = dbArray[2];
+
         LreAnalysisService prfIntlz = Lookup.getDefault().lookup(LreAnalysisService.class);
 
-//Process the SampleProfiles if an experiment database is open
-        if (!sampleProfileList.isEmpty()) {
-            if (experimentDB.isDatabaseOpen()) {
-                LreWindowSelectionParameters winParameters = (LreWindowSelectionParameters) experimentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
-                ExperimentDbInfo dbInfo = (ExperimentDbInfo) experimentDB.getAllObjects(ExperimentDbInfo.class).get(0);
-                double averageOCF = dbInfo.getOcf();
-                for (Profile profile : sampleProfileList) {
-                    profile.isProfileVer0_8_0(true);//Needed for back compatablity 
-                    profile.setParent(run);
-                    profile.setRun(run);//This is NOT redundant to setParent 
-                    profile.setRunDate(run.getRunDate());
-                    if (ampliconDB != null) {
-                        if (ampliconDB.isDatabaseOpen()
-                                && !profile.getAmpliconName().equals("")
-                                && profile.getAmpliconSize() == 0) {//Prevents over writting when using manual Run import
-                            RunImportUtilities.getAmpliconSize(ampliconDB, profile);
+//Process the SampleProfiles if an Experiment database is open
+        if (sampleProfileList != null) {
+            if (!sampleProfileList.isEmpty()) {//A manual Calibration Profile import type should have an empty SampleProfile list
+                if (experimentDB.isDatabaseOpen()) {
+                    LreWindowSelectionParameters winSelectionParameters = (LreWindowSelectionParameters) experimentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
+                    ExperimentDbInfo dbInfo = (ExperimentDbInfo) experimentDB.getAllObjects(ExperimentDbInfo.class).get(0);
+                    double ocf = dbInfo.getOcf();
+                    for (SampleProfile sampleProfile : sampleProfileList) {
+                        sampleProfile.isProfileVer0_8_0(true);//Needed for back compatablity
+                        if (ampliconDB != null) {
+                            if (ampliconDB.isDatabaseOpen()
+                                    && !sampleProfile.getAmpliconName().equals("")
+                                    && sampleProfile.getAmpliconSize() == 0) {//Prevents over writting when using manual SampleProfile import
+                                RunImportUtilities.getAmpliconSize(ampliconDB, sampleProfile);
+                            }
                         }
+                        //Initialize the new Profile which will conduct an automated LRE window selection
+                        prfIntlz.conductAutomatedLreWindowSelection(sampleProfile, winSelectionParameters);
+                        sampleProfile.setOCF(ocf);
+                        sampleProfile.updateProfile();
+                        experimentDB.saveObject(sampleProfile);
                     }
-                    prfIntlz.initializeProfile(profile, winParameters);
-                    if (profile.getStrCycleInt() != 0) {
-                        profile.setOCF(averageOCF);
-                        profile.updateProfile();
-                    }
-                    experimentDB.saveObject(profile);
-                }
-                List<? extends Profile> averageSampleProfileList =
-                        AverageProfileGenerator.averageSampleProfileConstruction(sampleProfileList,
-                        run,
-                        averageOCF,
-                        winParameters);
-                if (averageSampleProfileList == null) {
-                    return;
-                }
-                experimentDB.saveObject(averageSampleProfileList);
-                run.setAverageProfileList((ArrayList<AverageSampleProfile>) averageSampleProfileList);
-                //Deactivated due to a bug that can produce long delays during file import
+                    List<AverageSampleProfile> averageSampleProfileList =
+                            AverageProfileGenerator.averageSampleProfileConstruction(
+                            sampleProfileList,
+                            run,
+                            ocf,
+                            winSelectionParameters);
+                    experimentDB.saveObject(averageSampleProfileList);
+                    run.setAverageProfileList((ArrayList<AverageSampleProfile>) averageSampleProfileList);
+                    //Deactivated due to a bug that can produce long delays during file import
 //        RunImportUtilities.importCyclerDatafile(run);
-                experimentDB.saveObject(sampleProfileList);
-                experimentDB.saveObject(run);
-                experimentDB.commitChanges();
-                //This allows access to the newly imported Run
-                UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_RUN_IMPORTED, run);
-                //Broadcast that a new Run has been added to the Experiment database
-                UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_RUN_IMPORTED);
+                    experimentDB.saveObject(run);
+                    experimentDB.commitChanges();
+                    //This allows access to the newly imported Run
+                    UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_RUN_IMPORTED, run);
+                    //Broadcast that a new Run has been added to the Experiment database
+                    UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_RUN_IMPORTED);
+                }
             }
         }
 
         //Process the CalibnProfileList
-        if (!calibnProfileList.isEmpty()) {
-            if (calbnDB.isDatabaseOpen()) {
-                LreWindowSelectionParameters calbnParameters = (LreWindowSelectionParameters) calbnDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
-                //Process the CalibnProfiles
-                for (Profile profile : calibnProfileList) {
-                    profile.isProfileVer0_8_0(true);
-                    profile.setRunDate(run.getRunDate());
-                    if (ampliconDB != null) {
-                        if (ampliconDB.isDatabaseOpen()
-                                && !profile.getAmpliconName().equals("")
-                                && profile.getAmpliconSize() == 0) {//Prevents over writting when using manual import
-                            RunImportUtilities.getAmpliconSize(ampliconDB, profile);
+        if (calibnProfileList != null) {
+            if (!calibnProfileList.isEmpty()) {//A manual Sample Profile import should have an empty Calibration Profile list.
+                if (calbnDB.isDatabaseOpen()) {
+                    LreWindowSelectionParameters lreWindowSelectionParameters = (LreWindowSelectionParameters) calbnDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
+                    //Process the CalibnProfiles
+                    for (Profile profile : calibnProfileList) {
+                        profile.isProfileVer0_8_0(true);
+                        if (ampliconDB != null) {
+                            if (ampliconDB.isDatabaseOpen()
+                                    && !profile.getAmpliconName().equals("")
+                                    && profile.getAmpliconSize() == 0) {//Prevents over writting when using manual import
+                                RunImportUtilities.getAmpliconSize(ampliconDB, profile);
+                            }
                         }
-                    }
-                    prfIntlz.initializeProfile(profile, calbnParameters);
-                    if (profile.getStrCycleInt() != 0) {
+                        prfIntlz.conductAutomatedLreWindowSelection(profile, lreWindowSelectionParameters);
                         profile.updateProfile();
+                        calbnDB.saveObject(profile);
                     }
-                    calbnDB.saveObject(profile);
+                    //Process the AverageCalibnProfiles
+                    List<AverageCalibrationProfile> averageCalbnProfileList =
+                            (List<AverageCalibrationProfile>) AverageProfileGenerator.averageCalbrationProfileConstruction(
+                            calibnProfileList,
+                            lreWindowSelectionParameters,
+                            run);
+                    calbnDB.saveObject(averageCalbnProfileList);
+                    calbnDB.commitChanges();
+                    //Broadcast that the calibration panels must be updated
+                    UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_CALIBRATION_PANELS);
                 }
-                //Process the AverageCalibnProfiles
-                List<AverageCalibrationProfile> averageCalbnProfileList =
-                        (List<AverageCalibrationProfile>) AverageProfileGenerator.averageCalbrationProfileConstruction(
-                        calibnProfileList,
-                        calbnParameters);
-                calbnDB.saveObject(averageCalbnProfileList);
-                calbnDB.commitChanges();
-                //Broadcast that the calibration panels must be updated
-                UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_CALIBRATION_PANELS);
             }
         }
     }
-    
+
     /**
-     * Retrieves the three LRE databases via universal lookup.
-     * This version assumes only one database file is open for each of the database
-     * types.
-     *
-     * @return yes if to continue with the Run import or false to abandon the import
+     * Generates a yes/no dialog asking the user whether to continue when an Experiment database is not open.
+     * @return whether the user wants to continue with data import
      */
-    @SuppressWarnings(value = "unchecked")
-    public boolean getDatabases() {
-        UniversalLookup uLookup = UniversalLookup.getDefault();
-        //This assumes only one database file is open for each database type
+    public boolean experimentDatabaseNotOpen() {
+        Toolkit.getDefaultToolkit().beep();
+        String msg = "An Experiment database has not been opened. \n"
+                + "Do you want to continue with the data import?";
+        return RunImportUtilities.requestYesNoAnswer("Experiment database not open?",
+                msg);
+    }
 
-        //Check if the necessary database services have active databases
-        //This is done via the universal lookup which stores database service instances as a list
-        //associated with a key, which here is defined by the enum DatabaseType
-        if (uLookup.containsKey(DatabaseType.EXPERIMENT)) {
-            //Assumes that only one of each database will be open...this will have to be modified
-            //if multiple database files are implemented
-            experimentDB = (DatabaseServices) uLookup.getAll(DatabaseType.EXPERIMENT).get(0);
-            if (!experimentDB.isDatabaseOpen() && !isThisAManualDataImport) {
-                //Provide the ability to continue Run import without a exptDB
-                Toolkit.getDefaultToolkit().beep();
-                String msg = "Experiment database not available"
-                        + "Do you want to continue with the data import?";
-                boolean yes = RunImportUtilities.requestYesNoAnswer("Experiment database not available?",
-                        msg);
-                if (!yes) {
-                    return false;
-                }
-//                
-//                int n = JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(), msg, "Calibration database not available. ",
-//                        JOptionPane.YES_NO_OPTION);
-//                if (n != JOptionPane.YES_OPTION) {
-//                    return null;//Abort the Run import
-//                }
-//            }else{//No experiment database service is available
-//                //This type of error should be handled by the Database Window, not here
-            }
-        }
+    /**
+     * Generates a yes/no dialog asking the user whether to continue when a Calibration database is not open.
+     * @return whether the user wants to continue with data import
+     */
+    public boolean calibrationDatabaseNotOpen() {
+        Toolkit.getDefaultToolkit().beep();
+        String msg = "A Calibration database has not been opened. \n"
+                + "Do you want to continue with the data import?";
+        return RunImportUtilities.requestYesNoAnswer("Calibration database not open?", msg);
+    }
 
-        if (uLookup.containsKey(DatabaseType.CALIBRATION)) {
-            calbnDB = (DatabaseServices) uLookup.getAll(DatabaseType.CALIBRATION).get(0);
-            if (!calbnDB.isDatabaseOpen() && !isThisAManualDataImport) {
-                //Provide the ability to continue Run import without a calbnDB
-                Toolkit.getDefaultToolkit().beep();
-                String msg = "A Calibration database has not been opened. "
-                        + "Do you want to continue with the data import?";
-                boolean yes = RunImportUtilities.requestYesNoAnswer("Calibration database not available?",
-                        msg);
-                if (!yes) {
-                    return false;
-                }
-//                int n = JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(), msg, "Calibration database not available. ",
-//                        JOptionPane.YES_NO_OPTION);
-//                if (n != JOptionPane.YES_OPTION) {
-//                    return null;//Abort the Run import
-//                }
-            }
-        }
-        if (uLookup.containsKey(DatabaseType.AMPLICON)) {
-            ampliconDB = (DatabaseServices) uLookup.getAll(DatabaseType.AMPLICON).get(0);
-            //Provide the ability to continue Run import without a calbnDB
-            if (!ampliconDB.isDatabaseOpen() && !isThisAManualDataImport) {
-                Toolkit.getDefaultToolkit().beep();
-                String msg = "An Amplicon database has not been opened. "
-                        + "Do you want to continue with the data import?";
-                boolean yes = RunImportUtilities.requestYesNoAnswer("Amplicon database not available?",
-                        msg);
-                if (!yes) {
-                    return false;
-                }
-//                int n = JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(), msg, "Amplicon database not available. ",
-//                        JOptionPane.YES_NO_OPTION);
-//                if (n != JOptionPane.YES_OPTION) {
-//                    return null;//Abort the Run import
-//                }
-//            }
-//        } else {//No amplicon database service is available
-//            //This type of error should be handled by the Database Window, not here
-            }
-        }
-        return true;
+    public boolean ampliconDatabaseNotOpen() {
+        Toolkit.getDefaultToolkit().beep();
+        String msg = "An Amplicon database has not been opened. \n"
+                + "Do you want to continue with the data import?";
+        return RunImportUtilities.requestYesNoAnswer("Amplicon database not open?", msg);
     }
 }

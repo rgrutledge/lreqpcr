@@ -72,7 +72,7 @@ public class SortedProfileTreeNodeLabels implements LabelFactory {
             AverageSampleProfile avPrf = (AverageSampleProfile) profile;
             if (avPrf.isReplicateAverageNoLessThan10Molecules()
                     && !avPrf.isExcluded()
-                    && avPrf.getNumberOfActiveReplicateProfiles() > 1) {
+                    && avPrf.numberOfActiveReplicateProfiles() > 1) {
                 df.applyPattern("0.00");
                 profile.setShortDescription("A valid average profile could not be generated due the low target quantity");
                 return profileName + " <10 Molecules: avReplc N= " + df.format(avPrf.getNo());

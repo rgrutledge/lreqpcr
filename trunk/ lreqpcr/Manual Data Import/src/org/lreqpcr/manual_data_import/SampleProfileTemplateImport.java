@@ -49,6 +49,10 @@ import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.TargetStrandedness;
+import org.lreqpcr.core.database_services.DatabaseServices;
+import org.lreqpcr.core.database_services.DatabaseType;
+import org.lreqpcr.core.utilities.UniversalLookup;
+import org.lreqpcr.data_import_services.DataImportType;
 import org.lreqpcr.data_import_services.RunImportService;
 import org.openide.util.Exceptions;
 import org.openide.windows.WindowManager;
@@ -67,7 +71,7 @@ public class SampleProfileTemplateImport extends RunImportService {
      */
     public static void createSampleProfileImportTemplate() throws WriteException, IOException {
         File selectedFile = IOUtilities.newExcelFile();
-        if(selectedFile != null){
+        if (selectedFile != null) {
             WritableWorkbook workbook = Workbook.createWorkbook(selectedFile);
             //Setup cell formatting
             WritableFont arialBold = new WritableFont(WritableFont.ARIAL, 10, WritableFont.BOLD);
@@ -94,8 +98,8 @@ public class SampleProfileTemplateImport extends RunImportService {
             sheet.addCell(label);
             label = new Label(1, 2, "Profile Name(optnl):", boldRight);
             sheet.addCell(label);
-            label = new Label(4, 0, "Note that Amplicon Name, Amplicon Size and Sample Name must be provided for each Fc dataset." +
-                    " Profile Name is optional.");
+            label = new Label(4, 0, "Note that Amplicon Name, Amplicon Size and Sample Name must be provided for each Fc dataset."
+                    + " Profile Name is optional.");
             sheet.addCell(label);
             label = new Label(1, 3, "Amplicon Name:", boldRight);
             sheet.addCell(label);
@@ -147,8 +151,24 @@ public class SampleProfileTemplateImport extends RunImportService {
      */
     @Override
     public RunImportData importRunData() {
+        UniversalLookup uLookup = UniversalLookup.getDefault();
+        //Check to see if an Experiment database is open
+        if (uLookup.containsKey(DatabaseType.EXPERIMENT)) {
+            DatabaseServices calbnDB = (DatabaseServices) uLookup.getAll(DatabaseType.EXPERIMENT).get(0);
+            if (!calbnDB.isDatabaseOpen()) {
+                String msg = "An Experiment database is not open. \n"
+                        + "Data import will be terminated.";
+                JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Experiment database not open",
+                        JOptionPane.ERROR_MESSAGE);
+                return null;
+            }
+        } else {
+            //No Calibration database service is available...this should never happen
+            //Throw some type of error
+            return null;
+        }
         //Retrieve the Excel sample profile import file
-        File excelImportFile = IOUtilities.openImportExcelFile("Sample Template Data Import");
+        File excelImportFile = IOUtilities.openImportExcelFile("Maunal Sample Profile Data Import");
         if (excelImportFile == null) {
             return null;
         }
@@ -169,20 +189,20 @@ public class SampleProfileTemplateImport extends RunImportService {
         Sheet sheet = workbook.getSheet(0);
         //Check if this is an LRE Template sheet
         if (sheet.getName().compareTo("LRE Sample Template") != 0) {
-            String msg = "This appears not to be a LRE sample template file. Note " +
-                    "that the Excel sheet name must be \"LRE Sample Template\"";
-            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Invalid Excel import file",
+            String msg = "This appears not to be a Sample Profile import template. \nNote "
+                    + "that an empty Sample Profile import template can be created within the \'Manual Data Entry\' menu item";
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Invalid Sample Profile import template",
                     JOptionPane.ERROR_MESSAGE);
             return null;
         }
-        
+
         DateCell date = null;
         try {
             date = date = (DateCell) sheet.getCell(2, 0);
         } catch (Exception e) {
-            String msg = "The Run Date appears to be invalid. Manually replace " +
-                    "the run date in the Results sheet (B8), " +
-                    "save the file, and try importing the xls file again.";
+            String msg = "The Run Date appears to be invalid. Manually replace "
+                    + "the run date in the Results sheet (B8), "
+                    + "save the file, and try importing the xls file again.";
             JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg,
                     "Invalid Run Date", JOptionPane.ERROR_MESSAGE);
             return null;
@@ -201,9 +221,8 @@ public class SampleProfileTemplateImport extends RunImportService {
         int col = 2;//Start column
         int wellNumber = 1;//Used to preserve ordering of the profiles
         while (col < colCount && sheet.getCell(col, 3).getType() != CellType.EMPTY) {
-            SampleProfile profile = new SampleProfile();
+            SampleProfile profile = new SampleProfile(run);
             profile.setWellNumber(wellNumber);
-            profile.setRunDate(run.getRunDate());
             profile.setName(sheet.getCell(col, 2).getContents());
             profile.setAmpliconName(sheet.getCell(col, 3).getContents());
             try {
@@ -216,7 +235,7 @@ public class SampleProfileTemplateImport extends RunImportService {
             String dsDNA = sheet.getCell(col, 6).getContents();
             if (dsDNA.equalsIgnoreCase("yes")) {
                 profile.setTargetStrandedness(TargetStrandedness.DOUBLESTRANDED);
-            } else{
+            } else {
                 profile.setTargetStrandedness(TargetStrandedness.SINGLESTRANDED);
             }
             //If Profile name is empty, generate a name based on amp and sample names
@@ -246,9 +265,7 @@ public class SampleProfileTemplateImport extends RunImportService {
         }
         workbook.close();
 
-        RunImportData importData = new RunImportData();
-        importData.setIsThisAManualDataImport(true);
-        importData.setRun(run);
+        RunImportData importData = new RunImportData(DataImportType.MANUAL_SAMPLE_PROFILE, run);
         importData.setCalibrationProfileList(calbnProfileList);
         importData.setSampleProfileList(sampleProfileList);
         return importData;

@@ -31,7 +31,8 @@ public class AverageCalibrationProfile extends CalibrationProfile implements Ave
      * An average calibration file constructed from the replicate calibration
      * profiles
      */
-    public AverageCalibrationProfile() {
+    public AverageCalibrationProfile(Run run) {
+        super(run);
         setChildClass(CalibrationProfile.class);
     }
 
@@ -55,15 +56,24 @@ public class AverageCalibrationProfile extends CalibrationProfile implements Ave
     }
 
     /**
-     * The issue of profile scattering due to less than 10 target molecules is
-     * not applicable to AverageCalibrationProfiles due to the fact that sample is
-     * predefined. That is, calibration profiles are generated using a known
-     * number of lambda genomes.
+     * The issue of profile scattering when target quantity is less than 10 molecules is
+     * not applicable to AverageCalibrationProfiles due to the fact that sample is a 
+     * quantitative standard of predefined quantity that should always be much 
+     * greater than 10 molecules. 
      *
-     * @return always false
+     * @return always returns false
      */
     public boolean isReplicateAverageNoLessThan10Molecules() {
-        //Always false
         return false;
+    }
+
+    public int numberOfActiveReplicateProfiles() {
+        int numberOfActiveReplicateProfiles = 0;
+        for (Profile profile : lambdaProfileList) {
+            if (!profile.isExcluded()) {
+                numberOfActiveReplicateProfiles++;
+            }
+        }
+        return numberOfActiveReplicateProfiles;
     }
 }

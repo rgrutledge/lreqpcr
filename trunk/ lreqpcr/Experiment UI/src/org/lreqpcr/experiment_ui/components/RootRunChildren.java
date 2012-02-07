@@ -21,7 +21,6 @@ import java.util.List;
 import javax.swing.Action;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
-import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.database_services.DatabaseServices;
@@ -42,7 +41,6 @@ import org.openide.util.lookup.Lookups;
 public class RootRunChildren extends LreObjectChildren {
 
     private LreAnalysisService analysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
-    private LreWindowSelectionParameters selectionParameters;
 
     /**
      * Generates AverageProfile nodes for a Run.
@@ -56,9 +54,6 @@ public class RootRunChildren extends LreObjectChildren {
     public RootRunChildren(ExplorerManager mgr, DatabaseServices db, List<? extends Run> runList,
             LreActionFactory actionFactory, LabelFactory labelFactory) {
         super(mgr, db, runList, actionFactory, labelFactory);
-        List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
-//This list should never be empty, as a LreWindowSelectionParameters object is created during DB creation
-                selectionParameters = l.get(0);
     }
 
     /**
@@ -67,7 +62,7 @@ public class RootRunChildren extends LreObjectChildren {
      * the corresponding Explorer manager and database which is being viewed. 
      * 
      * @param lreObject
-     * @return
+     * @return the new node
      */
     @SuppressWarnings(value = "unchecked")
     @Override
@@ -90,13 +85,11 @@ public class RootRunChildren extends LreObjectChildren {
             List<AverageSampleProfile> allAvSampleProfiles = db.getAllObjects(AverageSampleProfile.class);
 //All of the profiles within this run need to be converted to version 0.8.0
             for (AverageSampleProfile avProfile : allAvSampleProfiles){
-        //Note that this function will also updates the replicate SampleProfiles
-                analysisService.convertProfileToNewVersion(avProfile, selectionParameters);
+                analysisService.convertProfileToNewVersion(avProfile);
                 //Must save the Profiles, including that replicate SampleProfiles
-                avProfile.isProfileVer0_8_0(true);
                 db.saveObject(avProfile);
                 for (Profile repProfile : avProfile.getReplicateProfileList()){
-                    repProfile.isProfileVer0_8_0(true);
+                    analysisService.convertProfileToNewVersion(repProfile);
                     db.saveObject(repProfile);
                 }
             }

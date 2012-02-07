@@ -24,7 +24,6 @@ import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.Run;
-import org.lreqpcr.core.data_processing.ProfileSummary;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.utilities.UniversalLookup;
@@ -72,14 +71,15 @@ public class ReturnRunProfilesEmaxToLreDerivedEmaxAction extends AbstractAction 
                 for (Profile profile : run.getAverageProfileList()) {
                     profile.setIsEmaxOverridden(false);
                     profile.setOverridentEmaxValue(0);
-                    ProfileSummary prfSum = analysisService.initializeProfile(profile, selectionParameters);
-                    db.saveObject(prfSum.getProfile());
+                    //Need to update avFo and avNo
+                    analysisService.initializeProfileSummary(profile, selectionParameters);
+                    db.saveObject(profile);
                     AverageProfile avProfile = (AverageProfile) profile;
                     for (Profile repProfile : avProfile.getReplicateProfileList()) {
                         repProfile.setIsEmaxOverridden(false);
                         repProfile.setOverridentEmaxValue(0);
-                        prfSum = analysisService.initializeProfile(repProfile, selectionParameters);
-                        db.saveObject(prfSum.getProfile());
+                        analysisService.initializeProfileSummary(repProfile, selectionParameters);
+                        db.saveObject(repProfile);
                     }
                 }
             }

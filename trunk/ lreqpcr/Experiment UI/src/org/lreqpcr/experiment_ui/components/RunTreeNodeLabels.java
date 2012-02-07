@@ -51,7 +51,7 @@ public class RunTreeNodeLabels implements LabelFactory {
         if (member instanceof Profile) {
             Profile profile = (Profile) member;
             profile.setShortDescription("");
-            //Label madeup of three components
+            //Label madeup of three components: name, Emax and No
             String profileName = profile.getAmpliconName() + "@" + profile.getSampleName();
             //If excluded no Emax or No is displayed
             if (profile.isExcluded()) {
@@ -74,7 +74,7 @@ public class RunTreeNodeLabels implements LabelFactory {
                 if (!profile.hasAnLreWindowBeenFound()) {
                     emax = " (LRE window not found) ";
                     profile.setShortDescription("An LRE window could not be found, likely due to being a flat profile"
-                            + " or the Min Fc is set too high");
+                            + " or the Min Fc being set too high");
                 } else {
                     df.applyPattern("#0.0");
                     emax = " (" + df.format(profile.getEmax() * 100) + "%) ";
@@ -84,13 +84,18 @@ public class RunTreeNodeLabels implements LabelFactory {
                 AverageSampleProfile avPrf = (AverageSampleProfile) profile;
                 if (avPrf.isReplicateAverageNoLessThan10Molecules()
                         && !avPrf.isExcluded()
-                        && avPrf.getNumberOfActiveReplicateProfiles() > 1) {
+                        && avPrf.numberOfActiveReplicateProfiles() > 1) {
                     df.applyPattern("0.00");
                     profile.setShortDescription("A valid average profile could not be generated due the low target quantity");
                     return profileName + " <10 Molecules: avReplc N= " + df.format(avPrf.getNo());
                 }
             }
             //Determine what to display for No
+            if (profile.getNo() == Double.POSITIVE_INFINITY){
+                //Produced because an OCF has not been applied
+                profile.setShortDescription("Target quantity could not be determined, likely because an OCF has not been applied");
+                return profileName + emax + "N = n.d.";
+            }
             if (profile.getNo() < 10) {
                 df.applyPattern("0.00");
             } else {

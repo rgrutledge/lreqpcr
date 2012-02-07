@@ -93,6 +93,7 @@ public class CalibrationDb4oServiceProvider extends Db4oDatabaseServices impleme
                     return true;
                 }
             }
+            return false;
         }
         return false;
     }

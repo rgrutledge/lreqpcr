@@ -68,8 +68,9 @@ public class ReturnSampleProfileToLreDerivedEmaxAction extends AbstractAction {
                 Profile profile = node.getLookup().lookup(Profile.class);
                 profile.setIsEmaxOverridden(false);
                 profile.setOverridentEmaxValue(0);
-                ProfileSummary prfSum = analysisService.initializeProfile(profile, selectionParameters);
-                db.saveObject(prfSum.getProfile());
+                //Need to update avFo and avNo
+                analysisService.initializeProfileSummary(profile, selectionParameters);
+                db.saveObject(profile);
                 node.refreshNodeLabel();
                 if (!(profile instanceof AverageSampleProfile)) {
                     //Need to update the parent AverageSampleProfile

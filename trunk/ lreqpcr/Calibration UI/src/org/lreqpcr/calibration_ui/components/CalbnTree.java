@@ -19,7 +19,6 @@ package org.lreqpcr.calibration_ui.components;
 import com.google.common.collect.Lists;
 import org.lreqpcr.core.utilities.MathFunctions;
 import org.lreqpcr.core.utilities.FormatingUtilities;
-import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.calibration_ui.actions.CalbnTreeNodeActions;
 import org.lreqpcr.core.ui_elements.LabelFactory;
@@ -31,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Action;
 import javax.swing.JPanel;
-import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.ui_components.PanelMessages;
@@ -120,35 +118,35 @@ public class CalbnTree extends JPanel {
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.CLEAR_PROFILE_EDITOR);
     }
 
+    /**
+     * Calculates the average OCF using only the average calibration profiles
+     *
+     * @param calbnProfileList list of AverageCalibrationProfiles
+     */
     @SuppressWarnings(value = "unchecked")
     public void calcAverageOCF() {
-        if (!calbnDB.isDatabaseOpen()) {
+        List<AverageCalibrationProfile> avCalProfileList = (List<AverageCalibrationProfile>) calbnDB.getAllObjects(AverageCalibrationProfile.class);
+        if (avCalProfileList.isEmpty()){
             avProfileOCFdisplay.setText("");
             return;
         }
         double ocfSum = 0;
         ArrayList ocfArray = Lists.newArrayList();
         dfCV.applyPattern("0.0");
-        //This returns both replicate and average profiles, so the repliate profiles must not be included
-        List<? extends LreObject> calbnProfileList =
-                (List<? extends LreObject>) calbnDB.getAllObjects(AverageCalibrationProfile.class);
-        if (!calbnProfileList.isEmpty()) {
-            for (int i = 0; i < calbnProfileList.size(); i++) {
-                CalibrationProfile profile = (CalibrationProfile) calbnProfileList.get(i);
-                if (!profile.isExcluded()) {
-                    ocfSum += profile.getOCF();
-                    ocfArray.add(profile.getOCF());
-                }
+        for (AverageCalibrationProfile avProfile : avCalProfileList) {
+            if (!avProfile.isExcluded()) {
+                ocfSum += avProfile.getOCF();
+                ocfArray.add(avProfile.getOCF());
             }
-            double averageOCF = ocfSum / ocfArray.size();
-            double sd = MathFunctions.calcStDev(ocfArray);
-            double cv = sd / averageOCF;
-            df.applyPattern(FormatingUtilities.decimalFormatPattern(averageOCF));
-            if (calbnProfileList.size() == 1) {
-                avProfileOCFdisplay.setText(df.format(averageOCF));
-            } else {
-                avProfileOCFdisplay.setText(df.format(averageOCF) + " +/-" + dfCV.format(cv * 100) + "%");
-            }
+        }
+        double averageOCF = ocfSum / ocfArray.size();
+        double sd = MathFunctions.calcStDev(ocfArray);
+        double cv = sd / averageOCF;
+        df.applyPattern(FormatingUtilities.decimalFormatPattern(averageOCF));
+        if (ocfArray.size() == 1) {
+            avProfileOCFdisplay.setText(df.format(averageOCF));
+        } else {
+            avProfileOCFdisplay.setText(df.format(averageOCF) + " +/-" + dfCV.format(cv * 100) + "%");
         }
     }
 
@@ -219,7 +217,6 @@ public class CalbnTree extends JPanel {
         runViewButton.setSelected(true);
         UniversalLookup.getDefault().add(PanelMessages.RUN_VIEW_SELECTED, null);
     }//GEN-LAST:event_runViewButtonActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField avProfileOCFdisplay;
     private javax.swing.JScrollPane beanTree;
