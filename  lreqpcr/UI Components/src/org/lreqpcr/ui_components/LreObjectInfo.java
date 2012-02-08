@@ -180,7 +180,11 @@ public class LreObjectInfo extends JPanel {
                 wellLabelDisplay.setVisible(false);
             }
             ampNameDisplay.setText(profile.getAmpliconName());
-            ampSizeDisplay.setText(String.valueOf(profile.getAmpliconSize()));
+            if (profile.getAmpliconSize() ==0){
+                ampSizeDisplay.setText("Unknown");
+            }else {
+                ampSizeDisplay.setText(String.valueOf(profile.getAmpliconSize()));
+            }
             sampleNameDisplay.setText(profile.getSampleName());
             if (profile.getAmpTm() != 0) {
                 tmDisplay.setText(df.format(profile.getAmpTm()));
@@ -350,8 +354,8 @@ public class LreObjectInfo extends JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(ampSizeLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(ampSizeDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(ampSizeDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 131, Short.MAX_VALUE)
                         .addComponent(nanErrorDisplay)
                         .addContainerGap())))
         );
