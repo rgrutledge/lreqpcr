@@ -100,7 +100,6 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         if (selectionParameters != null) {
             foThreshold = selectionParameters.getFoThreshold();
             minFc = selectionParameters.getMinFc();
-            avReplCvDisplay.setText("");
             updateDisplay();
         }
     }
@@ -232,7 +231,6 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
             currentDB.saveObject(profile);
         }
         currentDB.commitChanges();
-//        calcReplAvFoCV();
     }
 
     private void updateDisplay() {
@@ -252,7 +250,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
             df.applyPattern("#.0%");
             foThresholdDisplay.setText(df.format(foThreshold));
         }
-//        calcReplAvFoCV();//This can be very intensive when the database is large
+        avReplCvDisplay.setText("");
     }
 
     void clearPanel() {
@@ -266,12 +264,14 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
      * replicate profile CV, that is average No CV for sample profiles when an OCF 
      * has been applied (necessary to exclude replicates less than 10 molecules, 
      * or average Fo CV for replicate calibration profiles where it is expected that 
-     * target quantity will never be below 10 molecules. 
+     * target quantity will never be below 10 molecules.
+     *
+     * @return the replicate CV or -1 if the replicate CV cannot be determined or 0 if too few replicates are available.
      */
     @SuppressWarnings(value = "unchecked")
     private double calcReplicateFoCV() {
-        if (currentDB == null) {
-            return 0;
+        if (currentDB == null || !currentDB.isDatabaseOpen()) {
+            return -1;
         }
         ArrayList<Double> replCvValues = Lists.newArrayList();
         if (currentDB.getDatabaseType() == DatabaseType.EXPERIMENT) {
@@ -279,8 +279,12 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
             List<AverageSampleProfile> avSampleProfileList = currentDB.getAllObjects(AverageSampleProfile.class);
             if (!(avSampleProfileList.get(0).getOCF() > 0)) {
                 //An OCF has not been applied and thus No values are not available
-                //TO DO present an error dialog******************************************************************************************
-                return 0;
+                Toolkit.getDefaultToolkit().beep();
+                String msg = "An OCF has not yet be entered into this database and target quantities are thus not available. \n"
+                        + "The average replicate CV can therefore not be determined.";
+                JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Target quantities are not available",
+                        JOptionPane.ERROR_MESSAGE);
+                return -1;
             }
             //Calculate and collect the Replicate Fo CVs
 
@@ -314,20 +318,24 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                         sum += profile.getAvFo();
                     }
                 }
-                if (foValues.size() > 1) {
+                if (foValues.size() > 1) {//A CV can only be determined if more than one replicate is available
                     double avFo = sum / foValues.size();
                     replCvValues.add(MathFunctions.calcStDev(foValues) / avFo);
                 }
             }
         }
-        if (replCvValues.size() > 1) {
+        if (replCvValues.size() > 1) {//If only one replicate is available, a CV cannot be determined
             double cvSum = 0;
             for (Double cv : replCvValues) {
-                cvSum += cv;
+                //Check to see if this is a real number
+                String number = String.valueOf(cv);
+                if (!number.contains("NaN")){//This is caused by lacking an amplicon size or OCF
+                    cvSum += cv;
+                }
             }
             return cvSum / replCvValues.size();
         }
-        return 0;
+        return 0;//Too few replicates are available
     }
 
     /** This method is called from within the constructor to
@@ -416,12 +424,15 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         calcAvReplCV.setSelected(false);
         df.applyPattern("#0.0%");
         double avCV = calcReplicateFoCV();
-        if (avCV != 0){
+        if (!(avCV <= 0)) {
             avReplCvDisplay.setText(df.format(avCV));
-        }else {
-            avReplCvDisplay.setText("Too few replicates");
+        } else {
+            if (avCV == 0) {
+                avReplCvDisplay.setText("Too few replicates");
+            } else {
+                avReplCvDisplay.setText("");
+            }
         }
-        
     }//GEN-LAST:event_calcAvReplCVActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private JLabel avReplCvDisplay;
