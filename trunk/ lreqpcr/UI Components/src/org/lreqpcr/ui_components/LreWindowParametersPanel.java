@@ -79,6 +79,8 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         foThresholdDisplay.addKeyListener(keyAdapter);
         WindowManager.getDefault().getRegistry().addPropertyChangeListener(this);
         universalLookup.addListner(PanelMessages.NEW_DATABASE, this);
+        universalLookup.addListner(PanelMessages.UPDATE_CALIBRATION_PANELS, this);
+        universalLookup.addListner(PanelMessages.UPDATE_EXPERIMENT_PANELS, this);
         updateDisplay();
         avReplCvDisplay.setText("");
     }
@@ -128,7 +130,9 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                                 JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-                    calcAverageFmax();
+                    if (averageFmax == 0){
+                        calcAverageFmax();//Limited to the first 100 profiles as this is time consuming
+                    }
                     if (minFc > averageFmax) {
                         Toolkit.getDefaultToolkit().beep();
                         boolean yes = RunImportUtilities.requestYesNoAnswer("Minimum Fc too high?",
@@ -468,6 +472,9 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                     clearPanel();
                 }
             }
+        }
+        if (key == PanelMessages.UPDATE_CALIBRATION_PANELS || key == PanelMessages.UPDATE_EXPERIMENT_PANELS){
+            avReplCvDisplay.setText("");
         }
     }
 

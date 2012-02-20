@@ -38,12 +38,12 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="calcAvReplCV" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="avReplCvDisplay" pref="109" max="32767" attributes="0"/>
+                      <Component id="avReplCvDisplay" pref="89" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="minFcDisplay" pref="176" max="32767" attributes="0"/>
+                      <Component id="minFcDisplay" pref="156" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
@@ -72,7 +72,7 @@
                   <Component id="avReplCvDisplay" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="calcAvReplCV" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="34" max="32767" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>

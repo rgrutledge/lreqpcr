@@ -38,7 +38,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author Bob Rutledge
  */
-public class RootAvCalibrationProfileChildren extends LreObjectChildren {
+public class RootCalibrationChildren extends LreObjectChildren {
 
     private LreAnalysisService analysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
     private LreWindowSelectionParameters selectionParameters;
@@ -53,10 +53,11 @@ public class RootAvCalibrationProfileChildren extends LreObjectChildren {
      * @param labelFactory the node label factory
      */
     @SuppressWarnings(value = "unchecked")
-    public RootAvCalibrationProfileChildren(ExplorerManager mgr, DatabaseServices db, List<AverageCalibrationProfile> avCalProfileList,
+    public RootCalibrationChildren(ExplorerManager mgr, DatabaseServices db, List<AverageCalibrationProfile> avCalProfileList,
             LreActionFactory actionFactory, LabelFactory labelFactory) {
         super(mgr, db, avCalProfileList, actionFactory, labelFactory);
 
+//Profile conversin to ver 0.8.0
         //Check to see if the database contains any profile
         if (avCalProfileList != null && avCalProfileList.size() >0) {
             //Check the version of the AverageProfiles...if not 0.8.0 then all the profiles need to be updated.
