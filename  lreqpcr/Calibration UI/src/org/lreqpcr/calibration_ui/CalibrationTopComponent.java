@@ -39,7 +39,6 @@ import org.lreqpcr.ui_components.OpeningDatabaseDialog;
 import org.lreqpcr.ui_components.PanelMessages;
 import org.openide.util.Lookup.Result;
 import org.openide.util.LookupEvent;
-import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -73,7 +72,7 @@ public final class CalibrationTopComponent extends TopComponent
     public CalibrationTopComponent() {
         initComponents();
 //        setName(NbBundle.getMessage(CalibrationTopComponent.class, "CTL_CalibrationTopComponent"));
-        setToolTipText(NbBundle.getMessage(CalibrationTopComponent.class, "HINT_CalibrationTopComponent"));
+//        setToolTipText(NbBundle.getMessage(CalibrationTopComponent.class, "HINT_CalibrationTopComponent"));
 //        setIcon(ImageUtilities.loadImage(ICON_PATH, true));
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_DRAGGING_DISABLED, Boolean.TRUE);
@@ -82,6 +81,7 @@ public final class CalibrationTopComponent extends TopComponent
         putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
 
         setName("Lambda Calibration DB");
+        setToolTipText("Calibration DB");
         associateLookup(ExplorerUtils.createLookup(mgr, this.getActionMap()));
         mgr.addPropertyChangeListener(this);
         ampliconNodeResult = Utilities.actionsGlobalContext().lookupResult(AmpliconNode.class);
@@ -209,11 +209,15 @@ public final class CalibrationTopComponent extends TopComponent
         //The only reason this frame is painted at all is due to the delay produced by opening of a file chooser dialog
 //Many, many attempts were made unsuccefully to have this JFrame paint correctly while the database file was being opened
         JFrame message = OpeningDatabaseDialog.makeDialog();
-        if(calibrationDB.openUserSelectDatabaseFile()){
+        if (calibrationDB.openUserSelectDatabaseFile()) {
             calbnTree.createTree();
 //            calbnTree.calcAverageOCF();
             UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, calibrationDB);
             UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_DATABASE);
+            String dbFileName = calibrationDB.getDatabaseFile().getName();
+            int length = dbFileName.length();
+            setDisplayName(dbFileName.substring(0, length - 4));
+            setToolTipText(calibrationDB.getDatabaseFile().getName());
         }//If a new file was not opened, do nothing
         message.setVisible(false);
         message.dispose();
@@ -221,11 +225,14 @@ public final class CalibrationTopComponent extends TopComponent
 
     @SuppressWarnings(value = "unchecked")
     private void newDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newDBbuttonActionPerformed
-        if(calibrationDB.createNewDatabaseFile()){
+        if (calibrationDB.createNewDatabaseFile()) {
             calbnTree.createTree();
-//            calbnTree.calcAverageOCF();
             UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, calibrationDB);
             UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_DATABASE);
+            String dbFileName = calibrationDB.getDatabaseFile().getName();
+            int length = dbFileName.length();
+            setDisplayName(dbFileName.substring(0, length - 4));
+            setToolTipText(calibrationDB.getDatabaseFile().getName());
         }
     }//GEN-LAST:event_newDBbuttonActionPerformed
 
@@ -234,15 +241,21 @@ public final class CalibrationTopComponent extends TopComponent
             calbnTree.createTree();
             UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, null);
             UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_DATABASE);
+            setDisplayName("Calibration DB");
+            setToolTipText("Calibration DB Explorer");
         }
     }//GEN-LAST:event_closeDBbuttonActionPerformed
 
     @SuppressWarnings(value = "unchecked")
     private void openLastDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openLastDBbuttonActionPerformed
         if (calibrationDB.openLastDatabaseFile()) {
-                    calbnTree.createTree();
-                    UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, calibrationDB);
-                    UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_DATABASE);
+            calbnTree.createTree();
+            UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, calibrationDB);
+            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_DATABASE);
+            String dbFileName = calibrationDB.getDatabaseFile().getName();
+            int length = dbFileName.length();
+            setDisplayName(dbFileName.substring(0, length - 4));
+            setToolTipText(calibrationDB.getDatabaseFile().getName());
         } else {
             // TODO present an error dialog...this might not be necessary
         }

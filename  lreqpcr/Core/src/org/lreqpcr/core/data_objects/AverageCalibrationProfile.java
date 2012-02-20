@@ -76,4 +76,11 @@ public class AverageCalibrationProfile extends CalibrationProfile implements Ave
         }
         return numberOfActiveReplicateProfiles;
     }
+
+    @Override
+    public int compareTo(Object o) {
+        AverageCalibrationProfile profile = (AverageCalibrationProfile) o;
+        return profile.getRunDate().compareTo(getRunDate());
+    }
+
 }

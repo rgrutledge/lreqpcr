@@ -27,9 +27,12 @@ import org.lreqpcr.core.ui_elements.LreNode;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.swing.Action;
 import javax.swing.JPanel;
+import org.lreqpcr.calibration_ui.actions.FixAllCalibrationProfileEmaxTo100percentAction;
+import org.lreqpcr.calibration_ui.actions.ReturnAllCalibrationProfileEmaxToLreAction;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.ui_components.PanelMessages;
@@ -84,8 +87,16 @@ public class CalbnTree extends JPanel {
 //        LreNode root = new LreNode(new LreObjectChildren(mgr, calbnDB, rxnSetupList, nodeActionFactory,
 //                nodeLabelFactory), null, new Action[]{});
         List<AverageCalibrationProfile> avCalProfileList = (List<AverageCalibrationProfile>) calbnDB.getAllObjects(AverageCalibrationProfile.class);
-        LreNode root = new LreNode(new RootAvCalibrationProfileChildren(mgr, calbnDB, avCalProfileList, nodeActionFactory,
-                nodeLabelFactory), null, new Action[]{});
+   //This is necessary because DB4O lists cannot be sorted via Collections.sort
+        ArrayList<AverageCalibrationProfile> lreObjectArray = new ArrayList<AverageCalibrationProfile>(avCalProfileList);
+        displayName = displayName + " (" + String.valueOf(lreObjectArray.size()) + ")";
+        Collections.sort(lreObjectArray);
+        Action[] actions = new Action[]{
+            new FixAllCalibrationProfileEmaxTo100percentAction(mgr),
+            new ReturnAllCalibrationProfileEmaxToLreAction(mgr)
+        };
+        LreNode root = new LreNode(new RootCalibrationChildren(mgr, calbnDB, avCalProfileList, nodeActionFactory,
+                nodeLabelFactory), null, actions);
         root.setDatabaseService(calbnDB);
         root.setDisplayName(displayName);
         root.setShortDescription(dbFile.getAbsolutePath());
@@ -97,7 +108,7 @@ public class CalbnTree extends JPanel {
     @SuppressWarnings(value = "unchecked")
     public void creatAmpliconTree(String ampName) {
         List ampList = calbnDB.retrieveUsingFieldValue(AverageCalibrationProfile.class, "ampliconName", ampName);
-        LreNode root = new LreNode(new RootAvCalibrationProfileChildren(mgr, calbnDB, ampList, nodeActionFactory,
+        LreNode root = new LreNode(new RootCalibrationChildren(mgr, calbnDB, ampList, nodeActionFactory,
                 nodeLabelFactory), null, new Action[]{});
         root.setDisplayName(ampName + " (" + String.valueOf(ampList.size()) + ")");
         root.setDatabaseService(calbnDB);
@@ -109,7 +120,7 @@ public class CalbnTree extends JPanel {
     @SuppressWarnings(value = "unchecked")
     public void createSampleTree(String sampleName) {
         List avCalProfilList = calbnDB.retrieveUsingFieldValue(AverageCalibrationProfile.class, "sampleName", sampleName);
-        LreNode root = new LreNode(new RootAvCalibrationProfileChildren(mgr, calbnDB, avCalProfilList, nodeActionFactory, nodeLabelFactory),
+        LreNode root = new LreNode(new RootCalibrationChildren(mgr, calbnDB, avCalProfilList, nodeActionFactory, nodeLabelFactory),
                 null, new Action[]{});
         root.setDisplayName(sampleName + " (" + String.valueOf(avCalProfilList.size()) + ")");
         root.setDatabaseService(calbnDB);

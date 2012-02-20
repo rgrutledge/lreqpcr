@@ -39,7 +39,6 @@ import org.lreqpcr.data_export_services.DataExportServices;
 import org.lreqpcr.ui_components.PanelMessages;
 import org.lreqpcr.ui_components.OpeningDatabaseDialog;
 import org.openide.util.LookupEvent;
-import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -72,7 +71,7 @@ public final class ExperimentTopComponent extends TopComponent
     public ExperimentTopComponent() {
         initComponents();
 //        setName(NbBundle.getMessage(ExperimentTopComponent.class, "CTL_ExperimentTopComponent"));
-        setToolTipText(NbBundle.getMessage(ExperimentTopComponent.class, "HINT_ExperimentTopComponent"));
+//        setToolTipText(NbBundle.getMessage(ExperimentTopComponent.class, "HINT_ExperimentTopComponent"));
 //        setIcon(ImageUtilities.loadImage(ICON_PATH, true));
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_DRAGGING_DISABLED, Boolean.TRUE);
@@ -81,6 +80,7 @@ public final class ExperimentTopComponent extends TopComponent
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
 
         setName("Experiment DB");
+        setToolTipText("Experiment DB Explorer");
         associateLookup(ExplorerUtils.createLookup(mgr, this.getActionMap()));
         initServices();
         ampliconNodeResult = Utilities.actionsGlobalContext().lookupResult(AmpliconNode.class);
@@ -260,6 +260,10 @@ public final class ExperimentTopComponent extends TopComponent
             experimentDbTree.createTree();
             UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, experimentDB);
             UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_DATABASE);
+            String dbFileName = experimentDB.getDatabaseFile().getName();
+            int length = dbFileName.length();
+            setDisplayName(dbFileName.substring(0, length - 4));
+            setToolTipText(experimentDB.getDatabaseFile().getName());
         }//If a new file was not opened, do nothing
         message.setVisible(false);
         message.dispose();
@@ -270,6 +274,10 @@ public final class ExperimentTopComponent extends TopComponent
             experimentDbTree.createTree();
             UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, experimentDB);
             UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_DATABASE);
+            String dbFileName = experimentDB.getDatabaseFile().getName();
+            int length = dbFileName.length();
+            setDisplayName(dbFileName.substring(0, length - 4));
+            setToolTipText(experimentDB.getDatabaseFile().getName());
         }//False if the action was cancelled, so do nothing
     }//GEN-LAST:event_newDBbuttonActionPerformed
 
@@ -278,6 +286,10 @@ public final class ExperimentTopComponent extends TopComponent
             experimentDbTree.createTree();
             UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, experimentDB);
             UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_DATABASE);
+            String dbFileName = experimentDB.getDatabaseFile().getName();
+            int length = dbFileName.length();
+            setDisplayName(dbFileName.substring(0, length - 4));
+            setToolTipText(experimentDB.getDatabaseFile().getName());
         }//If not opened, do nothing
     }//GEN-LAST:event_openLastDBbuttonActionPerformed
 
@@ -286,6 +298,8 @@ public final class ExperimentTopComponent extends TopComponent
             experimentDbTree.createTree();
             UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, null);
             UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_DATABASE);
+            setDisplayName("Experiment DB");
+            setToolTipText("Experiment DB Explorer");
         }
     }//GEN-LAST:event_closeDBbuttonActionPerformed
 
@@ -439,7 +453,7 @@ public final class ExperimentTopComponent extends TopComponent
         if (key == PanelMessages.NEW_DATABASE) {
             experimentDbTree.createTree();
         }
-         if (key == PanelMessages.PROFILE_DELETED) {
+        if (key == PanelMessages.PROFILE_DELETED) {
             experimentDbTree.displayTotalNumberOfProfilesInTheDatabase();
         }
     }

@@ -32,10 +32,9 @@ import org.openide.explorer.ExplorerManager;
 public class CalbnTreeNodeActions implements LreActionFactory {
 
     private TreeMap<String, Action[]> actionMap = new TreeMap<String, Action[]>();
-//    private ExplorerManager mgr;//Defines the tree upon which these actions will be applied
 
     public CalbnTreeNodeActions(ExplorerManager mgr) {
-//        this.mgr = mgr;
+
         //Average Calbn Profile actions
         Action[] actions = new Action[]{
             new ExcludeAverageCalibrationProfileAction(mgr),
