@@ -154,8 +154,8 @@ public class SampleProfileTemplateImport extends RunImportService {
         UniversalLookup uLookup = UniversalLookup.getDefault();
         //Check to see if an Experiment database is open
         if (uLookup.containsKey(DatabaseType.EXPERIMENT)) {
-            DatabaseServices calbnDB = (DatabaseServices) uLookup.getAll(DatabaseType.EXPERIMENT).get(0);
-            if (!calbnDB.isDatabaseOpen()) {
+            DatabaseServices exptDB = (DatabaseServices) uLookup.getAll(DatabaseType.EXPERIMENT).get(0);
+            if (!exptDB.isDatabaseOpen()) {
                 String msg = "An Experiment database is not open. \n"
                         + "Data import will be terminated.";
                 JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Experiment database not open",
