@@ -99,10 +99,10 @@ public class RunInializationProvider implements RunInitializationService {
         }
         if (importType == DataImportType.MANUAL_SAMPLE_PROFILE) {
             //Absolutely need an active Experiment database
-            if (!calbnDB.isDatabaseOpen()) {
+            if (!experimentDB.isDatabaseOpen()) {
                 String msg = "An Experiment database is not open. \n"
                         + "Data import will be terminated.";
-                JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "No Experiemtn database is open",
+                JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Experiment database not open",
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
