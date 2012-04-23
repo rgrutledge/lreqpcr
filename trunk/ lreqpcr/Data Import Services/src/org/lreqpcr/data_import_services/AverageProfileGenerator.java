@@ -67,7 +67,7 @@ public class AverageProfileGenerator {
         while (!listCopy.isEmpty()) {
             SampleProfile profile = listCopy.get(0);
             AverageSampleProfile avSampleProfile = new AverageSampleProfile(parentRun);
-            avSampleProfile.isProfileVer0_8_0(true);
+            avSampleProfile.setProfileToVer0_8_0(true);
             avSampleProfile.setTargetStrandedness(profile.getTargetStrandedness());
             ArrayList<SampleProfile> replicateProfileList = new ArrayList<SampleProfile>();
             for (SampleProfile prf : listCopy) {
@@ -154,7 +154,7 @@ public class AverageProfileGenerator {
             }
             //Average the replicates Profile raw Fc datasets
             AverageCalibrationProfile avCalbnProfile = new AverageCalibrationProfile(run);
-            avCalbnProfile.isProfileVer0_8_0(true);
+            avCalbnProfile.setProfileToVer0_8_0(true);
             CalibrationProfile firstCalibrationProfile = calibrationProfileList.get(0);
             avCalbnProfile.setLambdaMass(firstCalibrationProfile.getLambdaMass() * 1000000);
             avCalbnProfile.setName(firstCalibrationProfile.getName());
@@ -192,9 +192,21 @@ public class AverageProfileGenerator {
         for (int i = 0; i < numberOfCycles; i++) {
             double fcSum = 0;
             for (int j = 0; j < fcMap.size(); j++) {
-                fcSum += fcMap.get(j)[i];
+                try {
+                    fcSum += fcMap.get(j)[i];
+                } catch (Exception e) {
+                    String msg = "An error has occurred, likely due replicate profiles containing "
+                            + "\ndifferent number of cycles. Be sure the import file only contains "
+                            + "\nprofiles containing the same number of cycles.";
+                    JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                            msg,
+                            "Data Emport Error",
+                            JOptionPane.ERROR_MESSAGE);
+//                    throw new Exception();
+//                    return null;
+                }
+                averageFcDataset[i] = fcSum / fcMap.size();
             }
-            averageFcDataset[i] = fcSum / fcMap.size();
         }
         return averageFcDataset;
     }
@@ -205,24 +217,29 @@ public class AverageProfileGenerator {
                 Lookup.getDefault().lookup(LreAnalysisService.class);
         ArrayList<Profile> replicateList =
                 new ArrayList<Profile>(averageProfile.getReplicateProfileList());
-        Profile avProfile = (Profile) averageProfile;
+        Profile fooProfile = (Profile) averageProfile;
         Profile firstRepProfile = replicateList.get(0);
-        avProfile.setAmpliconName(firstRepProfile.getAmpliconName());
-        avProfile.setAmpliconSize(firstRepProfile.getAmpliconSize());
-        avProfile.setSampleName(firstRepProfile.getSampleName());
-        avProfile.setAmpTm(0);
-        avProfile.setName(avProfile.getAmpliconName() + "@" + avProfile.getSampleName());
-        if (avProfile.getRawFcReadings().length == 0) {
+        fooProfile.setAmpliconName(firstRepProfile.getAmpliconName());
+        fooProfile.setAmpliconSize(firstRepProfile.getAmpliconSize());
+        fooProfile.setSampleName(firstRepProfile.getSampleName());
+        fooProfile.setAmpTm(0);
+        fooProfile.setName(fooProfile.getAmpliconName() + "@" + fooProfile.getSampleName());
+        if (fooProfile.getRawFcReadings().length == 0) {
             //All of the replicate profiles are excluded...thus the Average Profile must be excluded
             //Not sure if this will ever happen...do not have time to determine
-            avProfile.setNo(0);
+            fooProfile.setNo(0);
         } else {
-            //Note the the replicate sample profiles have already been initialized
-            profileIntialization.conductAutomatedLreWindowSelection(avProfile, parameters);
+            //If the replicate No average is <10 it cannot be initialized
+            AverageProfile avProfile = (AverageProfile) fooProfile;
+            if (avProfile.isReplicateAverageNoLessThan10Molecules()) {
+                fooProfile.updateProfile();
+            } else {
+                //Note the the replicate sample profiles have already been initialized
+                profileIntialization.conductAutomatedLreWindowSelection(fooProfile, parameters);
+            }
         }
         for (Profile profile : replicateList) {
-            profile.setParent(avProfile);
+            profile.setParent(fooProfile);
         }
     }
-    
 }

@@ -119,7 +119,7 @@ public class LreObjectChildren extends Children.Keys<LreObject> {
     @SuppressWarnings(value = "unchecked")
     @Override
     public void addNotify() {
-        if (!db.isDatabaseOpen()) {
+        if (!db.isDatabaseOpen() || lreObjectList == null) {
             return;
         }
         //This is necessary because DB4O lists cannot be sorted via Collections.sort

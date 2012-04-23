@@ -44,6 +44,8 @@ public interface AverageProfile {
 
     public int numberOfActiveReplicateProfiles();
 
+    public boolean determineIfTheAverageReplicateNoIsLessThan10Molecules();
+
     public boolean isReplicateAverageNoLessThan10Molecules();
 
 }

@@ -62,15 +62,43 @@ public class LreObjectInfo extends JPanel {
                     selectedNode.refreshNodeLabel();
                 }
                 if (evt.getComponent() == ampNameDisplay) {
-                    profile.setAmpliconName(ampNameDisplay.getText());
+                    String ampName = ampNameDisplay.getText();
+                    profile.setAmpliconName(ampName);
                     selectedNode.refreshNodeLabel();
+                    if (profile instanceof AverageProfile) {
+                        AverageProfile avProfile = (AverageProfile) profile;
+                        for (Profile prf : avProfile.getReplicateProfileList()) {
+                            prf.setAmpliconName(ampName);
+                            //Decided not to update the replicate profile node labels, so they may not be correct
+                        }
+                        LreObjectChildren children = (LreObjectChildren) selectedNode.getChildren();
+                        Node[] nodes = children.getNodes();
+                        for (Node node : nodes) {
+                            LreNode ln = (LreNode) node;
+                            ln.refreshNodeLabel();
+                        }
+                    }
                 }
                 if (evt.getComponent() == notesDisplay) {
                     member.setLongDescription(notesDisplay.getText());
                 }
                 if (evt.getComponent() == sampleNameDisplay) {
-                    profile.setSampleName(sampleNameDisplay.getText());
+                    String sampleName = sampleNameDisplay.getText();
+                    profile.setSampleName(sampleName);
                     selectedNode.refreshNodeLabel();
+                    if (profile instanceof AverageProfile) {
+                        AverageProfile avProfile = (AverageProfile) profile;
+                        for (Profile prf : avProfile.getReplicateProfileList()) {
+                            prf.setSampleName(sampleName);
+                            //Decided not to update the replicate profile node labels, so they may not be correct
+                        }
+                        LreObjectChildren children = (LreObjectChildren) selectedNode.getChildren();
+                        Node[] nodes = children.getNodes();
+                        for (Node node : nodes) {
+                            LreNode ln = (LreNode) node;
+                            ln.refreshNodeLabel();
+                        }
+                    }
                 }
                 if (evt.getComponent() == ampSizeDisplay) {
                     int i = 0;
@@ -101,7 +129,7 @@ public class LreObjectInfo extends JPanel {
                         }
                         LreObjectChildren children = (LreObjectChildren) selectedNode.getChildren();
                         Node[] nodes = children.getNodes();
-                        for (Node node : nodes){
+                        for (Node node : nodes) {
                             LreNode ln = (LreNode) node;
                             ln.refreshNodeLabel();
                         }
@@ -180,9 +208,9 @@ public class LreObjectInfo extends JPanel {
                 wellLabelDisplay.setVisible(false);
             }
             ampNameDisplay.setText(profile.getAmpliconName());
-            if (profile.getAmpliconSize() ==0){
+            if (profile.getAmpliconSize() == 0) {
                 ampSizeDisplay.setText("Unknown");
-            }else {
+            } else {
                 ampSizeDisplay.setText(String.valueOf(profile.getAmpliconSize()));
             }
             sampleNameDisplay.setText(profile.getSampleName());

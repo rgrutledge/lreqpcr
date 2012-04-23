@@ -83,4 +83,14 @@ public class AverageCalibrationProfile extends CalibrationProfile implements Ave
         return profile.getRunDate().compareTo(getRunDate());
     }
 
+    /**
+     * Based on the assumption that a calibration profile will never have
+     * less than 10 molecules, this method has not been implemented and will 
+     * throw an UnsupportedOperationException
+     * @return not implemented
+     */
+    public boolean determineIfTheAverageReplicateNoIsLessThan10Molecules() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }

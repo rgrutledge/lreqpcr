@@ -94,7 +94,7 @@ public class LreAnalysisProvider extends LreAnalysisService {
      */
     @Override
     public boolean convertProfileToNewVersion(Profile profile) {
-        profile.isProfileVer0_8_0(true);
+        profile.setProfileToVer0_8_0(true);
         //See if an LRE window is present
         if (profile.getLreWinSize() > 2) {
             //This should preserve any user modifications to the LRE window

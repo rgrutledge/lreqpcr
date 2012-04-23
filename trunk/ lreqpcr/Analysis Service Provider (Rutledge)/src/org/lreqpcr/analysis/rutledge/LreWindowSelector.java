@@ -144,19 +144,20 @@ public class LreWindowSelector {
 //Use C1/2 as a reference point to adjust the initial start cycle
         double midC = (int) profile.getMidC();
         runner = prfSum.getZeroCycle();
-        //Move the strCyclestart cycle to 1 cycle below C1/2
-        try {
-            while (midC > runner.getCycNum()) {
-                runner = runner.getNextCycle();
-            }
-        } catch (Exception e) {
-            //Must have reached the end of the profile which should never happen
-            //Do nothing
+        //Move the runner to 1 cycle below C1/2
+        while (midC > runner.getCycNum()) {
+            runner = runner.getNextCycle();
+        }
+        //This should never happen but one unrepeatable example was experienced
+        if (runner == null) {
+            //Must have reached the end of the profile
+            profile.setHasAnLreWindowBeenFound(false);
+            return;
         }
         profile.setStrCycleInt(runner.getCycNum());
         prfSum.setStrCycle(runner);
         profile.setLreWinSize(3);
-        //Reoptimize the LRE window which tries to add cycles to the top of the LRE window
+//Reoptimize the LRE window which tries to add cycles to the top of the LRE window
         ProfileInitializer.calcLreParameters(prfSum);
         optimizeLreWin(prfSum, foThreshold);
     }
@@ -199,7 +200,7 @@ public class LreWindowSelector {
                 //Reached the end of the profile...
                 //This should never happen unless the min Fc is set too high
 //Dislike doing this, but it is necessary to alert the user the the min Fc is too high
-//Generating an error dialog is not an option due to the potentially large numbers of profiles being processed
+//However, generating an error dialog is not an option due to the potentially large numbers of profiles being processed
                 profile.setHasAnLreWindowBeenFound(false);
                 processFailedProfile(profile);
                 return;

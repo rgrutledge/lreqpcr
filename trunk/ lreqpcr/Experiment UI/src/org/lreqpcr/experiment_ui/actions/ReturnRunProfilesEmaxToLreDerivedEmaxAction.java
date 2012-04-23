@@ -20,7 +20,7 @@ import java.awt.event.ActionEvent;
 import java.util.List;
 import javax.swing.AbstractAction;
 import org.lreqpcr.analysis_services.LreAnalysisService;
-import org.lreqpcr.core.data_objects.AverageProfile;
+import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.Run;
@@ -68,19 +68,28 @@ public class ReturnRunProfilesEmaxToLreDerivedEmaxAction extends AbstractAction 
                 LreNode node = (LreNode) n;
                 Run run = node.getLookup().lookup(Run.class);
 //Process all profiles within the run, including the replicate profiles
-                for (Profile profile : run.getAverageProfileList()) {
-                    profile.setIsEmaxOverridden(false);
-                    profile.setOverridentEmaxValue(0);
-                    //Need to update avFo and avNo
-                    analysisService.initializeProfileSummary(profile, selectionParameters);
-                    db.saveObject(profile);
-                    AverageProfile avProfile = (AverageProfile) profile;
+                for (AverageSampleProfile avProfile : run.getAverageProfileList()) {
+                    //Process the replicate profiles
                     for (Profile repProfile : avProfile.getReplicateProfileList()) {
-                        repProfile.setIsEmaxOverridden(false);
-                        repProfile.setOverridentEmaxValue(0);
-                        analysisService.initializeProfileSummary(repProfile, selectionParameters);
-                        db.saveObject(repProfile);
+                        //Ignore profiles that do not have an LRE window
+                        if (repProfile.hasAnLreWindowBeenFound()) {
+                            repProfile.setIsEmaxOverridden(false);
+                            repProfile.setOverridentEmaxValue(0);
+                            analysisService.initializeProfileSummary(repProfile, selectionParameters);
+                            db.saveObject(repProfile);
+                        }
                     }
+                    //Ignore average sample profiles that do not have an LRE window
+                    if (avProfile.hasAnLreWindowBeenFound()) {
+                        avProfile.setIsEmaxOverridden(false);
+                        avProfile.setOverridentEmaxValue(0);
+                        //Need to update avFo and avNo
+                        analysisService.initializeProfileSummary(avProfile, selectionParameters);
+                    }else{
+                        //Need to update the average profile as it is likely <10 molecule profile
+                        avProfile.updateProfile();
+                    }
+                    db.saveObject(avProfile);
                 }
             }
         } else {

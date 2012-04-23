@@ -423,6 +423,8 @@ public abstract class Profile extends LreObject {
 
     /**
      * Allows the LRE-derived Emax to be overridden as specified by the overriddenEmaxValue parameter.
+     * Note that an overridden Emax must only applied during conversion of Fo to No, and
+     * thus does not impact LRE analysis used to generate Fo values.
      * @param isEmaxOverriden
      */
     public void setIsEmaxOverridden(boolean isEmaxOverriden) {
@@ -482,9 +484,9 @@ public abstract class Profile extends LreObject {
      * Used for back compatability, it is necessary to set to true for all 
      * new Profiles during Profile creation.
      * 
-     * @param isProfileVer0_8_0 true for all new Profiles
+     * @param setProfileToVer0_8_0 true for all new Profiles
      */
-    public void isProfileVer0_8_0(boolean isProfileVer0_8_0) {
+    public void setProfileToVer0_8_0(boolean isProfileVer0_8_0) {
         this.isProfileVer0_8_0 = isProfileVer0_8_0;
     }
 

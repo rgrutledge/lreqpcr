@@ -80,24 +80,28 @@ public class RootRunChildren extends LreObjectChildren {
         //Check the version of the AverageProfiles...if not 0.8.0 then all the
         //profiles need to be updated.
         List<AverageSampleProfile> avProfileList = run.getAverageProfileList();
-   //Assume that the first profile is indicative of all the profiles in the Run
-        if (!avProfileList.get(0).isProfileVer0_8_0()){
-            List<AverageSampleProfile> allAvSampleProfiles = db.getAllObjects(AverageSampleProfile.class);
+        if (avProfileList != null) {
+            if (!avProfileList.isEmpty()) {
+                //Assume that the first profile is indicative of all the profiles in the Run
+                if (!avProfileList.get(0).isProfileVer0_8_0()) {
+                    List<AverageSampleProfile> allAvSampleProfiles = db.getAllObjects(AverageSampleProfile.class);
 //All of the profiles within this run need to be converted to version 0.8.0
-            for (AverageSampleProfile avProfile : allAvSampleProfiles){
-                analysisService.convertProfileToNewVersion(avProfile);
-                //Must save the Profiles, including that replicate SampleProfiles
-                db.saveObject(avProfile);
-                for (Profile repProfile : avProfile.getReplicateProfileList()){
-                    analysisService.convertProfileToNewVersion(repProfile);
-                    db.saveObject(repProfile);
+                    for (AverageSampleProfile avProfile : allAvSampleProfiles) {
+                        analysisService.convertProfileToNewVersion(avProfile);
+                        //Must save the Profiles, including that replicate SampleProfiles
+                        db.saveObject(avProfile);
+                        for (Profile repProfile : avProfile.getReplicateProfileList()) {
+                            analysisService.convertProfileToNewVersion(repProfile);
+                            db.saveObject(repProfile);
+                        }
+                    }
+                    db.commitChanges();
                 }
             }
-            db.commitChanges();
         }
 
-        LreNode node = new LreNode(new RunChildren(mgr, db, run.getAverageProfileList(), nodeActionFactory, nodeLabelFactory),
-                    Lookups.singleton(lreObject), actions);
+        LreNode node = new LreNode(new RunChildren(mgr, db, avProfileList, nodeActionFactory, nodeLabelFactory),
+                Lookups.singleton(lreObject), actions);
         node.setExplorerManager(mgr);
         node.setDatabaseService(db);
         node.setName(lreObject.getName());
