@@ -254,7 +254,7 @@ public final class ExperimentTopComponent extends TopComponent
 
     private void openDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openDBbuttonActionPerformed
 //The only reason this frame is painted at all is due to the delay produced by opening of a file chooser dialog
-//Many, many attempts were made unsuccefully to have this JFrame paint correctly while the database file was being opened
+//Many, many attempts were made unsuccessfully to have this JFrame paint correctly while the database file was being opened
         JFrame message = OpeningDatabaseDialog.makeDialog();
         if (experimentDB.openUserSelectDatabaseFile()) {
             experimentDbTree.createTree();

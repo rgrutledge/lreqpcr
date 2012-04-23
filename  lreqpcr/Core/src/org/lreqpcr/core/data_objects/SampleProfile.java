@@ -31,6 +31,8 @@ public class SampleProfile extends Profile {
     /**
      * Calculate the number of target molecules (No) 
      * based on the profile average Fo, OCF, amplicon size and target strandedness.
+     * Note that the update will abort if the profile is excluded OR if an LRE
+     * window has not been found.
      */
     public void updateProfile() {
         if (isExcluded() || !hasAnLreWindowBeenFound()) {

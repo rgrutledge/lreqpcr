@@ -60,18 +60,15 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
 
     @Override
     public void updateProfile() {
-        super.updateProfile();
-//        determineNumberofActiveReplicateProfiles();
         //Without an OCF, No values cannot be calculated
         if (getOCF() > 0) {
             determineIfTheAverageReplicateNoIsLessThan10Molecules();
-        } else {
-            isTheAverageReplicateNoLessThan10Molecules = false;
-        }
+        } 
+        super.updateProfile();//An LRE window must have already been found or the update will be aborted
     }
 
     /**
-     * Sort By Sample Name, then Amplicon name 
+     * Sort By Amplicon Name, then Sample name
      * @param o
      * @return
      */
@@ -79,13 +76,13 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
     public int compareTo(Object o) {
         SampleProfile profile = (AverageSampleProfile) o;
         //Sort by name
-        if (getSampleName().compareTo(profile.getSampleName()) == 0) {
+        if (getAmpliconName().compareTo(profile.getAmpliconName()) == 0) {
             //They have the same Sample name
             //Sort by Amplicon name
-            return getAmpliconName().compareTo(profile.getAmpliconName());
+            return getSampleName().compareTo(profile.getSampleName());
         }
         //They have different Sample names, to use Sample name to sort
-        return getSampleName().compareTo(profile.getSampleName());
+        return getAmpliconName().compareTo(profile.getAmpliconName());
     }
 
     /**
@@ -107,17 +104,21 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
      * distorted, and thus it must be invalidated. If so,
      * the average No for the AverageProfile is determined by
      * averaging the No values from each of the ReplicateProfiles. 
+     * Note that this will be aborted if the profile is excluded. Note also that 
+     * if found to be below 10 molecules, the profile will be set to "No LRE 
+     * window has been found".
      */
-    private void determineIfTheAverageReplicateNoIsLessThan10Molecules() {
+    public boolean determineIfTheAverageReplicateNoIsLessThan10Molecules() {
+        //Not sure how well this will work
         if (isExcluded()) {
-            return;
+            return true;
         }
         if (sampleProfileList.size() == 1) {
 //This allows the AverageProfile to function as if No >10 when there is a single replicate
 //This allows single replicates to be viewed and edited from the AverageSampleReplicate node
 //This is valid because the average Profile Fc is derived from a single Profile and thus is not impacted by profile scattering    
             isTheAverageReplicateNoLessThan10Molecules = false;
-            return;
+            return false;
         }
         double sum = 0;
         int counter = 0;
@@ -134,16 +135,22 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
                 }
             }
         }
-//        if (sum == 0) {
-//            //Some type of error has occurred
-//            return;
-//        }
+        if (sum == 0) {
+            //None of the replicate profiles have an LRE window
+            isTheAverageReplicateNoLessThan10Molecules = true;
+            setHasAnLreWindowBeenFound(false);
+            setNo(0);
+            return false;
+        }
         double averageReplicateNo = sum / counter;
         if (averageReplicateNo < 10) {
             isTheAverageReplicateNoLessThan10Molecules = true;
+            setHasAnLreWindowBeenFound(false);
             setNo(averageReplicateNo);
+            return true;
         } else {
             isTheAverageReplicateNoLessThan10Molecules = false;
+            return false;
         }
     }
 

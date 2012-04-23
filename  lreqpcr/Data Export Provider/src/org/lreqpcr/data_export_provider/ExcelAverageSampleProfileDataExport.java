@@ -220,7 +220,7 @@ public class ExcelAverageSampleProfileDataExport {
                             if (replicateProfileEmaxIsOverridden) {
                                 note = "<10 Molecules and Emax has been "
                                         + "overriddenat in at least one of the "
-                                        + "replicate profiles... "
+                                        + "replicate profiles"
                                         + avProfile.getLongDescription();
                             } else {
                                 note = "<10 Molecules... " + avProfile.getLongDescription();
@@ -229,16 +229,16 @@ public class ExcelAverageSampleProfileDataExport {
                             if (replicateProfileEmaxIsOverridden) {
                                 note = "<10 Molecules and Emax has been "
                                         + "overriddenat in at least one of the "
-                                        + "replicate profiles... ";
+                                        + "replicate profiles";
                             } else {
-                                note = "<10 Molecules <10...";
+                                note = "<10 Molecules";
                             }
                         }
                         if (avTm != 0) {
                             number = new Number(8, row, avTm, floatFormat);
                             sheet.addCell(number);
                         }
-                        label = new Label(11, row, note, boldLeft);
+                        label = new Label(11, row, note);
                         sheet.addCell(label);
                         number = new Number(9, row, avProfile.getAmpliconSize(), integerFormat);
                         sheet.addCell(number);
@@ -257,9 +257,9 @@ public class ExcelAverageSampleProfileDataExport {
                         note1 = avProfile.getLongDescription();
                     }
                     if (avProfile.isEmaxOverridden()) {
-                        note2 = "***Emax is fixed to " + String.valueOf(avProfile.getOverriddendEmaxValue() * 100) + "%... " + note1;
+                        note2 = "Emax is fixed to " + String.valueOf(avProfile.getOverriddendEmaxValue() * 100) + "%" + note1;
                         hasEmaxBeenOverridden = true;
-                        label = new Label(11, row, note2, boldLeft);
+                        label = new Label(11, row, note2);
                         number = new Number(4, row, avProfile.getOverriddendEmaxValue(), percentFormat);
                     } else {
                         note2 = note1;
@@ -293,11 +293,12 @@ public class ExcelAverageSampleProfileDataExport {
                 }
             }
             if (hasEmaxBeenOverridden) {
-                label = new Label(1, 1, "Note that Emax has been overridden in at leaast one profile", boldLeft);
+                label = new Label(1, 1, "Note that Emax has been overridden in at leaast one profile");
                 sheet.addCell(label);
             }
 
 //List the replicate profiles from the average profiles with No <10
+            //This has be disabled in Version 0.8.0
             if (!belowTenMoleculeList.isEmpty()) {
                 //Setup the <10 target molecule section
                 row++;

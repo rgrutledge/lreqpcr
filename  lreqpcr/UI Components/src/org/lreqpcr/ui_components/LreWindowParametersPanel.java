@@ -281,6 +281,10 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         if (currentDB.getDatabaseType() == DatabaseType.EXPERIMENT) {
             //Retrieve all Average Sample Profiles
             List<AverageSampleProfile> avSampleProfileList = currentDB.getAllObjects(AverageSampleProfile.class);
+            if (avSampleProfileList.isEmpty()){
+                //Database does not contain any profiles so abort
+                return 0;
+            }
             if (!(avSampleProfileList.get(0).getOCF() > 0)) {
                 //An OCF has not been applied and thus No values are not available
                 Toolkit.getDefaultToolkit().beep();

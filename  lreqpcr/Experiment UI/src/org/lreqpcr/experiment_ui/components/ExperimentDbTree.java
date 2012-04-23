@@ -143,7 +143,6 @@ public class ExperimentDbTree extends JPanel {
         root.setDisplayName(displayName);
         root.setShortDescription(dbFile.getAbsolutePath());
         mgr.setRootContext(root);
-//        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_CHANGED);
     }
 
     public void displayTotalNumberOfProfilesInTheDatabase() {

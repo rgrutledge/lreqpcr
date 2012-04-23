@@ -239,18 +239,28 @@ public final class AmpliconTopComponent extends TopComponent
     private void openDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openDBbuttonActionPerformed
         if (ampliconDB.openUserSelectDatabaseFile()){
             createTree();
+            String dbFileName = ampliconDB.getDatabaseFile().getName();
+            int length = dbFileName.length();
+            setDisplayName(dbFileName.substring(0, length - 4));
+            setToolTipText(ampliconDB.getDatabaseFile().getName());
         }
     }//GEN-LAST:event_openDBbuttonActionPerformed
 
     private void newDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newDBbuttonActionPerformed
         if (ampliconDB.createNewDatabaseFile()){
             createTree();
+            String dbFileName = ampliconDB.getDatabaseFile().getName();
+            int length = dbFileName.length();
+            setDisplayName(dbFileName.substring(0, length - 4));
+            setToolTipText(ampliconDB.getDatabaseFile().getName());
         }
     }//GEN-LAST:event_newDBbuttonActionPerformed
 
     private void closeDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeDBbuttonActionPerformed
         if (ampliconDB.closeDatabase()) {
             createTree();
+            setDisplayName("Amplicon DB");
+            setToolTipText("Amplicon DB Explorer");
         }
     }//GEN-LAST:event_closeDBbuttonActionPerformed
 
@@ -288,6 +298,10 @@ public final class AmpliconTopComponent extends TopComponent
     private void loadLastDatabaseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadLastDatabaseButtonActionPerformed
         if(ampliconDB.openLastDatabaseFile()){
             createTree();
+            String dbFileName = ampliconDB.getDatabaseFile().getName();
+            int length = dbFileName.length();
+            setDisplayName(dbFileName.substring(0, length - 4));
+            setToolTipText(ampliconDB.getDatabaseFile().getName());
         }
     }//GEN-LAST:event_loadLastDatabaseButtonActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
