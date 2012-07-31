@@ -196,12 +196,12 @@ public class ExcelCalibrationProfileExport {
                 if (profile.isEmaxOverridden()) {
                     hasEmaxBeenOverridden = true;
                     doesThisProfileOverrideEmax = true;
-                    notes = "***Emax is fixed to " + String.valueOf(profile.getOverriddendEmaxValue() * 100) + "%... " + note;
+                    notes = "Emax is fixed to " + String.valueOf(profile.getOverriddendEmaxValue() * 100) + "% " + note;
                 } else {
                     notes = note;
                 }
                 if (doesThisProfileOverrideEmax) {
-                    label = new Label(10, row, notes, boldLeft);
+                    label = new Label(10, row, notes);
                     doesThisProfileOverrideEmax = false;
                 } else {
                     label = new Label(10, row, notes);
@@ -216,6 +216,10 @@ public class ExcelCalibrationProfileExport {
         }
 
         //Add formulas
+        label = new Label(2, row + 1, "Average:", boldRight);
+        sheet.addCell(label);
+        label = new Label(2, row + 2, "SD:", boldRight);
+        sheet.addCell(label);
         String equation = "AVERAGE(D5:D" + String.valueOf(row) + ")";
         Formula formula = new Formula(3, row + 1, equation, percentFormat);
         sheet.addCell(formula);
@@ -224,6 +228,9 @@ public class ExcelCalibrationProfileExport {
         sheet.addCell(formula);
         equation = "AVERAGE(E5:E" + String.valueOf(row) + ")";
         formula = new Formula(4, row + 1, equation, percentFormat);
+        sheet.addCell(formula);
+        equation = "STDEV(E5:E" + String.valueOf(row) + ")";
+        formula = new Formula(4, row + 2, equation, percentFormat);
         sheet.addCell(formula);
         equation = "AVERAGE(F5:F" + String.valueOf(row) + ")";
         formula = new Formula(5, row + 1, equation, floatFormat);
