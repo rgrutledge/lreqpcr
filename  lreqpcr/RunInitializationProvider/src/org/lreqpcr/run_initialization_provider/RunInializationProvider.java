@@ -132,7 +132,7 @@ public class RunInializationProvider implements RunInitializationService {
                     ExperimentDbInfo dbInfo = (ExperimentDbInfo) experimentDB.getAllObjects(ExperimentDbInfo.class).get(0);
                     double ocf = dbInfo.getOcf();
                     for (SampleProfile sampleProfile : sampleProfileList) {
-                        sampleProfile.isProfileVer0_8_0(true);//Needed for back compatablity
+                        sampleProfile.setProfileToVer0_8_0(true);//Needed for back compatablity
                         if (ampliconDB != null) {
                             if (ampliconDB.isDatabaseOpen()
                                     && !sampleProfile.getAmpliconName().equals("")
@@ -173,7 +173,7 @@ public class RunInializationProvider implements RunInitializationService {
                     LreWindowSelectionParameters lreWindowSelectionParameters = (LreWindowSelectionParameters) calbnDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
                     //Process the CalibnProfiles
                     for (Profile profile : calibnProfileList) {
-                        profile.isProfileVer0_8_0(true);
+                        profile.setProfileToVer0_8_0(true);
                         if (ampliconDB != null) {
                             if (ampliconDB.isDatabaseOpen()
                                     && !profile.getAmpliconName().equals("")
