@@ -202,16 +202,17 @@ public class ExcelAverageSampleProfileDataExport {
                         //Excluded Profiles are the user-defined indicating
                         //they are not to be used for quantification
                         if (!prf.isExcluded()) {
-                            noSum = +prf.getNo();
+                            noSum = noSum + prf.getNo();
                             if (prf.isEmaxOverridden()) {
                                 replicateProfileEmaxIsOverridden = true;
                             }
                         }
                     }
+                    double average = noSum/avProfile.getReplicateProfileList().size();
 //If the average is <10 molecules the average profile is considered inaccurate
-                    if (noSum < 10) {
+                    if (average < 10) {
                         //Target quantity == replicate average No
-                        number = new Number(3, row, noSum, integerFormat);
+                        number = new Number(3, row, average, integerFormat);
                         sheet.addCell(number);
 //Leave all other values empty but put a statement in the notes denoting that the No <10
                         String note = "";

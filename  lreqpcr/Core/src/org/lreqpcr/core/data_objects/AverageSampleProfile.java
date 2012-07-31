@@ -64,7 +64,9 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
         if (getOCF() > 0) {
             determineIfTheAverageReplicateNoIsLessThan10Molecules();
         } 
-        super.updateProfile();//An LRE window must have already been found or the update will be aborted
+        if(!isTheAverageReplicateNoLessThan10Molecules){
+            super.updateProfile();//An LRE window must have already been found or the No will be set to zero
+        }
     }
 
     /**

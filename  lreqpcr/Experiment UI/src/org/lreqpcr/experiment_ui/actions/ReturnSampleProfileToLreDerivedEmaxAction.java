@@ -65,6 +65,10 @@ public class ReturnSampleProfileToLreDerivedEmaxAction extends AbstractAction {
             for (Node n : nodes) {
                 LreNode node = (LreNode) n;
                 Profile profile = node.getLookup().lookup(Profile.class);
+                //Ignore profiles that do not have an LRE window
+                if (!profile.hasAnLreWindowBeenFound()){
+                    return;
+                }
                 profile.setIsEmaxOverridden(false);
                 profile.setOverridentEmaxValue(0);
                 //Need to update avFo and avNo
@@ -74,7 +78,10 @@ public class ReturnSampleProfileToLreDerivedEmaxAction extends AbstractAction {
                 if (!(profile instanceof AverageSampleProfile)) {
                     //Need to update the parent AverageSampleProfile
                     AverageSampleProfile avProfile = (AverageSampleProfile) profile.getParent();
-                    avProfile.updateProfile();
+                    if (!avProfile.determineIfTheAverageReplicateNoIsLessThan10Molecules()) {
+                        //Must conduct an automated LRE window selection
+                        analysisService.conductAutomatedLreWindowSelection(avProfile, selectionParameters);
+                    }
                     parentAverageProfileLabelNeedsUpdating = true;
                 }
             }

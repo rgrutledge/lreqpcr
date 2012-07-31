@@ -79,15 +79,19 @@ public class ReturnRunProfilesEmaxToLreDerivedEmaxAction extends AbstractAction 
                             db.saveObject(repProfile);
                         }
                     }
+                    //Must test to see if replicate profile modifications brings
+                    //the average replicate No >10. If so then an automated LRE window
+                    //selection must be conducted on the average profile.
+                    if (!avProfile.determineIfTheAverageReplicateNoIsLessThan10Molecules()) {
+                        //Must conduct an automated LRE window selection
+                        analysisService.conductAutomatedLreWindowSelection(avProfile, selectionParameters);
+                    }
                     //Ignore average sample profiles that do not have an LRE window
                     if (avProfile.hasAnLreWindowBeenFound()) {
                         avProfile.setIsEmaxOverridden(false);
                         avProfile.setOverridentEmaxValue(0);
                         //Need to update avFo and avNo
                         analysisService.initializeProfileSummary(avProfile, selectionParameters);
-                    }else{
-                        //Need to update the average profile as it is likely <10 molecule profile
-                        avProfile.updateProfile();
                     }
                     db.saveObject(avProfile);
                 }

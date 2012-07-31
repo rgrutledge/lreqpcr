@@ -96,6 +96,12 @@ public final class AmpliconOverviewTopComponent extends TopComponent
             mgr.setRootContext(root);
             return;
         }
+        if (currentDB.getDatabaseType() == currentDB.getDatabaseType().CALIBRATION){
+            AbstractNode root = new AbstractNode(Children.LEAF);
+            root.setName("Calibration DBs do not support this function");
+            mgr.setRootContext(root);
+            return;
+        }
         List<Amplicon> ampList = getAmpliconList();
         Collections.sort(ampList);
         AbstractNode root = new AbstractNode(new AmpliconChildren(currentDB, ampList));
