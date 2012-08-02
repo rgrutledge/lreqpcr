@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.Profile;
@@ -78,24 +79,43 @@ public final class SampleOverviewTopComponent extends TopComponent
         putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.FALSE);
 
-        setName("Sort by Sample");
+        setName("Sorted by Sample");
         associateLookup(ExplorerUtils.createLookup(mgr, this.getActionMap()));
         //Listens to changes in TC window selection
         WindowManager.getDefault().getRegistry().addPropertyChangeListener(this);
         UniversalLookup.getDefault().addListner(PanelMessages.RUN_VIEW_SELECTED, this);
         UniversalLookup.getDefault().addListner(PanelMessages.NEW_DATABASE, this);
+        UniversalLookup.getDefault().addListner(PanelMessages.NEW_RUN_IMPORTED, this);
     }
 
     @SuppressWarnings("unchecked")
     private void createTree() {
         if (currentDB == null) {
+            AbstractNode root = new AbstractNode(Children.LEAF);
+            root.setName("No database is open");
+            mgr.setRootContext(root);
+            if (currentDB.getDatabaseType() == currentDB.getDatabaseType().CALIBRATION) {
+                exportProfilePanel.setVisible(false);
+            } else {
+                exportProfilePanel.setVisible(true);
+            }
             return;
         }
         if (!currentDB.isDatabaseOpen()) {
             AbstractNode root = new AbstractNode(Children.LEAF);
             root.setName("No database is open");
             mgr.setRootContext(root);
+            if (currentDB.getDatabaseType() == currentDB.getDatabaseType().CALIBRATION) {
+                exportProfilePanel.setVisible(false);
+            } else {
+                exportProfilePanel.setVisible(true);
+            }
             return;
+        }
+        if (currentDB.getDatabaseType() == currentDB.getDatabaseType().CALIBRATION) {
+            exportProfilePanel.setVisible(false);
+        } else {
+            exportProfilePanel.setVisible(true);
         }
         List<Sample> sampleList = getSampleList();
         //Sort by sample name via toString
@@ -109,7 +129,13 @@ public final class SampleOverviewTopComponent extends TopComponent
     private List<Sample> getSampleList() {
         List<Sample> sampleList = new ArrayList<Sample>();
         //Retrieve all amplicon names from the database
-        List profileList = currentDB.getAllObjects(AverageProfile.class);
+        List profileList = null;
+        //This was needed to avoid, for unclear reasons, a DB4O "not supported" exception that occurred when retrieving AveragProfile.class.
+        if (currentDB.getDatabaseType() == currentDB.getDatabaseType().CALIBRATION) {
+            profileList = currentDB.getAllObjects(AverageCalibrationProfile.class);
+        } else {
+            profileList = currentDB.getAllObjects(AverageProfile.class);
+        }
         ArrayList<String> sampleNameList = new ArrayList<String>();
         for (Object o : profileList) {
             Profile profile = (Profile) o;
@@ -133,10 +159,10 @@ public final class SampleOverviewTopComponent extends TopComponent
             for (int i = 0; i < profileList.size(); i++) {
                 Profile profile = (Profile) profileList.get(i);
                 //Check if a profile is present i.e. not flat
-                if (!profile.isExcluded() 
-                 //Check if a profile is present i.e. not flat
+                if (!profile.isExcluded()
+                        //Check if a profile is present i.e. not flat
                         && profile.hasAnLreWindowBeenFound()
-//Ignore AverageSampleProfiles with <10 molecules as they can generate invalid average profiles
+                        //Ignore AverageSampleProfiles with <10 molecules as they can generate invalid average profiles
                         && profile.getNo() > 10) {
                     emaxArrayList.add(profile.getEmax());
                     emaxTotal = emaxTotal + profile.getEmax();
@@ -159,10 +185,15 @@ public final class SampleOverviewTopComponent extends TopComponent
         emptyRoot.setName("Samples");
         mgr.setRootContext(emptyRoot);
         hasTreeBeenCreated = false;
+        if (currentDB.getDatabaseType() == currentDB.getDatabaseType().CALIBRATION) {
+            exportProfilePanel.setVisible(false);
+        } else {
+            exportProfilePanel.setVisible(true);
+        }
     }
 
     @SuppressWarnings("unchecked")
-    private HashMap<String, List<AverageSampleProfile>> getSelectedAmplicons(){
+    private HashMap<String, List<AverageSampleProfile>> getSelectedAmplicons() {
         Node[] nodes = mgr.getSelectedNodes();
         HashMap<String, List<AverageSampleProfile>> groupList = new HashMap<String, List<AverageSampleProfile>>();
         for (Node node : nodes) {
@@ -172,7 +203,7 @@ public final class SampleOverviewTopComponent extends TopComponent
                 groupList.put(sample.getName(), new ArrayList<AverageSampleProfile>(profileList));
             }
         }
-        if (groupList.isEmpty()){
+        if (groupList.isEmpty()) {
             Toolkit.getDefaultToolkit().beep();
             JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
                     "No Samples have not been selected",
@@ -191,11 +222,11 @@ public final class SampleOverviewTopComponent extends TopComponent
     private void initComponents() {
 
         jScrollPane1 = new BeanTreeView();
-        jPanel1 = new javax.swing.JPanel();
+        exportProfilePanel = new javax.swing.JPanel();
         exportAvProfileButton = new javax.swing.JButton();
         exportRepPrfsButton = new javax.swing.JButton();
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(SampleOverviewTopComponent.class, "SampleOverviewTopComponent.jPanel1.border.title"))); // NOI18N
+        exportProfilePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(SampleOverviewTopComponent.class, "SampleOverviewTopComponent.exportProfilePanel.border.title"))); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(exportAvProfileButton, org.openide.util.NbBundle.getMessage(SampleOverviewTopComponent.class, "SampleOverviewTopComponent.exportAvProfileButton.text")); // NOI18N
         exportAvProfileButton.setToolTipText(org.openide.util.NbBundle.getMessage(SampleOverviewTopComponent.class, "SampleOverviewTopComponent.exportAvProfileButton.toolTipText")); // NOI18N
@@ -213,20 +244,20 @@ public final class SampleOverviewTopComponent extends TopComponent
             }
         });
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout exportProfilePanelLayout = new javax.swing.GroupLayout(exportProfilePanel);
+        exportProfilePanel.setLayout(exportProfilePanelLayout);
+        exportProfilePanelLayout.setHorizontalGroup(
+            exportProfilePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(exportProfilePanelLayout.createSequentialGroup()
                 .addComponent(exportAvProfileButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(exportRepPrfsButton)
                 .addContainerGap())
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+        exportProfilePanelLayout.setVerticalGroup(
+            exportProfilePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(exportProfilePanelLayout.createSequentialGroup()
+                .addGroup(exportProfilePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(exportAvProfileButton)
                     .addComponent(exportRepPrfsButton))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -240,13 +271,13 @@ public final class SampleOverviewTopComponent extends TopComponent
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(exportProfilePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(exportProfilePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 773, Short.MAX_VALUE)
                 .addContainerGap())
@@ -255,7 +286,7 @@ public final class SampleOverviewTopComponent extends TopComponent
 
     private void exportAvProfileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportAvProfileButtonActionPerformed
         HashMap<String, List<AverageSampleProfile>> groupList = getSelectedAmplicons();
-        if (groupList == null){
+        if (groupList == null) {
             return;
         }
         Lookup.getDefault().lookup(DataExportServices.class).exportAverageSampleProfiles(groupList);
@@ -263,16 +294,15 @@ public final class SampleOverviewTopComponent extends TopComponent
 
     private void exportRepPrfsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportRepPrfsButtonActionPerformed
         HashMap<String, List<AverageSampleProfile>> groupList = getSelectedAmplicons();
-        if (groupList == null){
+        if (groupList == null) {
             return;
         }
         Lookup.getDefault().lookup(DataExportServices.class).exportReplicateSampleProfiles(groupList);
 }//GEN-LAST:event_exportRepPrfsButtonActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton exportAvProfileButton;
+    private javax.swing.JPanel exportProfilePanel;
     private javax.swing.JButton exportRepPrfsButton;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 
@@ -325,7 +355,7 @@ public final class SampleOverviewTopComponent extends TopComponent
     @Override
     protected void componentActivated() {
         super.componentActivated();
-        if (!hasTreeBeenCreated) {
+        if (!hasTreeBeenCreated) {//Likely not needed
             createTree();
         }
     }
@@ -369,30 +399,29 @@ public final class SampleOverviewTopComponent extends TopComponent
             if (dbProvider.getDatabaseServices() != currentDB) {
                 //A new TC window has been selected
                 currentDB = dbProvider.getDatabaseServices();
-                clearTree();
-                //The tree will be recreated when this TC window is selected
+                createTree();//Not sure if this will be slow when large numbers of profiles are present in the database
             }
         }
     }
 
     @Override
     public void universalLookupChangeEvent(Object key) {
-        if (key == PanelMessages.RUN_VIEW_SELECTED) {
-            clearTree();
-        }
-        if (key == PanelMessages.NEW_DATABASE) {//Open, Close, New database file change
-            clearTree();
+        if (key == PanelMessages.NEW_DATABASE || key == PanelMessages.NEW_RUN_IMPORTED) {//Open, Close, New database file change
             DatabaseServices newDB = (DatabaseServices) UniversalLookup.getDefault().getAll(PanelMessages.NEW_DATABASE).get(0);
             if (newDB == null) {
+                createTree();
                 return;
             }
             if (newDB != currentDB) {
-                if (newDB.getDatabaseType() == DatabaseType.EXPERIMENT || newDB.getDatabaseType() == DatabaseType.CALIBRATION) {
-                    currentDB = newDB;
-                } else {
+                if (newDB.getDatabaseType() != DatabaseType.EXPERIMENT || newDB.getDatabaseType() == DatabaseType.CALIBRATION) {
                     currentDB = null;
+                    clearTree();
+                    return;
+                } else {
+                    currentDB = newDB;
                 }
             }
+            createTree();//Not sure if this will be slow when large numbers of profiles are present in the database
         }
     }
 }
