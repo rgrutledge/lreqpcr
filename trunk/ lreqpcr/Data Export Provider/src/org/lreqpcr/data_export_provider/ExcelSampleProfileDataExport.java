@@ -202,9 +202,9 @@ public class ExcelSampleProfileDataExport {
                         note = sampleProfile.getLongDescription();
                     }
                     if (sampleProfile.isEmaxOverridden()) {
-                        notes = "***Emax is fixed to " + String.valueOf(sampleProfile.getOverriddendEmaxValue() * 100) + "%... " + note;
+                        notes = "Emax is fixed to " + String.valueOf(sampleProfile.getOverriddendEmaxValue() * 100) + "% " + note;
                         hasEmaxBeenOverridden = true;
-                        label = new Label(12, row, notes, boldLeft);
+                        label = new Label(12, row, notes);
                         number = new Number(4, row, sampleProfile.getOverriddendEmaxValue(), percentFormat);
                     } else {
                         notes = note;
