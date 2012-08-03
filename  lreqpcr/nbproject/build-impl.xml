@@ -48,3 +48,4 @@
     </fail>
     <import file="${harness.dir}/suite.xml"/>
 </project>
+
