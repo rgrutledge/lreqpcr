@@ -54,11 +54,10 @@ public class SortedProfileTreeNodeLabels implements LabelFactory {
         String emax;
         String no;
         //Determine what to display for Emax
-        if (profile.isEmaxOverridden() && profile.hasAnLreWindowBeenFound()) {
+        if (profile.isEmaxFixedTo100() && profile.hasAnLreWindowBeenFound()) {
             df.applyPattern("#0.0");
             profile.setShortDescription("Emax overridden");
-            emax = " (" + df.format(profile.getOverriddendEmaxValue() * 100)
-                    + "%<-- " + df.format(profile.getEmax() * 100) + "%) ";
+            emax = "(100%<-- " + df.format(profile.getEmax() * 100) + "%) ";
         } else {
             if (!profile.hasAnLreWindowBeenFound()) {
                 emax = " (LRE window not found) ";

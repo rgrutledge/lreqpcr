@@ -109,7 +109,7 @@ public class ProfileInitializer {
         ProfileInitializer.calcAllpFc(prfSum);
         profile.setNonR2(LREmath.calcNonLinearR2(winFcpFc));
         profile.setMidC(LREmath.getMidC(profile.getDeltaE(), profile.getEmax(), profile.getAvFo()));
-        profile.updateProfile();//General rule to update the Profile whenever the LRE parameters have changed
+        profile.updateProfile();//General rule is to update the Profile whenever the LRE parameters have changed
     }
 
     /**
@@ -126,23 +126,17 @@ public class ProfileInitializer {
         //The Cycle#-Fo Point2D.Double is also initialized 
         Cycle runner = prfSum.getZeroCycle().getNextCycle();//Start at cycle #1
         Profile profile = prfSum.getProfile();
-        if (profile.isEmaxOverridden()) {
-            do { //This should provide Fo values to all Cycles
-                runner.setFo(LREmath.calcFo(runner.getCycNum(), runner.getFc(),
-                        profile.getDeltaE(), profile.getEmax(), profile.getOverriddendEmaxValue()));
-                runner = runner.getNextCycle();
-            } while (runner != null);
-        } else {
-            do { //This should provide Fo values to all Cycles
-                runner.setFo(LREmath.calcFo(runner.getCycNum(), runner.getFc(),
-                        profile.getDeltaE(), profile.getEmax()));
-                runner = runner.getNextCycle();
-            } while (runner != null);
-        }
+        do { //This should provide Fo and FoEmax100 values for all Cycles
+            runner.setFo(LREmath.calcFo(runner.getCycNum(), runner.getFc(),
+                    profile.getDeltaE(), profile.getEmax()));
+            runner.setFoEmax100(LREmath.calcFo(runner.getCycNum(), runner.getFc(),
+                    profile.getDeltaE(), profile.getEmax(), 1.0));
+            runner = runner.getNextCycle();
+        } while (runner != null);
     }
 
     /**
-     * Calculates the average Fo across the LRE Window using the Cycle
+     * Calculates the average Fo for both Emax and Emax fixed to 100% across the LRE Window using the Cycle
      * linked list generated from the Profile.
      *
      * @param prfSum the ProfileSummary holding the Profile to be processed
@@ -151,6 +145,7 @@ public class ProfileInitializer {
         Profile profile = prfSum.getProfile();
         //The current LRE window is traversed and the average Fo calculated
         double sumFo = 0;
+        double sumFoEmax100 = 0;
         ArrayList<Double> oFlist = Lists.newArrayList();//Used to calculate average Fo CV
         //The Fo from the cycle previous to the start cycle must be included
         Cycle runner = prfSum.getStrCycle().getPrevCycle(); //First cycle to be included in the average
@@ -158,6 +153,7 @@ public class ProfileInitializer {
             for (int i = 0; i < profile.getLreWinSize() + 1; i++) { //Calculates the sum of the LRE window Fo values
                 oFlist.add(runner.getFo());
                 sumFo += runner.getFo();
+                sumFoEmax100 += runner.getFoEmax100();
                 runner = runner.getNextCycle();
             }
         } catch (Exception e) {
@@ -166,9 +162,12 @@ public class ProfileInitializer {
 
         profile.setAvFo(sumFo / (profile.getLreWinSize() + 1)); //Sets the LRE window average Fo value
         profile.setAvFoCV(MathFunctions.calcStDev(oFlist) / profile.getAvFo()); //Sets the average Fo CV
+        profile.setAvFoEmax100(sumFoEmax100 / (profile.getLreWinSize() + 1)); //Sets the LRE window average Fo value calculated with Emax fixed to 100%
+//Note that not updating was a serious bug in versions earlier than 6Aug12 that could have generate inaccurate No values...
+        profile.updateProfile();//Recalculates the No (for SampleProfiles) and OCF (for CalibrationProfiles)
         //Goto to cycle 1
         runner = prfSum.getZeroCycle().getNextCycle();
-        //Sets the fractional difference between Fo and the averageFo across the entire profile
+//Sets the fractional difference between Fo and the averageFo across the entire profile using the LRE derived Emax
         while (runner.getNextCycle() != null) {
             runner.setFoFracFoAv(1 - (runner.getFo() / profile.getAvFo()));
             runner = runner.getNextCycle();
@@ -176,7 +175,8 @@ public class ProfileInitializer {
     }
 
     /**
-     * Calculates the predicted Fc across the entire cycle profile
+     * Calculates the predicted Fc across the entire cycle profile using the LRE derived Emax.
+     * Note that fixing Emax to 100% does NOT change predicted Fc.
      * 
      * @param prfSum the ProfileSummary holding the Profile to be processed
      */
@@ -184,18 +184,10 @@ public class ProfileInitializer {
         Profile profile = prfSum.getProfile();
         //The cycle linked-list is traversed & predicted Fc values assigned to each cycle
         Cycle runner = prfSum.getZeroCycle().getNextCycle();//Goto cycle #1
-        if (profile.isEmaxOverridden()) {
-            do {
-                runner.setPredFc(LREmath.calcPrdFc(runner.getCycNum(), profile.getDeltaE(),
-                        profile.getEmax(), profile.getAvFo(), profile.getOverriddendEmaxValue()));
-                runner = runner.getNextCycle();
-            } while (runner != null);
-        } else {
-            do {
-                runner.setPredFc(LREmath.calcPrdFc(runner.getCycNum(), profile.getDeltaE(),
-                        profile.getEmax(), profile.getAvFo()));
-                runner = runner.getNextCycle();
-            } while (runner != null);
-        }
+        do {
+            runner.setPredFc(LREmath.calcPrdFc(runner.getCycNum(), profile.getDeltaE(),
+                    profile.getEmax(), profile.getAvFo()));
+            runner = runner.getNextCycle();
+        } while (runner != null);
     }
 }

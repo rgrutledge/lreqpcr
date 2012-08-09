@@ -65,13 +65,11 @@ public class FixAllCalibrationProfileEmaxTo100percentAction extends AbstractActi
                 return;
             }
             for (AverageCalibrationProfile avProfile : avProfileList) {
-                avProfile.setIsEmaxOverridden(true);
-                avProfile.setOverridentEmaxValue(1.0);
+                avProfile.setIsEmaxFixedTo100(true);
                 analysisService.initializeProfileSummary(avProfile, selectionParameters);
                 db.saveObject(avProfile);
                 for (CalibrationProfile profile : avProfile.getReplicateProfileList()) {
-                    profile.setIsEmaxOverridden(true);
-                    profile.setOverridentEmaxValue(1.0);
+                    profile.setIsEmaxFixedTo100(true);
                     analysisService.initializeProfileSummary(profile, selectionParameters);
                     db.saveObject(avProfile);
                 }

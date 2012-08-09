@@ -32,9 +32,10 @@ public abstract class Cycle {
     private double fc; //The fluorescence reading for this Cycle
     private double ec; //Cycle efficiency derived by dividing the Fc by the previous cycle Fc
     private double fo; //Fc to Fo conversion based on the current LRE window settings
-    private double adjustedFo;//Fo adjusted to 100%
+    private double foEmax100;//Fo calculated with Emax fixed to 100%
     private double pFc; //Predicted Fc based on the current LRE window settings
     private double oFfracFoAv;//The fractional difference between Fo and the average Fo
+    private double oFfracFoAvEmax100;//The fractional difference between Fo and the average Fo with Emax fixed to 100%
     private double[] cycLREparam;//Linear regression values [slope, intercept, r2]
 
     /**
@@ -127,6 +128,10 @@ public abstract class Cycle {
         return fo;
     }
 
+    public double getFoEmax100() {
+        return foEmax100;
+    }
+
     /**
      * Target quantity in fluorescence units (Fo) is calculated using 
      * the deltaE, Emax and average Fo.
@@ -137,20 +142,8 @@ public abstract class Cycle {
         this.fo = fo;
     }
 
-    /**
-     * Returns the Fo adjusted to Emax > 100%, or zero if Emax < 100%.
-     * @return Fo adjusted to 100% Emax
-     */
-    public double getAdjustedFo() {
-        return adjustedFo;
-    }
-
-    /**
-     * Sts the Fo adjusted to Emax > 100%.
-     * @param adjustedFo Fo adjusted to 100% Emax
-     */
-    public void setAdjustedFo(double adjustedFo) {
-        this.adjustedFo = adjustedFo;
+    public void setFoEmax100(double foEmax100) {
+        this.foEmax100 = foEmax100;
     }
 
     /**
@@ -218,4 +211,5 @@ public abstract class Cycle {
     public void setCycLREparam(double[] cycLREparam) {
         this.cycLREparam = cycLREparam;
     }
+
 }

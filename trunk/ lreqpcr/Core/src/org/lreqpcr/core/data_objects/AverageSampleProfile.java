@@ -59,13 +59,22 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
     }
 
     @Override
+    /**
+     * Recalculates No. If ReplicateProfile average No is less than 10 N, the AverageProfile
+     * will be inactivated and No set to the ReplicateProfile average No.
+     */
     public void updateProfile() {
         //Without an OCF, No values cannot be calculated
         if (getOCF() > 0) {
             determineIfTheAverageReplicateNoIsLessThan10Molecules();
-        } 
+        } else {//No cannot be determined
+            setNo(0);
+            setNoEmax100(0);
+            return;
+        }
         if(!isTheAverageReplicateNoLessThan10Molecules){
-            super.updateProfile();//An LRE window must have already been found or the No will be set to zero
+//Never call this function iF No <10N as No will be set to zero
+            super.updateProfile();
         }
     }
 
@@ -142,13 +151,15 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
             isTheAverageReplicateNoLessThan10Molecules = true;
             setHasAnLreWindowBeenFound(false);
             setNo(0);
+            setNoEmax100(0);
             return false;
         }
         double averageReplicateNo = sum / counter;
         if (averageReplicateNo < 10) {
             isTheAverageReplicateNoLessThan10Molecules = true;
+            //At <10N there no profile exsists
             setHasAnLreWindowBeenFound(false);
-            setNo(averageReplicateNo);
+            setNo(averageReplicateNo);//The AverageProfile falls to the average Replicate No along with its Emax status
             return true;
         } else {
             isTheAverageReplicateNoLessThan10Molecules = false;

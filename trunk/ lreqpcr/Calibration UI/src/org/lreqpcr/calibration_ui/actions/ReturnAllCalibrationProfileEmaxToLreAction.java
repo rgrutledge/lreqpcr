@@ -65,13 +65,11 @@ public class ReturnAllCalibrationProfileEmaxToLreAction extends AbstractAction {
                 return;
             }
             for (AverageCalibrationProfile avProfile : avProfileList) {
-                avProfile.setIsEmaxOverridden(false);
-                avProfile.setOverridentEmaxValue(0);
+                avProfile.setIsEmaxFixedTo100(false);
                 analysisService.initializeProfileSummary(avProfile, selectionParameters);
                 db.saveObject(avProfile);
                 for (CalibrationProfile profile : avProfile.getReplicateProfileList()) {
-                    profile.setIsEmaxOverridden(false);
-                    profile.setOverridentEmaxValue(0);
+                    profile.setIsEmaxFixedTo100(false);
                     analysisService.initializeProfileSummary(profile, selectionParameters);
                     db.saveObject(avProfile);
                 }

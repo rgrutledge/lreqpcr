@@ -32,17 +32,22 @@ public class SampleProfile extends Profile {
      * Calculate the number of target molecules (No) 
      * based on the profile average Fo, OCF, amplicon size and target strandedness.
      * Note that the update will abort if the profile is excluded OR if an LRE
-     * window has not been found.
+     * window has not been found. Note also that AverageProfiles must never call
+     * this function when No less than 10N, as No will be set to zero.
      */
     public void updateProfile() {
         if (isExcluded() || !hasAnLreWindowBeenFound()) {
+//This has caused all sorts of problems dealing with <10N in AverageProfiles
             setNo(0);
+            setNoEmax100(0);
             return;
         }
         if (getTargetStrandedness() == TargetStrandedness.SINGLESTRANDED) {
             setNo(2 * ((getAvFo() / getOCF()) * 910000000000d) / getAmpliconSize());
+            setNoEmax100(2 * ((getAvFoEmax100() / getOCF()) * 910000000000d) / getAmpliconSize());
         } else {
             setNo(((getAvFo() / getOCF()) * 910000000000d) / getAmpliconSize());
+            setNoEmax100(((getAvFoEmax100() / getOCF()) * 910000000000d) / getAmpliconSize());
         }
     }
 

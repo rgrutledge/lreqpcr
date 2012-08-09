@@ -32,6 +32,7 @@ import org.openide.nodes.Node;
 import org.openide.util.Lookup;
 
 /**
+ * Fix SampleProfile(s) Emax to 100%
  *
  * @author Bob Rutledge
  */
@@ -70,8 +71,7 @@ public class FixSampleProfileEmaxTo100percentAction extends AbstractAction {
                 if (!profile.hasAnLreWindowBeenFound()){
                     return;
                 }
-                profile.setIsEmaxOverridden(true);
-                profile.setOverridentEmaxValue(1.0);
+                profile.setIsEmaxFixedTo100(true);
                 //Need to update avFo and avNo
                 analysisService.initializeProfileSummary(profile, selectionParameters);
                 db.saveObject(profile);

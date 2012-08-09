@@ -48,6 +48,9 @@ public abstract class LreAnalysisService {
      * all of the quantitative parameters such as the average Fo, so this function 
      * can be used to update the profile, such as after fixing Emax to 100%. Note 
      * that ProfileSummary is also used to view and edit a Profiles.
+     *
+     * Note also that the averageFo is recalculated and that it is upto the calling
+     * function to save the changes to the corresponding database.
      * 
      * @param profile the profile to be viewed
      * @param parameters LRE window selection parameters

@@ -61,8 +61,7 @@ public class ReturnCalibrationProfileEmaxToLreAction extends AbstractAction {
             for (Node n : nodes) {
                 LreNode node = (LreNode) n;
                 Profile profile = node.getLookup().lookup(Profile.class);
-                profile.setIsEmaxOverridden(false);
-                profile.setOverridentEmaxValue(0);
+                profile.setIsEmaxFixedTo100(false);
                 analysisService.initializeProfileSummary(profile, selectionParameters);
                 db.saveObject(profile);
                 node.refreshNodeLabel();

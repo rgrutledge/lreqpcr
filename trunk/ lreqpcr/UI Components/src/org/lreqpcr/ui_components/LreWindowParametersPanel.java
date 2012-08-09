@@ -295,7 +295,6 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                 return -1;
             }
             //Calculate and collect the Replicate Fo CVs
-
             for (AverageSampleProfile avProfile : avSampleProfileList) {
                 List<Double> noValues = Lists.newArrayList();
                 if (!avProfile.isReplicateAverageNoLessThan10Molecules()) {

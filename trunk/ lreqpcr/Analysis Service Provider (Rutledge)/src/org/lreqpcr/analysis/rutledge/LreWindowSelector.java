@@ -84,24 +84,19 @@ public class LreWindowSelector {
             int cycNum = runner.getCycNum();
             double fc = runner.getFc();
             regressionValues = runner.getCycLREparam();
-            //Overridden Emax is used to calculate cycle Fo values, that in turn are used to
-            //calculate the average Fo, and thus the target quantity. 
-            if (profile.isEmaxOverridden()) {
-                runner.setFo(LREmath.calcFo(
-                        cycNum,
-                        fc,
-                        regressionValues[0],
-                        regressionValues[1],
-                        profile.getOverriddendEmaxValue()));
-                runner = runner.getNextCycle();
-            } else {
-                runner.setFo(LREmath.calcFo(
-                        cycNum,
-                        fc,
-                        regressionValues[0],
-                        regressionValues[1]));
-                runner = runner.getNextCycle();
-            }
+            //Calculate Fo for both Emax and Emax fixed to 100%
+            runner.setFo(LREmath.calcFo(
+                    cycNum,
+                    fc,
+                    regressionValues[0],
+                    regressionValues[1]));
+            runner.setFoEmax100(LREmath.calcFo(
+                    cycNum,
+                    fc,
+                    regressionValues[0],
+                    regressionValues[1],
+                    1.0));
+            runner = runner.getNextCycle();
         }
         double fb = profile.getFb();
         /*-----Finds start cycle based on the cycle LRE r2-----*/
@@ -255,7 +250,7 @@ public class LreWindowSelector {
     }
 
     /**
-     * Process a profile for which an LRE window could not be found by
+     * Process a Profile for which an LRE window could not be found by
      * resetting all LRE parameters to zero.
      *
      * @param failedProfile
@@ -266,11 +261,12 @@ public class LreWindowSelector {
         failedProfile.setEmax(0);
         failedProfile.setDeltaE(0);
         failedProfile.setR2(0);
-        failedProfile.setIsEmaxOverridden(false);
-        failedProfile.setOverridentEmaxValue(0);
+        failedProfile.setIsEmaxFixedTo100(false);
         failedProfile.setMidC(0);
         failedProfile.setAvFo(0);
+        failedProfile.setAvFoEmax100(0);
         failedProfile.setAvFoCV(0);
         failedProfile.setNo(0);
+        failedProfile.setNoEmax100(0);
     }
 }

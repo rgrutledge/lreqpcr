@@ -22,12 +22,17 @@ package org.lreqpcr.core.data_objects;
  * lambda gDNA, from which an optical calibration factors (OCF) is generated.
  * Calculating OCF requires that the mass of lambda used in the amplification be provided.
  *
+ * Note that because the central output of a CalbrationProfile is an OCF, dealing with
+ * fixing Emax to 100% differs from that originally assumed during construction of Profile, in which No
+ * is the primary output. This thus required CalibrationProfile to define an ocfEmax100.
+ *
  * @author Bob Rutledge
  */
 public class CalibrationProfile extends Profile {
 
     private double lambdaMass;//The mass of the lamdba gDNA in nanograms
     private double mo;//Mo calculated from the lambdaMass
+    private double ocfEmax100;//OCF calculated using Emax fixed to 100%
 
     /**
      * Target strandedness is set to double stranded by default because it is 
@@ -65,7 +70,18 @@ public class CalibrationProfile extends Profile {
     public void updateProfile() {
         mo = (lambdaMass * getAmpliconSize()) / 48502;//Mo for lambda gDNA expressed in nanograms
         setOCF(getAvFo() / mo);
+        ocfEmax100 = getAvFoEmax100() / mo;
         setNo(((getAvFo() / getOCF()) * 910000000000d) / getAmpliconSize());
+        setNoEmax100(((getAvFoEmax100() / getOCF()) * 910000000000d) / getAmpliconSize());
+    }
+
+    @Override
+    public double getOCF() {
+        if (isEmaxFixedTo100()){
+            return ocfEmax100;
+        }else{
+            return super.getOCF();
+        }
     }
 
     /**

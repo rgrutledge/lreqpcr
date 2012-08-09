@@ -93,11 +93,7 @@ public final class AmpliconOverviewTopComponent extends TopComponent
             AbstractNode root = new AbstractNode(Children.LEAF);
             root.setName("No database is open");
             mgr.setRootContext(root);
-            if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION) {
-                exportProfilePanel.setVisible(false);
-            } else {
-                exportProfilePanel.setVisible(true);
-            }
+            exportProfilePanel.setVisible(true);
             return;
         }
         if (!currentDB.isDatabaseOpen()) {
@@ -355,9 +351,6 @@ public final class AmpliconOverviewTopComponent extends TopComponent
     @Override
     protected void componentActivated() {
         super.componentActivated();
-        if (!hasTreeBeenCreated) {//Likely not needed
-            createTree();
-        }
     }
 
     @Override
@@ -418,7 +411,7 @@ public final class AmpliconOverviewTopComponent extends TopComponent
                 return;
             }
             if (newDB != currentDB) {
-                if (newDB.getDatabaseType() != DatabaseType.EXPERIMENT || newDB.getDatabaseType() == DatabaseType.CALIBRATION) {
+                if (newDB.getDatabaseType() != DatabaseType.EXPERIMENT || newDB.getDatabaseType() != DatabaseType.CALIBRATION) {
                     currentDB = null;
                     createTree();
                     return;

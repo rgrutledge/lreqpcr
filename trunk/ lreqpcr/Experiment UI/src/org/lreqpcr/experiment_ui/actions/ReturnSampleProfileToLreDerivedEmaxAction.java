@@ -69,8 +69,7 @@ public class ReturnSampleProfileToLreDerivedEmaxAction extends AbstractAction {
                 if (!profile.hasAnLreWindowBeenFound()){
                     return;
                 }
-                profile.setIsEmaxOverridden(false);
-                profile.setOverridentEmaxValue(0);
+                profile.setIsEmaxFixedTo100(false);
                 //Need to update avFo and avNo
                 analysisService.initializeProfileSummary(profile, selectionParameters);
                 db.saveObject(profile);
