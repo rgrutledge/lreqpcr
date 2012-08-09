@@ -23,7 +23,6 @@ import org.lreqpcr.core.utilities.MathFunctions;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
-import java.lang.Boolean;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -46,7 +45,6 @@ public class ExcelCalibrationProfileExport {
 
     @SuppressWarnings("unchecked")
     public static void exportCalibrationProfiles(List<AverageCalibrationProfile> prfList) throws WriteException, IOException {
-        Boolean hasEmaxBeenOverridden = false;
         if (prfList == null) {
             return;
         }
@@ -169,7 +167,7 @@ public class ExcelCalibrationProfileExport {
             } else {
                 number = new Number(2, row, profile.getOCF(), floatFormat);
                 sheet.addCell(number);
-                if (profile.isEmaxOverridden()) {
+                if (profile.isEmaxFixedTo100()) {
                     number = new Number(3, row, 1.0, percentFormat);
                     sheet.addCell(number);
                 } else {
@@ -191,28 +189,17 @@ public class ExcelCalibrationProfileExport {
                 number = new Number(9, row, numberOfGenomes, integerFormat);
                 sheet.addCell(number);
                 String notes = "";
-                Boolean doesThisProfileOverrideEmax = false;
                 String note = "";
-                if (profile.isEmaxOverridden()) {
-                    hasEmaxBeenOverridden = true;
-                    doesThisProfileOverrideEmax = true;
-                    notes = "Emax is fixed to " + String.valueOf(profile.getOverriddendEmaxValue() * 100) + "% " + note;
+                if (profile.isEmaxFixedTo100()) {
+                    notes = "Emax is fixed to 100%" + "% " + note;
                 } else {
                     notes = note;
                 }
-                if (doesThisProfileOverrideEmax) {
                     label = new Label(10, row, notes);
-                    doesThisProfileOverrideEmax = false;
-                } else {
-                    label = new Label(10, row, notes);
-                }
+                
                 sheet.addCell(label);
                 row++;
             }
-        }
-        if (hasEmaxBeenOverridden) {
-            label = new Label(1, 2, "Note that Emax has been overridden in at leaast one profile", boldLeft);
-            sheet.addCell(label);
         }
 
         //Add formulas

@@ -73,8 +73,7 @@ public class ReturnRunProfilesEmaxToLreDerivedEmaxAction extends AbstractAction 
                     for (Profile repProfile : avProfile.getReplicateProfileList()) {
                         //Ignore profiles that do not have an LRE window
                         if (repProfile.hasAnLreWindowBeenFound()) {
-                            repProfile.setIsEmaxOverridden(false);
-                            repProfile.setOverridentEmaxValue(0);
+                            repProfile.setIsEmaxFixedTo100(false);
                             analysisService.initializeProfileSummary(repProfile, selectionParameters);
                             db.saveObject(repProfile);
                         }
@@ -88,8 +87,7 @@ public class ReturnRunProfilesEmaxToLreDerivedEmaxAction extends AbstractAction 
                     }
                     //Ignore average sample profiles that do not have an LRE window
                     if (avProfile.hasAnLreWindowBeenFound()) {
-                        avProfile.setIsEmaxOverridden(false);
-                        avProfile.setOverridentEmaxValue(0);
+                        avProfile.setIsEmaxFixedTo100(false);
                         //Need to update avFo and avNo
                         analysisService.initializeProfileSummary(avProfile, selectionParameters);
                     }

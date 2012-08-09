@@ -64,8 +64,7 @@ public class FixCalibrationProfileEmaxTo100percentAction extends AbstractAction 
             for (Node n : nodes) {
                 LreNode node = (LreNode) n;
                 Profile profile = node.getLookup().lookup(Profile.class);
-                profile.setIsEmaxOverridden(true);
-                profile.setOverridentEmaxValue(1.0);
+                profile.setIsEmaxFixedTo100(true);
                 analysisService.initializeProfileSummary(profile, selectionParameters);
                 db.saveObject(profile);
                 node.refreshNodeLabel();

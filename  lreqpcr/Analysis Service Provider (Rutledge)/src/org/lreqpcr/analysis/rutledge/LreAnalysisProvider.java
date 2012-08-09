@@ -20,9 +20,12 @@ import org.lreqpcr.core.data_processing.BaselineSubtraction;
 import org.lreqpcr.core.data_processing.ProfileInitializer;
 import org.lreqpcr.core.data_processing.ProfileSummaryImp;
 import org.lreqpcr.analysis_services.LreAnalysisService;
+import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
+import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
+import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.data_processing.Cycle;
 import org.lreqpcr.core.data_processing.ProfileSummary;
 
@@ -41,7 +44,7 @@ public class LreAnalysisProvider extends LreAnalysisService {
         profile.setHasAnLreWindowBeenFound(false);
         //Construct a ProfileSummary which is used for automated LRE window selection 
         //Subtract background fluorescence
-        if (profile.getFcReadings() == null){
+        if (profile.getFcReadings() == null) {
             //A new profile that requires baseline substraction
             BaselineSubtraction.baselineSubtraction(profile);
         }
@@ -86,7 +89,7 @@ public class LreAnalysisProvider extends LreAnalysisService {
 
     /**
      * Converts the profile to version 0.8.0. Note it is the responsibility
-     * of the calling function to save the  Profiles into the corresponding database.
+     * of the calling function to save the Profiles into the corresponding database.
      * 
      * @param profile
      * @param parameters
@@ -94,16 +97,54 @@ public class LreAnalysisProvider extends LreAnalysisService {
      */
     @Override
     public boolean convertProfileToNewVersion(Profile profile) {
-        profile.setProfileToVer0_8_0(true);
-        //See if an LRE window is present
-        if (profile.getLreWinSize() > 2) {
-            //This should preserve any user modifications to the LRE window
-            profile.setHasAnLreWindowBeenFound(true);
-        }
 //For AverageSampleProfiles it must determined if replicate average No <10
+//Note that updating No is complex because AverageProfile is an interface
+//requiring all implementing Profiles to correctly Override updateProfile().
         if (profile instanceof AverageSampleProfile) {
             AverageSampleProfile avProfile = (AverageSampleProfile) profile;
-            avProfile.updateProfile();//This is all that is needed
+            avProfile.setProfileToVer0_8_0(true);
+            //Convert all of the replicate profiles to version 0.8.0
+            for (SampleProfile repPrf : avProfile.getReplicateProfileList()) {
+                repPrf.setProfileToVer0_8_0(true);
+                //See if an LRE window is present
+                if (repPrf.getLreWinSize() > 2) {
+                    //This should preserve any user modifications to the LRE window
+                    repPrf.setHasAnLreWindowBeenFound(true);
+                } else {
+                    repPrf.setHasAnLreWindowBeenFound(false);
+                }
+                repPrf.updateProfile();
+            }
+            if (avProfile.getLreWinSize() > 2) {
+                //This should preserve any user modifications to the LRE window
+                avProfile.setHasAnLreWindowBeenFound(true);
+            } else {
+                avProfile.setHasAnLreWindowBeenFound(false);
+            }
+            avProfile.updateProfile();
+        }
+        if (profile instanceof AverageCalibrationProfile) {
+            AverageCalibrationProfile avProfile = (AverageCalibrationProfile) profile;
+            avProfile.setProfileToVer0_8_0(true);
+            //Convert all of the replicate profiles to version 0.8.0
+            for (CalibrationProfile repPrf : avProfile.getReplicateProfileList()) {
+                repPrf.setProfileToVer0_8_0(true);
+                //See if an LRE window is present
+                if (repPrf.getLreWinSize() > 2) {
+                    //This should preserve any user modifications to the LRE window
+                    repPrf.setHasAnLreWindowBeenFound(true);
+                } else {
+                    repPrf.setHasAnLreWindowBeenFound(false);
+                }
+                repPrf.updateProfile();
+            }
+            if (avProfile.getLreWinSize() > 2) {
+                //This should preserve any user modifications to the LRE window
+                avProfile.setHasAnLreWindowBeenFound(true);
+            } else {
+                avProfile.setHasAnLreWindowBeenFound(false);
+            }
+            avProfile.updateProfile();
         }
         return true;
     }

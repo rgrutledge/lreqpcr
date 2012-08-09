@@ -228,6 +228,7 @@ public class AverageProfileGenerator {
             //All of the replicate profiles are excluded...thus the Average Profile must be excluded
             //Not sure if this will ever happen...do not have time to determine
             fooProfile.setNo(0);
+            fooProfile.setNoEmax100(0);
         } else {
             //If the replicate No average is <10 it cannot be initialized
             AverageProfile avProfile = (AverageProfile) fooProfile;

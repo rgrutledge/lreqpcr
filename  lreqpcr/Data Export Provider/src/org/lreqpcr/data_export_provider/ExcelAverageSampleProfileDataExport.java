@@ -23,7 +23,6 @@ import java.awt.Desktop;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,7 +37,6 @@ import jxl.format.Colour;
 import jxl.write.*;
 import jxl.write.Number;
 import org.openide.windows.WindowManager;
-import java.lang.Boolean;
 
 /**
  *
@@ -56,7 +54,6 @@ public class ExcelAverageSampleProfileDataExport {
      */
     @SuppressWarnings("unchecked")
     public static void exportProfiles(HashMap<String, List<AverageSampleProfile>> groupList) throws IOException, WriteException {
-        Boolean hasEmaxBeenOverridden = false;
         //Setup the the workbook based on the file choosen by the user
         File selectedFile = IOUtilities.newExcelFile();
         if (selectedFile == null) {
@@ -155,7 +152,6 @@ public class ExcelAverageSampleProfileDataExport {
 
             List<AverageSampleProfile> profileList = groupList.get(pageName);
             Collections.sort(profileList);
-            ArrayList<AverageSampleProfile> belowTenMoleculeList = new ArrayList<AverageSampleProfile>();
             for (AverageSampleProfile avProfile : profileList) {
                 //Calculate an average amplicon Tm taken from the replicate profiles
                 double avTm = 0;
@@ -193,22 +189,19 @@ public class ExcelAverageSampleProfileDataExport {
                     row++;
                     continue;
                 } else {
+//Note that all of this is redundant in that an AverageProfile <10N has the average Replicate No already set as its No
 //Need to determine if No <10 molecules so that an average No must be calculated from the replicate profiles
-//That is an average profile is not reliable when the average No is below 10 molecules
+//This is because an average profile is not reliable when the average No is below 10 molecules
                     //Calculate an average No from the replicate profile No values
-                    Boolean replicateProfileEmaxIsOverridden = false;
                     double noSum = 0;
                     for (Profile prf : avProfile.getReplicateProfileList()) {
                         //Excluded Profiles are the user-defined indicating
                         //they are not to be used for quantification
                         if (!prf.isExcluded()) {
                             noSum = noSum + prf.getNo();
-                            if (prf.isEmaxOverridden()) {
-                                replicateProfileEmaxIsOverridden = true;
-                            }
                         }
                     }
-                    double average = noSum/avProfile.getReplicateProfileList().size();
+                    double average = noSum / avProfile.getReplicateProfileList().size();
 //If the average is <10 molecules the average profile is considered inaccurate
                     if (average < 10) {
                         //Target quantity == replicate average No
@@ -218,22 +211,9 @@ public class ExcelAverageSampleProfileDataExport {
                         String note = "";
 
                         if (avProfile.getLongDescription() != null) {
-                            if (replicateProfileEmaxIsOverridden) {
-                                note = "<10 Molecules and Emax has been "
-                                        + "overriddenat in at least one of the "
-                                        + "replicate profiles"
-                                        + avProfile.getLongDescription();
-                            } else {
-                                note = "<10 Molecules... " + avProfile.getLongDescription();
-                            }
+                            note = "<10 Molecules... " + avProfile.getLongDescription();
                         } else {
-                            if (replicateProfileEmaxIsOverridden) {
-                                note = "<10 Molecules and Emax has been "
-                                        + "overriddenat in at least one of the "
-                                        + "replicate profiles";
-                            } else {
-                                note = "<10 Molecules";
-                            }
+                            note = "<10 Molecules";
                         }
                         if (avTm != 0) {
                             number = new Number(8, row, avTm, floatFormat);
@@ -257,11 +237,10 @@ public class ExcelAverageSampleProfileDataExport {
                     if (avProfile.getLongDescription() != null) {
                         note1 = avProfile.getLongDescription();
                     }
-                    if (avProfile.isEmaxOverridden()) {
-                        note2 = "Emax is fixed to " + String.valueOf(avProfile.getOverriddendEmaxValue() * 100) + "%" + note1;
-                        hasEmaxBeenOverridden = true;
+                    if (avProfile.isEmaxFixedTo100()) {
+                        note2 = "Emax is fixed to 100%" + note1;
                         label = new Label(11, row, note2);
-                        number = new Number(4, row, avProfile.getOverriddendEmaxValue(), percentFormat);
+                        number = new Number(4, row, 1, percentFormat);
                     } else {
                         note2 = note1;
                         label = new Label(11, row, note2);
@@ -290,103 +269,6 @@ public class ExcelAverageSampleProfileDataExport {
                     sheet.addCell(number);
                     number = new Number(10, row, avProfile.getOCF(), floatFormat);
                     sheet.addCell(number);
-                    row++;
-                }
-            }
-            if (hasEmaxBeenOverridden) {
-                label = new Label(1, 1, "Note that Emax has been overridden in at leaast one profile");
-                sheet.addCell(label);
-            }
-
-//List the replicate profiles from the average profiles with No <10
-            //This has be disabled in Version 0.8.0
-            if (!belowTenMoleculeList.isEmpty()) {
-                //Setup the <10 target molecule section
-                row++;
-                label = new Label(0, row, "Samples with <10 target molecules", boldLeft);
-                sheet.addCell(label);
-                row++;
-                label = new Label(0, row, "Run Date", centerBoldUnderline);
-                sheet.addCell(label);
-                label = new Label(1, row, "Amplicon", centerBoldUnderline);
-                sheet.addCell(label);
-                label = new Label(2, row, "Sample", centerBoldUnderline);
-                sheet.addCell(label);
-                label = new Label(3, row, "No", centerBoldUnderline);
-                sheet.addCell(label);
-                label = new Label(4, row, "Emax", centerBoldUnderline);
-                sheet.addCell(label);
-                label = new Label(5, row, "avFo CV", centerBoldUnderline);
-                sheet.addCell(label);
-                label = new Label(6, row, "C1/2", centerBoldUnderline);
-                sheet.addCell(label);
-                label = new Label(7, row, "Fmax", centerBoldUnderline);
-                sheet.addCell(label);
-                label = new Label(8, row, "Amp Tm", centerBoldUnderline);
-                sheet.addCell(label);
-                label = new Label(9, row, "Amp Size", centerBoldUnderline);
-                sheet.addCell(label);
-                label = new Label(10, row, "OCF", centerBoldUnderline);
-                sheet.addCell(label);
-                label = new Label(11, row, "Well", centerBoldUnderline);
-                sheet.addCell(label);
-                label = new Label(12, row, "Notes", centerBoldUnderline);
-                sheet.addCell(label);
-                for (AverageSampleProfile avProfile : belowTenMoleculeList) {
-                    row++;
-                    WritableCellFormat dateFormat = new WritableCellFormat(customDateFormat);
-                    dateFormat.setAlignment(Alignment.CENTRE);
-                    DateTime dateCell = new DateTime(0, row, avProfile.getRunDate(), dateFormat);
-                    sheet.addCell(dateCell);
-                    label = new Label(1, row, avProfile.getAmpliconName());
-                    sheet.addCell(label);
-                    label = new Label(2, row, avProfile.getSampleName());
-                    sheet.addCell(label);
-                    int startRow = row + 1;//For setting up the average formula
-                    for (Profile profile : avProfile.getReplicateProfileList()) {
-                        if (profile.isExcluded()) {
-                            label = new Label(3, row, "0", integerFormat);
-                            sheet.addCell(label);
-                            label = new Label(11, row, profile.getWellLabel());
-                            sheet.addCell(label);
-                            label = new Label(12, row, profile.getLongDescription());
-                            sheet.addCell(label);
-                            row++;
-                            continue;
-                        }
-                        number = new Number(3, row, profile.getNo(), floatFormat);
-                        sheet.addCell(number);
-                        if (profile.getEmax() != 0) {
-                            number = new Number(4, row, profile.getEmax(), percentFormat);
-                            sheet.addCell(number);
-                        }
-                        if (profile.getAvFoCV() != 0) {
-                            number = new Number(5, row, profile.getAvFoCV(), percentFormat);
-                            sheet.addCell(number);
-                        }
-                        if (profile.getMidC() != 0) {
-                            number = new Number(6, row, profile.getMidC(), floatFormat);
-                            sheet.addCell(number);
-                        }
-                        if (profile.getEmax() != 0) {
-                            double fmax = (profile.getEmax() / profile.getDeltaE()) * -1;
-                            number = new Number(7, row, fmax, floatFormat);
-                            sheet.addCell(number);
-                        }
-                        if (profile.getAmpTm() != 0) {
-                            number = new Number(8, row, profile.getAmpTm(), floatFormat);
-                            sheet.addCell(number);
-                        }
-                        number = new Number(9, row, profile.getAmpliconSize(), integerFormat);
-                        sheet.addCell(number);
-                        number = new Number(10, row, profile.getOCF(), floatFormat);
-                        sheet.addCell(number);
-                        label = new Label(11, row, profile.getWellLabel());
-                        sheet.addCell(label);
-                        label = new Label(12, row, profile.getLongDescription());
-                        sheet.addCell(label);
-                        row++;
-                    }
                     row++;
                 }
             }

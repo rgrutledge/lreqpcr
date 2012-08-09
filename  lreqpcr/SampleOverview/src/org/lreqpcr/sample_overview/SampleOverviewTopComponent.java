@@ -94,25 +94,21 @@ public final class SampleOverviewTopComponent extends TopComponent
             AbstractNode root = new AbstractNode(Children.LEAF);
             root.setName("No database is open");
             mgr.setRootContext(root);
-            if (currentDB.getDatabaseType() == currentDB.getDatabaseType().CALIBRATION) {
-                exportProfilePanel.setVisible(false);
-            } else {
-                exportProfilePanel.setVisible(true);
-            }
+            exportProfilePanel.setVisible(true);
             return;
         }
         if (!currentDB.isDatabaseOpen()) {
             AbstractNode root = new AbstractNode(Children.LEAF);
             root.setName("No database is open");
             mgr.setRootContext(root);
-            if (currentDB.getDatabaseType() == currentDB.getDatabaseType().CALIBRATION) {
+            if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION) {
                 exportProfilePanel.setVisible(false);
             } else {
                 exportProfilePanel.setVisible(true);
             }
             return;
         }
-        if (currentDB.getDatabaseType() == currentDB.getDatabaseType().CALIBRATION) {
+        if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION) {
             exportProfilePanel.setVisible(false);
         } else {
             exportProfilePanel.setVisible(true);
@@ -131,7 +127,7 @@ public final class SampleOverviewTopComponent extends TopComponent
         //Retrieve all amplicon names from the database
         List profileList = null;
         //This was needed to avoid, for unclear reasons, a DB4O "not supported" exception that occurred when retrieving AveragProfile.class.
-        if (currentDB.getDatabaseType() == currentDB.getDatabaseType().CALIBRATION) {
+        if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION) {
             profileList = currentDB.getAllObjects(AverageCalibrationProfile.class);
         } else {
             profileList = currentDB.getAllObjects(AverageProfile.class);
@@ -185,7 +181,7 @@ public final class SampleOverviewTopComponent extends TopComponent
         emptyRoot.setName("Samples");
         mgr.setRootContext(emptyRoot);
         hasTreeBeenCreated = false;
-        if (currentDB.getDatabaseType() == currentDB.getDatabaseType().CALIBRATION) {
+        if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION) {
             exportProfilePanel.setVisible(false);
         } else {
             exportProfilePanel.setVisible(true);
@@ -413,7 +409,7 @@ public final class SampleOverviewTopComponent extends TopComponent
                 return;
             }
             if (newDB != currentDB) {
-                if (newDB.getDatabaseType() != DatabaseType.EXPERIMENT || newDB.getDatabaseType() == DatabaseType.CALIBRATION) {
+                if (newDB.getDatabaseType() != DatabaseType.EXPERIMENT || newDB.getDatabaseType() != DatabaseType.CALIBRATION) {
                     currentDB = null;
                     clearTree();
                     return;

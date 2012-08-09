@@ -53,11 +53,10 @@ public class CalbnTreeNodeLabels implements LabelFactory {
         }
         String emax;
         //Determine what to display for Emax
-        if (calbrnProfile.isEmaxOverridden() && calbrnProfile.hasAnLreWindowBeenFound()) {
+        if (calbrnProfile.isEmaxFixedTo100() && calbrnProfile.hasAnLreWindowBeenFound()) {
             df.applyPattern("#0.0");
             calbrnProfile.setShortDescription("Emax overridden");
-            emax = " (" + df.format(calbrnProfile.getOverriddendEmaxValue() * 100)
-                    + "%<-- " + df.format(calbrnProfile.getEmax() * 100) + "%)";
+            emax = "100%<-- " + df.format(calbrnProfile.getEmax() * 100) + "%)";
         } else {
             if (!calbrnProfile.hasAnLreWindowBeenFound()) {
                 emax = " (LRE window not found) ";
