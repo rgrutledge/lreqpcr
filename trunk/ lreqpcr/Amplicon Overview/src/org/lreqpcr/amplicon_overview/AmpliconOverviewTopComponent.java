@@ -86,6 +86,7 @@ public final class AmpliconOverviewTopComponent extends TopComponent
         UniversalLookup.getDefault().addListner(PanelMessages.RUN_VIEW_SELECTED, this);
         UniversalLookup.getDefault().addListner(PanelMessages.NEW_DATABASE, this);
         UniversalLookup.getDefault().addListner(PanelMessages.NEW_RUN_IMPORTED, this);
+        UniversalLookup.getDefault().addListner(PanelMessages.PROFILE_DELETED, this);
     }
 
     @SuppressWarnings("unchecked")
@@ -147,15 +148,15 @@ public final class AmpliconOverviewTopComponent extends TopComponent
             //Thus this facadeAmplicon is only used for display purposes
             facadeAmplicon.setName(ampName);
             //Retrieve all average profiles derived from this amplicon
-            List avProfileAmpliconList = currentDB.retrieveUsingFieldValue(AverageProfile.class, "ampliconName", ampName);
+            List ampliconNameAverageProfileList = currentDB.retrieveUsingFieldValue(AverageProfile.class, "ampliconName", ampName);
             //Compile a list of all Emax values
             ArrayList<Double> emaxArrayList = new ArrayList<Double>();
             //Generate an average and CV for this Emax values in this list
             double emaxTotal = 0;
             int counter = 0;
-            for (int i = 0; i < avProfileAmpliconList.size(); i++) {
+            for (int i = 0; i < ampliconNameAverageProfileList.size(); i++) {
                 //Ignore the replicate profiles, i.e. this is based only on AverageSampleProfiles
-                Profile profile = (Profile) avProfileAmpliconList.get(i);
+                Profile profile = (Profile) ampliconNameAverageProfileList.get(i);
                 //If the profile is exclucded, do not include it
                 if (!profile.isExcluded()
                         //Check if a profile is present i.e. not flat
@@ -402,25 +403,28 @@ public final class AmpliconOverviewTopComponent extends TopComponent
 
     @Override
     public void universalLookupChangeEvent(Object key) {
-        if (key == PanelMessages.NEW_DATABASE || key == PanelMessages.NEW_RUN_IMPORTED) {//Open, Close, New database file change
+        if (key == PanelMessages.NEW_DATABASE) {//A New database has been opened
             DatabaseServices newDB = (DatabaseServices) UniversalLookup.getDefault().getAll(PanelMessages.NEW_DATABASE).get(0);
             if (newDB == null) {
                 dbType = null;
                 createTree();
                 return;
             }
-            if (newDB != currentDB) {
-                if (newDB.getDatabaseType() != DatabaseType.EXPERIMENT || newDB.getDatabaseType() != DatabaseType.CALIBRATION) {
-                    currentDB = null;
-                    dbType = null;
-                    createTree();
-                    return;
-                } else {
-                    currentDB = newDB;
-                    dbType = currentDB.getDatabaseType();
-                }
+            if (newDB.getDatabaseType() == DatabaseType.EXPERIMENT || newDB.getDatabaseType() == DatabaseType.CALIBRATION) {
+                currentDB = newDB;
+                dbType = currentDB.getDatabaseType();
+                createTree();//Not sure if this will be slow when large numbers of profiles are present in the database
+                return;
+            } else {//Must be an Amplicon database
+                currentDB = null;
+                dbType = null;
+                createTree();
+                return;
             }
+        }
+        if (key == PanelMessages.PROFILE_DELETED || key == PanelMessages.NEW_RUN_IMPORTED) {//Profile deleted or a new Run has been imported
             createTree();//Not sure if this will be slow when large numbers of profiles are present in the database
+            return;
         }
     }
 }

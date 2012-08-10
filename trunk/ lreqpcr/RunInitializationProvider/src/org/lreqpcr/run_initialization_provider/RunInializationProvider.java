@@ -128,7 +128,8 @@ public class RunInializationProvider implements RunInitializationService {
         if (sampleProfileList != null) {
             if (!sampleProfileList.isEmpty()) {//A manual Calibration Profile import type should have an empty SampleProfile list
                 if (experimentDB.isDatabaseOpen()) {
-                    LreWindowSelectionParameters winSelectionParameters = (LreWindowSelectionParameters) experimentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
+                    LreWindowSelectionParameters winSelectionParameters =
+                            (LreWindowSelectionParameters) experimentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
                     ExperimentDbInfo dbInfo = (ExperimentDbInfo) experimentDB.getAllObjects(ExperimentDbInfo.class).get(0);
                     double ocf = dbInfo.getOcf();
                     for (SampleProfile sampleProfile : sampleProfileList) {

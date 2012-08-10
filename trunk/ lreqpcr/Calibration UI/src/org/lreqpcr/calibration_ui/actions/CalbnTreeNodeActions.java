@@ -40,7 +40,7 @@ public class CalbnTreeNodeActions implements LreActionFactory {
             new ExcludeAverageCalibrationProfileAction(mgr),
             new IncludeAverageCalibrationProfileAction(mgr),
             null,
-            new DeleteCalibrationProfileAction(mgr),
+            new DeleteAverageCalibrationProfileAction(mgr),
             null,
             new FixCalibrationProfileEmaxTo100percentAction(mgr),
             new ReturnCalibrationProfileEmaxToLreAction(mgr)

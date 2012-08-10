@@ -33,7 +33,7 @@ import org.openide.nodes.Node;
 import org.openide.windows.WindowManager;
 
 /**
- *
+ * Deletes selected Runs
  * @author Bob Rutledge
  */
 public class DeleteRunAction extends AbstractAction {

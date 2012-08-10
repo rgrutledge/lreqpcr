@@ -21,6 +21,7 @@ import org.lreqpcr.core.ui_elements.LabelFactory;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
+import org.lreqpcr.core.data_objects.SampleProfile;
 
 /**
  * Provides node labels for Profiles sorted by either Amplicon or Sample
@@ -36,7 +37,7 @@ public class SortedProfileTreeNodeLabels implements LabelFactory {
 
     public String getNodeLabel(LreObject member) {
 //This is a linear list of AverageSampleProfiles, so no need to determine the identity of the member
-        AverageSampleProfile profile = (AverageSampleProfile) member;
+        SampleProfile profile = (SampleProfile) member;
         profile.setShortDescription("");
         //Label madeup of three components
         String rundate = sdf.format(profile.getRunDate());

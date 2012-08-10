@@ -91,19 +91,15 @@ public class RunTreeNodeLabels implements LabelFactory {
                 }
             }
             //Determine what to display for No
-            if (profile.getNo() == Double.POSITIVE_INFINITY){
-                //Produced because an OCF has not been applied
-                if (profile.getAmpliconSize() == 0){
-                    profile.setShortDescription("Target quantity could not be determined, because an amplicon size has not been provided");
+            if (profile.getAmpliconSize() == 0) {
+                profile.setShortDescription("Target quantity could not be determined, because an amplicon size has not been provided");
                 return profileName + emax + "N= n.d.(no amplicon size)";
-                }
-                if (!(profile.getOCF() > 0)){
-                    profile.setShortDescription("Target quantity could not be determined, likely because an OCF has not been applied");
-                return profileName + emax + "N= n.d. (no OCF)";
-                }
-                profile.setShortDescription("For unkown reasons, a target quantity could not be determined");
-                return profileName + emax + "N= n.d.";
             }
+            if (!(profile.getOCF() > 0)) {
+                profile.setShortDescription("Target quantity could not be determined, likely because an OCF has not been applied");
+                return profileName + emax + "N= n.d. (no OCF)";
+            }
+
             if (profile.getNo() < 10) {
                 df.applyPattern("0.00");
             } else {

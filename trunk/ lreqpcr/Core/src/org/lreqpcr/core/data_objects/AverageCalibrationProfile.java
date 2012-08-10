@@ -88,11 +88,11 @@ public class AverageCalibrationProfile extends CalibrationProfile implements Ave
     /**
      * Based on the assumption that the average ReplicateCalibrationProfile No will never have
      * less than 10 molecules, this method has not been implemented and will 
-     * return true regardless.
-     * @return always returns true.
+     * return false regardless of the number of target molecules.
+     * @return always returns false.
      */
     public boolean determineIfTheAverageReplicateNoIsLessThan10Molecules() {
-        return true;
+        return false;
     }
 
 }
