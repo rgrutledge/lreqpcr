@@ -21,8 +21,6 @@ import java.util.List;
 import javax.swing.Action;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
-import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
-import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LabelFactory;
 import org.lreqpcr.core.ui_elements.LreActionFactory;
@@ -41,7 +39,6 @@ import org.openide.util.lookup.Lookups;
 public class RootCalibrationChildren extends LreObjectChildren {
 
     private LreAnalysisService analysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
-    private LreWindowSelectionParameters selectionParameters;
 
     /**
      * Generates nodes containing the Runs within the supplied experiment database.
@@ -64,16 +61,7 @@ public class RootCalibrationChildren extends LreObjectChildren {
             //Assume that the first profile is indicative of all the profiles in the database
             if (!avCalProfileList.get(0).isProfileVer0_8_0()) {
                 //All of the profiles within this database need to be converted to version 0.8.0
-                for (AverageCalibrationProfile avProfile : avCalProfileList) {
-                    analysisService.convertProfileToNewVersion(avProfile);
-                    //Must save the Profiles, including that replicate SampleProfiles
-                    db.saveObject(avProfile);
-                    for (Profile repProfile : avProfile.getReplicateProfileList()) {
-                        analysisService.convertProfileToNewVersion(repProfile);
-                        db.saveObject(repProfile);
-                    }
-                }
-                db.commitChanges();
+                    analysisService.convertDatabaseToNewVersion(db);
             }
         }
     }

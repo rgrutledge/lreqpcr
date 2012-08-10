@@ -66,7 +66,8 @@ public final class AmpliconOverviewTopComponent extends TopComponent
     private static final String PREFERRED_ID = "AmpliconOverviewTopComponent";
     private ExplorerManager mgr = new ExplorerManager();
     private DatabaseServices currentDB;
-    private boolean hasTreeBeenCreated;
+    private boolean hasTreeBeenCreated;//To prevent reconstruction upon repeated window activation
+    private DatabaseType dbType;
 
     public AmpliconOverviewTopComponent() {
         initComponents();
@@ -100,14 +101,14 @@ public final class AmpliconOverviewTopComponent extends TopComponent
             AbstractNode root = new AbstractNode(Children.LEAF);
             root.setName("No database is open");
             mgr.setRootContext(root);
-            if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION) {
+            if (dbType == DatabaseType.CALIBRATION) {
                 exportProfilePanel.setVisible(false);
             } else {
                 exportProfilePanel.setVisible(true);
             }
             return;
         }
-        if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION) {
+        if (dbType == DatabaseType.CALIBRATION) {
             exportProfilePanel.setVisible(false);
         } else {
             exportProfilePanel.setVisible(true);
@@ -122,14 +123,13 @@ public final class AmpliconOverviewTopComponent extends TopComponent
 
     private List<Amplicon> getAmpliconList() {
         List<Amplicon> ampliconList = new ArrayList<Amplicon>();
-        //Retrieve all amplicon names from the database
         List avProfileList = null;
-        //This was needed to avoid, for unclear reasons, a DB4O "not supported" exception that occurred when retrieving AveragProfile.class.
-        if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION) {
+        if (dbType == DatabaseType.CALIBRATION) {
             avProfileList = currentDB.getAllObjects(AverageCalibrationProfile.class);
-        } else {
-            avProfileList = currentDB.getAllObjects(AverageProfile.class);
+        } else {//Must be an Experiment database
+            avProfileList = currentDB.getAllObjects(AverageSampleProfile.class);
         }
+        //Collect all the amplicon names from the average profile list
         ArrayList<String> ampNameList = new ArrayList<String>();
         for (Object o : avProfileList) {
             Profile profile = (Profile) o;
@@ -147,24 +147,32 @@ public final class AmpliconOverviewTopComponent extends TopComponent
             //Thus this facadeAmplicon is only used for display purposes
             facadeAmplicon.setName(ampName);
             //Retrieve all average profiles derived from this amplicon
-            avProfileList = currentDB.retrieveUsingFieldValue(AverageProfile.class, "ampliconName", ampName);
+            List avProfileAmpliconList = currentDB.retrieveUsingFieldValue(AverageProfile.class, "ampliconName", ampName);
             //Compile a list of all Emax values
             ArrayList<Double> emaxArrayList = new ArrayList<Double>();
             //Generate an average and CV for this Emax values in this list
             double emaxTotal = 0;
             int counter = 0;
-            for (int i = 0; i < avProfileList.size(); i++) {
+            for (int i = 0; i < avProfileAmpliconList.size(); i++) {
                 //Ignore the replicate profiles, i.e. this is based only on AverageSampleProfiles
-                Profile profile = (Profile) avProfileList.get(i);
+                Profile profile = (Profile) avProfileAmpliconList.get(i);
                 //If the profile is exclucded, do not include it
                 if (!profile.isExcluded()
                         //Check if a profile is present i.e. not flat
-                        && profile.hasAnLreWindowBeenFound()
-                        //Ignore AverageSampleProfiles with <10 molecules as they can generate invalid average profiles
-                        && profile.getNo() >= 10) {
-                    emaxArrayList.add(profile.getEmax());
-                    emaxTotal = emaxTotal + profile.getEmax();
-                    counter++;
+                        && profile.hasAnLreWindowBeenFound()) {
+                    if (dbType == DatabaseType.EXPERIMENT) {
+                        AverageSampleProfile sampleProfile = (AverageSampleProfile) profile;
+                        //Only includd AverageSampleProfiles with >10 molecules
+                        if (!sampleProfile.isReplicateAverageNoLessThan10Molecules()) {
+                            emaxArrayList.add(profile.getEmax());
+                            emaxTotal = emaxTotal + profile.getEmax();
+                            counter++;
+                        }
+                    } else {//Must be a CalibrationProfile
+                        emaxArrayList.add(profile.getEmax());
+                        emaxTotal = emaxTotal + profile.getEmax();
+                        counter++;
+                    }
                 }
             }
             facadeAmplicon.setEmaxAverage(emaxTotal / counter);
@@ -176,18 +184,6 @@ public final class AmpliconOverviewTopComponent extends TopComponent
             ampliconList.add(facadeAmplicon);
         }
         return ampliconList;
-    }
-
-    private void clearTree() {
-        AbstractNode emptyRoot = new AbstractNode(Children.LEAF);
-        emptyRoot.setName("Amplicons");
-        mgr.setRootContext(emptyRoot);
-        hasTreeBeenCreated = false;
-        if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION) {
-            exportProfilePanel.setVisible(false);
-        } else {
-            exportProfilePanel.setVisible(true);
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -211,6 +207,7 @@ public final class AmpliconOverviewTopComponent extends TopComponent
         }
         return groupList;
     }
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -397,6 +394,7 @@ public final class AmpliconOverviewTopComponent extends TopComponent
             if (dbProvider.getDatabaseServices() != currentDB) {
                 //A new explorer window has been selected
                 currentDB = dbProvider.getDatabaseServices();
+                dbType = currentDB.getDatabaseType();
                 createTree();//Not sure if this will be slow when large numbers of profiles are present in the database
             }
         }
@@ -407,16 +405,19 @@ public final class AmpliconOverviewTopComponent extends TopComponent
         if (key == PanelMessages.NEW_DATABASE || key == PanelMessages.NEW_RUN_IMPORTED) {//Open, Close, New database file change
             DatabaseServices newDB = (DatabaseServices) UniversalLookup.getDefault().getAll(PanelMessages.NEW_DATABASE).get(0);
             if (newDB == null) {
+                dbType = null;
                 createTree();
                 return;
             }
             if (newDB != currentDB) {
                 if (newDB.getDatabaseType() != DatabaseType.EXPERIMENT || newDB.getDatabaseType() != DatabaseType.CALIBRATION) {
                     currentDB = null;
+                    dbType = null;
                     createTree();
                     return;
                 } else {
                     currentDB = newDB;
+                    dbType = currentDB.getDatabaseType();
                 }
             }
             createTree();//Not sure if this will be slow when large numbers of profiles are present in the database

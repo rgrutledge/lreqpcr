@@ -36,6 +36,7 @@ import jxl.format.BorderLineStyle;
 import jxl.format.Colour;
 import jxl.write.*;
 import jxl.write.Number;
+import org.lreqpcr.core.data_objects.SampleProfile;
 import org.openide.windows.WindowManager;
 
 /**
@@ -194,7 +195,7 @@ public class ExcelAverageSampleProfileDataExport {
 //This is because an average profile is not reliable when the average No is below 10 molecules
                     //Calculate an average No from the replicate profile No values
                     double noSum = 0;
-                    for (Profile prf : avProfile.getReplicateProfileList()) {
+                    for (SampleProfile prf : avProfile.getReplicateProfileList()) {
                         //Excluded Profiles are the user-defined indicating
                         //they are not to be used for quantification
                         if (!prf.isExcluded()) {

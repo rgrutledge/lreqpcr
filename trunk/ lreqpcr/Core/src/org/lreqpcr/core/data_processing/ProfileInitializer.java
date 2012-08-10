@@ -66,7 +66,7 @@ public class ProfileInitializer {
     public static void calcLreParameters(ProfileSummary prfSum) {
         Profile profile = prfSum.getProfile();
         Cycle runner = prfSum.getZeroCycle();
-        //Assume that the start cycle has be changed
+        //Assume that the start cycle has been changed
         //Run to the start cycle and reset the ProfileSummary Start Cycle
         for (int i = 0; i < profile.getStrCycleInt(); i++) {
             runner = runner.getNextCycle();
@@ -105,11 +105,11 @@ public class ProfileInitializer {
             //Not sure if this is necessary
         }
         ProfileInitializer.calcAllFo(prfSum);
+        //This will initiate an auto update within the Profile
         ProfileInitializer.calcAverageFo(prfSum);
         ProfileInitializer.calcAllpFc(prfSum);
         profile.setNonR2(LREmath.calcNonLinearR2(winFcpFc));
         profile.setMidC(LREmath.getMidC(profile.getDeltaE(), profile.getEmax(), profile.getAvFo()));
-        profile.updateProfile();//General rule is to update the Profile whenever the LRE parameters have changed
     }
 
     /**
@@ -160,11 +160,14 @@ public class ProfileInitializer {
             // TODO present an error dialog...is this even necessary ??
         }
 
-        profile.setAvFo(sumFo / (profile.getLreWinSize() + 1)); //Sets the LRE window average Fo value
-        profile.setAvFoCV(MathFunctions.calcStDev(oFlist) / profile.getAvFo()); //Sets the average Fo CV
-        profile.setAvFoEmax100(sumFoEmax100 / (profile.getLreWinSize() + 1)); //Sets the LRE window average Fo value calculated with Emax fixed to 100%
-//Note that not updating was a serious bug in versions earlier than 6Aug12 that could have generate inaccurate No values...
-        profile.updateProfile();//Recalculates the No (for SampleProfiles) and OCF (for CalibrationProfiles)
+        //Calculate the LRE window average Fo value using the LRE-derived Emax
+        double averageFo = (sumFo / (profile.getLreWinSize() + 1)); 
+        //Sets the average Fo CV
+        profile.setAvFoCV(MathFunctions.calcStDev(oFlist) / profile.getAvFo()); 
+        //Sets the LRE window average Fo value calculated with Emax fixed to 100%
+        double averageFoEmax100 = (sumFoEmax100 / (profile.getLreWinSize() + 1));
+        //Setting the average Fo values will initiate an auto update within both Sample and Calibration Profiles
+        profile.setAvFoValues(averageFo, averageFoEmax100);
         //Goto to cycle 1
         runner = prfSum.getZeroCycle().getNextCycle();
 //Sets the fractional difference between Fo and the averageFo across the entire profile using the LRE derived Emax

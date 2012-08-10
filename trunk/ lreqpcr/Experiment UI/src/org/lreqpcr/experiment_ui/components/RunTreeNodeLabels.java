@@ -23,6 +23,7 @@ import org.lreqpcr.core.ui_elements.LabelFactory;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
+import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.utilities.FormatingUtilities;
 
 /**
@@ -49,7 +50,7 @@ public class RunTreeNodeLabels implements LabelFactory {
 
         }
         if (member instanceof Profile) {
-            Profile profile = (Profile) member;
+            SampleProfile profile = (SampleProfile) member;
             profile.setShortDescription("");
             //Label madeup of three components: name, Emax and No
             String profileName = profile.getAmpliconName() + "@" + profile.getSampleName();

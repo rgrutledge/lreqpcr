@@ -304,7 +304,7 @@ public class ProfileEditor extends JPanel implements
             selectedNode.refreshNodeLabel();
             if (!(profile instanceof AverageProfile)) {
                 AverageProfile avProfile = (AverageProfile) profile.getParent();
-                if (avProfile.isReplicateAverageNoLessThan10Molecules()) {
+                if (avProfile.determineIfTheAverageReplicateNoIsLessThan10Molecules()) {
                     //Need to update the AveragProfile parent node labels
                     LreNode parentNode = (LreNode) selectedNode.getParentNode();
                     parentNode.refreshNodeLabel();

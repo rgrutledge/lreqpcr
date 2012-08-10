@@ -96,7 +96,6 @@ public class AverageProfileGenerator {
             avSampleProfile.setOCF(ocf);
             avSampleProfile.setReplicateProfileList(replicateProfileList);
             avSampleProfile.setRawFcReadings(generateAverageFcDataset(replicateProfileList));
-            avSampleProfile.updateProfile();
             intializeAverageProfile(avSampleProfile, parameters);
             averageProfileList.add(avSampleProfile);
         }
@@ -164,7 +163,6 @@ public class AverageProfileGenerator {
             if (avCalbnProfile.getRawFcReadings().length != 0) {
                 //0 indicates that sll replicate profiles must be excluded
                 intializeAverageProfile(avCalbnProfile, parameters);
-                avCalbnProfile.updateProfile();
             }
             averageCalbnProfileList.add(avCalbnProfile);
         }
@@ -215,31 +213,23 @@ public class AverageProfileGenerator {
     private static void intializeAverageProfile(AverageProfile averageProfile, LreWindowSelectionParameters parameters) {
         LreAnalysisService profileIntialization =
                 Lookup.getDefault().lookup(LreAnalysisService.class);
-        ArrayList<Profile> replicateList =
-                new ArrayList<Profile>(averageProfile.getReplicateProfileList());
+        //This is necessary because AverageProfile is an interface
         Profile fooProfile = (Profile) averageProfile;
-        Profile firstRepProfile = replicateList.get(0);
+        Profile firstRepProfile = averageProfile.getReplicateProfileList().get(0);
         fooProfile.setAmpliconName(firstRepProfile.getAmpliconName());
         fooProfile.setAmpliconSize(firstRepProfile.getAmpliconSize());
         fooProfile.setSampleName(firstRepProfile.getSampleName());
         fooProfile.setAmpTm(0);
         fooProfile.setName(fooProfile.getAmpliconName() + "@" + fooProfile.getSampleName());
-        if (fooProfile.getRawFcReadings().length == 0) {
-            //All of the replicate profiles are excluded...thus the Average Profile must be excluded
-            //Not sure if this will ever happen...do not have time to determine
-            fooProfile.setNo(0);
-            fooProfile.setNoEmax100(0);
-        } else {
+        if (fooProfile.getRawFcReadings().length != 0) {
             //If the replicate No average is <10 it cannot be initialized
             AverageProfile avProfile = (AverageProfile) fooProfile;
-            if (avProfile.isReplicateAverageNoLessThan10Molecules()) {
-                fooProfile.updateProfile();
-            } else {
+            if (!avProfile.isReplicateAverageNoLessThan10Molecules()) {
                 //Note the the replicate sample profiles have already been initialized
                 profileIntialization.conductAutomatedLreWindowSelection(fooProfile, parameters);
             }
         }
-        for (Profile profile : replicateList) {
+        for (Profile profile : averageProfile.getReplicateProfileList()) {
             profile.setParent(fooProfile);
         }
     }

@@ -67,6 +67,7 @@ public final class SampleOverviewTopComponent extends TopComponent
     private ExplorerManager mgr = new ExplorerManager();
     private DatabaseServices currentDB;
     private boolean hasTreeBeenCreated;//To prevent reconstruction upon repeated window activation
+    private DatabaseType dbType;
 
     public SampleOverviewTopComponent() {
         initComponents();
@@ -101,14 +102,14 @@ public final class SampleOverviewTopComponent extends TopComponent
             AbstractNode root = new AbstractNode(Children.LEAF);
             root.setName("No database is open");
             mgr.setRootContext(root);
-            if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION) {
+            if (dbType == DatabaseType.CALIBRATION) {
                 exportProfilePanel.setVisible(false);
             } else {
                 exportProfilePanel.setVisible(true);
             }
             return;
         }
-        if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION) {
+        if (dbType == DatabaseType.CALIBRATION) {
             exportProfilePanel.setVisible(false);
         } else {
             exportProfilePanel.setVisible(true);
@@ -127,10 +128,10 @@ public final class SampleOverviewTopComponent extends TopComponent
         //Retrieve all amplicon names from the database
         List profileList = null;
         //This was needed to avoid, for unclear reasons, a DB4O "not supported" exception that occurred when retrieving AveragProfile.class.
-        if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION) {
+        if (dbType == DatabaseType.CALIBRATION) {
             profileList = currentDB.getAllObjects(AverageCalibrationProfile.class);
-        } else {
-            profileList = currentDB.getAllObjects(AverageProfile.class);
+        } else {//Must be an Experiment database
+            profileList = currentDB.getAllObjects(AverageSampleProfile.class);
         }
         ArrayList<String> sampleNameList = new ArrayList<String>();
         for (Object o : profileList) {
@@ -148,21 +149,29 @@ public final class SampleOverviewTopComponent extends TopComponent
             //That is, a Sample is only represented as a String name
             facadeSample.setName(sampleName);
             //Retrieve all average profiles derived from this sample
-            profileList = currentDB.retrieveUsingFieldValue(AverageProfile.class, "sampleName", sampleName);
+            List avProfileAmpliconList = currentDB.retrieveUsingFieldValue(AverageProfile.class, "sampleName", sampleName);
             ArrayList<Double> emaxArrayList = new ArrayList<Double>();
             double emaxTotal = 0;
             int counter = 0;
-            for (int i = 0; i < profileList.size(); i++) {
+            for (int i = 0; i < avProfileAmpliconList.size(); i++) {
                 Profile profile = (Profile) profileList.get(i);
                 //Check if a profile is present i.e. not flat
                 if (!profile.isExcluded()
                         //Check if a profile is present i.e. not flat
-                        && profile.hasAnLreWindowBeenFound()
-                        //Ignore AverageSampleProfiles with <10 molecules as they can generate invalid average profiles
-                        && profile.getNo() > 10) {
-                    emaxArrayList.add(profile.getEmax());
-                    emaxTotal = emaxTotal + profile.getEmax();
-                    counter++;
+                        && profile.hasAnLreWindowBeenFound()) {
+                    if (dbType == DatabaseType.EXPERIMENT) {
+                        AverageSampleProfile sampleProfile = (AverageSampleProfile) profile;
+                        //Only includd AverageSampleProfiles with >10 molecules
+                        if (!sampleProfile.isReplicateAverageNoLessThan10Molecules()) {
+                            emaxArrayList.add(profile.getEmax());
+                            emaxTotal = emaxTotal + profile.getEmax();
+                            counter++;
+                        }
+                    } else {//Must be a CalibrationProfil
+                        emaxArrayList.add(profile.getEmax());
+                        emaxTotal = emaxTotal + profile.getEmax();
+                        counter++;
+                    }
                 }
             }
             facadeSample.setEmaxAverage(emaxTotal / counter);
@@ -174,18 +183,6 @@ public final class SampleOverviewTopComponent extends TopComponent
             sampleList.add(facadeSample);
         }
         return sampleList;
-    }
-
-    private void clearTree() {
-        AbstractNode emptyRoot = new AbstractNode(Children.LEAF);
-        emptyRoot.setName("Samples");
-        mgr.setRootContext(emptyRoot);
-        hasTreeBeenCreated = false;
-        if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION) {
-            exportProfilePanel.setVisible(false);
-        } else {
-            exportProfilePanel.setVisible(true);
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -209,6 +206,7 @@ public final class SampleOverviewTopComponent extends TopComponent
         }
         return groupList;
     }
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -395,6 +393,7 @@ public final class SampleOverviewTopComponent extends TopComponent
             if (dbProvider.getDatabaseServices() != currentDB) {
                 //A new TC window has been selected
                 currentDB = dbProvider.getDatabaseServices();
+                dbType = currentDB.getDatabaseType();
                 createTree();//Not sure if this will be slow when large numbers of profiles are present in the database
             }
         }
@@ -405,16 +404,19 @@ public final class SampleOverviewTopComponent extends TopComponent
         if (key == PanelMessages.NEW_DATABASE || key == PanelMessages.NEW_RUN_IMPORTED) {//Open, Close, New database file change
             DatabaseServices newDB = (DatabaseServices) UniversalLookup.getDefault().getAll(PanelMessages.NEW_DATABASE).get(0);
             if (newDB == null) {
+                dbType = null;
                 createTree();
                 return;
             }
             if (newDB != currentDB) {
                 if (newDB.getDatabaseType() != DatabaseType.EXPERIMENT || newDB.getDatabaseType() != DatabaseType.CALIBRATION) {
                     currentDB = null;
-                    clearTree();
+                    dbType = null;
+                    createTree();
                     return;
                 } else {
                     currentDB = newDB;
+                    dbType = currentDB.getDatabaseType();
                 }
             }
             createTree();//Not sure if this will be slow when large numbers of profiles are present in the database

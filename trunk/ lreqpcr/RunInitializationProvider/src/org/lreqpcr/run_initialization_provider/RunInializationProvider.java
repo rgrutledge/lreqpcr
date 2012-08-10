@@ -143,7 +143,6 @@ public class RunInializationProvider implements RunInitializationService {
                         //Initialize the new Profile which will conduct an automated LRE window selection
                         prfIntlz.conductAutomatedLreWindowSelection(sampleProfile, winSelectionParameters);
                         sampleProfile.setOCF(ocf);
-                        sampleProfile.updateProfile();
                         experimentDB.saveObject(sampleProfile);
                     }
                     List<AverageSampleProfile> averageSampleProfileList =
@@ -182,7 +181,6 @@ public class RunInializationProvider implements RunInitializationService {
                             }
                         }
                         prfIntlz.conductAutomatedLreWindowSelection(profile, lreWindowSelectionParameters);
-                        profile.updateProfile();
                         calbnDB.saveObject(profile);
                     }
                     //Process the AverageCalibnProfiles

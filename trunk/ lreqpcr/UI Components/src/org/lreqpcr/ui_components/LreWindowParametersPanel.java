@@ -42,6 +42,7 @@ import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
+import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.database_services.DatabaseProvider;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
@@ -266,9 +267,9 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
     /**
      * Provides an indicate of quantitative variance based on variance of the 
      * replicate profile CV, that is average No CV for sample profiles when an OCF 
-     * has been applied (necessary to exclude replicates less than 10 molecules, 
-     * or average Fo CV for replicate calibration profiles where it is expected that 
-     * target quantity will never be below 10 molecules.
+     * has been applied. Note that replicates with less than 10 molecules are excluded
+     * for SampleProfile and that it is expected that calibration profiles to always have
+     * target quantities above 10 molecules.
      *
      * @return the replicate CV or -1 if the replicate CV cannot be determined or 0 if too few replicates are available.
      */
@@ -300,7 +301,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                 if (!avProfile.isReplicateAverageNoLessThan10Molecules()) {
 //Only include replicate that are >10 molecules in order to avoid scattering produced by Poisson distribution 
                     double sum = 0;
-                    for (Profile profile : avProfile.getReplicateProfileList()) {
+                    for (SampleProfile profile : avProfile.getReplicateProfileList()) {
                         if (profile.hasAnLreWindowBeenFound() && !profile.isExcluded()) {
                             noValues.add(profile.getNo());
                             sum += profile.getNo();

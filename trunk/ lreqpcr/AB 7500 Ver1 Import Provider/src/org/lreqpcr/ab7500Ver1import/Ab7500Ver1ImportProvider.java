@@ -142,7 +142,7 @@ public class Ab7500Ver1ImportProvider extends RunImportService {
             Profile profile = null;
             //Determine if this is a calibration profile
             if (resultSheet.getCell(3, resultRow).getContents().equals("Standard")) {
-                profile = new CalibrationProfile(run);//Target strandedness is set to double during instantiation
+                profile = new CalibrationProfile(run);
                 CalibrationProfile calbnProfile = (CalibrationProfile) profile;
                 try {
                     calbnProfile.setLambdaMass(Double.valueOf(resultSheet.getCell(6, resultRow).getContents()));

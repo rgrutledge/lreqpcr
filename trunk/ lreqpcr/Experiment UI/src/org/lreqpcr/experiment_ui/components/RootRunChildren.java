@@ -21,7 +21,6 @@ import java.util.List;
 import javax.swing.Action;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
-import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LabelFactory;
@@ -82,20 +81,10 @@ public class RootRunChildren extends LreObjectChildren {
         List<AverageSampleProfile> avProfileList = run.getAverageProfileList();
         if (avProfileList != null) {
             if (!avProfileList.isEmpty()) {
-                //Assume that the first profile is indicative of all the profiles in the Run
+    //Assume that the first profile is indicative of all the profiles in the Run
                 if (!avProfileList.get(0).isProfileVer0_8_0()) {
-                    List<AverageSampleProfile> allAvSampleProfiles = db.getAllObjects(AverageSampleProfile.class);
-//All of the profiles within this run need to be converted to version 0.8.0
-                    for (AverageSampleProfile avProfile : allAvSampleProfiles) {
-                        analysisService.convertProfileToNewVersion(avProfile);
-                        //Must save the Profiles, including that replicate SampleProfiles
-                        db.saveObject(avProfile);
-                        for (Profile repProfile : avProfile.getReplicateProfileList()) {
-                            analysisService.convertProfileToNewVersion(repProfile);
-                            db.saveObject(repProfile);
-                        }
-                    }
-                    db.commitChanges();
+//All of the profiles within this database need to be converted to version 0.8.0
+                    analysisService.convertDatabaseToNewVersion(db);
                 }
             }
         }

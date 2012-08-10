@@ -88,11 +88,11 @@ public class AverageCalibrationProfile extends CalibrationProfile implements Ave
     /**
      * Based on the assumption that the average ReplicateCalibrationProfile No will never have
      * less than 10 molecules, this method has not been implemented and will 
-     * throw an UnsupportedOperationException if called.
-     * @return not implemented
+     * return true regardless.
+     * @return always returns true.
      */
     public boolean determineIfTheAverageReplicateNoIsLessThan10Molecules() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return true;
     }
 
 }
