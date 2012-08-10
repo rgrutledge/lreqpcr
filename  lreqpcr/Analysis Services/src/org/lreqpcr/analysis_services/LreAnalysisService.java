@@ -20,6 +20,7 @@ package org.lreqpcr.analysis_services;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_processing.ProfileSummary;
+import org.lreqpcr.core.database_services.DatabaseServices;
 
 /**
  * Initialize all fields within the provided Profile and the
@@ -33,8 +34,7 @@ public abstract class LreAnalysisService {
      * Provides all the functions necessary for automated LRE window selection,
      * including the ability to initialize new Profiles.
      * This involves baseline subtraction for new Profiles and
-     * LRE window selection using the LreWindowSelectionParameters. Note that these
-     * methods do not save the modifications made to the Profile and thus
+     * LRE window selection using the LreWindowSelectionParameters. Note that
      * the caller must take responsibility for saving the changes to the Profile.
      *
      * @param profile the Profile to initialize
@@ -73,8 +73,8 @@ public abstract class LreAnalysisService {
      * Primarily for back compatability, provides all the needed actions to
      * update a preexisting Profile to a new version.
      *
-     * @param profile the profile to update to a new version
+     * @param db the database to be converted
      * @return true if the update was successful
      */
-    public abstract boolean convertProfileToNewVersion(Profile profile);
+    public abstract void convertDatabaseToNewVersion(DatabaseServices db);
 }

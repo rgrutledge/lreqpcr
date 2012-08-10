@@ -37,7 +37,7 @@ public abstract class Profile extends LreObject {
     private String sampleName;//Could be used to recover information about the sample from a database
     private String ampliconName;//Used to recover amplicon size from the amplicon database
     private int ampliconSize = 0;
-    private TargetStrandedness targetStrandedness;
+    private TargetStrandedness targetStrandedness = TargetStrandedness.DOUBLESTRANDED;
     //This is a very clumsy method for maintaiing back compatability...a better versioning method is clearly needed
     private boolean isProfileVer0_8_0 = false;//This must be set to true during data import!!!!!
         
@@ -59,14 +59,10 @@ public abstract class Profile extends LreObject {
     private double fbSlope, fbIntercept, fbR2;//Baseline linear regression used to test for baseline drift... under development
     private boolean excluded;//Allows profiles to be excluded from the analysis
     private String whyExcluded;//Text describing why the profile was excluded
-    
-    //Target molecule (No) determination via optical calibration
-    private double ocf;//The optical calibration factor used to calculate the number of target molecules
-    private double no;//Number of targets molecules
-    private double noEmax100;//Number of target molecules when Emax is fixed to 100%
 
     /**
-     * Holds all basic parameters of a Profile
+     * Stores all basic parameters of a Profile in which target quantity is expressed
+     * in fluorescence units.
      * @param run the Run from which the Profile was generated. Note that Run date is retrieved from the provide Run.
      */
     public Profile(Run run) {
@@ -86,14 +82,6 @@ public abstract class Profile extends LreObject {
     public void setWellNumber(int wellNumber) {
         this.wellNumber = wellNumber;
     }
-
-    /**
-     * Primarily for updating following a change
-     * to the LRE window, or any other parameter
-     * such as the OCF
-     * 
-     */
-    public abstract void updateProfile();
 
     /**
      * 
@@ -150,16 +138,8 @@ public abstract class Profile extends LreObject {
         this.ft = ft;
     }
 
-    public double getOCF() {
-        return ocf;
-    }
-
-    public void setOCF(double averageOCF) {
-        this.ocf = averageOCF;
-    }
-
     /**
-     * 
+     * The average Fo is calculated using the LRE-derived Emax
      * @return the average of the Fo values generated 
      * by the Fc readings within the LRE window.
      */
@@ -168,19 +148,19 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * The average Fo is the primary quantitative unit for a profile. 
-     * @param Fo the average of the Fo values generated 
-     * by the Fc readings within the LRE window.
+     * The average Fo is by the Fc readings within the LRE window the primary quantitative unit for a profile. 
+     * @param averageFo the average of the Fo values calculated using the LRE derived Emax 
+     * @param averageFoEmax100 the average of the Fo values calculated using Emax fixed to 100%
      */
-    public void setAvFo(double Fo) {
-        this.avFo = Fo;
-        updateProfile();
+    public void setAvFoValues(double averageFo, double averageFoEmax100) {
+        this.avFo = averageFo;
+        this.avFoEmax100 = averageFoEmax100;
     }
 
-    public void setAvFoEmax100(double avFoEmax100) {
-        this.avFoEmax100 = avFoEmax100;
-    }
-
+    /**
+     * The average Fo calculated using Emax fixed to 100%
+     * @return the average Fo calculated using Emax fixed to 100%
+     */
     public double getAvFoEmax100() {
         return avFoEmax100;
     }
@@ -215,11 +195,6 @@ public abstract class Profile extends LreObject {
 
     public void setEmax(double eMax) {
         this.eMax = eMax;
-        //Some nearly flat profiles generate a negative Emax
-        if(eMax < 0 || eMax == Double.NaN || deltaE > 0){
-            setNo(0);
-            setNoEmax100(0);
-        }
     }
 
     public double getFb() {
@@ -334,6 +309,10 @@ public abstract class Profile extends LreObject {
         return ampliconSize;
     }
 
+    /**
+     * Note that 
+     * @param ampliconSize
+     */
     public void setAmpliconSize(int ampliconSize) {
         this.ampliconSize = ampliconSize;
     }
@@ -390,32 +369,6 @@ public abstract class Profile extends LreObject {
 
     public void setFbSlope(double fbSlope) {
         this.fbSlope = fbSlope;
-    }
-
-    public void setNo(double no) {
-        this.no = no;
-    }
-
-    /**
-     * The number target molecules based on Emax or Emax fixed to 100%
-     * calculated using the optical calibration factor (OCF).
-     * 
-     * return number of target molecules
-     */
-    public double getNo() {
-        if (isEmaxFixedTo100){
-            return noEmax100;
-        }else{
-            return no;
-        }
-    }
-
-    public double getNoEmax100() {
-        return noEmax100;
-    }
-
-    public void setNoEmax100(double noEmax100) {
-        this.noEmax100 = noEmax100;
     }
 
     public boolean isExcluded() {

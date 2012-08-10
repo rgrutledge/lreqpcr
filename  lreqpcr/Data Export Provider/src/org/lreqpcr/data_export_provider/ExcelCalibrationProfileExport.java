@@ -17,7 +17,6 @@
 package org.lreqpcr.data_export_provider;
 
 import com.google.common.collect.Lists;
-import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.utilities.IOUtilities;
 import org.lreqpcr.core.utilities.MathFunctions;
 import java.awt.Desktop;
@@ -35,6 +34,7 @@ import jxl.format.Colour;
 import jxl.format.Border;
 import jxl.format.BorderLineStyle;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
+import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.openide.windows.WindowManager;
 
 /**
@@ -56,7 +56,7 @@ public class ExcelCalibrationProfileExport {
         double ocfSum = 0;
         ArrayList<Double> ocfArray = Lists.newArrayList();
         for (int i = 0; i < profileList.size(); i++) {
-            Profile profile = (Profile) profileList.get(i);
+            CalibrationProfile profile = (CalibrationProfile) profileList.get(i);
             if (!profile.isExcluded()) {
                 ocfSum = ocfSum + profile.getOCF();
                 ocfArray.add(profile.getOCF());

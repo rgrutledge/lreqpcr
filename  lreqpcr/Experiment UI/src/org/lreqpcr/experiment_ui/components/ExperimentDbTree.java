@@ -220,13 +220,11 @@ public class ExperimentDbTree extends JPanel {
                 //Reset the profile ocf to the new ocf
                 //Neeed to update the replicate profiles before updating the average profiles
                 //This is because average profile updating depends on replicate profile No values
-                for (Profile repProfile : avProfile.getReplicateProfileList()) {
+                for (SampleProfile repProfile : avProfile.getReplicateProfileList()) {
                     repProfile.setOCF(ocf);
-                    repProfile.updateProfile();
                     experimentDB.saveObject(repProfile);
                 }
                 avProfile.setOCF(ocf);
-                avProfile.updateProfile();
                 experimentDB.saveObject(avProfile);
             }
         }

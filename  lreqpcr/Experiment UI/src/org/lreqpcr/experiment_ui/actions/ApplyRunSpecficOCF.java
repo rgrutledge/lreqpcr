@@ -89,21 +89,17 @@ class ApplyRunSpecficOCF extends AbstractAction {
                 //apply the run ocf
                 avProfile.setOCF(runOCF);
             }
-            avProfile.updateProfile();
             db.saveObject(avProfile);
             List<SampleProfile> sampleProfileList = avProfile.getReplicateProfileList();
             for (SampleProfile sampleProfile : sampleProfileList) {
-                if (!sampleProfile.isExcluded()) {
-                    if (runOCF == 0) {
-                        //This resets the ocf to the average OCF
-                        sampleProfile.setOCF(avOCF);
-                    } else {
-                        //apply the run ocf
-                        sampleProfile.setOCF(runOCF);
-                    }
-                    sampleProfile.updateProfile();
-                    db.saveObject(sampleProfile);
+                if (runOCF == 0) {
+                    //This resets the ocf to the average OCF
+                    sampleProfile.setOCF(avOCF);
+                } else {
+                    //apply the run ocf
+                    sampleProfile.setOCF(runOCF);
                 }
+                db.saveObject(sampleProfile);
             }
         }
         db.commitChanges();

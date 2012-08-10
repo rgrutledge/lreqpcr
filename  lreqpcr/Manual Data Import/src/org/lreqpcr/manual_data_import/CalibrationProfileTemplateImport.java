@@ -217,7 +217,6 @@ public class CalibrationProfileTemplateImport extends RunImportService {
 
         while (col < colCount && sheet.getCell(col, 2).getType() != CellType.EMPTY) {
             CalibrationProfile calbnProfile = new CalibrationProfile(run);
-            calbnProfile.setTargetStrandedness(TargetStrandedness.DOUBLESTRANDED);
             calbnProfile.setAmpliconName(sheet.getCell(col, 2).getContents());
             calbnProfile.setSampleName(sheet.getCell(col, 4).getContents() + " fg");
             try {

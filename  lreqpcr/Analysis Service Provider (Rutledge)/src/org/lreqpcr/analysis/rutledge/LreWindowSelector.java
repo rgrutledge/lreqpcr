@@ -263,10 +263,7 @@ public class LreWindowSelector {
         failedProfile.setR2(0);
         failedProfile.setIsEmaxFixedTo100(false);
         failedProfile.setMidC(0);
-        failedProfile.setAvFo(0);
-        failedProfile.setAvFoEmax100(0);
+        failedProfile.setAvFoValues(0, 0);
         failedProfile.setAvFoCV(0);
-        failedProfile.setNo(0);
-        failedProfile.setNoEmax100(0);
     }
 }

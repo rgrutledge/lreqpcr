@@ -82,24 +82,26 @@ public class LrePlot extends javax.swing.JPanel {
         this.prfSum = prfSum;
         profile = prfSum.getProfile();
         if (profile instanceof SampleProfile) {
-            double no = profile.getNo();
+            SampleProfile samplePrf = (SampleProfile) profile;
+            double no = samplePrf.getNo();
             if (no < 10) {
                 df.applyPattern("#0.00");
             } else {
                 df.applyPattern("###,###");
             }
-            String numTargetMolecs = df.format(profile.getNo()) + " molecules";
-            graphTitle.setText(sdf.format(profile.getRunDate()) + "  " + numTargetMolecs);
+            String numTargetMolecs = df.format(samplePrf.getNo()) + " molecules";
+            graphTitle.setText(sdf.format(samplePrf.getRunDate()) + "  " + numTargetMolecs);
         }
         if (profile instanceof CalibrationProfile) {
-            double ocf = profile.getOCF();
+            CalibrationProfile calPrf = (CalibrationProfile) profile;
+            double ocf = calPrf.getOCF();
             if (ocf < 10) {
                 df.applyPattern("#0.00");
             } else {
                 df.applyPattern("###,###");
             }
-            String ocfLabel = "  OCF= " + df.format(profile.getOCF());
-            graphTitle.setText(sdf.format(profile.getRunDate()) + ocfLabel);
+            String ocfLabel = "  OCF= " + df.format(calPrf.getOCF());
+            graphTitle.setText(sdf.format(calPrf.getRunDate()) + ocfLabel);
         }
         lreWinSizeDisplay.setText(String.valueOf(profile.getLreWinSize()));
         startCycleDisplay.setText(String.valueOf(profile.getStrCycleInt()));
@@ -162,15 +164,13 @@ public class LrePlot extends javax.swing.JPanel {
 //which should be true if the profile is being displayed so that the user can modify it
         //Update ProfileSummary using the new LRE parameters
         ProfileInitializer.calcLreParameters(prfSum);
-        profile.updateProfile();
+//Note that of 9Aug12 the profile updates itself following changes to the avFo
         db.saveObject(profile);
-        //More may need to be done if it is a SampleProfile
+        //The AverageSampleProfile may need to be updated if this is a SampleProfile
         if (profile instanceof SampleProfile && !(profile instanceof AverageProfile)) {
             AverageSampleProfile avProfile = (AverageSampleProfile) profile.getParent();
-            if (avProfile.isReplicateAverageNoLessThan10Molecules()) {
-//Need to update the AverageProfile No because it is determined from the average
-//No from the replicate profiles
-                avProfile.updateProfile();
+            //This function will update the AverageSampleProfile if it is <10N
+            if (avProfile.determineIfTheAverageReplicateNoIsLessThan10Molecules()) {
                 db.saveObject(avProfile);
             }
         }

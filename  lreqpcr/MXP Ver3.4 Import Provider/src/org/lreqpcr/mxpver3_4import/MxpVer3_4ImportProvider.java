@@ -193,7 +193,8 @@ public class MxpVer3_4ImportProvider extends RunImportService {
             //Determine if this is a calibration profile
             if (reportSheet.getCell(wellType, reportRow).getContents().equals("Standard")) {
                 //This is a calibration profile
-                profile = new CalibrationProfile(run);//Target strandedness is set to double during instantiation
+                profile = new CalibrationProfile(run);
+                profile.setTargetStrandedness(targetStrandedness.DOUBLESTRANDED);
                 CalibrationProfile calbnProfile = (CalibrationProfile) profile;
                 if (quantityCol != columnAbsent) {
                     try {

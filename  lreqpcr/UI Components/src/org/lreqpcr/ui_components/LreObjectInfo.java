@@ -28,6 +28,7 @@ import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.data_objects.TargetStrandedness;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
+import org.lreqpcr.core.utilities.UniversalLookup;
 import org.openide.nodes.Node;
 
 /**
@@ -117,16 +118,15 @@ public class LreObjectInfo extends JPanel {
                     }
                     nanErrorDisplay.setText("");
                     profile.setAmpliconSize(i);
-                    profile.updateProfile();
                     selectedNode.refreshNodeLabel();
                     //Update the replicate profiles if this is an average profile
                     if (profile instanceof AverageProfile) {
                         AverageProfile avProfile = (AverageProfile) profile;
                         for (Profile prf : avProfile.getReplicateProfileList()) {
                             prf.setAmpliconSize(i);
-                            prf.updateProfile();
-                            //Decided not to update the replicate profile node labels, so they may not be correct
+                            
                         }
+                        //Update the replicate profile node labels
                         LreObjectChildren children = (LreObjectChildren) selectedNode.getChildren();
                         Node[] nodes = children.getNodes();
                         for (Node node : nodes) {
@@ -429,9 +429,9 @@ public class LreObjectInfo extends JPanel {
         } else {
             profile.setTargetStrandedness(TargetStrandedness.DOUBLESTRANDED);
         }
-        profile.updateProfile();
         selectedNode.saveLreObject();
         selectedNode.refreshNodeLabel();
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_CHANGED);
     }//GEN-LAST:event_ssDNAcheckBox1ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel ampLabel;

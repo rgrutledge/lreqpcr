@@ -16,7 +16,6 @@
  */
 package org.lreqpcr.experiment_ui.components;
 
-import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.ui_elements.LabelFactory;
 import java.text.DecimalFormat;
@@ -37,7 +36,7 @@ public class SortedProfileTreeNodeLabels implements LabelFactory {
 
     public String getNodeLabel(LreObject member) {
 //This is a linear list of AverageSampleProfiles, so no need to determine the identity of the member
-        Profile profile = (Profile) member;
+        AverageSampleProfile profile = (AverageSampleProfile) member;
         profile.setShortDescription("");
         //Label madeup of three components
         String rundate = sdf.format(profile.getRunDate());

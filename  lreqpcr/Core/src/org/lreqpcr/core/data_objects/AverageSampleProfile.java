@@ -29,6 +29,7 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
 
     private List<SampleProfile> sampleProfileList;
     private boolean isTheAverageReplicateNoLessThan10Molecules;
+    private double no;
 //    private int numberOfActiveReplicateProfiles;
 
     /**
@@ -58,23 +59,18 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
         this.sampleProfileList = (List<SampleProfile>) replicateProfileList;
     }
 
-    @Override
     /**
      * Recalculates No. If ReplicateProfile average No is less than 10 N, the AverageProfile
      * will be inactivated and No set to the ReplicateProfile average No.
      */
-    public void updateProfile() {
+    @Override
+    public void updateSampleProfile() {
         //Without an OCF, No values cannot be calculated
         if (getOCF() > 0) {
             determineIfTheAverageReplicateNoIsLessThan10Molecules();
-        } else {//No cannot be determined
-            setNo(0);
-            setNoEmax100(0);
-            return;
-        }
+        } 
         if(!isTheAverageReplicateNoLessThan10Molecules){
-//Never call this function iF No <10N as No will be set to zero
-            super.updateProfile();
+            super.updateSampleProfile();
         }
     }
 
@@ -102,7 +98,7 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
      * can be distorted due to profile scattering caused by Poison Distribution.
      * If so, the
      * average No of the AverageProfile is set to the average of the ReplicateProfile
-     * No values. 
+     * No values. Calling this function will also update the profile.
      * 
      * @return whether the average No is less than 10 molecules
      */
@@ -111,9 +107,9 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
     }
 
     /**
-     * If the average No is less than 10 molecules, that AverageProfile can be
-     * distorted, and thus it must be invalidated. If so,
-     * the average No for the AverageProfile is determined by
+     * If the average No is less than 10 molecules, the AverageProfile can be
+     * distorted due to replicate profile scattering, and thus must be invalidated. If so,
+     * the average No for the AverageProfile is then determined by
      * averaging the No values from each of the ReplicateProfiles. 
      * Note that this will be aborted if the profile is excluded. Note also that 
      * if found to be below 10 molecules, the profile will be set to "No LRE 
@@ -133,7 +129,7 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
         }
         double sum = 0;
         int counter = 0;
-        for (Profile repPrf : getReplicateProfileList()) {
+        for (SampleProfile repPrf : getReplicateProfileList()) {
             //It is important not to include excluded profiles
             if (!repPrf.isExcluded()) {
                 if (!repPrf.hasAnLreWindowBeenFound()) {
@@ -147,19 +143,19 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
             }
         }
         if (sum == 0) {
-            //None of the replicate profiles have an LRE window
+//None of the replicate profiles have an LRE window
             isTheAverageReplicateNoLessThan10Molecules = true;
             setHasAnLreWindowBeenFound(false);
-            setNo(0);
-            setNoEmax100(0);
+            setNoValues(0, 0);
             return false;
         }
         double averageReplicateNo = sum / counter;
         if (averageReplicateNo < 10) {
             isTheAverageReplicateNoLessThan10Molecules = true;
-            //At <10N there no profile exsists
-            setHasAnLreWindowBeenFound(false);
-            setNo(averageReplicateNo);//The AverageProfile falls to the average Replicate No along with its Emax status
+            //At <10N the profile becomes invalid and the No values fall to that of the ReplicateProfile average No
+//            setHasAnLreWindowBeenFound(false);
+//The AverageProfile falls to the average Replicate No along with its Emax status
+            setNoValues(averageReplicateNo, averageReplicateNo);
             return true;
         } else {
             isTheAverageReplicateNoLessThan10Molecules = false;
