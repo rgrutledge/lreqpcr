@@ -38,16 +38,16 @@ import org.openide.util.Lookup;
 import org.openide.windows.WindowManager;
 
 /**
- *
+ * Deletes the selection AverageCalibrationProfiles
  * @author Bob Rutledge
  */
-public class DeleteCalibrationProfileAction extends AbstractAction {
+public class DeleteAverageCalibrationProfileAction extends AbstractAction {
 
     private ExplorerManager mgr;
     private DatabaseServices db;
     private LreWindowSelectionParameters selectionParameters;
 
-    public DeleteCalibrationProfileAction(ExplorerManager mgr) {
+    public DeleteAverageCalibrationProfileAction(ExplorerManager mgr) {
         this.mgr = mgr;
         putValue(NAME, "Delete Profile(s)");
     }
@@ -101,6 +101,7 @@ public class DeleteCalibrationProfileAction extends AbstractAction {
         parentChildren.addNotify();
         //Trigger Calibration panel update
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_CALIBRATION_PANELS);
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_DELETED);
     }
 
     private void deleteProfile(Profile profile) {

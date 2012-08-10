@@ -93,9 +93,9 @@ public class AverageProfileGenerator {
             for (SampleProfile prf : replicateProfileList) {
                 listCopy.remove(prf);
             }
-            avSampleProfile.setOCF(ocf);
             avSampleProfile.setReplicateProfileList(replicateProfileList);
             avSampleProfile.setRawFcReadings(generateAverageFcDataset(replicateProfileList));
+            avSampleProfile.setOCF(ocf);
             intializeAverageProfile(avSampleProfile, parameters);
             averageProfileList.add(avSampleProfile);
         }
@@ -155,7 +155,10 @@ public class AverageProfileGenerator {
             AverageCalibrationProfile avCalbnProfile = new AverageCalibrationProfile(run);
             avCalbnProfile.setProfileToVer0_8_0(true);
             CalibrationProfile firstCalibrationProfile = calibrationProfileList.get(0);
-            avCalbnProfile.setLambdaMass(firstCalibrationProfile.getLambdaMass() * 1000000);
+            //Amplicon size is required for initializing mo
+            avCalbnProfile.setAmpliconSize(firstCalibrationProfile.getAmpliconSize());
+            //This initializes mo
+            avCalbnProfile.setLambdaMass(firstCalibrationProfile.getLambdaMass());
             avCalbnProfile.setName(firstCalibrationProfile.getName());
             avCalbnProfile.setTargetStrandedness(TargetStrandedness.DOUBLESTRANDED);
             avCalbnProfile.setReplicateProfileList(calibrationProfileList);
@@ -209,6 +212,11 @@ public class AverageProfileGenerator {
         return averageFcDataset;
     }
 
+    /**
+     * A clumsy attempt to avoid duplicate code for initializing Sample and Calibration AverageProfiles
+     * @param averageProfile
+     * @param parameters
+     */
     @SuppressWarnings(value = "unchecked")
     private static void intializeAverageProfile(AverageProfile averageProfile, LreWindowSelectionParameters parameters) {
         LreAnalysisService profileIntialization =

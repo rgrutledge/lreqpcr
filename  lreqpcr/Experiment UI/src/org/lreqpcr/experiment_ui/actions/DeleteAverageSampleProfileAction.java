@@ -33,7 +33,7 @@ import org.openide.nodes.Node;
 import org.openide.windows.WindowManager;
 
 /**
- *
+ * Delete the selected AverageSampleProfiles
  * @author Bob Rutledge
  */
 public class DeleteAverageSampleProfileAction extends AbstractAction {

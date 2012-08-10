@@ -37,7 +37,7 @@ import org.openide.util.Lookup;
 import org.openide.windows.WindowManager;
 
 /**
- *
+ * Deletes the selected SampleProfiles
  * @author Bob Rutledge
  */
 public class DeleteSampleProfileAction extends AbstractAction {
@@ -96,7 +96,7 @@ public class DeleteSampleProfileAction extends AbstractAction {
         parentChildren.setLreObjectList((List<? extends LreObject>)
                 db.getChildren(parentLreObject, parentLreObject.getChildClass()));
         parentChildren.addNotify();
-        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_CHANGED);
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_DELETED);
     }
 
     @SuppressWarnings("unchecked")

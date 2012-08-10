@@ -39,6 +39,7 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
+import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
@@ -131,7 +132,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                                 JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-                    if (averageFmax == 0){
+                    if (averageFmax == 0) {
                         calcAverageFmax();//Limited to the first 100 profiles as this is time consuming
                     }
                     if (minFc > averageFmax) {
@@ -225,15 +226,22 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         if (foThreshold <= 0) {
             return;
         }
-        List<Profile> profileList = currentDB.getAllObjects(Profile.class);
+        List<AverageProfile> profileList = currentDB.getAllObjects(AverageProfile.class);
         if (profileList.isEmpty()) {
             return;
         }
-        for (Profile profile : profileList) {
-//If minFc=0, first cycle below C1/2 will be used as the start cycle during profile intialization
-//            profile.setHasAnLreWindowBeenFound(false);
-            lreAnalysisService.conductAutomatedLreWindowSelection(profile, selectionParameters);
-            currentDB.saveObject(profile);
+        for (AverageProfile avProfile : profileList) {
+            //Need to update the replicate profiles first in order to test if <10N
+            for (Profile profile : avProfile.getReplicateProfileList()) {
+                lreAnalysisService.conductAutomatedLreWindowSelection(profile, selectionParameters);
+                currentDB.saveObject(profile);
+            }
+            if (!avProfile.determineIfTheAverageReplicateNoIsLessThan10Molecules()) {
+                //The AverageProfile is valid thus reinitialize it
+                Profile profile = (Profile) avProfile;
+                lreAnalysisService.conductAutomatedLreWindowSelection(profile, selectionParameters);
+                currentDB.saveObject(avProfile);
+            }
         }
         currentDB.commitChanges();
     }
@@ -282,7 +290,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         if (currentDB.getDatabaseType() == DatabaseType.EXPERIMENT) {
             //Retrieve all Average Sample Profiles
             List<AverageSampleProfile> avSampleProfileList = currentDB.getAllObjects(AverageSampleProfile.class);
-            if (avSampleProfileList.isEmpty()){
+            if (avSampleProfileList.isEmpty()) {
                 //Database does not contain any profiles so abort
                 return 0;
             }
@@ -337,7 +345,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
             for (Double cv : replCvValues) {
                 //Check to see if this is a real number
                 String number = String.valueOf(cv);
-                if (!number.contains("NaN")){//This is caused by lacking an amplicon size or OCF
+                if (!number.contains("NaN")) {//This is caused by lacking an amplicon size or OCF
                     cvSum += cv;
                 }
             }
@@ -477,7 +485,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                 }
             }
         }
-        if (key == PanelMessages.UPDATE_CALIBRATION_PANELS || key == PanelMessages.UPDATE_EXPERIMENT_PANELS){
+        if (key == PanelMessages.UPDATE_CALIBRATION_PANELS || key == PanelMessages.UPDATE_EXPERIMENT_PANELS) {
             avReplCvDisplay.setText("");
         }
     }
