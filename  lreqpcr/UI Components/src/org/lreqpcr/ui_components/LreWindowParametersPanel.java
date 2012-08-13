@@ -73,7 +73,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
     private UniversalLookup universalLookup = UniversalLookup.getDefault();
     private double averageFmax;
 
-    /** Creates new form LreWindowParametersPanel */
+    /** Creates new form LreWindowParametersPanel */ 
     public LreWindowParametersPanel() {
         initComponents();
         createKeyAdapter();

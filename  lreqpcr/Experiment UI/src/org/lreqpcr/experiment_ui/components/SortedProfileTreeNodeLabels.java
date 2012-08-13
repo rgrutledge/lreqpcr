@@ -36,7 +36,6 @@ public class SortedProfileTreeNodeLabels implements LabelFactory {
     private DecimalFormat df = new DecimalFormat();
 
     public String getNodeLabel(LreObject member) {
-//This is a linear list of AverageSampleProfiles, so no need to determine the identity of the member
         SampleProfile profile = (SampleProfile) member;
         profile.setShortDescription("");
         //Label madeup of three components
