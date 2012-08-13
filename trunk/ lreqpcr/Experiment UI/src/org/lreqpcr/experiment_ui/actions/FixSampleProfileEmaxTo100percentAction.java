@@ -79,7 +79,7 @@ public class FixSampleProfileEmaxTo100percentAction extends AbstractAction {
                 if (!(profile instanceof AverageSampleProfile)) {
                     //Need to update the parent AverageProfile
                     AverageSampleProfile avProfile = (AverageSampleProfile) profile.getParent();
-                    if (!avProfile.determineIfTheAverageReplicateNoIsLessThan10Molecules()) {
+                    if (!avProfile.determineIfTheAverageReplicateNoIsLessThan10Molecules() && !avProfile.hasAnLreWindowBeenFound()) {
                         //Must conduct an automated LRE window selection
                         analysisService.conductAutomatedLreWindowSelection(avProfile, selectionParameters);
                     }

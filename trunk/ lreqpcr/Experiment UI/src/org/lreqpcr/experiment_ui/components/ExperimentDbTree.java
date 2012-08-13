@@ -31,6 +31,7 @@ import java.util.List;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.ui_components.PanelMessages;
@@ -38,6 +39,7 @@ import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
+import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 import org.openide.windows.WindowManager;
 
@@ -225,9 +227,17 @@ public class ExperimentDbTree extends JPanel {
                     experimentDB.saveObject(repProfile);
                 }
                 avProfile.setOCF(ocf);
+//Need to check if the LRE window needs reinitialization when av No increases to above >10 molecules
+                if (!avProfile.isReplicateAverageNoLessThan10Molecules() && !avProfile.hasAnLreWindowBeenFound()){
+//>10N but no LRE window found indicates that the LRE window needs to be reiniitialized
+                    LreAnalysisService lreAnalysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
+                    LreWindowSelectionParameters selectionParameters = (LreWindowSelectionParameters) experimentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
+                    lreAnalysisService.conductAutomatedLreWindowSelection(avProfile, selectionParameters);
+                }
                 experimentDB.saveObject(avProfile);
             }
         }
+        experimentDB.commitChanges();
         createTree();
     }
 

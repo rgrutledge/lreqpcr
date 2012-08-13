@@ -152,7 +152,7 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
         double averageReplicateNo = sum / counter;
         if (averageReplicateNo < 10) {
             isTheAverageReplicateNoLessThan10Molecules = true;
-            //At <10N the profile becomes invalid and the No values fall to that of the ReplicateProfile average No
+//At <10N the profile becomes invalid and the No values fall to that of the ReplicateProfile average No
 //            setHasAnLreWindowBeenFound(false);
 //The AverageProfile falls to the average Replicate No along with its Emax status
             setNoValues(averageReplicateNo, averageReplicateNo);
