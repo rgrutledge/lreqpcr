@@ -53,7 +53,7 @@ public class RunTreeNodeLabels implements LabelFactory {
             SampleProfile profile = (SampleProfile) member;
             profile.setShortDescription("");
             //Label madeup of three components: name, Emax and No
-            String profileName = profile.getAmpliconName() + "@" + profile.getSampleName();
+            String profileName = profile.getAmpliconName() + "@" + profile.getSampleName() + " ";
             //If excluded no Emax or No is displayed
             if (profile.isExcluded()) {
                 if (profile instanceof AverageSampleProfile) {
@@ -77,7 +77,7 @@ public class RunTreeNodeLabels implements LabelFactory {
                             + " or the Min Fc being set too high");
                 } else {
                     df.applyPattern("#0.0");
-                    emax = " (" + df.format(profile.getEmax() * 100) + "%) ";
+                    emax = "(" + df.format(profile.getEmax() * 100) + "%) ";
                 }
             }
             if (profile instanceof AverageSampleProfile) {
