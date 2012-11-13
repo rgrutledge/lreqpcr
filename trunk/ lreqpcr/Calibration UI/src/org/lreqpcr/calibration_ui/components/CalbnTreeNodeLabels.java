@@ -41,7 +41,7 @@ public class CalbnTreeNodeLabels implements LabelFactory {
         if (calbrnProfile.getRunDate() != null) {
             rundate = sdf.format(calbrnProfile.getRunDate());
         }
-        String profileName = calbrnProfile.getAmpliconName() + "@" + calbrnProfile.getSampleName();
+        String profileName = calbrnProfile.getAmpliconName() + "@" + calbrnProfile.getSampleName() + " ";
         //If excluded no Emax or OCF is displayed
         if (calbrnProfile.isExcluded()) {
             if (calbrnProfile instanceof AverageCalibrationProfile) {
@@ -56,15 +56,15 @@ public class CalbnTreeNodeLabels implements LabelFactory {
         if (calbrnProfile.isEmaxFixedTo100() && calbrnProfile.hasAnLreWindowBeenFound()) {
             df.applyPattern("#0.0");
             calbrnProfile.setShortDescription("Emax overridden");
-            emax = "100%<-- " + df.format(calbrnProfile.getEmax() * 100) + "%)";
+            emax = "(100%<-- " + df.format(calbrnProfile.getEmax() * 100) + "%)";
         } else {
             if (!calbrnProfile.hasAnLreWindowBeenFound()) {
-                emax = " (LRE window not found) ";
+                emax = "(LRE window not found) ";
                 calbrnProfile.setShortDescription("An LRE window could not be found, likely due to being a flat profile"
                         + " or the Min Fc is set too high");
             } else {
                 df.applyPattern("#0.0");
-                emax = " (" + df.format(calbrnProfile.getEmax() * 100) + "%) ";
+                emax = "(" + df.format(calbrnProfile.getEmax() * 100) + "%) ";
             }
         }
         df.applyPattern(FormatingUtilities.decimalFormatPattern(calbrnProfile.getOCF()));

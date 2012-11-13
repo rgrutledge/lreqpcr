@@ -226,7 +226,14 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         if (foThreshold <= 0) {
             return;
         }
-        List<AverageProfile> profileList = currentDB.getAllObjects(AverageProfile.class);
+        List<AverageProfile> profileList = null;
+        //This is necessary becuase for unknown reasons retrieving averageCalibrationProfile objects fails
+        if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION){
+           profileList =  currentDB.getAllObjects(AverageCalibrationProfile.class);
+        } else {
+            profileList = currentDB.getAllObjects(AverageProfile.class);
+        }
+        
         if (profileList.isEmpty()) {
             return;
         }
