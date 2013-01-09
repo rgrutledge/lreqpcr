@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * and open the template in the editor.
  */
-package org.lreqpcr.mxpver3_4import;
+package org.lreqpcr.lightcycler_import;
 
 import java.net.URL;
 import org.lreqpcr.core.data_objects.*;
@@ -42,52 +42,53 @@ import org.openide.windows.WindowManager;
  *
  * @author Bob Rutledge
  */
-public class MxpVer3_4ImportProvider extends RunImportService {
+public class LightCyclerImportProvider extends RunImportService {
 
     public String getRunImportServiceName() {
-        return "Mx3000P Ver 3.4";
+        return "Lightcycler";
     }
 
     public URL getHelpFile() {
-        try {
-            try {
-                return new URI("file:HelpFiles/mxpVer4.html").toURL();
-            } catch (MalformedURLException ex) {
-                Exceptions.printStackTrace(ex);
-                return null;
-            }
-        } catch (URISyntaxException ex) {
-            Exceptions.printStackTrace(ex);
-            return null;
-        }
+        return null;
+//        try {
+//            try {
+//                return new URI("file:HelpFiles/mxpVer4.html").toURL();
+//            } catch (MalformedURLException ex) {
+//                Exceptions.printStackTrace(ex);
+//                return null;
+//            }
+//        } catch (URISyntaxException ex) {
+//            Exceptions.printStackTrace(ex);
+//            return null;
+//        }
     }
 
     @Override
     @SuppressWarnings(value = "unchecked")
     public RunImportData importRunData() {
         //Retrieve the export xls file
-        File mxpExcelImportFile = IOUtilities.openImportExcelFile("MXP3000P Version 3.4 Data Import");
-        if (mxpExcelImportFile == null) {
+        File lcExcelImportFile = IOUtilities.openImportExcelFile("Lightcycler Data Import");
+        if (lcExcelImportFile == null) {
             return null;
         }
         Workbook workbook = null;
         try {
-            workbook = Workbook.getWorkbook(mxpExcelImportFile);
+            workbook = Workbook.getWorkbook(lcExcelImportFile);
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
         } catch (BiffException ex) {
             Exceptions.printStackTrace(ex);
         }
         if (workbook == null) {
-            String msg = "The selected file (" + mxpExcelImportFile.getName() + " could not be opened";
-            JOptionPane.showMessageDialog(null, msg, "Unable to open the selected file " + mxpExcelImportFile.getName(), JOptionPane.ERROR_MESSAGE);
+            String msg = "The selected file (" + lcExcelImportFile.getName() + " could not be opened";
+            JOptionPane.showMessageDialog(null, msg, "Unable to open the selected file " + lcExcelImportFile.getName(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
         Sheet chartSheet = null;
-        Sheet reportSheet = null;
-        chartSheet = workbook.getSheet(0);
-        reportSheet = workbook.getSheet(1);
+        Sheet chartDataSheet = null;
+        chartSheet = workbook.getSheet(0);//Contains the Fc readings
+        chartDataSheet = workbook.getSheet(1);//Contains information about each well
         try {
         } catch (Exception e) {
             String msg = "One of the worksheets could not be loaded."
@@ -111,7 +112,8 @@ public class MxpVer3_4ImportProvider extends RunImportService {
                     "Invalid Run Date", JOptionPane.ERROR_MESSAGE);
             return null;
         }
-        //This is taken from the 7500 Ver2 service provider
+        //This is taken from the 7500 Ver2 service provider for which columns can be moved
+        //making it necessary to ID columns based on their title
         //Setup column identity assignment
         int columnAbsent = -1;//Default is absent == -1
         int wellLabelCol = columnAbsent;//Well label
@@ -121,47 +123,50 @@ public class MxpVer3_4ImportProvider extends RunImportService {
         int ftCol = columnAbsent;//Fluorescence threshold
         int quantityCol = columnAbsent;//Quantity of the lambda calibrator in pigograms
         int tmCol = columnAbsent;//Amplicon melting temperature (Tm) "Tm1"
-        int reportCol = 0;
-        int resultColCount = reportSheet.getColumns();//Width of Results sheet
-        while (reportCol < resultColCount) {
-            if (reportSheet.getCell(reportCol, 0).getContents().equals("Well")) {
-                wellLabelCol = reportCol;
+        int tableCol = 0;
+        int tableColCount = chartDataSheet.getColumns();//Width of Results sheet
+        while (tableCol < tableColCount) {
+            if (chartDataSheet.getCell(tableCol, 1).getContents().equals("Pos")) {
+                wellLabelCol = tableCol;
             }
-            if (reportSheet.getCell(reportCol, 0).getContents().equals("Well Name")) {
-                wellNameCol = reportCol;
+            if (chartDataSheet.getCell(tableCol, 1).getContents().equals("Name")) {
+                wellNameCol = tableCol;
             }
-            if (reportSheet.getCell(reportCol, 0).getContents().equals("Well Type")) {
-                wellType = reportCol;
+            //Not sure how this works...need to study the program directly
+//            if (reportSheet.getCell(reportCol, 1).getContents().equals("Well Type")) {
+//                wellType = reportCol;
+//            }
+            //17Dec12: Decided not to worry about Ct
+//            if (reportSheet.getCell(reportCol, 0).getContents().equals("Cp")) {
+//                ctCol = reportCol;
+//            }
+//            if (reportSheet.getCell(reportCol, 0).getContents().equals("Threshold (dR)")) {
+//                ftCol = reportCol;
+//            }
+            if (chartDataSheet.getCell(tableCol, 0).getContents().startsWith("Quantity")) {
+                quantityCol = tableCol;
             }
-            if (reportSheet.getCell(reportCol, 0).getContents().equals("Ct (dR)")) {
-                ctCol = reportCol;
+            if (chartDataSheet.getCell(tableCol, 0).getContents().equals("Tm Product 1 (-R'(T))")) {
+                tmCol = tableCol;
             }
-            if (reportSheet.getCell(reportCol, 0).getContents().equals("Threshold (dR)")) {
-                ftCol = reportCol;
-            }
-            if (reportSheet.getCell(reportCol, 0).getContents().startsWith("Quantity")) {
-                quantityCol = reportCol;
-            }
-            if (reportSheet.getCell(reportCol, 0).getContents().equals("Tm Product 1 (-R'(T))")) {
-                tmCol = reportCol;
-            }
-            reportCol++;
+            tableCol++;
         }
         //Check to see if all of the compusory columns were found
         if (wellLabelCol == columnAbsent) {
-            String msg = "The \"Well\" column was not found in the Text Report sheet (sheet #1). "
+            String msg = "The \"Pos\" column was not found in the Text Data sheet. "
                     + "Data import will be terminated.";
             JOptionPane.showMessageDialog(null, msg,
-                    "No Well column", JOptionPane.ERROR_MESSAGE);
+                    "No Pos column", JOptionPane.ERROR_MESSAGE);
             return null;
         }
         if (wellNameCol == columnAbsent) {
-            String msg = "The \"Sample Name\" column was not found in the Text Report sheet (sheet #1). "
+            String msg = "The \"Name\" column was not found in the Text Data sheet. "
                     + "Data import will be terminated.";
             JOptionPane.showMessageDialog(null, msg,
-                    "No Well column", JOptionPane.ERROR_MESSAGE);
+                    "No Name", JOptionPane.ERROR_MESSAGE);
             return null;
         }
+        //Not sure how this works for the Lightcycler
         if (wellType == columnAbsent) {
             String msg = "The \"Well Type\" column was not found in the Text Report sheet (sheet #1). "
                     + "Data import will be terminated.";
@@ -172,8 +177,8 @@ public class MxpVer3_4ImportProvider extends RunImportService {
 
         //Setup the Run and determine run date
         RunImpl run = new RunImpl();
-        String runName = mxpExcelImportFile.getName();
-//        RunImportUtilities.importExcelImportFile(run, mxpExcelImportFile);
+        //Not sure if the "Experiment Name" would not be a better run name
+        String runName = lcExcelImportFile.getName();
         runName = runName.substring(0, runName.indexOf("."));
         run.setName(runName);
         run.setRunDate(RunImportUtilities.importExcelDate(date));
@@ -185,20 +190,20 @@ public class MxpVer3_4ImportProvider extends RunImportService {
         TargetStrandedness targetStrandedness = RunImportUtilities.isTheTargetSingleStranded();
         NumberFormat numFormat = NumberFormat.getInstance();
 
-        int reportRow = 1;//Starting row in the Report sheet
-        int chartRow = 3;//Starting row in the Chart Data sheet
+        int tableDataRow = 2;//Starting row in the Report sheet
+        int chartDataRow = 1;//Starting row in the Chart Data sheet
         boolean reachedTheBottom = false;
         while (!reachedTheBottom) {
             Profile profile = null;
             //Determine if this is a calibration profile
-            if (reportSheet.getCell(wellType, reportRow).getContents().equals("Standard")) {
+            if (chartDataSheet.getCell(wellType, tableDataRow).getContents().equals("Standard")) {
                 //This is a calibration profile
                 profile = new CalibrationProfile(run);
                 profile.setTargetStrandedness(targetStrandedness.DOUBLESTRANDED);
                 CalibrationProfile calbnProfile = (CalibrationProfile) profile;
                 if (quantityCol != columnAbsent) {
                     try {
-                        Number value = numFormat.parse(reportSheet.getCell(quantityCol, reportRow).getContents());
+                        Number value = numFormat.parse(chartDataSheet.getCell(quantityCol, tableDataRow).getContents());
                         calbnProfile.setLambdaMass(value.doubleValue());
                     } catch (Exception e) {
                         calbnProfile.setLambdaMass(0);
@@ -209,73 +214,79 @@ public class MxpVer3_4ImportProvider extends RunImportService {
                 profile.setTargetStrandedness(targetStrandedness);
             }
 
-            profile.setWellLabel(reportSheet.getCell(wellLabelCol, reportRow).getContents());
+            profile.setWellLabel(chartDataSheet.getCell(wellLabelCol, tableDataRow).getContents());
             //Parse and set the sample and amplicon names (separated by a comma)
-            String wellName = reportSheet.getCell(wellNameCol, reportRow).getContents();
+            String wellName = chartDataSheet.getCell(wellNameCol, tableDataRow).getContents();
             String[] names = RunImportUtilities.parseAmpSampleNames(wellName);
             if (names[0] == null) {
                 //Only one String was in the well label
                 profile.setSampleName(names[0]);
                 profile.setAmpliconName("none");
             } else {
-                profile.setSampleName(names[1]);
                 profile.setAmpliconName(names[0]);
+                profile.setSampleName(names[1]);
             }
             profile.setName(profile.getAmpliconName() + "@" + profile.getSampleName());
             if (ctCol != columnAbsent) {
                 try {
-                    profile.setCt(Double.parseDouble(reportSheet.getCell(ctCol, reportRow).getContents()));
+                    profile.setCt(Double.parseDouble(chartDataSheet.getCell(ctCol, tableDataRow).getContents()));
                 } catch (Exception e) {
                 }
             }
             if (ftCol != columnAbsent) {
                 try {
-                    profile.setFt(Double.parseDouble(reportSheet.getCell(ftCol, reportRow).getContents()));
+                    profile.setFt(Double.parseDouble(chartDataSheet.getCell(ftCol, tableDataRow).getContents()));
                 } catch (Exception e) {
                 }
             }
             if (tmCol != columnAbsent) {
                 try {
-                    profile.setAmpTm(Double.parseDouble(reportSheet.getCell(tmCol, reportRow).getContents()));
+                    profile.setAmpTm(Double.parseDouble(chartDataSheet.getCell(tmCol, tableDataRow).getContents()));
                 } catch (Exception e) {
                 }
             }
-            reportRow++;
+            tableDataRow++;
             //Retrieve and store the Fc dataset
             ArrayList<Double> fcDataSet = new ArrayList<Double>();
             //This assumes identical order of the wells in the report and the chart sheet
-            if (!reachedTheBottom) {
-                fcRead:
-                while (!chartSheet.getCell(2, chartRow).getContents().contains("Fluorescence")) {
-                    try {
-                        //NumberFormat needed to prevent locale differences in numbers (e.g. comma vs period)
-                        Number value = numFormat.parse(chartSheet.getCell(2, chartRow).getContents());
-                        fcDataSet.add(value.doubleValue());
-                    } catch (Exception e) {
+            int chartRowCount = chartDataSheet.getRows();//Length of Chart Data sheet
+            int chartColCount = chartDataSheet.getColumns();//Width of Chart Data sheet
+            int chartCol = 1;
+            while (chartCol <chartColCount)
+            while (tableCol < chartRowCount) {
+                if (!reachedTheBottom) {
+                    fcRead:
+                    while (!chartSheet.getCell(2, chartDataRow).getContents().contains("Fluorescence")) {
+                        try {
+                            //NumberFormat needed to prevent locale differences in numbers (e.g. comma vs period)
+                            Number value = numFormat.parse(chartSheet.getCell(2, chartDataRow).getContents());
+                            fcDataSet.add(value.doubleValue());
+                        } catch (Exception e) {
+                        }
+                        chartDataRow++;
+                        try {
+                            chartSheet.getCell(2, chartDataRow).getContents();
+                        } catch (Exception e) {
+                            reachedTheBottom = true;
+                            break fcRead;
+                        }
                     }
-                    chartRow++;
-                    try {
-                        chartSheet.getCell(2, chartRow).getContents();
-                    } catch (Exception e) {
-                        reachedTheBottom = true;
-                        break fcRead;
+                    //Move over the label
+                    chartDataRow++;
+                    //Assume no errors
+                    double[] fcArray = new double[fcDataSet.size()];
+                    for (int k = 0; k < fcDataSet.size(); k++) {
+                        fcArray[k] = fcDataSet.get(k);
                     }
-                }
-                //Move over the label
-                chartRow++;
-                //Assume no errors
-                double[] fcArray = new double[fcDataSet.size()];
-                for (int k = 0; k < fcDataSet.size(); k++) {
-                    fcArray[k] = fcDataSet.get(k);
-                }
-                profile.setRawFcReadings(fcArray);
+                    profile.setRawFcReadings(fcArray);
 
-                if (CalibrationProfile.class.isAssignableFrom(profile.getClass())) {
-                    CalibrationProfile calProfile = (CalibrationProfile) profile;
-                    calbnProfileList.add(calProfile);
-                } else {
-                    SampleProfile sampleProfile = (SampleProfile) profile;
-                    sampleProfileList.add(sampleProfile);
+                    if (CalibrationProfile.class.isAssignableFrom(profile.getClass())) {
+                        CalibrationProfile calProfile = (CalibrationProfile) profile;
+                        calbnProfileList.add(calProfile);
+                    } else {
+                        SampleProfile sampleProfile = (SampleProfile) profile;
+                        sampleProfileList.add(sampleProfile);
+                    }
                 }
             }
         }
