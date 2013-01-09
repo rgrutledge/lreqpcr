@@ -3,9 +3,9 @@
 <filesystem>
     <folder name="Actions">
         <folder name="Tools">
-            <file name="org-lreqpcr-ab7500ver2import-Ab7500Ver2Action.instance">
-                <attr name="delegate" newvalue="org.lreqpcr.ab7500ver2import.Ab7500Ver2Action"/>
-                <attr name="displayName" stringvalue="AB 7500 Version 2"/>
+            <file name="org-lreqpcr-lightcycler_import-LightCyclerAction.instance">
+                <attr name="delegate" newvalue="org.lreqpcr.lightcycler_import.LightCyclerAction"/>
+                <attr name="displayName" stringvalue="LightCycler RDML"/>
                 <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
                 <attr name="noIconInMenu" boolvalue="false"/>
             </file>
@@ -13,9 +13,9 @@
     </folder>
     <folder name="Menu">
         <folder name="Import">
-            <file name="org-lreqpcr-ab7500ver2import-Ab7500Ver2.shadow">
-                <attr name="originalFile" stringvalue="Actions/Tools/org-lreqpcr-ab7500ver2import-Ab7500Ver2Action.instance"/>
-                <attr name="position" intvalue="300"/>
+            <file name="org-lreqpcr-lightcycler_import-LightCycler.shadow">
+                <attr name="originalFile" stringvalue="Actions/Tools/org-lreqpcr-lightcycler_import-LightCyclerAction.instance"/>
+                <attr name="position" intvalue="800"/>
             </file>
         </folder>
     </folder>

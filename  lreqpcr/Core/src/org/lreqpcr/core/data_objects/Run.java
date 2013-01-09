@@ -76,7 +76,7 @@ public abstract class Run extends LreObject {
     }
 
     /**
-     * Sets the data of the run.
+     * Sets the date on which the run was conducted.
      * @param runDate the run date
      */
     public void setRunDate(Date runDate) {

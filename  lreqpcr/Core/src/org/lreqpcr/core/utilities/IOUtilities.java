@@ -30,12 +30,14 @@ import org.openide.windows.WindowManager;
 
 /**
  * Static utilities for data input/output
+ *
  * @author Bob Rutledge
  */
 public class IOUtilities {
 
     /**
      * Presents a file chooser dialog for selection of a generic file.
+     *
      * @return the selected file, or null if selection is canceled.
      */
     public static File selectFile() {
@@ -44,6 +46,7 @@ public class IOUtilities {
 
     /**
      * Presents a file chooser dialog for selection of a generic file.
+     *
      * @param directory the directory to be opened.
      * @return the selected file, or null if selection is canceled.
      */
@@ -60,6 +63,7 @@ public class IOUtilities {
 
     /**
      * Converts the selected file into a byte array
+     *
      * @param file the file to be read
      * @return the byte array, or null if it could not be read
      */
@@ -73,7 +77,7 @@ public class IOUtilities {
             String msg = "The datafile could not be opened...";
             JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(),
                     msg,
-                    "Error reading datafile", 
+                    "Error reading datafile",
                     JOptionPane.OK_OPTION,
                     JOptionPane.WARNING_MESSAGE);
             return null;
@@ -92,7 +96,7 @@ public class IOUtilities {
             String msg = "The datafile could not be read...";
             JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(),
                     msg,
-                    "Error reading datafile", 
+                    "Error reading datafile",
                     JOptionPane.OK_OPTION,
                     JOptionPane.WARNING_MESSAGE);
             return null;
@@ -102,6 +106,7 @@ public class IOUtilities {
 
     /**
      * Presents a file chooser dialog for creating a new xls file
+     *
      * @return the new xls file
      */
     public static File newExcelFile() {
@@ -159,20 +164,44 @@ public class IOUtilities {
     }
 
     /**
-     * Presents a file chooser dialog for selecting a preexisting xls file.
-     * If the file does not exist null is return
+     * Returns a user selected xls file.
+     *
      * @param title the file chooser title
      * @return the selected xls file, or null if it does not exist
      */
     public static File openImportExcelFile(String title) {
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                "Excel workbook", "xls");
+        return createFileChooser(title, filter);
+    }
+    
+     /**
+     * Returns a user selected XML file. This is used for importing RDML
+     * data (www.rdml.org).
+     *
+     * @param title the file chooser title
+     * @return the selected xml file, or null if it does not exist
+     */
+    public static File openXmlFile(String title){
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                "RDML file", "xml");
+        return createFileChooser(title, filter);
+    }
+    
+    /**
+     * Presents a file chooser dialog to the user for selecting a preexisting file 
+     * based on the FileNameExtensionFilter. If
+     * the file does not exist null is returned
+     * @param title
+     * @param filter
+     * @return 
+     */
+    private static File createFileChooser(String title, FileNameExtensionFilter filter){
         SettingsServices settingsDB = Lookup.getDefault().lookup(SettingsServices.class);
         JFileChooser fc = new JFileChooser();
         if (title != null) {
             fc.setDialogTitle(title);
         }
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                "Excel workbook", "xls");
-
         fc.setFileFilter(filter);
         File directory = null;
         if (settingsDB.getLastDataImportDirectory() != null) {
@@ -194,7 +223,7 @@ public class IOUtilities {
                 JOptionPane.showConfirmDialog(
                         WindowManager.getDefault().getMainWindow(),
                         msg,
-                        "Error reading datafile", 
+                        "Error reading datafile",
                         JOptionPane.OK_OPTION,
                         JOptionPane.WARNING_MESSAGE);
                 return null;

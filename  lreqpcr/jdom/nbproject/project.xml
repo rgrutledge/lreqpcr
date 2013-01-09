@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.apisupport.project</type>
+    <configuration>
+        <data xmlns="http://www.netbeans.org/ns/nb-module-project/3">
+            <code-name-base>org.w3c.dom</code-name-base>
+            <suite-component/>
+            <module-dependencies/>
+            <public-packages>
+                <package>org.jdom2</package>
+                <package>org.jdom2.adapters</package>
+                <package>org.jdom2.filter</package>
+                <package>org.jdom2.input</package>
+                <package>org.jdom2.input.sax</package>
+                <package>org.jdom2.input.stax</package>
+                <package>org.jdom2.internal</package>
+                <package>org.jdom2.located</package>
+                <package>org.jdom2.output</package>
+                <package>org.jdom2.output.support</package>
+                <package>org.jdom2.transform</package>
+                <package>org.jdom2.util</package>
+                <package>org.jdom2.xpath</package>
+                <package>org.jdom2.xpath.jaxen</package>
+                <package>org.jdom2.xpath.util</package>
+            </public-packages>
+            <class-path-extension>
+                <runtime-relative-path>ext/jdom-2.0.4.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/jdom-2.0.4.jar</binary-origin>
+            </class-path-extension>
+        </data>
+    </configuration>
+</project>
