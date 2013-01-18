@@ -28,7 +28,7 @@ public final class LightCyclerAction implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
-         new LightCyclerRdmlImportProvider();
+         new LC480ImportProvider();
     }
 
 }
