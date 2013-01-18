@@ -56,7 +56,7 @@ public class RootRunChildren extends LreObjectChildren {
     }
 
     /**
-     * Creates LRE nodes with children of the supplied LRE object, is any exist, 
+     * Creates LRE nodes with children of the supplied LRE object, if any exist, 
      * along with with the corresponding node labels, actions (if any exist) and 
      * the corresponding Explorer manager and database which is being viewed. 
      * 

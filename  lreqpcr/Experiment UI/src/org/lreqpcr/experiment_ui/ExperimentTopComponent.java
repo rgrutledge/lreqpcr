@@ -36,19 +36,19 @@ import org.lreqpcr.core.ui_elements.SampleNode;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.core.utilities.UniversalLookupListener;
 import org.lreqpcr.data_export_services.DataExportServices;
-import org.lreqpcr.ui_components.PanelMessages;
 import org.lreqpcr.ui_components.OpeningDatabaseDialog;
-import org.openide.util.LookupEvent;
-import org.openide.windows.TopComponent;
-import org.openide.windows.WindowManager;
+import org.lreqpcr.ui_components.PanelMessages;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
 import org.openide.util.Lookup.Result;
+import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.util.Utilities;
+import org.openide.windows.TopComponent;
+import org.openide.windows.WindowManager;
 
 /**
  * Explorer window that displays sample profiles within an experiment database.

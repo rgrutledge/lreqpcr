@@ -16,16 +16,16 @@
  */
 package org.lreqpcr.ui_components;
 
-import org.lreqpcr.core.data_objects.AmpliconImpl;
-import org.lreqpcr.core.ui_elements.LreNode;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Collection;
 import java.util.List;
 import javax.swing.JPanel;
 import org.lreqpcr.core.data_objects.Amplicon;
+import org.lreqpcr.core.data_objects.AmpliconImpl;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
+import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.core.utilities.UniversalLookupListener;
 import org.openide.util.Lookup;
@@ -37,8 +37,8 @@ import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 
 /**
- * Panel for viewing and editing of Amplicons within the
- * Amplicon database
+ * Panel for viewing and editing of Amplicons within the Amplicon database
+ *
  * @author Bob Rutledge
  */
 public class AmpliconEditPanel extends JPanel
@@ -54,7 +54,6 @@ public class AmpliconEditPanel extends JPanel
         initComponents();
         nameErrorDisplay.setText("");
         keyListener = new KeyAdapter() {
-
             @Override
             public void keyReleased(KeyEvent evt) {
                 if (selectedAmplicon == null) {
@@ -90,6 +89,16 @@ public class AmpliconEditPanel extends JPanel
                 if (evt.getComponent() == dnPrimerDisplay) {
                     selectedAmplicon.setDownPrimer(dnPrimerDisplay.getText());
                 }
+                if (evt.getComponent() == uniGeneDisplay) {
+                    selectedAmplicon.setUniGene(uniGeneDisplay.getText());
+                }
+                if (evt.getComponent() == ampSeqDisplay) {
+                    String ampSeq = ampSeqDisplay.getText();
+                    selectedAmplicon.setAmpSequence(ampSeq.trim());//Remove any terminal white spaces
+                    ampSeqLabel.setText("Amplicon Sequence (" + 
+                            String.valueOf(selectedAmplicon.getAmpSequence().length()) 
+                            + " bp)");
+                }
                 if (evt.getComponent() == ampliconSizeDisplay) {
                     int i = 0;
                     try {
@@ -117,6 +126,10 @@ public class AmpliconEditPanel extends JPanel
         upPrimerDisplay.addKeyListener(keyListener);
         dnPrimerDisplay.addKeyListener(keyListener);
         shortDescriptionDisplay.addKeyListener(keyListener);
+        ampSeqDisplay.addKeyListener(keyListener);
+        uniGeneDisplay.addKeyListener(keyListener);
+        
+        uniGeneDisplay.setToolTipText("UniGene or Accession Number");
 
         nodeResult = Utilities.actionsGlobalContext().lookupResult(LreNode.class);
         nodeResult.allItems();
@@ -147,16 +160,28 @@ public class AmpliconEditPanel extends JPanel
         shortDescriptionDisplay.setText("");
         notesDisplay.setText("");
         nameErrorDisplay.setText("");
+        ampSeqDisplay.setText("");
+        uniGeneDisplay.setText("");
+        ampSeqLabel.setText("Amplcon Sequence");
     }
 
-    private void iniInfo() {
+    private void displayAmpInfo() {
         if (selectedAmplicon == null) {
             clearPanel();
             return;
         }
         nanErrorDisplay.setText("");
+//        if (selectedAmplicon.getName() != null) {
+//            nameDisplay.setText(selectedAmplicon.getName());
+//        } else {
+//            nameDisplay.setText("");
+//        }
         if (selectedAmplicon.getName() != null) {
-            nameDisplay.setText(selectedAmplicon.getName());
+            if (selectedAmplicon.getName().equals("New Amplicon")) {
+                nameDisplay.setText("");
+            }else{
+                nameDisplay.setText(selectedAmplicon.getName());
+            }
         } else {
             nameDisplay.setText("");
         }
@@ -185,20 +210,24 @@ public class AmpliconEditPanel extends JPanel
         } else {
             notesDisplay.setText("");
         }
-        if (selectedAmplicon.getName() != null) {
-            if (selectedAmplicon.getName().equals("New Amplicon")) {
-                nameDisplay.setText("");
-            }
-
+        if (selectedAmplicon.getAmpSequence() != null) {
+            ampSeqDisplay.setText(selectedAmplicon.getAmpSequence());
+            ampSeqLabel.setText("Amplicon Sequence (" + String.valueOf(selectedAmplicon.getAmpSequence().length()) + " bp)");
         } else {
-            nameDisplay.setText("");
+            ampSeqDisplay.setText("");
+            ampSeqLabel.setText("Amplicon Sequence");
+        }
+        if (selectedAmplicon.getUniGene() != null) {
+            uniGeneDisplay.setText(selectedAmplicon.getUniGene());
+        } else {
+            uniGeneDisplay.setText("");
         }
     }
 
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
      */
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -218,6 +247,11 @@ public class AmpliconEditPanel extends JPanel
         nameErrorDisplay = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         notesDisplay = new javax.swing.JTextArea();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        ampSeqDisplay = new javax.swing.JTextArea();
+        ampSeqLabel = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        uniGeneDisplay = new javax.swing.JTextField();
 
         jLabel1.setText("Amplicon Name:");
 
@@ -228,7 +262,7 @@ public class AmpliconEditPanel extends JPanel
 
         jLabel2.setText("Notes");
 
-        jLabel4.setText("Short Description");
+        jLabel4.setText("Target Description");
 
         shortDescriptionDisplay.setColumns(30);
 
@@ -254,42 +288,68 @@ public class AmpliconEditPanel extends JPanel
         notesDisplay.setWrapStyleWord(true);
         jScrollPane1.setViewportView(notesDisplay);
 
+        ampSeqDisplay.setColumns(20);
+        ampSeqDisplay.setFont(new java.awt.Font("Arial", 0, 11)); // NOI18N
+        ampSeqDisplay.setLineWrap(true);
+        ampSeqDisplay.setRows(5);
+        ampSeqDisplay.setWrapStyleWord(true);
+        jScrollPane2.setViewportView(ampSeqDisplay);
+
+        ampSeqLabel.setText("Amplicon Sequence");
+
+        jLabel8.setText("UniGene/Acc#:");
+
+        uniGeneDisplay.setColumns(20);
+        uniGeneDisplay.setText(null);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(nameDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                            .addContainerGap()
+                            .addComponent(jScrollPane2))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(10, 10, 10)
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(nameDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(nameErrorDisplay))
+                            .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                        .addComponent(jLabel3)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(ampliconSizeDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(nanErrorDisplay)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLabel8)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(uniGeneDisplay))
+                                    .addComponent(shortDescriptionDisplay, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                        .addComponent(jLabel7)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(dnPrimerDisplay, 0, 1, Short.MAX_VALUE))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                        .addComponent(jLabel6)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(upPrimerDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 376, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)))))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(nameErrorDisplay))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(ampliconSizeDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(nanErrorDisplay))
-                            .addComponent(shortDescriptionDisplay, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(jLabel7)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(dnPrimerDisplay, 0, 0, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(jLabel6)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(upPrimerDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 376, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING))))
-                .addContainerGap(53, Short.MAX_VALUE))
+                        .addComponent(ampSeqLabel)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -304,7 +364,9 @@ public class AmpliconEditPanel extends JPanel
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(ampliconSizeDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(nanErrorDisplay))
+                    .addComponent(nanErrorDisplay)
+                    .addComponent(jLabel8)
+                    .addComponent(uniGeneDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
@@ -320,11 +382,17 @@ public class AmpliconEditPanel extends JPanel
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(ampSeqLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextArea ampSeqDisplay;
+    private javax.swing.JLabel ampSeqLabel;
     private javax.swing.JTextField ampliconSizeDisplay;
     private javax.swing.JTextField dnPrimerDisplay;
     private javax.swing.JLabel jLabel1;
@@ -333,12 +401,15 @@ public class AmpliconEditPanel extends JPanel
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField nameDisplay;
     private javax.swing.JLabel nameErrorDisplay;
     private javax.swing.JLabel nanErrorDisplay;
     private javax.swing.JTextArea notesDisplay;
     private javax.swing.JTextField shortDescriptionDisplay;
+    private javax.swing.JTextField uniGeneDisplay;
     private javax.swing.JTextField upPrimerDisplay;
     // End of variables declaration//GEN-END:variables
 
@@ -371,7 +442,7 @@ public class AmpliconEditPanel extends JPanel
                 ampliconDB = selectedNode.getDatabaseServices();
             }
             selectedAmplicon = selectedNode.getLookup().lookup(Amplicon.class);
-            iniInfo();
+            displayAmpInfo();
             if (selectedAmplicon == null) {
                 return;
             }

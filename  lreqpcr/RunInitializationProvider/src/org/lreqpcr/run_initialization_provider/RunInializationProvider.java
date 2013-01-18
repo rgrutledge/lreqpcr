@@ -20,7 +20,6 @@ import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
-import org.lreqpcr.data_import_services.AverageProfileGenerator;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
@@ -32,10 +31,11 @@ import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
-import org.lreqpcr.data_import_services.RunImportUtilities;
 import org.lreqpcr.core.utilities.UniversalLookup;
+import org.lreqpcr.data_import_services.AverageProfileGenerator;
 import org.lreqpcr.data_import_services.DataImportType;
 import org.lreqpcr.data_import_services.RunImportData;
+import org.lreqpcr.data_import_services.RunImportUtilities;
 import org.lreqpcr.data_import_services.RunInitializationService;
 import org.lreqpcr.ui_components.PanelMessages;
 import org.openide.util.Lookup;
@@ -133,6 +133,7 @@ public class RunInializationProvider implements RunInitializationService {
                     ExperimentDbInfo dbInfo = (ExperimentDbInfo) experimentDB.getAllObjects(ExperimentDbInfo.class).get(0);
                     double ocf = dbInfo.getOcf();
                     for (SampleProfile sampleProfile : sampleProfileList) {
+                        // TODO This conversion should be moved to a dedicated module 
                         sampleProfile.setProfileToVer0_8_0(true);//Needed for back compatablity
                         if (ampliconDB != null) {
                             if (ampliconDB.isDatabaseOpen()
@@ -154,6 +155,7 @@ public class RunInializationProvider implements RunInitializationService {
                             winSelectionParameters);
                     experimentDB.saveObject(averageSampleProfileList);
                     run.setAverageProfileList((ArrayList<AverageSampleProfile>) averageSampleProfileList);
+                    run.determineAverageFmax();
                     //Deactivated due to a bug that can produce long delays during file import
 //        RunImportUtilities.importCyclerDatafile(run);
                     experimentDB.saveObject(run);

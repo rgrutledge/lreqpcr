@@ -16,12 +16,12 @@
  */
 package org.lreqpcr.experiment_ui.components;
 
-import org.lreqpcr.core.data_objects.LreObject;
-import org.lreqpcr.core.ui_elements.LabelFactory;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
+import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.data_objects.SampleProfile;
+import org.lreqpcr.core.ui_elements.LabelFactory;
 
 /**
  * Provides node labels for Profiles sorted by either Amplicon or Sample
@@ -40,7 +40,7 @@ public class SortedProfileTreeNodeLabels implements LabelFactory {
         profile.setShortDescription("");
         //Label madeup of three components
         String rundate = sdf.format(profile.getRunDate());
-        String profileName = rundate + ": " + profile.getAmpliconName() + "@" + profile.getSampleName();
+        String profileName = rundate + ": " + profile.getAmpliconName() + "@ " + profile.getSampleName() + " ";
         //If excluded no Emax or No is displayed
         if (profile.isExcluded()) {
             if (profile instanceof AverageSampleProfile) {
@@ -48,7 +48,7 @@ public class SortedProfileTreeNodeLabels implements LabelFactory {
             } else {//Must be a SampleProfile
                 profile.setShortDescription("This Sample Profile has been excluded by the user and will not be included in the Average Profile");
             }
-            return profileName + " ...PROFILE IS EXCLUDED";
+            return profileName + "...PROFILE IS EXCLUDED";
         }
         String emax;
         String no;
@@ -56,14 +56,14 @@ public class SortedProfileTreeNodeLabels implements LabelFactory {
         if (profile.isEmaxFixedTo100() && profile.hasAnLreWindowBeenFound()) {
             df.applyPattern("#0.0");
             profile.setShortDescription("Emax overridden");
-            emax = "(100%<-- " + df.format(profile.getEmax() * 100) + "%) ";
+            emax = "<100%> " ;
         } else {
             if (!profile.hasAnLreWindowBeenFound()) {
-                emax = " (LRE window not found) ";
+                emax = "(LRE window not found) ";
                 profile.setShortDescription("An LRE window could not be found, likely due to being a flat profile");
             } else {
                 df.applyPattern("#0.0");
-                emax = " (" + df.format(profile.getEmax() * 100) + "%) ";
+                emax = "(" + df.format(profile.getEmax() * 100) + "%) ";
             }
         }
         if (profile instanceof AverageSampleProfile) {
@@ -72,23 +72,23 @@ public class SortedProfileTreeNodeLabels implements LabelFactory {
                     && !avPrf.isExcluded()
                     && avPrf.numberOfActiveReplicateProfiles() > 1) {
                 df.applyPattern("0.00");
-                profile.setShortDescription("Less than 10 molecules so that a valid average profile could not be generated");
-                return profileName + " <10 N avReplc N= " + df.format(avPrf.getNo());
+                profile.setShortDescription("Less than 10 molecules requires averaging the replicate profiles quantities");
+                return profileName + "avRep: " + df.format(avPrf.getNo());
             }
         }
         //Determine what to display for No
         if (profile.getNo() == Double.POSITIVE_INFINITY){
                 //Produced because an OCF has not been applied
                 if (profile.getAmpliconSize() == 0){
-                    profile.setShortDescription("Target quantity could not be determined, because an amplicon size has not been provided");
-                return profileName + emax + "N= n.d. (no amplicon size)";
+                    profile.setShortDescription("Target quantity could not be determined because an amplicon size has not been provided");
+                return profileName + emax + "n.d. (no amplicon size)";
                 }
                 if (!(profile.getOCF() > 0)){
-                    profile.setShortDescription("Target quantity could not be determined, likely because an OCF has not been applied");
-                return profileName + emax + "N= n.d. (no OCF)";
+                    profile.setShortDescription("Target quantity could not be determined because an OCF has not been applied");
+                return profileName + emax + "n.d. (no OCF)";
                 }
                 profile.setShortDescription("For unkown reasons, a target quantity could not be determined");
-                return profileName + emax + "N= n.d.";
+                return profileName + emax + "n.d.";
             }
         if (profile.getNo() < 10) {
             df.applyPattern("0.00");
@@ -96,9 +96,9 @@ public class SortedProfileTreeNodeLabels implements LabelFactory {
             df.applyPattern("###,###");
         }
         if (!profile.hasAnLreWindowBeenFound()) {
-            no = " N= 0";
+            no = "0";
         } else {
-            no = " N= " + df.format(profile.getNo());
+            no = df.format(profile.getNo());
         }
         return profileName + emax + no;
     }

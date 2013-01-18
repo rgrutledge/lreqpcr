@@ -35,6 +35,7 @@ public abstract class Run extends LreObject {
     private int year;
     private int month;
     private double runOCF = 0;//Run-specific OCF
+    private double averageFmax = 0;//Average Fmax of all replicate profiles
     
     /**
      * The child class is set to AverageProfile.
@@ -103,6 +104,18 @@ public abstract class Run extends LreObject {
         return year;
     }
 
+    public double getAverageFmax() {
+        if(averageFmax == 0){
+            //Need to calculate averag Fmax
+            
+        }
+        return averageFmax;
+    }
+
+    public void setAverageFmax(double averageFmax) {
+        this.averageFmax = averageFmax;
+    }
+
     /**
      * Returns the run-specific OCF.
      * @return run-specific OCF
@@ -118,6 +131,22 @@ public abstract class Run extends LreObject {
     public void setRunOCF(double runOCF) {
         this.runOCF = runOCF;
     }
+    
+    public void determineAverageFmax(){
+        double fmaxSum = 0;
+        int profileCount = 0;
+        for (AverageSampleProfile avProfile: averageProfileList){
+            for(SampleProfile profile: avProfile.getReplicateProfileList()){
+                if(profile.hasAnLreWindowBeenFound()){
+                    fmaxSum += profile.getFmax();
+                    profileCount++;
+                }
+            }
+        }
+        if (profileCount > 1 && fmaxSum > 0){
+            averageFmax = fmaxSum/profileCount;
+        }
+    }
 
     /**
      * Sort Run objects based on the date of the Run
@@ -130,7 +159,7 @@ public abstract class Run extends LreObject {
         if(runDate.compareTo(run.getRunDate()) == 0){
             return getName().compareTo(run.getName());
         }else{
-            return runDate.compareTo(run.getRunDate());
+            return run.getRunDate().compareTo(getRunDate());
         }
     }
 }

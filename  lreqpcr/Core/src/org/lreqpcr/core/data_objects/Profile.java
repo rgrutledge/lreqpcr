@@ -196,6 +196,10 @@ public abstract class Profile extends LreObject {
     public void setEmax(double eMax) {
         this.eMax = eMax;
     }
+    
+    public double getFmax(){
+        return eMax/-(deltaE);
+    }
 
     public double getFb() {
         return fb;

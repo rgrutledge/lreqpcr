@@ -83,7 +83,7 @@ public class SampleProfile extends Profile {
             noEmax100 = 0;
         }
     }
-
+    
     /**
      * Returns the optical calibration factor that wa used to calculate the
      * number of target molecules (No).
@@ -119,10 +119,22 @@ public class SampleProfile extends Profile {
      * @return No, the number of target molecules
      */
     public double getNo() {
+        return getNoAdjustedToFmax();
+//        if (isEmaxFixedTo100()) {
+//            return noEmax100;
+//        } else {
+//            return no;
+//        }
+    }
+    
+    public double getNoAdjustedToFmax(){
+        double avFmax = super.getRun().getAverageFmax();
+        double fmax = getFmax();
+        double correctionFactor = avFmax/fmax;
         if (isEmaxFixedTo100()) {
-            return noEmax100;
+            return noEmax100 * correctionFactor;
         } else {
-            return no;
+            return no * correctionFactor;
         }
     }
 

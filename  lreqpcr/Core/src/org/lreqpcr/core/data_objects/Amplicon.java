@@ -23,10 +23,27 @@ package org.lreqpcr.core.data_objects;
  */
 public abstract class Amplicon extends LreObject {
 
+    private String uniGene;
     private int ampliconSize;
-    private String upPrimer, downPrimer;
+    private String upPrimer, downPrimer, ampSequence;
     private double emaxAverage;
     private double emaxCV;
+
+    public String getUniGene() {
+        return uniGene;
+    }
+
+    public void setUniGene(String uniGene) {
+        this.uniGene = uniGene;
+    }
+
+    public String getAmpSequence() {
+        return ampSequence;
+    }
+
+    public void setAmpSequence(String ampSequence) {
+        this.ampSequence = ampSequence;
+    }
 
     /**
      * 
