@@ -59,8 +59,10 @@ public class SortedProfileTreeNodeLabels implements LabelFactory {
             emax = "<100%> " ;
         } else {
             if (!profile.hasAnLreWindowBeenFound()) {
-                emax = "(LRE window not found) ";
-                profile.setShortDescription("An LRE window could not be found, likely due to being a flat profile");
+                emax = "<LRE window not found>";
+                profile.setShortDescription("An LRE window could not be found, likely due to being a flat profile" 
+                        + " or the Min Fc being set too high");
+                return profileName + emax;
             } else {
                 df.applyPattern("#0.0");
                 emax = "(" + df.format(profile.getEmax() * 100) + "%) ";

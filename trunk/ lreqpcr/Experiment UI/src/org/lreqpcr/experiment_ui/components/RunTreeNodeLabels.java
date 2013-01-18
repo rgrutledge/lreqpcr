@@ -46,8 +46,8 @@ public class RunTreeNodeLabels implements LabelFactory {
                 return sdf.format(run.getRunDate()) + " (" + df.format(runOCF) + ")-" + member.getName();
             } else {
                 df.applyPattern(FormatingUtilities.decimalFormatPattern(run.getAverageFmax()));
-                return sdf.format(run.getRunDate()) + "-" + member.getName() 
-                        + " (Av Fmax: " + df.format(run.getAverageFmax()) + ")";
+                return sdf.format(run.getRunDate()) + "-" + member.getName()
+                        + " [Av Fmax: " + df.format(run.getAverageFmax()) + "]";
             }
 
         }
@@ -56,41 +56,50 @@ public class RunTreeNodeLabels implements LabelFactory {
             profile.setShortDescription("");
             //Label madeup of three components: name, Emax and No
             String profileName = profile.getAmpliconName() + "@ " + profile.getSampleName() + " ";
-            //If excluded no Emax or No is displayed
+            //If excluded no Emax or No to be displayed
             if (profile.isExcluded()) {
                 if (profile instanceof AverageSampleProfile) {
-                    profile.setShortDescription("This Profile has been excluded by the user");
+                    profile.setShortDescription("This Average Profile has been excluded by the user");
                 } else {//Must be a SampleProfile
-                    profile.setShortDescription("This Sample Profile has been excluded by the user and will not be included in the Average Profile");
+                    profile.setShortDescription("This Sample Profile has been excluded " 
+                            + "by the user and will not be included in the Average Profile");
                 }
-                return profileName + "...PROFILE IS EXCLUDED";
+                return profileName + "<PROFILE EXCLUDED>";
+            }
+
+            if (profile instanceof AverageSampleProfile) {
+                AverageSampleProfile avPrf = (AverageSampleProfile) profile;
+                //This assumes that excluded profiles would not reach here
+                if (avPrf.isReplicateAverageNoLessThan10Molecules()) {
+                    //An LRE window does not exist
+                    //Do any of the replicate profiles have an LRE window?
+                    df.applyPattern("0.00");
+                    profile.setShortDescription("Less than 10 molecules requires averaging the replicate profiles quantities");
+                    double no = avPrf.getNo();
+                    if(avPrf.isEmaxFixedTo100()){
+                        return profileName + "<100%> avRep= " + df.format(no);
+                    }
+                    return profileName + "avRep= " + df.format(no);
+                }
             }
             String emax;
             String no;
             //Determine what to display for Emax
+            if (!profile.hasAnLreWindowBeenFound()) {
+//This assumes an AverageSampleProfile that has <10N would not reach here 
+                profile.setShortDescription("An LRE window could not be found, likely due to being a flat profile"
+                        + " or the Min Fc being set too high");
+                //Emax and No do not exsist
+                return profileName + "<LRE window not found>";
+            }
+            //Profile is OK
             if (profile.isEmaxFixedTo100() && profile.hasAnLreWindowBeenFound()) {
                 df.applyPattern("#0.0");
                 profile.setShortDescription("Emax is fixed to 100%");
                 emax = "<100%> ";
             } else {
-                if (!profile.hasAnLreWindowBeenFound()) {
-                    emax = "(LRE window not found) ";
-                    profile.setShortDescription("An LRE window could not be found, likely due to being a flat profile"
-                            + " or the Min Fc being set too high");
-                } else {
-                    df.applyPattern("#0.0");
-                    emax = "(" + df.format(profile.getEmax() * 100) + "%) ";
-                }
-            }
-            if (profile instanceof AverageSampleProfile) {
-                AverageSampleProfile avPrf = (AverageSampleProfile) profile;
-                if (avPrf.isReplicateAverageNoLessThan10Molecules()
-                        && !avPrf.isExcluded()
-                        && avPrf.numberOfActiveReplicateProfiles() > 1) {
-                    df.applyPattern("0.00");
-                    profile.setShortDescription("Less than 10 molecules requires averaging the replicate profiles quantities");
-                    return profileName + "avRep: " + df.format(avPrf.getNo());
-                }
+                df.applyPattern("#0.0");
+                emax = "(" + df.format(profile.getEmax() * 100) + "%) ";
             }
             //Determine what to display for No
             if (profile.getAmpliconSize() == 0) {
@@ -108,7 +117,7 @@ public class RunTreeNodeLabels implements LabelFactory {
                 df.applyPattern("###,###");
             }
             if (!profile.hasAnLreWindowBeenFound()) {
-                no = "0";
+                no = "";
             } else {
                 no = df.format(profile.getNo());
             }

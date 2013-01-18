@@ -68,6 +68,7 @@ public class FixRunProfilesEmaxTo100percentAction extends AbstractAction {
                 Run run = node.getLookup().lookup(Run.class);
 //Process all profiles within the run, including the replicate profiles
                 for (AverageSampleProfile avProfile : run.getAverageProfileList()) {
+                    avProfile.setIsEmaxFixedTo100(true);//
                     //Process the replicate profiles
                     for (Profile repProfile : avProfile.getReplicateProfileList()) {
                         //Ignore profiles that do not have an LRE window
@@ -86,11 +87,10 @@ public class FixRunProfilesEmaxTo100percentAction extends AbstractAction {
                         analysisService.conductAutomatedLreWindowSelection(avProfile, selectionParameters);
                     }
                     //Ignore average sample profiles that do not have an LRE window
-                    if (avProfile.hasAnLreWindowBeenFound()) {
-                        avProfile.setIsEmaxFixedTo100(true);
+                    if (!avProfile.isReplicateAverageNoLessThan10Molecules()) {
                         //Need to update avFo and avNo
                         analysisService.initializeProfileSummary(avProfile, selectionParameters);
-                    } 
+                    }//When <10N the averageProfile inherits the average replicate profile No so no need to update
                     db.saveObject(avProfile);
                 }
             }

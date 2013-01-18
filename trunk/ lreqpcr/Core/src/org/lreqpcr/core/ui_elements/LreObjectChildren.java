@@ -16,12 +16,12 @@
  */
 package org.lreqpcr.core.ui_elements;
 
-import org.lreqpcr.core.data_objects.LreObject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import javax.swing.Action;
+import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Children;

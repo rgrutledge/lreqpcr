@@ -198,7 +198,10 @@ public abstract class Profile extends LreObject {
     }
     
     public double getFmax(){
-        return eMax/-(deltaE);
+        if(!isExcluded() && hasAnLreWindowBeenFound){
+            return eMax/-(deltaE);
+        }
+        return 0;
     }
 
     public double getFb() {
