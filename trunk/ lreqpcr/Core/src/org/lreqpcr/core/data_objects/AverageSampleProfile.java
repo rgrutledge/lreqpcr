@@ -29,7 +29,7 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
 
     private List<SampleProfile> sampleProfileList;
     private boolean isTheAverageReplicateNoLessThan10Molecules;
-    private double no;
+//    private double no;
 //    private int numberOfActiveReplicateProfiles;
 
     /**
