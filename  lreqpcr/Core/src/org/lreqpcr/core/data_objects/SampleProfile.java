@@ -109,7 +109,7 @@ public class SampleProfile extends Profile {
      * @param no target quantity expressed in molecules calculated using the LRE-derived Emax.
      * @param noEmax100 target quantity expressed in molecules calculated using Emax fixed to 100%
      */
-    public void setNoValues(double no, double noEmax100){
+    protected void setNoValues(double no, double noEmax100){
         this.no = no;
         this.noEmax100 = noEmax100;
     }
@@ -119,7 +119,8 @@ public class SampleProfile extends Profile {
      * @return No, the number of target molecules
      */
     public double getNo() {
-        return getNoAdjustedToFmax();
+        double adjustedNo = getNoAdjustedToFmax();
+        return adjustedNo;
 //        if (isEmaxFixedTo100()) {
 //            return noEmax100;
 //        } else {
@@ -130,6 +131,9 @@ public class SampleProfile extends Profile {
     public double getNoAdjustedToFmax(){
         double avFmax = super.getRun().getAverageFmax();
         double fmax = getFmax();
+        if(fmax == 0 || avFmax == 0){
+            return 0;
+        }
         double correctionFactor = avFmax/fmax;
         if (isEmaxFixedTo100()) {
             return noEmax100 * correctionFactor;

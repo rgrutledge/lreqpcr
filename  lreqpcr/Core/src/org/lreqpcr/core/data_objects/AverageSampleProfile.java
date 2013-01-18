@@ -29,6 +29,7 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
 
     private List<SampleProfile> sampleProfileList;
     private boolean isTheAverageReplicateNoLessThan10Molecules;
+    private double repAvNo;//This should conform to both +/-fixing Emax and Fmax normalization
 //    private double no;
 //    private int numberOfActiveReplicateProfiles;
 
@@ -72,6 +73,7 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
         if(!isTheAverageReplicateNoLessThan10Molecules){
             super.updateSampleProfile();
         }
+        //Nothing else is needed as the determineIf... function updates the No values
     }
 
     /**
@@ -112,15 +114,17 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
      * the average No for the AverageProfile is then determined by
      * averaging the No values from each of the ReplicateProfiles. 
      * Note that this will be aborted if the profile is excluded. Note also that 
-     * if found to be below 10 molecules, the profile will be set to "No LRE 
+     * if found to be below 10 molecules, this.No is set to the average of the 
+     * replicate profiles and the profile will be set to "No LRE 
      * window has been found".
+     * return boolean has no function
      */
     public boolean determineIfTheAverageReplicateNoIsLessThan10Molecules() {
         //Not sure how well this will work
         if (isExcluded()) {
             return true;
         }
-        if (sampleProfileList.size() == 1) {
+        if (numberOfActiveReplicateProfiles() == 1) {
 //This allows the AverageProfile to function as if No >10 when there is a single replicate
 //This allows single replicates to be viewed and edited from the AverageSampleReplicate node
 //This is valid because the average Profile Fc is derived from a single Profile and thus is not impacted by profile scattering    
@@ -137,7 +141,7 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
 //However, such profiles (i.e. flat profiles) default to zero molecules and thus must be counted
                     counter++;
                 } else {
-                    sum = sum + repPrf.getNo();
+                    sum += repPrf.getNo();
                     counter++;
                 }
             }
@@ -145,23 +149,31 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
         if (sum == 0) {
 //None of the replicate profiles have an LRE window
             isTheAverageReplicateNoLessThan10Molecules = true;
-            setHasAnLreWindowBeenFound(false);
-            setNoValues(0, 0);
-            return false;
+            setHasAnLreWindowBeenFound(false);//TODO neutralize this*******************************************************************
+            repAvNo = 0;
+            return true;
         }
         double averageReplicateNo = sum / counter;
         if (averageReplicateNo < 10) {
             isTheAverageReplicateNoLessThan10Molecules = true;
-//At <10N the profile becomes invalid and the No values fall to that of the ReplicateProfile average No
-//            setHasAnLreWindowBeenFound(false);
-//The AverageProfile falls to the average Replicate No along with its Emax status
-            setNoValues(averageReplicateNo, averageReplicateNo);
+//At <10N the profile becomes invalid and the No value falls to the ReplicateProfile average No
+            repAvNo = averageReplicateNo;
             return true;
         } else {
             isTheAverageReplicateNoLessThan10Molecules = false;
             return false;
         }
     }
+
+    @Override
+     public double getNo() {
+        if(!isTheAverageReplicateNoLessThan10Molecules){
+            return super.getNo();
+        }
+        return repAvNo;
+    }
+    
+    
 
     public int numberOfActiveReplicateProfiles() {
         int numberOfActiveReplicateProfiles = 0;
