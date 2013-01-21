@@ -226,8 +226,8 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         if (foThreshold <= 0) {
             return;
         }
-        List<AverageProfile> profileList = null;
-        //This is necessary becuase for unknown reasons retrieving averageCalibrationProfile objects fails
+        List<AverageProfile> profileList;
+//This is necessary becuase for unknown reasons retrieving averageCalibrationProfile objects fail
         if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION){
            profileList =  currentDB.getAllObjects(AverageCalibrationProfile.class);
         } else {
@@ -304,8 +304,8 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
             if (!(avSampleProfileList.get(0).getOCF() > 0)) {
                 //An OCF has not been applied and thus No values are not available
                 Toolkit.getDefaultToolkit().beep();
-                String msg = "An OCF has not yet be entered into this database and target quantities are thus not available. \n"
-                        + "The average replicate CV can therefore not be determined.";
+                String msg = "An OCF has not yet been entered and target quantities are thus not available. \n"
+                        + "Therefore the average replicate CV can not be determined.";
                 JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Target quantities are not available",
                         JOptionPane.ERROR_MESSAGE);
                 return -1;
@@ -510,20 +510,20 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
             //Test if the database holds profiles
             if (type == DatabaseType.EXPERIMENT || type == DatabaseType.CALIBRATION) {
                 if (currentDB != dbProvider.getDatabaseServices()) {
-                    //A new Experiment or Calibration TC has been selected thus the parameters need to be updated
+       //A new Experiment or Calibration TC has been selected thus the parameters need to be updated
                     currentDB = dbProvider.getDatabaseServices();
                     if (currentDB.isDatabaseOpen()) {
                         selectionParameters = (LreWindowSelectionParameters) currentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
                         if (selectionParameters == null) {
                             clearPanel();
-                            return;
+//                            return;
                         } else {
                             minFc = selectionParameters.getMinFc();
                             foThreshold = selectionParameters.getFoThreshold();
                             updateDisplay();
                         }
                     } else {
-                        currentDB = null;
+//                        currentDB = null;
                         clearPanel();
                         return;
                     }

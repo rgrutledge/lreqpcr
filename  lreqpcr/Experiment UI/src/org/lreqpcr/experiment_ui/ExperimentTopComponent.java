@@ -218,7 +218,7 @@ public final class ExperimentTopComponent extends TopComponent
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(experimentDbTree, javax.swing.GroupLayout.DEFAULT_SIZE, 328, Short.MAX_VALUE)
+                    .addComponent(experimentDbTree, javax.swing.GroupLayout.PREFERRED_SIZE, 377, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(openLastDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -433,7 +433,6 @@ public final class ExperimentTopComponent extends TopComponent
                 }
                 Sample sample = sampleNode.getLookup().lookup(Sample.class);
                 experimentDbTree.createSampleTree(sample.getName());
-                return;
             }
         }
     }

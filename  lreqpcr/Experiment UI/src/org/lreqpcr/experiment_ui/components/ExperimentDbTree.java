@@ -17,12 +17,6 @@
 package org.lreqpcr.experiment_ui.components;
 
 import java.awt.Toolkit;
-import org.lreqpcr.core.data_objects.*;
-import org.lreqpcr.core.ui_elements.LreActionFactory;
-import org.lreqpcr.core.ui_elements.LreNode;
-import org.lreqpcr.core.ui_elements.LabelFactory;
-import org.lreqpcr.core.utilities.FormatingUtilities;
-import org.lreqpcr.experiment_ui.actions.ExperimentTreeNodeActions;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -32,8 +26,14 @@ import javax.swing.Action;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.lreqpcr.analysis_services.LreAnalysisService;
+import org.lreqpcr.core.data_objects.*;
 import org.lreqpcr.core.database_services.DatabaseServices;
+import org.lreqpcr.core.ui_elements.LabelFactory;
+import org.lreqpcr.core.ui_elements.LreActionFactory;
+import org.lreqpcr.core.ui_elements.LreNode;
+import org.lreqpcr.core.utilities.FormatingUtilities;
 import org.lreqpcr.core.utilities.UniversalLookup;
+import org.lreqpcr.experiment_ui.actions.ExperimentTreeNodeActions;
 import org.lreqpcr.ui_components.PanelMessages;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.view.BeanTreeView;
@@ -212,7 +212,7 @@ public class ExperimentDbTree extends JPanel {
         for (Profile profile : avSampleProfileList) {
             AverageSampleProfile avProfile = (AverageSampleProfile) profile;
             //This is needed for back compatability due to Run not being set < version 0.8.0
-            Run run = null;
+            Run run;
             if (profile.getRun() == null){
                 run = (Run) profile.getParent();
             }else {

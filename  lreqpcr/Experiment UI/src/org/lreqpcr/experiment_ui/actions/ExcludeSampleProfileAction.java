@@ -16,18 +16,19 @@
  */
 package org.lreqpcr.experiment_ui.actions;
 
-import org.lreqpcr.analysis_services.LreAnalysisService;
-import org.lreqpcr.core.data_objects.AverageSampleProfile;
-import org.lreqpcr.core.data_objects.SampleProfile;
-import org.lreqpcr.core.ui_elements.LreNode;
-import org.lreqpcr.core.ui_elements.LreObjectChildren;
-import org.lreqpcr.core.utilities.GeneralUtilities;
 import java.awt.event.ActionEvent;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
+import org.lreqpcr.analysis_services.LreAnalysisService;
+import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
+import org.lreqpcr.core.data_objects.Run;
+import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.database_services.DatabaseServices;
+import org.lreqpcr.core.ui_elements.LreNode;
+import org.lreqpcr.core.ui_elements.LreObjectChildren;
+import org.lreqpcr.core.utilities.GeneralUtilities;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.ui_components.PanelMessages;
 import org.openide.explorer.ExplorerManager;
@@ -53,9 +54,9 @@ class ExcludeSampleProfileAction extends AbstractAction {
 
     @SuppressWarnings("unchecked")
     public void actionPerformed(ActionEvent e) {
-        Node[] selectedNodes = mgr.getSelectedNodes();
-        LreNode selectedNode = (LreNode) selectedNodes[0];
-        db = selectedNode.getDatabaseServices();
+        Node[] sampleProfileNodes = mgr.getSelectedNodes();
+        LreNode sampleProfileLreNode = (LreNode) sampleProfileNodes[0];
+        db = sampleProfileLreNode.getDatabaseServices();
         if (db != null) {
             if (db.isDatabaseOpen()) {
                 List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
@@ -65,10 +66,10 @@ class ExcludeSampleProfileAction extends AbstractAction {
         } else {
             return;
         }
-        for (Node node : selectedNodes) {
-            selectedNode = (LreNode) node;
-            SampleProfile selectedProfile = selectedNode.getLookup().lookup(SampleProfile.class);
-            AverageSampleProfile parentAvProfile = (AverageSampleProfile) selectedProfile.getParent();
+        for (Node node : sampleProfileNodes) {
+            sampleProfileLreNode = (LreNode) node;
+            SampleProfile sampleProfile = sampleProfileLreNode.getLookup().lookup(SampleProfile.class);
+            AverageSampleProfile parentAvProfile = (AverageSampleProfile) sampleProfile.getParent();
             List<SampleProfile> repProfileList = parentAvProfile.getReplicateProfileList();
 
             //Need to confirm that at least one Profile will remain active
@@ -82,12 +83,14 @@ class ExcludeSampleProfileAction extends AbstractAction {
                         + "selected Profile", JOptionPane.ERROR_MESSAGE);
                 continue;
             }
-            selectedProfile.setExcluded(true);
-            selectedNode.refreshNodeLabel();
-            db.saveObject(selectedProfile);
-
+            //This will force the profile's Run to recalculate its average Fmax
+            sampleProfile.setExcluded(true);
+            sampleProfileLreNode.refreshNodeLabel();
+            
+            db.saveObject(sampleProfile);
+            
             //Update the parent Average Sample Profile
-            LreNode parentNode = (LreNode) selectedNodes[0].getParentNode();
+            LreNode avSampleProfileLreNode = (LreNode) sampleProfileNodes[0].getParentNode();
             parentAvProfile.setRawFcReadings(GeneralUtilities.generateAverageFcDataset(repProfileList));
             parentAvProfile.setFcReadings(null);//This will trigger a new Fc dataset to be generated from the raw Fc dataset
             //Reinitialize the Average Profile
@@ -96,9 +99,15 @@ class ExcludeSampleProfileAction extends AbstractAction {
             //Conduct automated LRE window selection
             profileIntialization.conductAutomatedLreWindowSelection(parentAvProfile, selectionParameters);
             db.saveObject(parentAvProfile);
+            db.saveObject(sampleProfile.getRun());
             //Update the tree
-            parentNode.refreshNodeLabel();
-            LreObjectChildren parentChildren = (LreObjectChildren) parentNode.getChildren();
+            avSampleProfileLreNode.refreshNodeLabel();
+            //See if the AverageSample parent node is a Run node
+            if (avSampleProfileLreNode.getParentNode().getLookup().lookup(Run.class) != null){
+                LreNode runLreNode = (LreNode) avSampleProfileLreNode.getParentNode();
+                runLreNode.refreshNodeLabel();
+            }
+            LreObjectChildren parentChildren = (LreObjectChildren) avSampleProfileLreNode.getChildren();
             parentChildren.setLreObjectList(repProfileList);
             parentChildren.addNotify();
         }

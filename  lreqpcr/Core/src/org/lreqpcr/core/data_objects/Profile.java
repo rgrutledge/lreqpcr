@@ -370,10 +370,20 @@ public abstract class Profile extends LreObject {
         this.fbR2 = fbR2;
     }
 
+    /**
+     * This is part of an unimplemented function to determine the level of baseline 
+     * drifting and thus has no current relevance.
+     * @return the slope of the baseline
+     */
     public double getFbSlope() {
         return fbSlope;
     }
 
+    /**
+     * This is part of an unimplemented function to determine the level of baseline 
+     * drifting and thus has no current relevance.
+     * @param fbSlope 
+     */
     public void setFbSlope(double fbSlope) {
         this.fbSlope = fbSlope;
     }
@@ -382,8 +392,13 @@ public abstract class Profile extends LreObject {
         return excluded;
     }
 
+    /**
+     * Exclude/include this profile. Note that this also updates the Run average Fmax.
+     * @param excluded whether this profile is excluded
+     */
     public void setExcluded(boolean excluded) {
         this.excluded = excluded;
+        run.determineAverageFmax();
     }
 
     public String getWhyExcluded() {
@@ -403,17 +418,20 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * Allows the LRE-derived Emax to be fixed to 100%.
-     * Note that Emax fixed to 100% must only applied during conversion of Fo to No, and
-     * thus does not impact LRE analysis used to generate Fo values, as it will generate aberrant biases.
+     * Allows the LRE-derived Emax to be fixed/unfixed to 100%.
+     * Note that Emax fixed to 100% must only be applied during conversion of Fo to No, and
+     * thus does not impact LRE analysis used to generate Fo values, as it will generate aberrant biases. 
+     * Note also that this triggers updating the Run's average Fmax
      * @param isEmaxFixedTo100
      */
     public void setIsEmaxFixedTo100(boolean isEmaxFixedTo100) {
         this.isEmaxFixedTo100 = isEmaxFixedTo100;
+        run.determineAverageFmax();
     }
 
     /**
-     * If an LRE window has not been found the Profile is not displayable.
+     * Sets whether an LRE window has been found for this Profile.
+     * Not that if an LRE window is not present, the Profile is not displayable.
      * 
      * @return whether an LRE window has been found
      */
@@ -423,9 +441,9 @@ public abstract class Profile extends LreObject {
 
     /**
      * Indicates whether a this is a valid Profile. If an LRE window has 
-     * not been found the Profile is not displayable.
+     * not been found the Profile is not displayable. 
      * 
-     * @param hasAnLreWindowFound determines whether an LRE window has been found
+     * @param hasAnLreWindowFound sets whether an LRE window has been found
      */
     public void setHasAnLreWindowBeenFound(boolean hasAnLreWindowFound) {
         this.hasAnLreWindowBeenFound = hasAnLreWindowFound;

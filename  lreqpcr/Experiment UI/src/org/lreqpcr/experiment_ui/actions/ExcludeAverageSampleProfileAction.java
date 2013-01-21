@@ -16,12 +16,13 @@
  */
 package org.lreqpcr.experiment_ui.actions;
 
-import org.lreqpcr.core.ui_elements.LreNode;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
+import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.database_services.DatabaseServices;
+import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.ui_components.PanelMessages;
 import org.openide.explorer.ExplorerManager;
@@ -45,24 +46,34 @@ class ExcludeAverageSampleProfileAction extends AbstractAction {
     @SuppressWarnings("unchecked")
     public void actionPerformed(ActionEvent e) {
         Node[] nodes = mgr.getSelectedNodes();
-        LreNode selectedNode = (LreNode) nodes[0];
-        db = selectedNode.getDatabaseServices();
+        LreNode avSampleProfileNode = (LreNode) nodes[0];
+        db = avSampleProfileNode.getDatabaseServices();
         for (Node node : nodes) {
-            selectedNode = (LreNode) node;
-            AverageSampleProfile selectedProfile = (AverageSampleProfile) selectedNode.getLookup().lookup(SampleProfile.class);
-            selectedProfile.setExcluded(true);
-            db.saveObject(selectedProfile);
+            avSampleProfileNode = (LreNode) node;
+            AverageSampleProfile avSampleProfile = (AverageSampleProfile) avSampleProfileNode.getLookup().lookup(SampleProfile.class);
+            avSampleProfile.setExcluded(true);
+            db.saveObject(avSampleProfile);
             //Exclude all replicate profiles
-            for (SampleProfile prf : selectedProfile.getReplicateProfileList()) {
+            for (SampleProfile prf : avSampleProfile.getReplicateProfileList()) {
+                //This will force the Run's average Fmax to be recalculated
                 prf.setExcluded(true);
                 db.saveObject(prf);
+                //The SampleProfile's Run must also be saved
             }
-            selectedNode.refreshNodeLabel();
-            //Refresh the replicate profile node labels
-            Node[] replNodes = selectedNode.getChildren().getNodes();
-            for (int i = 0; i < replNodes.length; i++) {
-                LreNode n = (LreNode) replNodes[i];
-                n.refreshNodeLabel();
+            //Save the SampleProfile's Run which is retrieved via the AverageSampleProfile
+            db.saveObject(avSampleProfile.getRun());
+            avSampleProfileNode.refreshNodeLabel();
+            //Determine if the parent node is a Run node
+            if (avSampleProfileNode.getParentNode().getLookup().lookup(Run.class) != null) {
+                //Refresh the Run label to update the average Fmax
+                LreNode runNode = (LreNode) avSampleProfileNode.getParentNode();
+                runNode.refreshNodeLabel();
+            }
+            //Refresh the SampleProfile and Run node labels
+            Node[] sampleProfileNodes = avSampleProfileNode.getChildren().getNodes();
+            for (int i = 0; i < sampleProfileNodes.length; i++) {
+                LreNode avergeProfileNode = (LreNode) sampleProfileNodes[i];
+                avergeProfileNode.refreshNodeLabel();
             }
         }
         db.commitChanges();

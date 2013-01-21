@@ -52,15 +52,15 @@ public class DeleteAverageSampleProfileAction extends AbstractAction {
         LreNode lreNode = (LreNode) nodes[0];
         db = lreNode.getDatabaseServices();
         if (nodes.length == 1) {
-            AverageSampleProfile profile = nodes[0].getLookup().lookup(AverageSampleProfile.class);
-            String msg = "Are you sure you want to delete '" + profile.getName()
+            AverageSampleProfile avSampleProfile = nodes[0].getLookup().lookup(AverageSampleProfile.class);
+            String msg = "Are you sure you want to delete '" + avSampleProfile.getName()
                     + "'?\n" + "This will permenantly remove this Average Sample Profile. ";
             int n = JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(),
                     msg, "Delete Average Sample Profile",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.WARNING_MESSAGE);
             if (n == JOptionPane.YES_OPTION) {
-                deleteProfile(profile);
+                deleteProfile(avSampleProfile);
             }
         } else {
             String msg = "Are you sure you want to delete " + String.valueOf(nodes.length)
@@ -87,14 +87,17 @@ public class DeleteAverageSampleProfileAction extends AbstractAction {
     }
 
     @SuppressWarnings("unchecked")
-    private void deleteProfile(AverageSampleProfile avProfile) {
+    private void deleteProfile(AverageSampleProfile avSampleProfile) {
 
         //Need to remove the AverageProfile from the Run Profile list
-        Run run = (Run) avProfile.getParent();
+        Run run = (Run) avSampleProfile.getParent();
         List<AverageSampleProfile> avSamplePrfList = run.getAverageProfileList();
-        avSamplePrfList.remove(avProfile);
+        avSamplePrfList.remove(avSampleProfile);
         db.saveObject(avSamplePrfList);
-        db.deleteObject(avProfile);
+        db.deleteObject(avSampleProfile);
+        //Update the Run's average Fmax and save it
+        run.determineAverageFmax();
+        db.saveObject(run);
 
         db.commitChanges();
     }
