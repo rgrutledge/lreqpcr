@@ -498,7 +498,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
     }
 
     public void propertyChange(PropertyChangeEvent evt) {
-        //This called everytime a node is selected, which is redundant most of the time
+        //This is called everytime a node is selected, which is redundant most of the time
         //This initiates an updateDisplay call which can be very intensive when the database is large
         //Actually, it is called twice everytime a node is selected!!!!
         //Maybe a new Top Component window has been selected but not necessarily
