@@ -17,8 +17,6 @@
 
 package org.lreqpcr.experiment_ui.actions;
 
-import org.lreqpcr.core.data_objects.RunImpl;
-import org.lreqpcr.core.ui_elements.LreNode;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,14 +25,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
+import org.lreqpcr.core.data_objects.RunImpl;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.SettingsServices;
+import org.lreqpcr.core.ui_elements.LreNode;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
 
 /**
- * DEACTIVATED
+ * DEACTIVATED due long delays during file import
  * @author Bob Rutledge
  */
 public class SaveCyclerDatafileAction extends AbstractAction {
@@ -53,8 +53,8 @@ public class SaveCyclerDatafileAction extends AbstractAction {
         SettingsServices settingsDB = Lookup.getDefault().lookup(SettingsServices.class);
         RunImpl run = selectedNode.getLookup().lookup(RunImpl.class);
         JFileChooser fc = new JFileChooser();
-        File file = null;
-        byte[] dataFile = null;
+        File file;
+        byte[] dataFile;
         if (settingsDB.getLastExperimentDatabaseDirectory() != null) {
             try {
                 file = new File(settingsDB.getLastExperimentDatabaseDirectory());
@@ -63,8 +63,8 @@ public class SaveCyclerDatafileAction extends AbstractAction {
             }
             fc.setCurrentDirectory(file);
             int returnVal = fc.showOpenDialog(null);
-            File newFile = null;
-            FileInputStream in = null;
+            File newFile;
+            FileInputStream in;
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 newFile = fc.getSelectedFile();
                 settingsDB.setLastExperimentDatabaseDirectory(fc.getCurrentDirectory().getAbsolutePath());

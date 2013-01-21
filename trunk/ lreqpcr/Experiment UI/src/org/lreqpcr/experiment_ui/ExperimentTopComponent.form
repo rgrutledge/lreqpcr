@@ -19,7 +19,7 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="experimentDbTree" alignment="0" pref="328" max="32767" attributes="0"/>
+                  <Component id="experimentDbTree" alignment="0" pref="377" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="openLastDBbutton" min="-2" pref="33" max="-2" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>

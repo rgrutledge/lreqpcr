@@ -16,11 +16,6 @@
  */
 package org.lreqpcr.core.db4o_provider;
 
-import org.lreqpcr.core.data_objects.Family;
-import org.lreqpcr.core.data_objects.LreObject;
-import org.lreqpcr.core.data_objects.Profile;
-import org.lreqpcr.core.data_objects.AverageProfile;
-import org.lreqpcr.core.data_objects.Run;
 import com.db4o.Db4o;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
@@ -32,6 +27,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.swing.JOptionPane;
+import org.lreqpcr.core.data_objects.AverageProfile;
+import org.lreqpcr.core.data_objects.Family;
+import org.lreqpcr.core.data_objects.LreObject;
+import org.lreqpcr.core.data_objects.Profile;
+import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.openide.windows.WindowManager;
 

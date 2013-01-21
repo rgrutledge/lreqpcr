@@ -106,14 +106,9 @@ public abstract class Run extends LreObject {
 
     public double getAverageFmax() {
         if(averageFmax == 0){
-            //Need to calculate averag Fmax
-            
+            determineAverageFmax();            
         }
         return averageFmax;
-    }
-
-    public void setAverageFmax(double averageFmax) {
-        this.averageFmax = averageFmax;
     }
 
     /**
@@ -132,12 +127,17 @@ public abstract class Run extends LreObject {
         this.runOCF = runOCF;
     }
     
+    /**
+     * Calculates the average Fmax from the replicate profiles. Note that the
+     * AverageProfiles are ignored, as are excluded SampleProfiles, along with  
+     * SampleProfiles for which an LRE window has not been found.
+     */
     public void determineAverageFmax(){
         double fmaxSum = 0;
         int profileCount = 0;
         for (AverageSampleProfile avProfile: averageProfileList){
             for(SampleProfile profile: avProfile.getReplicateProfileList()){
-                if(profile.hasAnLreWindowBeenFound()){
+                if(profile.hasAnLreWindowBeenFound() && !profile.isExcluded()){
                     fmaxSum += profile.getFmax();
                     profileCount++;
                 }

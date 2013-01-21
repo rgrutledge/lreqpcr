@@ -48,7 +48,7 @@ public class SortedProfileTreeNodeLabels implements LabelFactory {
             } else {//Must be a SampleProfile
                 profile.setShortDescription("This Sample Profile has been excluded by the user and will not be included in the Average Profile");
             }
-            return profileName + "...PROFILE IS EXCLUDED";
+            return profileName + "<PROFILE IS EXCLUDED>";
         }
         String emax;
         String no;
