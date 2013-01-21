@@ -29,7 +29,7 @@ import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 
 /**
- * Only one Profile can be excluded at one time.
+ * Excludes the currently selected AverageSampleProfile(s). 
  *
  * @author Bob Rutledge
  */
@@ -66,8 +66,8 @@ class ExcludeAverageSampleProfileAction extends AbstractAction {
             //Determine if the parent node is a Run node
             if (avSampleProfileNode.getParentNode().getLookup().lookup(Run.class) != null) {
                 //Refresh the Run label to update the average Fmax
-                LreNode runNode = (LreNode) avSampleProfileNode.getParentNode();
-                runNode.refreshNodeLabel();
+                LreNode runLreNode = (LreNode) avSampleProfileNode.getParentNode();
+                runLreNode.refreshNodeLabel();
             }
             //Refresh the SampleProfile and Run node labels
             Node[] sampleProfileNodes = avSampleProfileNode.getChildren().getNodes();

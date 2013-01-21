@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010  Bob Rutledge
+ * Copyright (C) 2011  Bob Rutledge
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,17 +33,21 @@ import org.openide.nodes.Node;
 import org.openide.util.Lookup;
 
 /**
- *
+ * Fixes all Profile's Emax to 100% held within the selected Runs. Note that 
+ * it is likely that in future this will not be allowed for individual Runs, but 
+ * rather will be only applied to an entire exp database. Note also the fixing 
+ * Emax to 100% does not change the LRE analysis (due to artifacts this would 
+ * generate) and thus Fmax is also not changed. 
  * @author Bob Rutledge
  */
-public class FixRunProfilesEmaxTo100percentAction extends AbstractAction {
+public class FixRunEmaxTo100percentAction extends AbstractAction {
 
     private ExplorerManager mgr;
     private DatabaseServices db;
     private LreWindowSelectionParameters selectionParameters;
     private LreAnalysisService analysisService;
 
-    public FixRunProfilesEmaxTo100percentAction(ExplorerManager mgr) {
+    public FixRunEmaxTo100percentAction(ExplorerManager mgr) {
         this.mgr = mgr;
         putValue(NAME, "Fix all Run Profiles' Emax to 100%");
     }
@@ -52,9 +56,9 @@ public class FixRunProfilesEmaxTo100percentAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         analysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
         //Retrieve the database holding the profiles
-        Node[] nodes = mgr.getSelectedNodes();
-        LreNode lreNode = (LreNode) nodes[0];
-        db = lreNode.getDatabaseServices();
+        Node[] runNodes = mgr.getSelectedNodes();
+        LreNode firstRunLreNode = (LreNode) runNodes[0];
+        db = firstRunLreNode.getDatabaseServices();
         if (db != null) {
             if (db.isDatabaseOpen()) {
                 List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
@@ -62,10 +66,10 @@ public class FixRunProfilesEmaxTo100percentAction extends AbstractAction {
             } else {
                 return;
             }
-            for (Node n : nodes) {
+            for (Node runNode : runNodes) {
                 //Retrieve the Run
-                LreNode node = (LreNode) n;
-                Run run = node.getLookup().lookup(Run.class);
+                LreNode runLreNode = (LreNode) runNode;
+                Run run = runLreNode.getLookup().lookup(Run.class);
 //Process all profiles within the run, including the replicate profiles
                 for (AverageSampleProfile avProfile : run.getAverageProfileList()) {
                     avProfile.setIsEmaxFixedTo100(true);//

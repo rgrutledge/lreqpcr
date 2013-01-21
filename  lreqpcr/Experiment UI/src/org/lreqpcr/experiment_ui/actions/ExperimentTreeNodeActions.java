@@ -16,9 +16,9 @@
  */
 package org.lreqpcr.experiment_ui.actions;
 
-import org.lreqpcr.core.ui_elements.LreActionFactory;
 import java.util.TreeMap;
 import javax.swing.Action;
+import org.lreqpcr.core.ui_elements.LreActionFactory;
 import org.openide.explorer.ExplorerManager;
 
 /**
@@ -31,25 +31,25 @@ public class ExperimentTreeNodeActions implements LreActionFactory {
 
     public ExperimentTreeNodeActions(ExplorerManager mgr) {
 
-        //Average Sample Profile actions
+        //AverageSampleProfile actions
         Action[] actions = new Action[]{
             new IncludeAverageSampleProfileAction(mgr),
             new ExcludeAverageSampleProfileAction(mgr),
             null,
             new DeleteAverageSampleProfileAction(mgr),
-            null,
-            new FixSampleProfileEmaxTo100percentAction(mgr),
-            new ReturnSampleProfileToLreDerivedEmaxAction(mgr)
+//            null,
+//            new FixSampleProfileEmaxTo100percentAction(mgr),
+//            new ReturnSampleProfileToLreDerivedEmaxAction(mgr)
         };
         actionMap.put("AverageSampleProfile", actions);
 
-        //Replicate Sample Profile actions
+        //SampleProfile actions
         actions = new Action[]{
                     new ExcludeSampleProfileAction(mgr),
                     new IncludeSampleProfileAction(mgr), //Disallow SampleProfile deletion for now
-                    null,
-                    new FixSampleProfileEmaxTo100percentAction(mgr),
-                    new ReturnSampleProfileToLreDerivedEmaxAction(mgr)
+//                    null,
+//                    new FixSampleProfileEmaxTo100percentAction(mgr),
+//                    new ReturnSampleProfileToLreDerivedEmaxAction(mgr)
          //Rather use Exclude than to permanently deleting a replicate profile
                 //            null,
                 //            new DeleteSampleProfileAction(mgr)
@@ -66,7 +66,8 @@ public class ExperimentTreeNodeActions implements LreActionFactory {
                     null,
                     new DeleteRunAction(mgr),
                     null,
-                    new FixRunProfilesEmaxTo100percentAction(mgr),
+//Policy is to allow fix/unfix Emax for an entire Run, which in future will likely be limited to the entire exp database
+                    new FixRunEmaxTo100percentAction(mgr),
                     new ReturnRunProfilesEmaxToLreDerivedEmaxAction(mgr)
                 };
         actionMap.put("RunImpl", actions);

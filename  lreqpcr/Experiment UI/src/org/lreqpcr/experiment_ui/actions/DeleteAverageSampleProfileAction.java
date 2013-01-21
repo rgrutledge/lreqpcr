@@ -96,7 +96,7 @@ public class DeleteAverageSampleProfileAction extends AbstractAction {
         db.saveObject(avSamplePrfList);
         db.deleteObject(avSampleProfile);
         //Update the Run's average Fmax and save it
-        run.determineAverageFmax();
+        run.calculateAverageFmax();
         db.saveObject(run);
 
         db.commitChanges();

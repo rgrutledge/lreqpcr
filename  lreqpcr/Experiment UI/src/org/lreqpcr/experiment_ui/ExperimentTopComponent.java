@@ -453,7 +453,7 @@ public final class ExperimentTopComponent extends TopComponent
             experimentDbTree.createTree();
         }
         if (key == PanelMessages.PROFILE_DELETED) {
-            experimentDbTree.displayTotalNumberOfProfilesInTheDatabase();
+//            experimentDbTree.displayTotalNumberOfProfilesInTheDatabase();
             experimentDbTree.createTree();//This allows profiles deleted from a sorted list to reset to Run View
         }
     }

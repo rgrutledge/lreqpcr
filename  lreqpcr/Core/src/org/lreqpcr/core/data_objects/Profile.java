@@ -398,7 +398,7 @@ public abstract class Profile extends LreObject {
      */
     public void setExcluded(boolean excluded) {
         this.excluded = excluded;
-        run.determineAverageFmax();
+        run.calculateAverageFmax();
     }
 
     public String getWhyExcluded() {
@@ -419,14 +419,15 @@ public abstract class Profile extends LreObject {
 
     /**
      * Allows the LRE-derived Emax to be fixed/unfixed to 100%.
-     * Note that Emax fixed to 100% must only be applied during conversion of Fo to No, and
-     * thus does not impact LRE analysis used to generate Fo values, as it will generate aberrant biases. 
-     * Note also that this triggers updating the Run's average Fmax
+     * Note that Emax fixed to 100% is only applied during conversion of Fo to No, and
+     * thus does not impact LRE analysis used to generate Fo values, as this 
+     * would generate aberrant biases. 
+     * Note also that this updates the Run's average Fmax. 
      * @param isEmaxFixedTo100
      */
     public void setIsEmaxFixedTo100(boolean isEmaxFixedTo100) {
         this.isEmaxFixedTo100 = isEmaxFixedTo100;
-        run.determineAverageFmax();
+        run.calculateAverageFmax();
     }
 
     /**

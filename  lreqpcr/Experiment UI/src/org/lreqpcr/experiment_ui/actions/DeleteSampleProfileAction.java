@@ -120,7 +120,7 @@ public class DeleteSampleProfileAction extends AbstractAction {
             samplePrfList.remove(sampleProfile);
             db.saveObject(samplePrfList);
             //Recalculate the average Fmax which should not be time consuming
-            sampleProfile.getRun().determineAverageFmax();
+            sampleProfile.getRun().calculateAverageFmax();
             //Need to recalculate the average Fc dataset in the AverageSample Profile
             avProfile.setFcReadings(null);//Fb will need to be recalculated
             avProfile.setRawFcReadings(GeneralUtilities.generateAverageFcDataset(samplePrfList));
