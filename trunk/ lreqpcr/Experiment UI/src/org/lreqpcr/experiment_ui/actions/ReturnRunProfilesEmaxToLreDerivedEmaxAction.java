@@ -53,9 +53,9 @@ public class ReturnRunProfilesEmaxToLreDerivedEmaxAction extends AbstractAction 
         analysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
         //Retrieve the database holding the profiles
         //Note that this must be a Run node
-        Node[] nodes = mgr.getSelectedNodes();
-        LreNode lreNode = (LreNode) nodes[0];
-        db = lreNode.getDatabaseServices();
+        Node[] runNodes = mgr.getSelectedNodes();
+        LreNode runLreNode = (LreNode) runNodes[0];
+        db = runLreNode.getDatabaseServices();
         if (db != null) {
             if (db.isDatabaseOpen()) {
                 List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
@@ -63,7 +63,7 @@ public class ReturnRunProfilesEmaxToLreDerivedEmaxAction extends AbstractAction 
             } else {
                 return;
             }
-            for (Node n : nodes) {
+            for (Node n : runNodes) {
                 //Retrieve the Run
                 LreNode node = (LreNode) n;
                 Run run = node.getLookup().lookup(Run.class);
@@ -93,7 +93,12 @@ public class ReturnRunProfilesEmaxToLreDerivedEmaxAction extends AbstractAction 
                     }
                     db.saveObject(avProfile);
                 }
-            }
+                //Update the Run's average Fmax and save it
+                run.calculateAverageFmax();
+                db.saveObject(run);
+                //Update the Run's label
+                runLreNode.refreshNodeLabel();
+            }//End of Run Node list
         } else {
             return;
         }

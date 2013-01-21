@@ -46,11 +46,10 @@ import org.openide.windows.WindowManager;
 /**
  * Tree-based view of an Experiment database
  *
- * This is test version that attempts to increase
- * tree display performance by moving to a run-specific
- * node construction that avoids searching the all objects
- * within the database
- * 
+ * This is test version that attempts to increase tree display performance by
+ * moving to a run-specific node construction that avoids searching the all
+ * objects within the database
+ *
  * @author Bob Rutledge
  */
 public class ExperimentDbTree extends JPanel {
@@ -61,15 +60,15 @@ public class ExperimentDbTree extends JPanel {
     private ExperimentDbInfo dbInfo;
     private LreActionFactory nodeActionFactory;
     private LabelFactory runNodeLabelFactory;
-    private LabelFactory sortedNodeLabelFactory;
     private DecimalFormat df = new DecimalFormat();
 
-    /** Creates new form ExperimentDbTree */
+    /**
+     * Creates new form ExperimentDbTree
+     */
     public ExperimentDbTree() {
         initComponents();
         runViewButton.setSelected(true);
         ocfDisplay.addKeyListener(new KeyAdapter() {
-
             @Override
             public void keyReleased(KeyEvent e) {
                 if (!experimentDB.isDatabaseOpen()) {
@@ -110,7 +109,6 @@ public class ExperimentDbTree extends JPanel {
         experimentDB = db;
         nodeActionFactory = new ExperimentTreeNodeActions(mgr);
         runNodeLabelFactory = (LabelFactory) new RunTreeNodeLabels();
-        sortedNodeLabelFactory = (LabelFactory) new SortedProfileTreeNodeLabels();
         createTree();
     }
 
@@ -124,14 +122,17 @@ public class ExperimentDbTree extends JPanel {
             AbstractNode root = new AbstractNode(Children.LEAF);
             root.setName("No Experiment database is open");
             mgr.setRootContext(root);
-            totalNumberOfProfiles.setText("n/a");
+            ocfDisplay.setText("");
+//            totalNumberOfProfiles.setText("n/a");
+            fmaxNormalizeChkBox.setSelected(false);
             return;
         }
         dbInfo = (ExperimentDbInfo) experimentDB.getAllObjects(ExperimentDbInfo.class).get(0);
+        fmaxNormalizeChkBox.setSelected(dbInfo.isTargetQuantityNormalizedToFax());
         File dbFile = experimentDB.getDatabaseFile();
         String dbFileName = dbFile.getName();
         int length = dbFileName.length();
-        displayTotalNumberOfProfilesInTheDatabase();
+//        displayTotalNumberOfProfilesInTheDatabase();
         String displayName = dbFileName.substring(0, length - 4);
         ocf = dbInfo.getOcf();
         df.applyPattern(FormatingUtilities.decimalFormatPattern(ocf));
@@ -147,15 +148,15 @@ public class ExperimentDbTree extends JPanel {
         mgr.setRootContext(root);
     }
 
-    public void displayTotalNumberOfProfilesInTheDatabase() {
-        //Determine the total number of profiles in the database
-        List profiles = experimentDB.getAllObjects(Profile.class);
-        totalNumberOfProfiles.setText(String.valueOf(profiles.size()));
-    }
-
+//    public void displayTotalNumberOfProfilesInTheDatabase() {
+//        //Determine the total number of profiles in the database
+//        List profiles = experimentDB.getAllObjects(Profile.class);
+//        totalNumberOfProfiles.setText(String.valueOf(profiles.size()));
+//    }
     /**
-     * Creates a tree displaying all AverageSampleProfiles created using the designated
-     * amplicon.
+     * Creates a tree displaying all AverageSampleProfiles created using the
+     * designated amplicon.
+     *
      * @param ampName the amplicon used to create the AverageSampleProfile
      */
     @SuppressWarnings(value = "unchecked")
@@ -165,7 +166,7 @@ public class ExperimentDbTree extends JPanel {
             List avSampleProfileList = experimentDB.retrieveUsingFieldValue(AverageSampleProfile.class, "ampliconName", ampName);
             //Display the list of AverageSampleProfiles
             LreNode root = new LreNode(new RunChildren(mgr, experimentDB, avSampleProfileList, nodeActionFactory,
-                    sortedNodeLabelFactory), Lookups.singleton(dbInfo), new Action[]{});
+                    runNodeLabelFactory), Lookups.singleton(dbInfo), new Action[]{});
             root.setName(ampName + " (" + String.valueOf(avSampleProfileList.size()) + ")");
             root.setDatabaseService(experimentDB);
             mgr.setRootContext(root);
@@ -175,9 +176,9 @@ public class ExperimentDbTree extends JPanel {
     }
 
     /**
-     * Creates a tree displaying all AverageSampleProfiles created using 
-     * the designated sample.
-     * 
+     * Creates a tree displaying all AverageSampleProfiles created using the
+     * designated sample.
+     *
      * @param sampleName the sample used to create the AverageSampleProfile
      */
     @SuppressWarnings(value = "unchecked")
@@ -187,19 +188,13 @@ public class ExperimentDbTree extends JPanel {
             List avSampleProfileList = experimentDB.retrieveUsingFieldValue(AverageSampleProfile.class, "sampleName", sampleName);
             //Display the list of AverageSampleProfiles
             LreNode root = new LreNode(new RunChildren(mgr, experimentDB, avSampleProfileList, nodeActionFactory,
-                    sortedNodeLabelFactory), Lookups.singleton(dbInfo), new Action[]{});
+                    runNodeLabelFactory), Lookups.singleton(dbInfo), new Action[]{});
             root.setName(sampleName + " (" + String.valueOf(avSampleProfileList.size()) + ")");
             root.setDatabaseService(experimentDB);
             mgr.setRootContext(root);
             runViewButton.setSelected(false);
             UniversalLookup.getDefault().fireChangeEvent(PanelMessages.CLEAR_PROFILE_EDITOR);
         }
-    }
-
-    public void createEmptyTree() {
-        AbstractNode root = new AbstractNode(Children.LEAF);
-        mgr.setRootContext(root);
-        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.CLEAR_PROFILE_EDITOR);
     }
 
     @SuppressWarnings(value = "unchecked")
@@ -213,9 +208,9 @@ public class ExperimentDbTree extends JPanel {
             AverageSampleProfile avProfile = (AverageSampleProfile) profile;
             //This is needed for back compatability due to Run not being set < version 0.8.0
             Run run;
-            if (profile.getRun() == null){
+            if (profile.getRun() == null) {
                 run = (Run) profile.getParent();
-            }else {
+            } else {
                 run = profile.getRun();
             }
             if (run.getRunOCF() == 0) {
@@ -228,7 +223,7 @@ public class ExperimentDbTree extends JPanel {
                 }
                 avProfile.setOCF(ocf);
 //Need to check if the LRE window needs reinitialization when av No increases to above >10 molecules
-                if (!avProfile.isReplicateAverageNoLessThan10Molecules() && !avProfile.hasAnLreWindowBeenFound()){
+                if (!avProfile.isReplicateAverageNoLessThan10Molecules() && !avProfile.hasAnLreWindowBeenFound()) {
 //>10N but no LRE window found indicates that the LRE window needs to be reiniitialized
                     LreAnalysisService lreAnalysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
                     LreWindowSelectionParameters selectionParameters = (LreWindowSelectionParameters) experimentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
@@ -241,10 +236,10 @@ public class ExperimentDbTree extends JPanel {
         createTree();
     }
 
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -255,8 +250,7 @@ public class ExperimentDbTree extends JPanel {
         jLabel1 = new javax.swing.JLabel();
         ocfDisplay = new javax.swing.JTextField();
         runViewButton = new javax.swing.JRadioButton();
-        jLabel2 = new javax.swing.JLabel();
-        totalNumberOfProfiles = new javax.swing.JLabel();
+        fmaxNormalizeChkBox = new javax.swing.JCheckBox();
 
         jScrollPane1.setPreferredSize(new java.awt.Dimension(400, 100));
 
@@ -277,10 +271,13 @@ public class ExperimentDbTree extends JPanel {
             }
         });
 
-        jLabel2.setText("Total # of Profiles:");
-        jLabel2.setToolTipText("The total number of profiles present in the database");
-
-        totalNumberOfProfiles.setText("       ");
+        fmaxNormalizeChkBox.setText("Fmax Normalize");
+        fmaxNormalizeChkBox.setToolTipText("Normalize target quantity to average Fmax");
+        fmaxNormalizeChkBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fmaxNormalizeChkBoxActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -289,17 +286,16 @@ public class ExperimentDbTree extends JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 409, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(runViewButton)
-                        .addGap(18, 18, 18)
+                        .addGap(12, 12, 12)
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ocfDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(totalNumberOfProfiles, javax.swing.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE)))
+                        .addComponent(fmaxNormalizeChkBox)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -309,8 +305,7 @@ public class ExperimentDbTree extends JPanel {
                     .addComponent(runViewButton)
                     .addComponent(jLabel1)
                     .addComponent(ocfDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2)
-                    .addComponent(totalNumberOfProfiles))
+                    .addComponent(fmaxNormalizeChkBox))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE))
         );
@@ -320,13 +315,44 @@ public class ExperimentDbTree extends JPanel {
         createTree();
         UniversalLookup.getDefault().add(PanelMessages.RUN_VIEW_SELECTED, null);
 }//GEN-LAST:event_runViewButtonActionPerformed
+    @SuppressWarnings(value = "unchecked")
+    private void fmaxNormalizeChkBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fmaxNormalizeChkBoxActionPerformed
+    if (fmaxNormalizeChkBox.isSelected()) {
+        //The checkbox is checked and so normalize all No values within the exp database to the averag Fmax
+        //Retrieve all of the SampleProfiles from the database, which should include the AverageSampleProfiles
+        if (!experimentDB.isDatabaseOpen()) {
+            return;
+        }
+        List<SampleProfile> sampleProfileList =
+                (List<SampleProfile>) experimentDB.getAllObjects(SampleProfile.class);
+        for (SampleProfile sampleProfile : sampleProfileList) {
+            sampleProfile.setIsTargetQuantityNormalizedToFmax(true);
+            experimentDB.saveObject(sampleProfile);
+        }
+        dbInfo.setIsTargetQuantityNormalizedToFax(true);
+        createTree();
+    } else {//The checkbox must be unchecked
+        fmaxNormalizeChkBox.setSelected(false);
+        if (!experimentDB.isDatabaseOpen()) {
+            return;
+        }
+        List<SampleProfile> sampleProfileList =
+                (List<SampleProfile>) experimentDB.getAllObjects(SampleProfile.class);
+        for (SampleProfile sampleProfile : sampleProfileList) {
+            sampleProfile.setIsTargetQuantityNormalizedToFmax(false);
+            experimentDB.saveObject(sampleProfile);
+        }
+        dbInfo.setIsTargetQuantityNormalizedToFax(false);
+        createTree();
+    }
+    experimentDB.saveObject(dbInfo);
+    }//GEN-LAST:event_fmaxNormalizeChkBoxActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane beanTree;
+    private javax.swing.JCheckBox fmaxNormalizeChkBox;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField ocfDisplay;
     private javax.swing.JRadioButton runViewButton;
-    private javax.swing.JLabel totalNumberOfProfiles;
     // End of variables declaration//GEN-END:variables
 }

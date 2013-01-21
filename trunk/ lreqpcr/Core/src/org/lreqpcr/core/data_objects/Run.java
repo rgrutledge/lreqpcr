@@ -106,7 +106,7 @@ public abstract class Run extends LreObject {
 
     public double getAverageFmax() {
         if(averageFmax == 0){
-            determineAverageFmax();            
+            calculateAverageFmax();            
         }
         return averageFmax;
     }
@@ -132,7 +132,7 @@ public abstract class Run extends LreObject {
      * AverageProfiles are ignored, as are excluded SampleProfiles, along with  
      * SampleProfiles for which an LRE window has not been found.
      */
-    public void determineAverageFmax(){
+    public void calculateAverageFmax(){
         double fmaxSum = 0;
         int profileCount = 0;
         for (AverageSampleProfile avProfile: averageProfileList){

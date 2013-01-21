@@ -24,6 +24,7 @@ package org.lreqpcr.core.data_objects;
 public class ExperimentDbInfo extends LreObject {
 
     private double ocf = 0;//The average OCF derived from the corresponding Reaction Setup
+    private boolean isTargetQuantityNormalizedToFax;
 
     /**
      * 
@@ -39,5 +40,13 @@ public class ExperimentDbInfo extends LreObject {
      */
     public void setOcf(double ocf) {
         this.ocf = ocf;
+    }
+
+    public boolean isTargetQuantityNormalizedToFax() {
+        return isTargetQuantityNormalizedToFax;
+    }
+
+    public void setIsTargetQuantityNormalizedToFax(boolean isTargetQuantityNormalizedToFax) {
+        this.isTargetQuantityNormalizedToFax = isTargetQuantityNormalizedToFax;
     }
 }

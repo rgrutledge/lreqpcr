@@ -16,8 +16,8 @@
  */
 package org.lreqpcr.core.ui_elements;
 
-import org.lreqpcr.core.data_objects.LreObject;
 import javax.swing.Action;
+import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.database_services.DatabaseProvider;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.openide.explorer.ExplorerManager;

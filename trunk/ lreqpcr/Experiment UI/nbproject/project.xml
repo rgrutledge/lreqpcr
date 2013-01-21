@@ -176,6 +176,10 @@
         </data>
         <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
             <word>amplicon</word>
+            <word>Emax</word>
+            <word>exp</word>
+            <word>Fmax</word>
+            <word>Profile's</word>
         </spellchecker-wordlist>
     </configuration>
 </project>

@@ -154,7 +154,7 @@ public class RunInializationProvider implements RunInitializationService {
                             ocf,
                             winSelectionParameters);
                     experimentDB.saveObject(averageSampleProfileList);
-//This will trigger average Fmax determination
+          //This will force the average Fmax to be calculated
                     run.setAverageProfileList((ArrayList<AverageSampleProfile>) averageSampleProfileList);
                     //Deactivated due to a bug that can produce long delays during file import
 //        RunImportUtilities.importCyclerDatafile(run);

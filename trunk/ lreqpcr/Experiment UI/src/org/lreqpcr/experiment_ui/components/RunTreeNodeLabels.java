@@ -51,10 +51,11 @@ public class RunTreeNodeLabels implements LabelFactory {
             }
 
         }
+        //Label madeup of three components: name + Emax + No
         if (member instanceof Profile) {
             SampleProfile profile = (SampleProfile) member;
             profile.setShortDescription("");
-            //Label madeup of three components: name, Emax and No
+            
             String profileName = profile.getAmpliconName() + "@ " + profile.getSampleName() + " ";
             //If excluded no Emax or No to be displayed
             if (profile.isExcluded()) {
@@ -71,7 +72,8 @@ public class RunTreeNodeLabels implements LabelFactory {
                 AverageSampleProfile avPrf = (AverageSampleProfile) profile;
                 //This assumes that excluded profiles would not reach here
                 if (avPrf.isReplicateAverageNoLessThan10Molecules()) {
-                    //An LRE window does not exist
+                    //An average profile does not exist to No is inherented 
+                    //from the average replicate No
                     //Do any of the replicate profiles have an LRE window?
                     df.applyPattern("0.00");
                     profile.setShortDescription("Less than 10 molecules requires averaging the replicate profiles quantities");
@@ -94,7 +96,6 @@ public class RunTreeNodeLabels implements LabelFactory {
             }
             //Profile is OK
             if (profile.isEmaxFixedTo100() && profile.hasAnLreWindowBeenFound()) {
-                df.applyPattern("#0.0");
                 profile.setShortDescription("Emax is fixed to 100%");
                 emax = "<100%> ";
             } else {
@@ -104,11 +105,11 @@ public class RunTreeNodeLabels implements LabelFactory {
             //Determine what to display for No
             if (profile.getAmpliconSize() == 0) {
                 profile.setShortDescription("Target quantity could not be determined because an amplicon size has not been provided");
-                return profileName + emax + "n.d.(no amplicon size) ";
+                return profileName + emax + "n.d.<Amplicon size absent> ";
             }
             if (!(profile.getOCF() > 0)) {
                 profile.setShortDescription("Target quantity could not be determined because an OCF has not been applied");
-                return profileName + emax + "n.d. (no OCF)";
+                return profileName + emax + "n.d. <OCF absent>";
             }
 
             if (profile.getNo() < 10) {
