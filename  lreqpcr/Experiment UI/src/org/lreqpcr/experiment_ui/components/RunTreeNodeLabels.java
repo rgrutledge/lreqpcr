@@ -109,7 +109,7 @@ public class RunTreeNodeLabels implements LabelFactory {
             }
             if (!(profile.getOCF() > 0)) {
                 profile.setShortDescription("Target quantity could not be determined because an OCF has not been applied");
-                return profileName + emax + "n.d. <OCF absent>";
+                return profileName + emax + "n.d. <No OCF>";
             }
 
             if (profile.getNo() < 10) {

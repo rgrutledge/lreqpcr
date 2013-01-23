@@ -128,6 +128,8 @@ public class DeleteSampleProfileAction extends AbstractAction {
             LreAnalysisService profileIntialization =
                     Lookup.getDefault().lookup(LreAnalysisService.class);
             profileIntialization.initializeProfileSummary(avProfile, selectionParameters);
+             //The average Tm must be updated in the parent AverageSampleProfile
+            avProfile.calculateAvAmpTm();
             db.saveObject(avProfile);
             //Need to also save the SampeProfile's Run
             db.saveObject(sampleProfile.getRun());

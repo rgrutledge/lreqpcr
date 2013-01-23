@@ -85,8 +85,9 @@ class ExcludeSampleProfileAction extends AbstractAction {
             }
             //This will force the profile's Run to recalculate its average Fmax
             sampleProfile.setExcluded(true);
+            //The average Tm must be updated in the parent AverageSampleProfile
+            parentAvProfile.calculateAvAmpTm();
             sampleProfileLreNode.refreshNodeLabel();
-            
             db.saveObject(sampleProfile);
             
             //Update the parent Average Sample Profile

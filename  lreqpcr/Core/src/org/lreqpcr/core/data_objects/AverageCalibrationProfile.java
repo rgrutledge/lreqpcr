@@ -28,6 +28,7 @@ import java.util.List;
 public class AverageCalibrationProfile extends CalibrationProfile implements AverageProfile {
 
     private List<CalibrationProfile> lambdaProfileList;
+    private double avTm = 0;
 
     /**
      * An average calibration file constructed from the replicate calibration
@@ -93,6 +94,36 @@ public class AverageCalibrationProfile extends CalibrationProfile implements Ave
      */
     public boolean determineIfTheAverageReplicateNoIsLessThan10Molecules() {
         return false;
+    }
+
+    /**
+     * Returns the average melting temperature (Tm) of the SampleProfile(s) amplicons. 
+     * Note that this will return -1 if a Tm is not available. 
+     * @return the average SampleProfile Tm or -1 if none is available
+     */
+    public double getAvAmpTm() {
+        if (avTm == 0){
+            calculateAvTm();
+        }
+        return avTm;
+    }
+
+    private void calculateAvTm(){
+        double tmSum = 0;
+        int counter = 0;
+        for(CalibrationProfile calProfile: lambdaProfileList){
+            if(!calProfile.isExcluded() 
+                    && calProfile.hasAnLreWindowBeenFound()
+                    && calProfile.getAmpTm() != 0){
+                tmSum += calProfile.getAmpTm();
+                counter++;
+            }
+            if(counter != 0){
+                avTm = tmSum/counter;
+            }else {
+                avTm = -1;
+            }
+        }
     }
 
 }

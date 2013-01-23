@@ -346,6 +346,7 @@ public class ExperimentDbTree extends JPanel {
         createTree();
     }
     experimentDB.saveObject(dbInfo);
+    UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_EXPERIMENT_PANELS);
     }//GEN-LAST:event_fmaxNormalizeChkBoxActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane beanTree;

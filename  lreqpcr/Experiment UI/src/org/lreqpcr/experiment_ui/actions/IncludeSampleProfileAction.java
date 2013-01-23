@@ -71,6 +71,8 @@ class IncludeSampleProfileAction extends AbstractAction {
             List<SampleProfile> profileList = parentAvProfile.getReplicateProfileList();
             //This will force the parent Run to recalcualte its average Fmax
             sampleProfile.setExcluded(false);
+             //The average Tm must be updated in the parent AverageSampleProfile
+            parentAvProfile.calculateAvAmpTm();
             sampleProfileLreNode.refreshNodeLabel();
             db.saveObject(sampleProfile);
 

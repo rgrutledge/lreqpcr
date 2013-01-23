@@ -16,8 +16,6 @@
  */
 package org.lreqpcr.ui_components;
 
-import org.lreqpcr.core.data_objects.Profile;
-import org.lreqpcr.core.ui_elements.LreNode;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.text.DecimalFormat;
@@ -25,19 +23,20 @@ import javax.swing.JPanel;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreObject;
+import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.data_objects.TargetStrandedness;
+import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.openide.nodes.Node;
 
 /**
- * Multi-functional panel for displaying LRE object information.
- * Depending on the specific LRE object, various labels and text
- * boxes are available. All text fields are editable, with changes
- * immediately made to the LRE object. Note also, any modifications
- * that change the node label (e.g. amplicon size)will also be
- * immediately updated.
+ * Multi-functional panel for displaying LRE object information. Depending on
+ * the specific LRE object, various labels and text boxes are available. All
+ * text fields are editable, with changes immediately made to the LRE object.
+ * Note also, any modifications that change the node label (e.g. amplicon
+ * size)will also be immediately updated.
  *
  * @author Bob Rutledge
  */
@@ -52,7 +51,6 @@ public class LreObjectInfo extends JPanel {
     public LreObjectInfo() {
         initComponents();
         keyListener = new KeyAdapter() {
-
             @Override
             public void keyReleased(KeyEvent evt) {
                 if (member == null) {
@@ -91,7 +89,7 @@ public class LreObjectInfo extends JPanel {
                         AverageProfile avProfile = (AverageProfile) profile;
                         for (Profile prf : avProfile.getReplicateProfileList()) {
                             prf.setSampleName(sampleName);
-                            //Decided not to update the replicate profile node labels, so they may not be correct
+                            // TODO Decided not to update the replicate profile node labels, so they may not be correct
                         }
                         LreObjectChildren children = (LreObjectChildren) selectedNode.getChildren();
                         Node[] nodes = children.getNodes();
@@ -102,7 +100,7 @@ public class LreObjectInfo extends JPanel {
                     }
                 }
                 if (evt.getComponent() == ampSizeDisplay) {
-                    int i = 0;
+                    int i;
                     try {
                         i = Integer.parseInt(ampSizeDisplay.getText());
                     } catch (NumberFormatException nan) {
@@ -124,7 +122,7 @@ public class LreObjectInfo extends JPanel {
                         AverageProfile avProfile = (AverageProfile) profile;
                         for (Profile prf : avProfile.getReplicateProfileList()) {
                             prf.setAmpliconSize(i);
-                            
+
                         }
                         //Update the replicate profile node labels
                         LreObjectChildren children = (LreObjectChildren) selectedNode.getChildren();
@@ -147,6 +145,8 @@ public class LreObjectInfo extends JPanel {
         ampSizeDisplay.setVisible(false);
         tmLabel.setVisible(false);
         tmDisplay.setVisible(false);
+        avTmDisplay.setVisible(false);
+        avTmLabel.setVisible(false);
         sampleLabel.setVisible(false);
         sampleNameDisplay.setVisible(false);
         nanErrorDisplay.setVisible(false);
@@ -186,6 +186,8 @@ public class LreObjectInfo extends JPanel {
             ampSizeDisplay.setVisible(true);
             tmLabel.setVisible(true);
             tmDisplay.setVisible(true);
+            avTmLabel.setVisible(false);
+            avTmDisplay.setVisible(false);
             sampleLabel.setVisible(true);
             sampleLabel.setVisible(true);
             sampleNameDisplay.setVisible(true);
@@ -214,11 +216,28 @@ public class LreObjectInfo extends JPanel {
                 ampSizeDisplay.setText(String.valueOf(profile.getAmpliconSize()));
             }
             sampleNameDisplay.setText(profile.getSampleName());
-            if (profile.getAmpTm() != 0) {
-                tmDisplay.setText(df.format(profile.getAmpTm()));
+            if (profile.getAmpTm() != 0 && profile.hasAnLreWindowBeenFound()) {
+                tmDisplay.setText(df.format(profile.getAmpTm()) + " °C");
             } else {
                 tmDisplay.setVisible(false);
                 tmLabel.setVisible(false);
+            }
+            //Display the average Tm, if available
+            if (profile instanceof AverageSampleProfile) {
+                AverageSampleProfile avProfile = (AverageSampleProfile) profile;
+                if (avProfile.isExcluded()) {
+                    avTmLabel.setVisible(false);
+                    avTmDisplay.setVisible(false);
+                } else {
+                    if (avProfile.calculateAvAmpTm() != -1) {
+                        avTmDisplay.setText(df.format(avProfile.calculateAvAmpTm()) + " °C");
+                        avTmLabel.setVisible(true);
+                        avTmDisplay.setVisible(true);
+                    } else {
+                        avTmLabel.setVisible(false);
+                        avTmDisplay.setVisible(false);
+                    }
+                }
             }
         } else {
             wellLabelLabel.setVisible(false);
@@ -229,6 +248,8 @@ public class LreObjectInfo extends JPanel {
             ampSizeDisplay.setVisible(false);
             tmLabel.setVisible(false);
             tmDisplay.setVisible(false);
+            avTmLabel.setVisible(false);
+            avTmDisplay.setVisible(false);
             sampleLabel.setVisible(false);
             sampleNameDisplay.setVisible(false);
             nanErrorDisplay.setVisible(false);
@@ -241,6 +262,7 @@ public class LreObjectInfo extends JPanel {
         nameDisplay.setText("");
         notesDisplay.setText("");
         tmDisplay.setText("");
+        avTmDisplay.setText("");
         ampLabel.setVisible(false);
         ampNameDisplay.setVisible(false);
         ampSizeLabel.setVisible(false);
@@ -251,6 +273,8 @@ public class LreObjectInfo extends JPanel {
         wellLabelLabel.setVisible(false);
         wellLabelDisplay.setVisible(false);
         tmDisplay.setVisible(false);
+        avTmDisplay.setVisible(false);
+        avTmLabel.setVisible(false);
         tmLabel.setVisible(false);
         ssDNAcheckBox1.setVisible(false);
     }
@@ -260,10 +284,10 @@ public class LreObjectInfo extends JPanel {
         iniInfo();
     }
 
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -286,6 +310,8 @@ public class LreObjectInfo extends JPanel {
         tmDisplay = new javax.swing.JTextField();
         tmLabel = new javax.swing.JLabel();
         ssDNAcheckBox1 = new javax.swing.JCheckBox();
+        avTmLabel = new javax.swing.JLabel();
+        avTmDisplay = new javax.swing.JTextField();
 
         setBackground(new java.awt.Color(244, 245, 247));
         setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -316,7 +342,7 @@ public class LreObjectInfo extends JPanel {
         nanErrorDisplay.setText("     ");
 
         notesDisplay.setColumns(20);
-        notesDisplay.setFont(new java.awt.Font("Arial", 0, 11));
+        notesDisplay.setFont(new java.awt.Font("Arial", 0, 11)); // NOI18N
         notesDisplay.setLineWrap(true);
         notesDisplay.setRows(5);
         notesDisplay.setWrapStyleWord(true);
@@ -324,11 +350,11 @@ public class LreObjectInfo extends JPanel {
 
         wellLabelLabel.setText("Well:");
 
-        wellLabelDisplay.setColumns(3);
         wellLabelDisplay.setEditable(false);
+        wellLabelDisplay.setColumns(3);
 
-        tmDisplay.setColumns(3);
         tmDisplay.setEditable(false);
+        tmDisplay.setColumns(3);
 
         tmLabel.setText("Tm:");
 
@@ -339,6 +365,12 @@ public class LreObjectInfo extends JPanel {
                 ssDNAcheckBox1ActionPerformed(evt);
             }
         });
+
+        avTmLabel.setText("Av. Tm:");
+
+        avTmDisplay.setEditable(false);
+        avTmDisplay.setColumns(3);
+        avTmDisplay.setHorizontalAlignment(javax.swing.JTextField.LEFT);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -359,11 +391,11 @@ public class LreObjectInfo extends JPanel {
                         .addComponent(wellLabelLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(wellLabelDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(18, 18, 18)
                         .addComponent(tmLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tmDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())
+                        .addComponent(tmDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(sampleLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -383,7 +415,11 @@ public class LreObjectInfo extends JPanel {
                         .addComponent(ampSizeLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ampSizeDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 131, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
+                        .addComponent(avTmLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(avTmDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(nanErrorDisplay)
                         .addContainerGap())))
         );
@@ -408,7 +444,9 @@ public class LreObjectInfo extends JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(ampSizeLabel)
                     .addComponent(ampSizeDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(nanErrorDisplay))
+                    .addComponent(nanErrorDisplay)
+                    .addComponent(avTmLabel)
+                    .addComponent(avTmDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(sampleLabel)
@@ -438,6 +476,8 @@ public class LreObjectInfo extends JPanel {
     private javax.swing.JTextField ampNameDisplay;
     private javax.swing.JTextField ampSizeDisplay;
     private javax.swing.JLabel ampSizeLabel;
+    private javax.swing.JTextField avTmDisplay;
+    private javax.swing.JLabel avTmLabel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane2;

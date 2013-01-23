@@ -21,11 +21,10 @@ import java.beans.PropertyChangeListener;
 import java.util.logging.Logger;
 import org.lreqpcr.core.database_services.DatabaseProvider;
 import org.lreqpcr.core.database_services.DatabaseType;
+import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
-//import org.openide.util.ImageUtilities;
-import org.netbeans.api.settings.ConvertAsProperties;
 
 /**
  * Top component which displays something.

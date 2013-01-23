@@ -1,4 +1,4 @@
-<?xml version="1.1" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
   <Properties>
@@ -52,11 +52,11 @@
                       <Component id="wellLabelLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="wellLabelDisplay" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="tmLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="tmDisplay" min="-2" pref="41" max="-2" attributes="2"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="tmDisplay" min="-2" pref="52" max="-2" attributes="2"/>
+                      <EmptySpace max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="sampleLabel" min="-2" max="-2" attributes="0"/>
@@ -80,7 +80,11 @@
                       <Component id="ampSizeLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="ampSizeDisplay" min="-2" pref="58" max="-2" attributes="0"/>
-                      <EmptySpace pref="131" max="32767" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="avTmLabel" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="avTmDisplay" min="-2" pref="50" max="-2" attributes="2"/>
+                      <EmptySpace max="32767" attributes="0"/>
                       <Component id="nanErrorDisplay" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -113,6 +117,8 @@
                   <Component id="ampSizeLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="ampSizeDisplay" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="nanErrorDisplay" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="avTmLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="avTmDisplay" alignment="3" min="-2" pref="20" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -213,14 +219,14 @@
     </Component>
     <Component class="javax.swing.JTextField" name="wellLabelDisplay">
       <Properties>
-        <Property name="columns" type="int" value="3"/>
         <Property name="editable" type="boolean" value="false"/>
+        <Property name="columns" type="int" value="3"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="tmDisplay">
       <Properties>
-        <Property name="columns" type="int" value="3"/>
         <Property name="editable" type="boolean" value="false"/>
+        <Property name="columns" type="int" value="3"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="tmLabel">
@@ -238,6 +244,18 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ssDNAcheckBox1ActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="avTmLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Av. Tm:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="avTmDisplay">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+        <Property name="columns" type="int" value="3"/>
+        <Property name="horizontalAlignment" type="int" value="2"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>
