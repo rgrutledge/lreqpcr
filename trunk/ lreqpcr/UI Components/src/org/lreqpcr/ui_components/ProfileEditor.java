@@ -16,19 +16,19 @@
  */
 package org.lreqpcr.ui_components;
 
-import org.lreqpcr.core.data_objects.Profile;
-import org.lreqpcr.analysis_services.LreAnalysisService;
-import org.lreqpcr.core.data_processing.ProfileSummary;
-import org.lreqpcr.core.ui_elements.LreNode;
 import java.util.Collection;
 import java.util.List;
 import javax.swing.JPanel;
+import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
+import org.lreqpcr.core.data_objects.Profile;
+import org.lreqpcr.core.data_processing.ProfileSummary;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
+import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.core.utilities.UniversalLookupListener;
 import org.openide.util.Lookup;
@@ -97,7 +97,6 @@ public class ProfileEditor extends JPanel implements
         }else {//LRE window not found
             clearPanels();
             lreObjectInfo.displayMember(selectedNode);
-            return;
         }
         
     }

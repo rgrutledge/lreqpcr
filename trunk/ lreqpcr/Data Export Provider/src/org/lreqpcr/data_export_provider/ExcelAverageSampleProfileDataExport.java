@@ -16,9 +16,6 @@
  */
 package org.lreqpcr.data_export_provider;
 
-import org.lreqpcr.core.data_objects.AverageSampleProfile;
-import org.lreqpcr.core.data_objects.Profile;
-import org.lreqpcr.core.utilities.IOUtilities;
 import java.awt.Desktop;
 import java.awt.Toolkit;
 import java.io.File;
@@ -36,7 +33,9 @@ import jxl.format.BorderLineStyle;
 import jxl.format.Colour;
 import jxl.write.*;
 import jxl.write.Number;
+import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.SampleProfile;
+import org.lreqpcr.core.utilities.IOUtilities;
 import org.openide.windows.WindowManager;
 
 /**
@@ -60,7 +59,7 @@ public class ExcelAverageSampleProfileDataExport {
         if (selectedFile == null) {
             return;
         }
-        WritableWorkbook workbook = null;
+        WritableWorkbook workbook;
         try {
             workbook = Workbook.createWorkbook(selectedFile);
         } catch (Exception e) {
@@ -80,6 +79,8 @@ public class ExcelAverageSampleProfileDataExport {
         boldRight.setAlignment(Alignment.RIGHT);
         WritableCellFormat boldLeft = new WritableCellFormat(arialBold);
         boldLeft.setAlignment(Alignment.LEFT);
+        WritableCellFormat boldCenter = new WritableCellFormat(arialBold);
+        boldCenter.setAlignment(Alignment.CENTRE);
         WritableCellFormat center = new WritableCellFormat(arial);
         center.setAlignment(Alignment.CENTRE);
         WritableCellFormat leftYellow = new WritableCellFormat(arial);
@@ -142,30 +143,34 @@ public class ExcelAverageSampleProfileDataExport {
             sheet.addCell(label);
             label = new Label(10, 2, "OCF", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(11, 2, "Notes", centerBoldUnderline);
+            label = new Label(11, 1, "Fmax", boldCenter);
+            sheet.addCell(label);
+            label = new Label(11, 2, "Normlzed", centerBoldUnderline);
+            sheet.addCell(label);
+            label = new Label(12, 2, "Notes", centerBoldUnderline);
             sheet.addCell(label);
             int row = 3;
             label = new Label(1, 0, pageName);
             sheet.addCell(label);
 
-            Number number = null;
+            Number number;
             DateFormat customDateFormat = new DateFormat("ddMMMyy");
 
             List<AverageSampleProfile> profileList = groupList.get(pageName);
             Collections.sort(profileList);
             for (AverageSampleProfile avProfile : profileList) {
-                //Calculate an average amplicon Tm taken from the replicate profiles
-                double avTm = 0;
-                int tmCnt = 0;
-                for (Profile sampleProfile : avProfile.getReplicateProfileList()) {
-                    if (sampleProfile.getAmpTm() != 0) {
-                        avTm += sampleProfile.getAmpTm();
-                        tmCnt++;
-                    }
-                }
-                if (avTm != 0) {
-                    avTm = avTm / tmCnt;
-                }
+//                //Calculate an average amplicon Tm taken from the replicate profiles
+//                double avTm = 0;
+//                int tmCnt = 0;
+//                for (Profile sampleProfile : avProfile.getReplicateProfileList()) {
+//                    if (sampleProfile.getAmpTm() != 0) {
+//                        avTm += sampleProfile.getAmpTm();
+//                        tmCnt++;
+//                    }
+//                }
+//                if (avTm != 0) {
+//                    avTm = avTm / tmCnt;
+//                }
 
                 WritableCellFormat dateFormat = new WritableCellFormat(customDateFormat);
                 dateFormat.setAlignment(Alignment.CENTRE);
@@ -179,13 +184,13 @@ public class ExcelAverageSampleProfileDataExport {
                     //All replicate profiles have been excluded
                     label = new Label(3, row, "nd", center);
                     sheet.addCell(label);
-                    String s = "";
+                    String s;
                     if (avProfile.getLongDescription() != null) {
                         s = "EXCLUDED... " + avProfile.getLongDescription();
                     } else {
                         s = "EXCLUDED ";
                     }
-                    label = new Label(11, row, s, leftYellow);
+                    label = new Label(12, row, s, leftYellow);
                     sheet.addCell(label);
                     row++;
                     continue;
@@ -209,23 +214,24 @@ public class ExcelAverageSampleProfileDataExport {
                         number = new Number(3, row, average, integerFormat);
                         sheet.addCell(number);
 //Leave all other values empty but put a statement in the notes denoting that the No <10
-                        String note = "";
+                        String note;
 
                         if (avProfile.getLongDescription() != null) {
                             note = "<10 Molecules... " + avProfile.getLongDescription();
                         } else {
                             note = "<10 Molecules";
                         }
-                        if (avTm != 0) {
-                            number = new Number(8, row, avTm, floatFormat);
+                        if (avProfile.calculateAvAmpTm() != -1) {
+                            number = new Number(8, row, avProfile.calculateAvAmpTm(), floatFormat);
                             sheet.addCell(number);
                         }
-                        label = new Label(11, row, note);
-                        sheet.addCell(label);
                         number = new Number(9, row, avProfile.getAmpliconSize(), integerFormat);
                         sheet.addCell(number);
                         number = new Number(10, row, avProfile.getOCF(), floatFormat);
                         sheet.addCell(number);
+                       
+                        label = new Label(12, row, note);
+                        sheet.addCell(label);
                         //Move to the next average profile
                         row++;
                         continue;
@@ -233,18 +239,18 @@ public class ExcelAverageSampleProfileDataExport {
                         number = new Number(3, row, avProfile.getNo(), integerFormat);
                         sheet.addCell(number);
                     }
-                    String note2 = "";
+                    String note2;
                     String note1 = "";
                     if (avProfile.getLongDescription() != null) {
                         note1 = avProfile.getLongDescription();
                     }
                     if (avProfile.isEmaxFixedTo100()) {
                         note2 = "Emax is fixed to 100%" + note1;
-                        label = new Label(11, row, note2);
+                        label = new Label(12, row, note2);
                         number = new Number(4, row, 1, percentFormat);
                     } else {
                         note2 = note1;
-                        label = new Label(11, row, note2);
+                        label = new Label(12, row, note2);
                         number = new Number(4, row, avProfile.getEmax(), percentFormat);
                     }
                     sheet.addCell(label);
@@ -262,14 +268,18 @@ public class ExcelAverageSampleProfileDataExport {
                         number = new Number(7, row, fmax, floatFormat);
                         sheet.addCell(number);
                     }
-                    if (avTm != 0) {
-                        number = new Number(8, row, avTm, floatFormat);
+                    if (avProfile.calculateAvAmpTm() != -1) {
+                        number = new Number(8, row, avProfile.calculateAvAmpTm(), floatFormat);
                         sheet.addCell(number);
                     }
                     number = new Number(9, row, avProfile.getAmpliconSize(), integerFormat);
                     sheet.addCell(number);
                     number = new Number(10, row, avProfile.getOCF(), floatFormat);
                     sheet.addCell(number);
+                     // TODO this is not working; produces a blank cell
+                        String s = String.valueOf(avProfile.isTargetQuantityNormalizedToFmax());
+                        label = new Label(11, row, s, center);
+                        sheet.addCell(label);
                     row++;
                 }
             }
@@ -277,7 +287,7 @@ public class ExcelAverageSampleProfileDataExport {
         }
         workbook.write();
         workbook.close();
-        Desktop desktop = null;
+        Desktop desktop;
         if (Desktop.isDesktopSupported()) {
             desktop = Desktop.getDesktop();
             desktop.open(selectedFile);

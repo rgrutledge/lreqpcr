@@ -135,6 +135,9 @@ public abstract class Run extends LreObject {
     public void calculateAverageFmax(){
         double fmaxSum = 0;
         int profileCount = 0;
+        if (averageProfileList == null){
+            return;
+        }
         for (AverageSampleProfile avProfile: averageProfileList){
             for(SampleProfile profile: avProfile.getReplicateProfileList()){
                 if(profile.hasAnLreWindowBeenFound() && !profile.isExcluded()){

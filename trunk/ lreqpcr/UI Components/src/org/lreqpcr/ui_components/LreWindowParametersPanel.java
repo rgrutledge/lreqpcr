@@ -502,7 +502,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         //This initiates an updateDisplay call which can be very intensive when the database is large
         //Actually, it is called twice everytime a node is selected!!!!
         //Maybe a new Top Component window has been selected but not necessarily
-        //Be sure to never include anything that is time intensive
+        //Be sure to never include anything in this Method that is time intensive
         TopComponent tc = WindowManager.getDefault().getRegistry().getActivated();
         if (tc instanceof DatabaseProvider) {
             DatabaseProvider dbProvider = (DatabaseProvider) tc;
@@ -516,7 +516,6 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                         selectionParameters = (LreWindowSelectionParameters) currentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
                         if (selectionParameters == null) {
                             clearPanel();
-//                            return;
                         } else {
                             minFc = selectionParameters.getMinFc();
                             foThreshold = selectionParameters.getFoThreshold();
@@ -525,7 +524,6 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                     } else {
 //                        currentDB = null;
                         clearPanel();
-                        return;
                     }
                 }
             }

@@ -16,23 +16,16 @@
  */
 package org.lreqpcr.ui_components;
 
-import org.lreqpcr.core.data_objects.Profile;
-import org.lreqpcr.core.data_processing.Cycle;
-import org.lreqpcr.core.data_processing.ProfileSummary;
-import org.lreqpcr.core.utilities.FormatingUtilities;
 import java.awt.*;
 import java.awt.geom.*;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import org.lreqpcr.analysis_services.LreAnalysisService;
-import org.lreqpcr.core.data_objects.AverageProfile;
-import org.lreqpcr.core.data_objects.AverageSampleProfile;
-import org.lreqpcr.core.data_objects.CalibrationProfile;
-import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
-import org.lreqpcr.core.data_objects.SampleProfile;
-import org.lreqpcr.core.data_processing.ProfileInitializer;
+import org.lreqpcr.core.data_objects.*;
+import org.lreqpcr.core.data_processing.*;
 import org.lreqpcr.core.database_services.DatabaseServices;
+import org.lreqpcr.core.utilities.FormatingUtilities;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.openide.util.Lookup;
 
@@ -591,8 +584,8 @@ private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         double xScalingFactor = xMax / (xMaxVal * 1.05); //pixels/FU relative X scale with 5% X axis reduction
         double yScalingFactor = yMax / (yMaxVal * 1.05); //pixels/FU relative Y scale with 5% Y axis reduction
         g2.setColor(Color.BLACK);
-        double x = 0;
-        double y = 0;
+        double x;
+        double y;
         if (profile != null) {
             /*Draw the LRE line*/
             x = xMin + (((profile.getEmax() / profile.getDeltaE()) * -1) * xScalingFactor); //Fmax

@@ -33,7 +33,7 @@ import java.text.SimpleDateFormat;
  * 
  * @author  Bob Rutledge
  */
-// TODO do something with the class, or deleted it
+// TODO do something with this class, or deleted it
 public class PlotFbNotYetImplemented extends javax.swing.JPanel {
 
     private ProfileSummary prfSum; //Holds the Profile to be displayed

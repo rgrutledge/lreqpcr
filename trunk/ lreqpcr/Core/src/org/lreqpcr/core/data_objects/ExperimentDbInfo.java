@@ -25,6 +25,7 @@ public class ExperimentDbInfo extends LreObject {
 
     private double ocf = 0;//The average OCF derived from the corresponding Reaction Setup
     private boolean isTargetQuantityNormalizedToFax;
+    private boolean isEmaxFixTo100Percent;
 
     /**
      * 
@@ -40,6 +41,24 @@ public class ExperimentDbInfo extends LreObject {
      */
     public void setOcf(double ocf) {
         this.ocf = ocf;
+    }
+
+    /**
+     * This allows Emax to be fixed to 100% for an entire experiment database, rather than 
+     * allowing individual profiles or runs to change this parameter. 
+     * @return whether Fmax is fixed to 100%
+     */
+    public boolean isEmaxFixTo100Percent() {
+        return isEmaxFixTo100Percent;
+    }
+
+    /**
+     * This allows Emax to be fixed to 100% for an entire experiment database, rather than 
+     * allowing individual profiles or runs to change this parameter. 
+     * 
+     */
+    public void setIsEmaxFixTo100Percent(boolean isEmaxFixTo100Percent) {
+        this.isEmaxFixTo100Percent = isEmaxFixTo100Percent;
     }
 
     public boolean isTargetQuantityNormalizedToFax() {
