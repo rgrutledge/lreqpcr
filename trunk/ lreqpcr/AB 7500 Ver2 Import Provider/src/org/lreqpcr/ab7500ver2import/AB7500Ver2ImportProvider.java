@@ -17,9 +17,6 @@
 package org.lreqpcr.ab7500ver2import;
 
 import java.awt.Toolkit;
-import org.lreqpcr.core.data_objects.*;
-import org.lreqpcr.data_import_services.RunImportUtilities;
-import org.lreqpcr.core.utilities.IOUtilities;
 import java.io.File;
 import java.io.IOException;
 import java.text.NumberFormat;
@@ -30,10 +27,13 @@ import jxl.DateCell;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
+import org.lreqpcr.core.data_objects.*;
+import org.lreqpcr.core.utilities.IOUtilities;
 import org.lreqpcr.core.utilities.WellLabelToWellNumber;
 import org.lreqpcr.data_import_services.DataImportType;
 import org.lreqpcr.data_import_services.RunImportData;
 import org.lreqpcr.data_import_services.RunImportService;
+import org.lreqpcr.data_import_services.RunImportUtilities;
 import org.openide.util.Exceptions;
 import org.openide.windows.WindowManager;
 
@@ -81,7 +81,7 @@ public class AB7500Ver2ImportProvider extends RunImportService {
                     JOptionPane.ERROR_MESSAGE);
             return null;
         }
-        DateCell date = null;
+        DateCell date;
         try {
             date = (DateCell) resultSheet.getCell(1, 3);
         } catch (Exception e) {

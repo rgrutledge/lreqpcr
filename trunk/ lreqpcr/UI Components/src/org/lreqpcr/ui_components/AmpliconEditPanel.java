@@ -100,7 +100,7 @@ public class AmpliconEditPanel extends JPanel
                             + " bp)");
                 }
                 if (evt.getComponent() == ampliconSizeDisplay) {
-                    int i = 0;
+                    int i;
                     try {
                         i = Integer.parseInt(ampliconSizeDisplay.getText());
                     } catch (NumberFormatException nan) {
