@@ -41,13 +41,18 @@ public class RunTreeNodeLabels implements LabelFactory {
             Run run = (Run) member;
             double runOCF = run.getRunOCF();
             //Display a Run-specific OCF if one has been applied to this Run
+            // TODO displaying run-specfic OCF must be reviewed
             if (runOCF != 0) {
                 df.applyPattern(FormatingUtilities.decimalFormatPattern(runOCF));
-                return sdf.format(run.getRunDate()) + " (" + df.format(runOCF) + ")-" + member.getName();
+                return sdf.format(run.getRunDate()) + " <" + df.format(runOCF) + ">-" + member.getName();
             } else {
+                run.calculateAverageFmax();//This is temporary for testing
+                df.applyPattern("##.0");
+                String cv = df.format(run.getAvFmaxCV() * 100);
                 df.applyPattern(FormatingUtilities.decimalFormatPattern(run.getAverageFmax()));
                 return sdf.format(run.getRunDate()) + "-" + member.getName()
-                        + " [Av Fmax: " + df.format(run.getAverageFmax()) + "]";
+                        + " [Av Fmax: " + df.format(run.getAverageFmax()) 
+                        + " ±" + cv + "%]";
             }
 
         }
@@ -70,9 +75,9 @@ public class RunTreeNodeLabels implements LabelFactory {
 
             if (profile instanceof AverageSampleProfile) {
                 AverageSampleProfile avPrf = (AverageSampleProfile) profile;
-                //This assumes that excluded profiles would not reach here
-                if (avPrf.isReplicateAverageNoLessThan10Molecules()) {
-                    //An average profile does not exist to No is inherented 
+                //This assumes that excluded profiles would not reach to this point
+                if (avPrf.isTheReplicateAverageNoLessThan10Molecules()) {
+                    //An average profile does not exist, so No is inherented 
                     //from the average replicate No
                     //Do any of the replicate profiles have an LRE window?
                     df.applyPattern("0.00");
@@ -107,7 +112,7 @@ public class RunTreeNodeLabels implements LabelFactory {
                 profile.setShortDescription("Target quantity could not be determined because an amplicon size has not been provided");
                 return profileName + emax + "n.d.<Amplicon size absent> ";
             }
-            if (!(profile.getOCF() > 0)) {
+            if (!(profile.getOCF() >= 0)) {
                 profile.setShortDescription("Target quantity could not be determined because an OCF has not been applied");
                 return profileName + emax + "n.d. <No OCF>";
             }

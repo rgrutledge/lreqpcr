@@ -145,7 +145,7 @@ public class LreAnalysisProvider extends LreAnalysisService {
                     }
                     //This will trigger an auto update of the AverageSampleProfile
                     avProfile.setOCF(ocf);
-                    avProfile.determineIfTheAverageReplicateNoIsLessThan10Molecules();
+                    avProfile.isTheReplicateAverageNoLessThan10Molecules();
                     db.saveObject(avProfile);
                 }
             }

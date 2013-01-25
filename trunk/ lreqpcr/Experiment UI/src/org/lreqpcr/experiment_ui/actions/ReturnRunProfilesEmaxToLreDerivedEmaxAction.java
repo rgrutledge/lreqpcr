@@ -81,7 +81,7 @@ public class ReturnRunProfilesEmaxToLreDerivedEmaxAction extends AbstractAction 
                     //Must test to see if replicate profile modifications brings
                     //the average replicate No >10. If so then an automated LRE window
                     //selection must be conducted on the average profile.
-                    if (!avProfile.determineIfTheAverageReplicateNoIsLessThan10Molecules()) {
+                    if (!avProfile.isTheReplicateAverageNoLessThan10Molecules()) {
                         //Must conduct an automated LRE window selection
                         analysisService.conductAutomatedLreWindowSelection(avProfile, selectionParameters);
                     }

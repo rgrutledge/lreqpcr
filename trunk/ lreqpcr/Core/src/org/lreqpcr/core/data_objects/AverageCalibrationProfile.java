@@ -58,19 +58,7 @@ public class AverageCalibrationProfile extends CalibrationProfile implements Ave
         lambdaProfileList = (List<CalibrationProfile>) replicateProfileList;
     }
 
-    /**
-     * The issue of profile scattering when target quantity is less than 10 molecules is
-     * not applicable to AverageCalibrationProfiles due to the fact that sample is a 
-     * quantitative standard of predefined quantity that should always be much 
-     * greater than 10 molecules. 
-     *
-     * @return always returns false
-     */
-    public boolean isReplicateAverageNoLessThan10Molecules() {
-        return false;
-    }
-
-    public int numberOfActiveReplicateProfiles() {
+    public int getTheNumberOfActiveReplicateProfiles() {
         int numberOfActiveReplicateProfiles = 0;
         for (Profile profile : lambdaProfileList) {
             if (!profile.isExcluded()) {
@@ -92,7 +80,7 @@ public class AverageCalibrationProfile extends CalibrationProfile implements Ave
      * return false regardless of the number of target molecules.
      * @return always returns false.
      */
-    public boolean determineIfTheAverageReplicateNoIsLessThan10Molecules() {
+    public boolean isTheReplicateAverageNoLessThan10Molecules() {
         return false;
     }
 

@@ -227,7 +227,8 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
             return;
         }
         List<AverageProfile> profileList;
-//This is necessary becuase for unknown reasons retrieving averageCalibrationProfile objects fail
+//This is necessary becuase for unknown reasons retrieving AverageProfiles 
+//objects fail for calibration profiles
         if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION){
            profileList =  currentDB.getAllObjects(AverageCalibrationProfile.class);
         } else {
@@ -243,7 +244,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                 lreAnalysisService.conductAutomatedLreWindowSelection(profile, selectionParameters);
                 currentDB.saveObject(profile);
             }
-            if (!avProfile.determineIfTheAverageReplicateNoIsLessThan10Molecules()) {
+            if (!avProfile.isTheReplicateAverageNoLessThan10Molecules()) {
                 //The AverageProfile is valid thus reinitialize it
                 Profile profile = (Profile) avProfile;
                 lreAnalysisService.conductAutomatedLreWindowSelection(profile, selectionParameters);
@@ -301,7 +302,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                 //Database does not contain any profiles so abort
                 return 0;
             }
-            if (!(avSampleProfileList.get(0).getOCF() > 0)) {
+            if (!(avSampleProfileList.get(0).getOCF() >= 0)) {
                 //An OCF has not been applied and thus No values are not available
                 Toolkit.getDefaultToolkit().beep();
                 String msg = "An OCF has not yet been entered and target quantities are thus not available. \n"
@@ -313,7 +314,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
             //Calculate and collect the Replicate Fo CVs
             for (AverageSampleProfile avProfile : avSampleProfileList) {
                 List<Double> noValues = Lists.newArrayList();
-                if (!avProfile.isReplicateAverageNoLessThan10Molecules()) {
+                if (!avProfile.isTheReplicateAverageNoLessThan10Molecules()) {
 //Only include replicate that are >10 molecules in order to avoid scattering produced by Poisson distribution 
                     double sum = 0;
                     for (SampleProfile profile : avProfile.getReplicateProfileList()) {

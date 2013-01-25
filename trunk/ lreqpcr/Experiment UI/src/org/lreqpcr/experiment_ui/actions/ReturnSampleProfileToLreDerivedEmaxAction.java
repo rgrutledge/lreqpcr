@@ -77,7 +77,7 @@ public class ReturnSampleProfileToLreDerivedEmaxAction extends AbstractAction {
                 if (!(profile instanceof AverageSampleProfile)) {
                     //Need to update the parent AverageSampleProfile
                     AverageSampleProfile avProfile = (AverageSampleProfile) profile.getParent();
-                    if (!avProfile.determineIfTheAverageReplicateNoIsLessThan10Molecules()) {
+                    if (!avProfile.isTheReplicateAverageNoLessThan10Molecules()) {
                         //Must conduct an automated LRE window selection
                         analysisService.conductAutomatedLreWindowSelection(avProfile, selectionParameters);
                     }

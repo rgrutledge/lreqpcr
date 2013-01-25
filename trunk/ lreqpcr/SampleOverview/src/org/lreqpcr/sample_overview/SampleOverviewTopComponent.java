@@ -163,7 +163,7 @@ public final class SampleOverviewTopComponent extends TopComponent
                     if (dbType == DatabaseType.EXPERIMENT) {
                         AverageSampleProfile sampleProfile = (AverageSampleProfile) profile;
                         //Only includd AverageSampleProfiles with >10 molecules
-                        if (!sampleProfile.isReplicateAverageNoLessThan10Molecules()) {
+                        if (!sampleProfile.isTheReplicateAverageNoLessThan10Molecules()) {
                             emaxArrayList.add(profile.getEmax());
                             emaxTotal = emaxTotal + profile.getEmax();
                             counter++;

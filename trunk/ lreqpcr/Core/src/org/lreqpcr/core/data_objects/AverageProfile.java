@@ -50,10 +50,20 @@ public interface AverageProfile {
      */
     public void setReplicateProfileList(List<? extends Profile> replicateProfileList);
 
-    public int numberOfActiveReplicateProfiles();
-
-    public boolean determineIfTheAverageReplicateNoIsLessThan10Molecules();
-
-    public boolean isReplicateAverageNoLessThan10Molecules();
+    public int getTheNumberOfActiveReplicateProfiles();
+    
+    /**
+     * Determines if the AverageProfile is valid, based on whether the 
+     * number of target molecules in the sample is greater than 10. If the number 
+     * of target molecules is less than 10, the resulting average profile becomes 
+     * distorted due to by Poison Distribution generating extensive profile scattering. 
+     * In this case, the AverageProfile inherits the target quantities determined by 
+     * the replicate profiles, that is the average from the replicate profiles. 
+     * Calling this function will also update the
+     * profile.
+     *
+     * @return whether the average No is less than 10 molecules
+     */
+    public boolean isTheReplicateAverageNoLessThan10Molecules();
 
 }

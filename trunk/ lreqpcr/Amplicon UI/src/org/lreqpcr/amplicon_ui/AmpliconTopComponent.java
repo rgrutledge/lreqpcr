@@ -260,6 +260,7 @@ public final class AmpliconTopComponent extends TopComponent
             createTree();
             setDisplayName("Amplicon DB");
             setToolTipText("Amplicon DB Explorer");
+            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_AMPLICON_PANELS);
         }
     }//GEN-LAST:event_closeDBbuttonActionPerformed
 
