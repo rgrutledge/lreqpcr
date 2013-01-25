@@ -17,10 +17,13 @@
 
 package org.lreqpcr.core.data_objects;
 
+import com.google.common.collect.Lists;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import org.lreqpcr.core.utilities.MathFunctions;
 
 /**
  * Data object representing a Run loosely based on the RDML 1.0 specification.
@@ -36,6 +39,7 @@ public abstract class Run extends LreObject {
     private int month;
     private double runOCF = 0;//Run-specific OCF
     private double averageFmax = 0;//Average Fmax of all replicate profiles
+    private double avFmaxCV;//Average Fmax coefficient of variation 
     
     /**
      * The child class is set to AverageProfile.
@@ -111,6 +115,10 @@ public abstract class Run extends LreObject {
         return averageFmax;
     }
 
+    public double getAvFmaxCV() {
+        return avFmaxCV;
+    }
+
     /**
      * Returns the run-specific OCF.
      * @return run-specific OCF
@@ -128,11 +136,12 @@ public abstract class Run extends LreObject {
     }
     
     /**
-     * Calculates the average Fmax from the replicate profiles. Note that the
+     * Calculates the average Fmax and CV from the replicate profiles. Note that the
      * AverageProfiles are ignored, as are excluded SampleProfiles, along with  
      * SampleProfiles for which an LRE window has not been found.
      */
     public void calculateAverageFmax(){
+        ArrayList<Double> fmaxList = Lists.newArrayList();//Used to determine SD
         double fmaxSum = 0;
         int profileCount = 0;
         if (averageProfileList == null){
@@ -143,11 +152,15 @@ public abstract class Run extends LreObject {
                 if(profile.hasAnLreWindowBeenFound() && !profile.isExcluded()){
                     fmaxSum += profile.getFmax();
                     profileCount++;
+                    fmaxList.add(profile.getFmax());
                 }
             }
         }
         if (profileCount > 1 && fmaxSum > 0){
             averageFmax = fmaxSum/profileCount;
+            if(fmaxList.size()>1){
+                avFmaxCV = MathFunctions.calcStDev(fmaxList)/averageFmax;
+            }
         }
     }
 

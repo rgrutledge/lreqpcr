@@ -36,10 +36,10 @@ public class MathFunctions {
         int arraySize = pointArray[1].length;//
         double sumX = 0;
         double sumY = 0;
-        double avX = 0;
-        double avY = 0;
-        double slope = 0;
-        double intercept = 0;
+        double avX;
+        double avY;
+        double slope;
+        double intercept;
         for (int i=0; i < arraySize; i++) {
             sumX += pointArray[0][i];
             sumY += pointArray[1][i];
@@ -53,11 +53,11 @@ public class MathFunctions {
         }
         slope = numSum/demSum;
         intercept = (sumY-(slope*sumX))/arraySize;
-        int i = 0;
+        int i;
         numSum = 0;
         double demXsum = 0;
         double demYsum = 0;
-        double r2 = 0;
+        double r2;
         for (i=0; i < arraySize; i++) {
             numSum += (avX - pointArray[0][i])*(avY - pointArray[1][i]);
             demXsum += Math.pow((avX - pointArray[0][i]), 2);
@@ -74,11 +74,11 @@ public class MathFunctions {
      /**
      * Calculates standard deviation based on Excel's stdev function
      *
-      *@param values the values to process
+      *@param values the Double values to process
       * @return stDev the standard deviation
      */
     public static double calcStDev(List<Double> values) {
-        double stDev = 0;
+        double stDev;
         double xSum = 0; //Sum of values
         double x2Sum = 0; //Sum of the values squared
         for(Double v : values){

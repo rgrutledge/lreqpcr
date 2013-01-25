@@ -232,7 +232,7 @@ public class AverageProfileGenerator {
         if (fooProfile.getRawFcReadings().length != 0) {
             //If the replicate No average is <10 it cannot be initialized
             AverageProfile avProfile = (AverageProfile) fooProfile;
-            if (!avProfile.isReplicateAverageNoLessThan10Molecules()) {
+            if (!avProfile.isTheReplicateAverageNoLessThan10Molecules()) {
                 //Note the the replicate sample profiles have already been initialized
                 profileIntialization.conductAutomatedLreWindowSelection(fooProfile, parameters);
             }

@@ -163,7 +163,7 @@ public class LrePlot extends javax.swing.JPanel {
         if (profile instanceof SampleProfile && !(profile instanceof AverageProfile)) {
             AverageSampleProfile avProfile = (AverageSampleProfile) profile.getParent();
             //This function will update the AverageSampleProfile if it is <10N
-            if (avProfile.determineIfTheAverageReplicateNoIsLessThan10Molecules()) {
+            if (avProfile.isTheReplicateAverageNoLessThan10Molecules()) {
                 db.saveObject(avProfile);
             }
         }

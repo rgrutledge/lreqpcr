@@ -105,7 +105,7 @@ public class ProfileEditor extends JPanel implements
         //Test to see if this is an AverageProfile with just one replicate
         if (profile instanceof AverageSampleProfile) {
             AverageSampleProfile avSampleProfile = (AverageSampleProfile) profile;
-            if (avSampleProfile.numberOfActiveReplicateProfiles() == 1
+            if (avSampleProfile.getTheNumberOfActiveReplicateProfiles() == 1
                     && !avSampleProfile.isExcluded()) {
 //Display the AverageSampleProfile because it has only one replicate SampleProfile
                 plotLREs.iniPlotLREs(prfSum, currentDB);
@@ -118,7 +118,7 @@ public class ProfileEditor extends JPanel implements
         }
         if (profile instanceof AverageProfile) {
             AverageProfile avProfile = (AverageProfile) profile;
-            if (avProfile.isReplicateAverageNoLessThan10Molecules()
+            if (avProfile.isTheReplicateAverageNoLessThan10Molecules()
                     || profile.isExcluded() //                    || !profile.hasAnLreWindowBeenFound()
                     ) {
                 clearPanels();
@@ -235,7 +235,7 @@ public class ProfileEditor extends JPanel implements
             //Reject if this is an Amplicon database object
             DatabaseType type = selectedNode.getDatabaseServices().getDatabaseType();
             if (type == DatabaseType.AMPLICON) {
-                clearPanels();
+//                clearPanels();
                 return;
             }
             if (selectedNode.getDatabaseServices() != currentDB) {
@@ -244,6 +244,7 @@ public class ProfileEditor extends JPanel implements
                 currentDB = selectedNode.getDatabaseServices();
                 List<LreWindowSelectionParameters> l = currentDB.getAllObjects(LreWindowSelectionParameters.class);
                 if (l.isEmpty()) {
+                    // TODO delete this back compatability correction
 //This occurs with databases created before implementation of the LRE window parameters
                     currentDB.saveObject(new LreWindowSelectionParameters());
                     l = currentDB.getAllObjects(LreWindowSelectionParameters.class);
@@ -264,7 +265,7 @@ public class ProfileEditor extends JPanel implements
 //but not when the Profile Editor is selected in order to allow profile editing
         TopComponent selectedTC = WindowManager.getDefault().getRegistry().getActivated();
         if (!selectedTC.getName().equals("Profile Editor")) {
-            clearPanels();//Not an LRE node and not the Profile Editor window
+//            clearPanels();//Not an LRE node and not the Profile Editor window
         }
     }
 
@@ -303,7 +304,7 @@ public class ProfileEditor extends JPanel implements
             selectedNode.refreshNodeLabel();
             if (!(profile instanceof AverageProfile)) {
                 AverageProfile avProfile = (AverageProfile) profile.getParent();
-                if (avProfile.determineIfTheAverageReplicateNoIsLessThan10Molecules()) {
+                if (avProfile.isTheReplicateAverageNoLessThan10Molecules()) {
                     //Need to update the AveragProfile parent node labels
                     LreNode parentNode = (LreNode) selectedNode.getParentNode();
                     parentNode.refreshNodeLabel();

@@ -86,12 +86,12 @@ public class FixRunEmaxTo100percentAction extends AbstractAction {
                     //the average replicate No >10 as indicated by lacking an LRE
                     //window. If so then an automated LRE window
                     //selection must be conducted on the average profile.
-                    if (!avProfile.determineIfTheAverageReplicateNoIsLessThan10Molecules() && !avProfile.hasAnLreWindowBeenFound()) {
+                    if (!avProfile.isTheReplicateAverageNoLessThan10Molecules() && !avProfile.hasAnLreWindowBeenFound()) {
                         //Must conduct an automated LRE window selection
                         analysisService.conductAutomatedLreWindowSelection(avProfile, selectionParameters);
                     }
                     //Ignore average sample profiles that do not have an LRE window
-                    if (!avProfile.isReplicateAverageNoLessThan10Molecules()) {
+                    if (!avProfile.isTheReplicateAverageNoLessThan10Molecules()) {
                         //Need to update avFo and avNo
                         analysisService.initializeProfileSummary(avProfile, selectionParameters);
                     }//When <10N the averageProfile inherits the average replicate profile No so no need to update

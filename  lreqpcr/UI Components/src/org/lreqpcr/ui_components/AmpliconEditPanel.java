@@ -134,7 +134,7 @@ public class AmpliconEditPanel extends JPanel
         nodeResult = Utilities.actionsGlobalContext().lookupResult(LreNode.class);
         nodeResult.allItems();
         nodeResult.addLookupListener(this);
-        UniversalLookup.getDefault().addListner(PanelMessages.NEW_DATABASE, this);
+        UniversalLookup.getDefault().addListner(PanelMessages.UPDATE_AMPLICON_PANELS, this);
     }
 
     private boolean isAmpliconNameUnique(String ampName) {
@@ -435,7 +435,7 @@ public class AmpliconEditPanel extends JPanel
             //Test to see if this node is from an amplicon database
             DatabaseType type = selectedNode.getDatabaseServices().getDatabaseType();
             if (type != DatabaseType.AMPLICON) {
-                clearPanel();
+//                clearPanel();
                 return;
             }
             if (selectedNode.getDatabaseServices() != ampliconDB) {
@@ -451,13 +451,15 @@ public class AmpliconEditPanel extends JPanel
                 nameDisplay.requestFocusInWindow();
             }
         } else {
-            clearPanel();
+//            clearPanel();
         }
     }
 
     public void universalLookupChangeEvent(Object key) {
-        if (key == PanelMessages.NEW_DATABASE) {//Open, New or Close database file changed
-            clearPanel();
+        if (key == PanelMessages.UPDATE_AMPLICON_PANELS) {//Open, New or Close database file changed
+            if(!ampliconDB.isDatabaseOpen()){
+                clearPanel();
+            }
         }
     }
 }

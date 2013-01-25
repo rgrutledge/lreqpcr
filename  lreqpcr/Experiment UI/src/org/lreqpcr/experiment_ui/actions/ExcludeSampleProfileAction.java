@@ -73,7 +73,7 @@ class ExcludeSampleProfileAction extends AbstractAction {
             List<SampleProfile> repProfileList = parentAvProfile.getReplicateProfileList();
 
             //Need to confirm that at least one Profile will remain active
-            if (parentAvProfile.numberOfActiveReplicateProfiles() == 1) {//Only one Profile active
+            if (parentAvProfile.getTheNumberOfActiveReplicateProfiles() == 1) {//Only one Profile active
                 String msg = "It appears that there is only one Profile that is active "
                         + "and thus cannot be excluded. Exclude the average profile instead";
                 JOptionPane.showMessageDialog(

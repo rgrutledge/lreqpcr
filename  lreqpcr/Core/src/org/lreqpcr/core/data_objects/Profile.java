@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010  Bob Rutledge
+ * Copyright (C) 2013  Bob Rutledge
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,9 +20,11 @@ package org.lreqpcr.core.data_objects;
 import java.util.Date;
 
 /**
- * Abstract class for the basic data object representing an
- * amplification profile. Parameters (fields) are separated into
- * Profile creation, Profile processing and No determination.
+ * Abstract class for the basic object representing an
+ * amplification profile. Stores all basic parameters of a Profile in which target quantity is expressed
+ * in fluorescence units. Note that this is designed to only be a data storage 
+ * object such that it contains only setter and getter methods. 
+ * Note also that target quantity is only expressed in fluorescence units. 
  *
  * @author Bob Rutledge
  */
@@ -45,13 +47,14 @@ public abstract class Profile extends LreObject {
     private double ampTm;//The amplicon Tm
     private double ct, ft;//Threshold cycle and fluorescence threshold
     private int fbStart, fbWindow;//Start and size of the Fb window for determining background fluorescence
+    // TODO fcReadings should be stored in a HashTable in order to preserve cycle number
     private double[] fcReadings; //Fluorescence dataset (Background subtracted)
-    private double fb;//Average fluorescence backgroung
-    private boolean hasAnLreWindowBeenFound;
+    private double fb;//Average fluorescence backgroung used for background substraction
+    private boolean hasAnLreWindowBeenFound;//Is this a flat profile or has any abberrancy that dissallows an LRE window to be located
     private int strCycleInt; //LRE window start cycle
     private int lreWinSize; //LRE window size
     private double eMax, deltaE, r2;//Linear regression values for the LRE window
-    private boolean isEmaxFixedTo100;//Overides LRE analysis-derived Emax
+    private boolean isEmaxFixedTo100;//Overides LRE analysis-derived Emax by setting it to 100%
     private double avFo, avFoCV;//Fo values and CV calculated from the LRE window Fo values
     private double avFoEmax100;//Fo values and CV calculated with Emax fixed to 100%
     private double nonR2;//Nonlinear r2 of predicted Fc to actual Fc within the LRE window... not very useful
@@ -61,9 +64,8 @@ public abstract class Profile extends LreObject {
     private String whyExcluded;//Text describing why the profile was excluded
 
     /**
-     * Stores all basic parameters of a Profile in which target quantity is expressed
-     * in fluorescence units.
-     * @param run the Run from which the Profile was generated. Note that Run date is retrieved from the provide Run.
+     * 
+     * @param run the Run from which the Profile was generated. Note that Run date is retrieved from the provided Run.
      */
     public Profile(Run run) {
         this.run = run;
@@ -75,10 +77,18 @@ public abstract class Profile extends LreObject {
         return run;
     }
 
+    /**
+     * For defining well position using a numbering system. 
+     * @return well position expressed as a number.
+     */
     public int getWellNumber() {
         return wellNumber;
     }
 
+    /**
+     * Sets the well position for this profile using a numbering system. 
+     * @param wellNumber 
+     */
     public void setWellNumber(int wellNumber) {
         this.wellNumber = wellNumber;
     }
@@ -431,8 +441,7 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * Sets whether an LRE window has been found for this Profile.
-     * Not that if an LRE window is not present, the Profile is not displayable.
+     * Indicates whether an LRE window has been found for this Profile.
      * 
      * @return whether an LRE window has been found
      */

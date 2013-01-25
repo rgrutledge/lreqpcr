@@ -223,7 +223,7 @@ public class ExperimentDbTree extends JPanel {
                 }
                 avProfile.setOCF(ocf);
 //Need to check if the LRE window needs reinitialization when av No increases to above >10 molecules
-                if (!avProfile.isReplicateAverageNoLessThan10Molecules() && !avProfile.hasAnLreWindowBeenFound()) {
+                if (!avProfile.isTheReplicateAverageNoLessThan10Molecules() && !avProfile.hasAnLreWindowBeenFound()) {
 //>10N but no LRE window found indicates that the LRE window needs to be reiniitialized
                     LreAnalysisService lreAnalysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
                     LreWindowSelectionParameters selectionParameters = (LreWindowSelectionParameters) experimentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);

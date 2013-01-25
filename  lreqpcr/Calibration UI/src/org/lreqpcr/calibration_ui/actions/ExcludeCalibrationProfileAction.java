@@ -72,7 +72,7 @@ class ExcludeCalibrationProfileAction extends AbstractAction {
             AverageCalibrationProfile parentAvProfile = (AverageCalibrationProfile) selectedProfile.getParent();
             List<CalibrationProfile> profileList = parentAvProfile.getReplicateProfileList();
             //Need to confirm that at least one Profile will remain active
-            if (parentAvProfile.numberOfActiveReplicateProfiles() < 2) {//Only one Profile active
+            if (parentAvProfile.getTheNumberOfActiveReplicateProfiles() < 2) {//Only one Profile active
                 String msg = "It appears that there is only one Profile that is active "
                         + "and thus cannot be excluded.";
                 JOptionPane.showMessageDialog(null, msg, "Unable to exclude the "
