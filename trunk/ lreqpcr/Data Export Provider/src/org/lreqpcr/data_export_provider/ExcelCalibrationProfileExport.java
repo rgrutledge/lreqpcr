@@ -17,8 +17,6 @@
 package org.lreqpcr.data_export_provider;
 
 import com.google.common.collect.Lists;
-import org.lreqpcr.core.utilities.IOUtilities;
-import org.lreqpcr.core.utilities.MathFunctions;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
@@ -27,14 +25,16 @@ import java.util.Collections;
 import java.util.List;
 import javax.swing.JOptionPane;
 import jxl.Workbook;
-import jxl.write.*;
-import jxl.write.Number;
 import jxl.format.Alignment;
-import jxl.format.Colour;
 import jxl.format.Border;
 import jxl.format.BorderLineStyle;
+import jxl.format.Colour;
+import jxl.write.*;
+import jxl.write.Number;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.CalibrationProfile;
+import org.lreqpcr.core.utilities.IOUtilities;
+import org.lreqpcr.core.utilities.MathFunctions;
 import org.openide.windows.WindowManager;
 
 /**
@@ -70,7 +70,7 @@ public class ExcelCalibrationProfileExport {
         if (selectedFile == null) {
             return;
         }
-        WritableWorkbook workbook = null;
+        WritableWorkbook workbook;
         try {
             workbook = Workbook.createWorkbook(selectedFile);
         } catch (Exception e) {

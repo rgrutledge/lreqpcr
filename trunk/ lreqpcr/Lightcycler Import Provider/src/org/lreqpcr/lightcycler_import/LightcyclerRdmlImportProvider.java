@@ -50,7 +50,7 @@ import org.xml.sax.InputSource;
  *
  * @author Bob Rutledge
  */
-public class LightCyclerRdmlImportProvider extends RunImportService {
+public class LightcyclerRdmlImportProvider extends RunImportService {
 
     private NodeList sampleNodeList;
 

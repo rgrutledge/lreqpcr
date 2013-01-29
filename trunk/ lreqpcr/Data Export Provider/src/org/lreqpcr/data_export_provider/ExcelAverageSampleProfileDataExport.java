@@ -45,13 +45,9 @@ import org.openide.windows.WindowManager;
 public class ExcelAverageSampleProfileDataExport {
 
     /**
-     * Exports the AverageSampleProfiles from a list of Runs. Each 
-     * Run data is placed into a work sheet.
      * 
-     * @param runList the list of Runs to be exported
-     * @throws IOException Excel file read exception
-     * @throws WriteException Excel file write exception
      */
+    // TODO JavaDoc text
     @SuppressWarnings("unchecked")
     public static void exportProfiles(HashMap<String, List<AverageSampleProfile>> groupList) throws IOException, WriteException {
         //Setup the the workbook based on the file choosen by the user
