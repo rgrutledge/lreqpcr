@@ -148,15 +148,19 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
      * @return whether the average No is less than 10 molecules
      */
     public boolean isTheReplicateAverageNoLessThan10Molecules() {
+        if(getReplicateProfileList() == null){
+            //Occurs during data import
+            return false;
+        }
         //Not sure how well this will work
         if (isExcluded()) {
             return true;
         }
 
-        if (getTheNumberOfActiveReplicateProfiles() == 1){
-        //not sure if this is needed...
-       //TODO review how avProfiles revert to a single replicate profile
-    }
+//        if (getTheNumberOfActiveReplicateProfiles() == 1){
+//        //not sure if this is needed...
+//       //TODO review how avProfiles revert to a single replicate profile
+//    }
         //Try to calculate the replicate average No
         double sum = 0;
         int counter = 0;
@@ -198,6 +202,10 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
     }
 
     public int getTheNumberOfActiveReplicateProfiles() {
+//        if (sampleProfileList == null){
+//            //Occurs during data import
+//            return
+//        }
         int numberOfActiveReplicateProfiles = 0;
         for (Profile profile : sampleProfileList) {
             if (!profile.isExcluded()) {

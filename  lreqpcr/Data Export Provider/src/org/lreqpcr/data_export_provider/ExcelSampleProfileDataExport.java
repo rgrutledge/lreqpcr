@@ -16,8 +16,7 @@
  */
 package org.lreqpcr.data_export_provider;
 
-import org.lreqpcr.core.data_objects.AverageSampleProfile;
-import org.lreqpcr.core.utilities.IOUtilities;
+import com.google.common.collect.Lists;
 import java.awt.Desktop;
 import java.awt.Toolkit;
 import java.io.File;
@@ -36,7 +35,9 @@ import jxl.format.BorderLineStyle;
 import jxl.format.Colour;
 import jxl.write.*;
 import jxl.write.Number;
+import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.SampleProfile;
+import org.lreqpcr.core.utilities.IOUtilities;
 import org.openide.windows.WindowManager;
 
 /**
@@ -46,13 +47,9 @@ import org.openide.windows.WindowManager;
 public class ExcelSampleProfileDataExport {
 
     /**
-     * Exports the AverageSampleProfiles from a list of Runs. Each 
-     * Run data is placed into a work sheet.
      * 
-     * @param runList the list of Runs to be exported
-     * @throws IOException Excel file read exception
-     * @throws WriteException Excel file write exception
      */
+    // TODO JavaDoc text
     @SuppressWarnings("unchecked")
     public static void exportProfiles(HashMap<String, List<AverageSampleProfile>> groupList) throws IOException, WriteException {
         //Setup the the workbook based on the file choosen by the user
@@ -60,7 +57,7 @@ public class ExcelSampleProfileDataExport {
         if (selectedFile == null) {
             return;
         }
-        WritableWorkbook workbook = null;
+        WritableWorkbook workbook;
         try {
             workbook = Workbook.createWorkbook(selectedFile);
         } catch (Exception e) {
@@ -153,12 +150,12 @@ public class ExcelSampleProfileDataExport {
             label = new Label(1, 0, pageName);
             sheet.addCell(label);
 
-            Number number = null;
+            Number number;
             DateFormat customDateFormat = new DateFormat("ddMMMyy");
 
             List<AverageSampleProfile> profileList = groupList.get(pageName);
             Collections.sort(profileList);
-            ArrayList<SampleProfile> belowTenMoleculeList = new ArrayList<SampleProfile>();
+            ArrayList<SampleProfile> belowTenMoleculeList = Lists.newArrayList();
 
             for (AverageSampleProfile avProfile : profileList) {
                 for (SampleProfile sampleProfile : avProfile.getReplicateProfileList()) {
@@ -180,7 +177,7 @@ public class ExcelSampleProfileDataExport {
                         sheet.addCell(label);
                         label = new Label(11, row, sampleProfile.getWellLabel());
                         sheet.addCell(label);
-                        String s = "";
+                        String s;
                         if (avProfile.getLongDescription() != null) {
                             s = "EXCLUDED " + sampleProfile.getLongDescription();
                         } else {
@@ -194,7 +191,7 @@ public class ExcelSampleProfileDataExport {
                         number = new Number(3, row, sampleProfile.getNo(), integerFormat);
                         sheet.addCell(number);
                     }
-                    String notes = "";
+                    String notes;
                     String note = "";
                     if (sampleProfile.getLongDescription() != null) {
                         note = sampleProfile.getLongDescription();
@@ -238,7 +235,7 @@ public class ExcelSampleProfileDataExport {
         }
         workbook.write();
         workbook.close();
-        Desktop desktop = null;
+        Desktop desktop;
         if (Desktop.isDesktopSupported()) {
             desktop = Desktop.getDesktop();
             desktop.open(selectedFile);
