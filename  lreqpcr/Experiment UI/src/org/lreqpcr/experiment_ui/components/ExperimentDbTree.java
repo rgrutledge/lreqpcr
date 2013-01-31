@@ -16,11 +16,13 @@
  */
 package org.lreqpcr.experiment_ui.components;
 
+import com.google.common.collect.Lists;
 import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
@@ -32,6 +34,7 @@ import org.lreqpcr.core.ui_elements.LabelFactory;
 import org.lreqpcr.core.ui_elements.LreActionFactory;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.utilities.FormatingUtilities;
+import org.lreqpcr.core.utilities.MathFunctions;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.experiment_ui.actions.ExperimentTreeNodeActions;
 import org.lreqpcr.ui_components.PanelMessages;
@@ -61,6 +64,8 @@ public class ExperimentDbTree extends JPanel {
     private LreActionFactory nodeActionFactory;
     private LabelFactory runNodeLabelFactory;
     private DecimalFormat df = new DecimalFormat();
+    private double avRunFmax = 0;
+    private double avRunFmaxCV = 0;
 
     /**
      * Creates new form ExperimentDbTree
@@ -140,12 +145,32 @@ public class ExperimentDbTree extends JPanel {
         //Retrieval all Runs from the database
         List<? extends Run> runList =
                 (List<? extends Run>) experimentDB.getAllObjects(Run.class);
+        averageFmaxForAllRuns(runList);
         LreNode root = new LreNode(new RootRunChildren(mgr, experimentDB, runList, nodeActionFactory,
                 runNodeLabelFactory), Lookups.singleton(dbInfo), new Action[]{});
         root.setDatabaseService(experimentDB);
-        root.setDisplayName(displayName);
+        //This is where average Fmax for all runs should be displayeddf.applyPattern("##.0");
+        df.applyPattern("##.0");
+        String cv = df.format(avRunFmaxCV * 100);
+        df.applyPattern(FormatingUtilities.decimalFormatPattern(avRunFmax));
+        root.setDisplayName(displayName + " [Average Run Fmax: " + df.format(avRunFmax) + " ±" + cv + "%]");
         root.setShortDescription(dbFile.getAbsolutePath());
         mgr.setRootContext(root);
+    }//End of create tree
+
+    public void averageFmaxForAllRuns(List<? extends Run> runList) {
+        ArrayList<Double> fmaxList = Lists.newArrayList();//Used to determine SD
+        double fmaxSum = 0;
+        for (Run run : runList) {
+            fmaxSum += run.getAverageFmax();
+            fmaxList.add(run.getAverageFmax());
+        }
+        if (fmaxList.size() > 1 && fmaxSum > 0) {
+            avRunFmax = fmaxSum / fmaxList.size();
+            if (fmaxList.size() > 1) {
+                avRunFmaxCV = MathFunctions.calcStDev(fmaxList) / avRunFmax;
+            }
+        }
     }
 
 //    public void displayTotalNumberOfProfilesInTheDatabase() {
@@ -317,36 +342,36 @@ public class ExperimentDbTree extends JPanel {
 }//GEN-LAST:event_runViewButtonActionPerformed
     @SuppressWarnings(value = "unchecked")
     private void fmaxNormalizeChkBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fmaxNormalizeChkBoxActionPerformed
-    if (fmaxNormalizeChkBox.isSelected()) {
-        //The checkbox is checked and so normalize all No values within the exp database to the averag Fmax
-        //Retrieve all of the SampleProfiles from the database, which should include the AverageSampleProfiles
-        if (!experimentDB.isDatabaseOpen()) {
-            return;
+        if (fmaxNormalizeChkBox.isSelected()) {
+            //The checkbox is checked and so normalize all No values within the exp database to the averag Fmax
+            //Retrieve all of the SampleProfiles from the database, which should include the AverageSampleProfiles
+            if (!experimentDB.isDatabaseOpen()) {
+                return;
+            }
+            List<SampleProfile> sampleProfileList =
+                    (List<SampleProfile>) experimentDB.getAllObjects(SampleProfile.class);
+            for (SampleProfile sampleProfile : sampleProfileList) {
+                sampleProfile.setIsTargetQuantityNormalizedToFmax(true);
+                experimentDB.saveObject(sampleProfile);
+            }
+            dbInfo.setIsTargetQuantityNormalizedToFax(true);
+            createTree();
+        } else {//The checkbox must be unchecked
+            fmaxNormalizeChkBox.setSelected(false);
+            if (!experimentDB.isDatabaseOpen()) {
+                return;
+            }
+            List<SampleProfile> sampleProfileList =
+                    (List<SampleProfile>) experimentDB.getAllObjects(SampleProfile.class);
+            for (SampleProfile sampleProfile : sampleProfileList) {
+                sampleProfile.setIsTargetQuantityNormalizedToFmax(false);
+                experimentDB.saveObject(sampleProfile);
+            }
+            dbInfo.setIsTargetQuantityNormalizedToFax(false);
+            createTree();
         }
-        List<SampleProfile> sampleProfileList =
-                (List<SampleProfile>) experimentDB.getAllObjects(SampleProfile.class);
-        for (SampleProfile sampleProfile : sampleProfileList) {
-            sampleProfile.setIsTargetQuantityNormalizedToFmax(true);
-            experimentDB.saveObject(sampleProfile);
-        }
-        dbInfo.setIsTargetQuantityNormalizedToFax(true);
-        createTree();
-    } else {//The checkbox must be unchecked
-        fmaxNormalizeChkBox.setSelected(false);
-        if (!experimentDB.isDatabaseOpen()) {
-            return;
-        }
-        List<SampleProfile> sampleProfileList =
-                (List<SampleProfile>) experimentDB.getAllObjects(SampleProfile.class);
-        for (SampleProfile sampleProfile : sampleProfileList) {
-            sampleProfile.setIsTargetQuantityNormalizedToFmax(false);
-            experimentDB.saveObject(sampleProfile);
-        }
-        dbInfo.setIsTargetQuantityNormalizedToFax(false);
-        createTree();
-    }
-    experimentDB.saveObject(dbInfo);
-    UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_EXPERIMENT_PANELS);
+        experimentDB.saveObject(dbInfo);
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_EXPERIMENT_PANELS);
     }//GEN-LAST:event_fmaxNormalizeChkBoxActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane beanTree;
