@@ -143,18 +143,18 @@ public class ExcelWellFmaxExport {
                     sheet.addCell(label);
                 row++;
             }
-            col++
+//            col++
                     }
                 
               
             pageCounter++;
         }
-        workbook.write();
-        workbook.close();
-        Desktop desktop = null;
-        if (Desktop.isDesktopSupported()) {
-            desktop = Desktop.getDesktop();
-            desktop.open(selectedFile);
-        }
-    }
-}
+//        workbook.write();
+//        workbook.close();
+//        Desktop desktop = null;
+//        if (Desktop.isDesktopSupported()) {
+//            desktop = Desktop.getDesktop();
+//            desktop.open(selectedFile);
+//        }
+//    }
+}//End of exportProfiles
