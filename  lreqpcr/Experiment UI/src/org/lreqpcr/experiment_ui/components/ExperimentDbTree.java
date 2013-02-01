@@ -149,8 +149,8 @@ public class ExperimentDbTree extends JPanel {
         LreNode root = new LreNode(new RootRunChildren(mgr, experimentDB, runList, nodeActionFactory,
                 runNodeLabelFactory), Lookups.singleton(dbInfo), new Action[]{});
         root.setDatabaseService(experimentDB);
-        //This is where average Fmax for all runs should be displayeddf.applyPattern("##.0");
-        df.applyPattern("##.0");
+        //This is where average Fmax for all runs should be displayed
+        df.applyPattern("#0.0");
         String cv = df.format(avRunFmaxCV * 100);
         df.applyPattern(FormatingUtilities.decimalFormatPattern(avRunFmax));
         root.setDisplayName(displayName + " [Average Run Fmax: " + df.format(avRunFmax) + " ±" + cv + "%]");
@@ -165,7 +165,7 @@ public class ExperimentDbTree extends JPanel {
             fmaxSum += run.getAverageFmax();
             fmaxList.add(run.getAverageFmax());
         }
-        if (fmaxList.size() > 1 && fmaxSum > 0) {
+        if (fmaxList.size() >= 1 && fmaxSum > 0) {
             avRunFmax = fmaxSum / fmaxList.size();
             if (fmaxList.size() > 1) {
                 avRunFmaxCV = MathFunctions.calcStDev(fmaxList) / avRunFmax;

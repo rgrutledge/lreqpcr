@@ -68,14 +68,8 @@ public class LreObjectInfo extends JPanel {
                         AverageProfile avProfile = (AverageProfile) profile;
                         for (Profile prf : avProfile.getReplicateProfileList()) {
                             prf.setAmpliconName(ampName);
-                            //Decided not to update the replicate profile node labels, so they may not be correct
                         }
-                        LreObjectChildren children = (LreObjectChildren) selectedNode.getChildren();
-                        Node[] nodes = children.getNodes();
-                        for (Node node : nodes) {
-                            LreNode ln = (LreNode) node;
-                            ln.refreshNodeLabel();
-                        }
+                        updateReplicateProfileNodeLabels();
                     }
                 }
                 if (evt.getComponent() == notesDisplay) {
@@ -89,14 +83,8 @@ public class LreObjectInfo extends JPanel {
                         AverageProfile avProfile = (AverageProfile) profile;
                         for (Profile prf : avProfile.getReplicateProfileList()) {
                             prf.setSampleName(sampleName);
-                            // TODO Decided not to update the replicate profile node labels, so they may not be correct
                         }
-                        LreObjectChildren children = (LreObjectChildren) selectedNode.getChildren();
-                        Node[] nodes = children.getNodes();
-                        for (Node node : nodes) {
-                            LreNode ln = (LreNode) node;
-                            ln.refreshNodeLabel();
-                        }
+                        updateReplicateProfileNodeLabels();
                     }
                 }
                 if (evt.getComponent() == ampSizeDisplay) {
@@ -122,15 +110,10 @@ public class LreObjectInfo extends JPanel {
                         AverageProfile avProfile = (AverageProfile) profile;
                         for (Profile prf : avProfile.getReplicateProfileList()) {
                             prf.setAmpliconSize(i);
-
                         }
-                        //Update the replicate profile node labels
-                        LreObjectChildren children = (LreObjectChildren) selectedNode.getChildren();
-                        Node[] nodes = children.getNodes();
-                        for (Node node : nodes) {
-                            LreNode ln = (LreNode) node;
-                            ln.refreshNodeLabel();
-                        }
+                        updateReplicateProfileNodeLabels();
+            //Changing amplicon size changes target quantity and so fire a profile change event
+                        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_CHANGED);
                     }
                 }
                 selectedNode.saveLreObject();
@@ -282,6 +265,16 @@ public class LreObjectInfo extends JPanel {
     public void displayMember(LreNode node) {
         selectedNode = node;
         iniInfo();
+    }
+
+    private void updateReplicateProfileNodeLabels() {
+        //Update the replicate profile node labels
+        LreObjectChildren children = (LreObjectChildren) selectedNode.getChildren();
+        Node[] nodes = children.getNodes();
+        for (Node node : nodes) {
+            LreNode ln = (LreNode) node;
+            ln.refreshNodeLabel();
+        }
     }
 
     /**

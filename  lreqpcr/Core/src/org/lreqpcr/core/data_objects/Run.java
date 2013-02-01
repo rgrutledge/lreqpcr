@@ -39,7 +39,7 @@ public abstract class Run extends LreObject {
     private int month;
     private double runOCF = 0;//Run-specific OCF
     private double averageFmax = 0;//Average Fmax of all replicate profiles
-    private double avFmaxCV;//Average Fmax coefficient of variation 
+    private double avFmaxCV = 0;//Average Fmax coefficient of variation 
     
     /**
      * The child class is set to AverageProfile.
