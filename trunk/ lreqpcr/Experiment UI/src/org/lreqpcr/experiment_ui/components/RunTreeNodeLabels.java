@@ -46,12 +46,14 @@ public class RunTreeNodeLabels implements LabelFactory {
                 df.applyPattern(FormatingUtilities.decimalFormatPattern(runOCF));
                 return sdf.format(run.getRunDate()) + " <" + df.format(runOCF) + ">-" + member.getName();
             } else {
-                run.calculateAverageFmax();//This is temporary for testing
-                df.applyPattern("##.0");
+                if (run.getAverageFmax() == 0) {
+                    run.calculateAverageFmax();//This is temporary for testing
+                }
+                df.applyPattern("#0.0");
                 String cv = df.format(run.getAvFmaxCV() * 100);
                 df.applyPattern(FormatingUtilities.decimalFormatPattern(run.getAverageFmax()));
                 return sdf.format(run.getRunDate()) + "-" + member.getName()
-                        + " [Av Fmax: " + df.format(run.getAverageFmax()) 
+                        + " [Av Fmax: " + df.format(run.getAverageFmax())
                         + " ±" + cv + "%]";
             }
 
@@ -60,14 +62,14 @@ public class RunTreeNodeLabels implements LabelFactory {
         if (member instanceof Profile) {
             SampleProfile profile = (SampleProfile) member;
             profile.setShortDescription("");
-            
+
             String profileName = profile.getAmpliconName() + "@ " + profile.getSampleName() + " ";
             //If excluded no Emax or No to be displayed
             if (profile.isExcluded()) {
                 if (profile instanceof AverageSampleProfile) {
                     profile.setShortDescription("This Average Profile has been excluded by the user");
                 } else {//Must be a SampleProfile
-                    profile.setShortDescription("This Sample Profile has been excluded " 
+                    profile.setShortDescription("This Sample Profile has been excluded "
                             + "by the user and will not be included in the Average Profile");
                 }
                 return profileName + "<PROFILE EXCLUDED>";
@@ -83,7 +85,7 @@ public class RunTreeNodeLabels implements LabelFactory {
                     df.applyPattern("0.00");
                     profile.setShortDescription("Less than 10 molecules requires averaging the replicate profiles quantities");
                     double no = avPrf.getNo();
-                    if(avPrf.isEmaxFixedTo100()){
+                    if (avPrf.isEmaxFixedTo100()) {
                         return profileName + "<100%> avRep= " + df.format(no);
                     }
                     return profileName + "avRep= " + df.format(no);

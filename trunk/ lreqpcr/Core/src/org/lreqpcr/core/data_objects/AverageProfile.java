@@ -65,5 +65,8 @@ public interface AverageProfile {
      * @return whether the average No is less than 10 molecules
      */
     public boolean isTheReplicateAverageNoLessThan10Molecules();
+    
+    // TODO review AverageProfile should be eliminated: still struggling with duplicate code Sample vs. Calibration profiles
+    //public double calcAvAmpliconTm();//However this introduces a new class variable that cannot be added via an Interface
 
 }
