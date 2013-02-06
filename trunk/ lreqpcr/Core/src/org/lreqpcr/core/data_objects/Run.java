@@ -136,12 +136,12 @@ public abstract class Run extends LreObject {
     }
     
     /**
-     * Calculates the average Fmax and CV from the replicate profiles. Note that the
+     * Calculates the average Fmax and CV based only on the replicate profiles. Note that the
      * AverageProfiles are ignored, as are excluded SampleProfiles, along with  
      * SampleProfiles for which an LRE window has not been found.
      */
     public void calculateAverageFmax(){
-        ArrayList<Double> fmaxList = Lists.newArrayList();//Used to determine SD
+        ArrayList<Double> fmaxList = Lists.newArrayList();//Used to determine the SD
         double fmaxSum = 0;
         int profileCount = 0;
         if (averageProfileList == null){

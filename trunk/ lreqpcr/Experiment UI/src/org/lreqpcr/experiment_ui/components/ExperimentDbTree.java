@@ -145,20 +145,25 @@ public class ExperimentDbTree extends JPanel {
         //Retrieval all Runs from the database
         List<? extends Run> runList =
                 (List<? extends Run>) experimentDB.getAllObjects(Run.class);
-        averageFmaxForAllRuns(runList);
         LreNode root = new LreNode(new RootRunChildren(mgr, experimentDB, runList, nodeActionFactory,
                 runNodeLabelFactory), Lookups.singleton(dbInfo), new Action[]{});
         root.setDatabaseService(experimentDB);
-        //This is where average Fmax for all runs should be displayed
-        df.applyPattern("#0.0");
-        String cv = df.format(avRunFmaxCV * 100);
-        df.applyPattern(FormatingUtilities.decimalFormatPattern(avRunFmax));
-        root.setDisplayName(displayName + " [Average Run Fmax: " + df.format(avRunFmax) + " ±" + cv + "%]");
+        //Determine if the average Run Fmax should be displayed, i.e. when >1 Run is present
+        if (runList.size() > 1) {
+            //Calculate and display the average Run Fmax along with correlation of coefficient
+            calcAvFmaxForAllRuns(runList);
+            df.applyPattern("#0.0");
+            String cv = df.format(avRunFmaxCV * 100);
+            df.applyPattern(FormatingUtilities.decimalFormatPattern(avRunFmax));
+            root.setDisplayName(displayName + " [Average Run Fmax: " + df.format(avRunFmax) + " ±" + cv + "%]");
+        } else {
+            root.setDisplayName(displayName);
+        }
         root.setShortDescription(dbFile.getAbsolutePath());
         mgr.setRootContext(root);
     }//End of create tree
 
-    public void averageFmaxForAllRuns(List<? extends Run> runList) {
+    public void calcAvFmaxForAllRuns(List<? extends Run> runList) {
         ArrayList<Double> fmaxList = Lists.newArrayList();//Used to determine SD
         double fmaxSum = 0;
         for (Run run : runList) {

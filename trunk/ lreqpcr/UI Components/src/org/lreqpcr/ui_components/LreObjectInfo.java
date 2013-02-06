@@ -212,7 +212,7 @@ public class LreObjectInfo extends JPanel {
                     avTmLabel.setVisible(false);
                     avTmDisplay.setVisible(false);
                 } else {
-                    if (avProfile.calculateAvAmpTm() != -1) {
+                    if (avProfile.calculateAvAmpTm() > 0) {
                         avTmDisplay.setText(df.format(avProfile.calculateAvAmpTm()) + " °C");
                         avTmLabel.setVisible(true);
                         avTmDisplay.setVisible(true);

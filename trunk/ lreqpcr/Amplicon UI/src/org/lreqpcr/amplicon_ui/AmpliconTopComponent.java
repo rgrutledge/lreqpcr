@@ -93,6 +93,7 @@ public final class AmpliconTopComponent extends TopComponent
             universalLookup.add(DatabaseType.AMPLICON, ampliconDB);
         }
         universalLookup.addListner(PanelMessages.UPDATE_AMPLICON_PANELS, this);
+        universalLookup.addListner(PanelMessages.UPDATE_AMPLICON_TREE, this);
         createTree();
 
     }
@@ -396,6 +397,29 @@ public final class AmpliconTopComponent extends TopComponent
     public void universalLookupChangeEvent(Object key) {
         if (key == PanelMessages.UPDATE_AMPLICON_PANELS) {
             createTree();
+        }
+        if (key == PanelMessages.UPDATE_AMPLICON_TREE) {
+            //Likely a change in the amplicon name
+//            Node rootNode = mgr.getRootContext();
+            //Store the selected node
+            Node[] selectedNodes = mgr.getSelectedNodes();
+            if (selectedNodes.length == 0){
+                return;
+            }
+            Node selectedNode = selectedNodes[0];
+            LreObject selectedAmplicon = (LreObject) selectedNode.getLookup().lookup(LreObject.class);
+            createTree();
+                //Set selection to the modified node
+                //Open the tree to the new Run node
+                LreObjectChildren children = (LreObjectChildren) mgr.getRootContext().getChildren();
+                LreNode ampNode = (LreNode) children.findChild(selectedAmplicon.getName());
+                Node[] newSelectedNodes = new Node[] {ampNode};
+//                mgr.setExploredContext(ampNode);
+            try {
+                mgr.setSelectedNodes(newSelectedNodes);
+            } catch (PropertyVetoException ex) {
+                Exceptions.printStackTrace(ex);
+            }
         }
     }
 }

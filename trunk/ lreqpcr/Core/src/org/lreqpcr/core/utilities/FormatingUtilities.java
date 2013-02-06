@@ -41,8 +41,15 @@ public class FormatingUtilities {
         }
         if (number <= 10.0 && number >= 1.0) {
             return "##.00";
-        } else{//Number must be <1.0
+        } 
+        if (number <=1.0 && number >= 0.1 ){
+            return "0.000";
+        }if (number <=0.1 && number >= 0.01){
             return "0.0000";
+        }if (number <= 0.01 && number >= 0.001){
+            return "0.00000";
+        }else{//Number must be <1.0
+            return "0.0000000";
         }
     }
 }

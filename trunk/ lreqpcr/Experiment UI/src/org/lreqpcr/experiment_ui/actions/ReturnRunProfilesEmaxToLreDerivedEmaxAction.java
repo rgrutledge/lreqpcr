@@ -69,6 +69,7 @@ public class ReturnRunProfilesEmaxToLreDerivedEmaxAction extends AbstractAction 
                 Run run = node.getLookup().lookup(Run.class);
 //Process all profiles within the run, including the replicate profiles
                 for (AverageSampleProfile avProfile : run.getAverageProfileList()) {
+                    avProfile.setIsEmaxFixedTo100(false);
                     //Process the replicate profiles
                     for (Profile repProfile : avProfile.getReplicateProfileList()) {
                         //Ignore profiles that do not have an LRE window
@@ -87,7 +88,6 @@ public class ReturnRunProfilesEmaxToLreDerivedEmaxAction extends AbstractAction 
                     }
                     //Ignore average sample profiles that do not have an LRE window
                     if (avProfile.hasAnLreWindowBeenFound()) {
-                        avProfile.setIsEmaxFixedTo100(false);
                         //Need to update avFo and avNo
                         analysisService.initializeProfileSummary(avProfile, selectionParameters);
                     }

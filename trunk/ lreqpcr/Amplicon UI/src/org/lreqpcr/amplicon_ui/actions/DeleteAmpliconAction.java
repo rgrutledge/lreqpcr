@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010  Bob Rutledge
+ * Copyright (C) 2013  Bob Rutledge
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,16 +17,16 @@
 
 package org.lreqpcr.amplicon_ui.actions;
 
-import org.lreqpcr.core.data_objects.AmpliconImpl;
-import org.lreqpcr.core.data_objects.LreObject;
-import org.lreqpcr.core.ui_elements.LreNode;
-import org.lreqpcr.core.ui_elements.LreObjectChildren;
 import java.awt.event.ActionEvent;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
+import org.lreqpcr.core.data_objects.AmpliconImpl;
+import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
+import org.lreqpcr.core.ui_elements.LreNode;
+import org.lreqpcr.core.ui_elements.LreObjectChildren;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;

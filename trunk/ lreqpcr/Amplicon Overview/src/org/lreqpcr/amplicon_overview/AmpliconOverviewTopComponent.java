@@ -17,7 +17,6 @@
 package org.lreqpcr.amplicon_overview;
 
 import java.awt.Toolkit;
-import org.lreqpcr.amplicon_overview.ui_components.AmpliconChildren;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -26,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import org.lreqpcr.amplicon_overview.ui_components.AmpliconChildren;
 import org.lreqpcr.core.data_objects.Amplicon;
 import org.lreqpcr.core.data_objects.AmpliconImpl;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
@@ -40,9 +40,6 @@ import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.core.utilities.UniversalLookupListener;
 import org.lreqpcr.data_export_services.DataExportServices;
 import org.lreqpcr.ui_components.PanelMessages;
-import org.openide.util.NbBundle;
-import org.openide.windows.TopComponent;
-import org.openide.windows.WindowManager;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
@@ -51,6 +48,9 @@ import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
+import org.openide.util.NbBundle;
+import org.openide.windows.TopComponent;
+import org.openide.windows.WindowManager;
 
 /**
  * Top component which displays something.
@@ -124,7 +124,7 @@ public final class AmpliconOverviewTopComponent extends TopComponent
 
     private List<Amplicon> getAmpliconList() {
         List<Amplicon> ampliconList = new ArrayList<Amplicon>();
-        List avProfileList = null;
+        List avProfileList;
         if (dbType == DatabaseType.CALIBRATION) {
             avProfileList = currentDB.getAllObjects(AverageCalibrationProfile.class);
         } else {//Must be an Experiment database
@@ -422,9 +422,9 @@ public final class AmpliconOverviewTopComponent extends TopComponent
                 return;
             }
         }
-        if (key == PanelMessages.PROFILE_DELETED || key == PanelMessages.NEW_RUN_IMPORTED) {//Profile deleted or a new Run has been imported
+        if (key == PanelMessages.PROFILE_DELETED || key == PanelMessages.NEW_RUN_IMPORTED) {
+            //Profile deleted or a new Run has been imported
             createTree();//Not sure if this will be slow when large numbers of profiles are present in the database
-            return;
         }
     }
 }

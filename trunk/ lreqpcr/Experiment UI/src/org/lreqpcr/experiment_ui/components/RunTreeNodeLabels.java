@@ -86,9 +86,9 @@ public class RunTreeNodeLabels implements LabelFactory {
                     profile.setShortDescription("Less than 10 molecules requires averaging the replicate profiles quantities");
                     double no = avPrf.getNo();
                     if (avPrf.isEmaxFixedTo100()) {
-                        return profileName + "<100%> avRep= " + df.format(no);
+                        return profileName + "<100%> [avRep= " + df.format(no) + "]";
                     }
-                    return profileName + "avRep= " + df.format(no);
+                    return profileName + "[avRep= " + df.format(no) + "]";
                 }
             }
             String emax;
