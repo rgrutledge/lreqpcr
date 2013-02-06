@@ -74,6 +74,7 @@ public class AmpliconEditPanel extends JPanel
                             nameErrorDisplay.setText("");
                             selectedNode.saveLreObject();
                             selectedNode.refreshNodeLabel();
+                            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_AMPLICON_TREE);
                         }
                     }
                 }
@@ -171,11 +172,6 @@ public class AmpliconEditPanel extends JPanel
             return;
         }
         nanErrorDisplay.setText("");
-//        if (selectedAmplicon.getName() != null) {
-//            nameDisplay.setText(selectedAmplicon.getName());
-//        } else {
-//            nameDisplay.setText("");
-//        }
         if (selectedAmplicon.getName() != null) {
             if (selectedAmplicon.getName().equals("New Amplicon")) {
                 nameDisplay.setText("");
@@ -450,13 +446,12 @@ public class AmpliconEditPanel extends JPanel
                 //This appears to be a new Amplicon
                 nameDisplay.requestFocusInWindow();
             }
-        } else {
-//            clearPanel();
         }
     }
 
     public void universalLookupChangeEvent(Object key) {
-        if (key == PanelMessages.UPDATE_AMPLICON_PANELS) {//Open, New or Close database file changed
+        if (key == PanelMessages.UPDATE_AMPLICON_PANELS) {
+            //Open, New or Close database file changed
             if(!ampliconDB.isDatabaseOpen()){
                 clearPanel();
             }

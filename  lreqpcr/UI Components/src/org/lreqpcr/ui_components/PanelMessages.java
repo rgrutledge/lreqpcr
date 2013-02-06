@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010  Bob Rutledge
+ * Copyright (C) 2013  Bob Rutledge
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ public enum PanelMessages {
     UPDATE_CALIBRATION_PANELS,
     UPDATE_EXPERIMENT_PANELS,
     UPDATE_AMPLICON_PANELS,
+    UPDATE_AMPLICON_TREE,
     RUN_VIEW_SELECTED,
     PROFILE_CHANGED,
     PROFILE_EXCLUDED,
