@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010  Bob Rutledge
+ * Copyright (C) 2013  Bob Rutledge
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,8 +42,8 @@ import org.openide.util.Lookup;
 import org.openide.windows.WindowManager;
 
 /**
- * Processes RunImportData objects, storing the resulting Run and its profiles into
- * the appropriate database files. 
+ * Processes RunImportData objects, storing the resulting Run and its profiles
+ * into the appropriate database files.
  *
  * @author Bob Rutledge
  */
@@ -66,12 +66,12 @@ public class RunInializationProvider implements RunInitializationService {
 
     /**
      * Initialized the Run using the supplied ImportData object
-     * 
+     *
      * @param importData the ImportData which cannot be null
      */
     @SuppressWarnings(value = "unchecked")
     public void intializeRun(RunImportData importData) {
-        if (importData == null){
+        if (importData == null) {
             //Run import has been cancelled
             return;
         }
@@ -122,7 +122,7 @@ public class RunInializationProvider implements RunInitializationService {
         List<SampleProfile> sampleProfileList = importData.getSampleProfileList();
         List<CalibrationProfile> calibnProfileList = importData.getCalibrationProfileList();
 
-        LreAnalysisService prfIntlz = Lookup.getDefault().lookup(LreAnalysisService.class);
+        LreAnalysisService profileInitializer = Lookup.getDefault().lookup(LreAnalysisService.class);
 
 //Process the SampleProfiles if an Experiment database is open
         if (sampleProfileList != null) {
@@ -143,7 +143,7 @@ public class RunInializationProvider implements RunInitializationService {
                             }
                         }
                         //Initialize the new Profile which will conduct an automated LRE window selection
-                        prfIntlz.conductAutomatedLreWindowSelection(sampleProfile, winSelectionParameters);
+                        profileInitializer.conductAutomatedLreWindowSelection(sampleProfile, winSelectionParameters);
                         sampleProfile.setOCF(ocf);
                         experimentDB.saveObject(sampleProfile);
                     }
@@ -154,10 +154,17 @@ public class RunInializationProvider implements RunInitializationService {
                             ocf,
                             winSelectionParameters);
                     experimentDB.saveObject(averageSampleProfileList);
-          //This will force the average Fmax to be calculated
+                    //This will force the average Fmax to be calculated
                     run.setAverageProfileList((ArrayList<AverageSampleProfile>) averageSampleProfileList);
                     //Deactivated due to a bug that can produce long delays during file import
 //        RunImportUtilities.importCyclerDatafile(run);
+                    if (dbInfo.isTargetQuantityNormalizedToFax()) {
+                        run.calculateAverageFmax();
+                        for (SampleProfile sampleProfile : sampleProfileList) {
+                            sampleProfile.setIsTargetQuantityNormalizedToFmax(true);
+                            experimentDB.saveObject(sampleProfile);
+                        }
+                    }
                     experimentDB.saveObject(run);
                     experimentDB.commitChanges();
                     //This allows access to the newly imported Run
@@ -183,7 +190,7 @@ public class RunInializationProvider implements RunInitializationService {
                                 RunImportUtilities.getAmpliconSize(ampliconDB, profile);
                             }
                         }
-                        prfIntlz.conductAutomatedLreWindowSelection(profile, lreWindowSelectionParameters);
+                        profileInitializer.conductAutomatedLreWindowSelection(profile, lreWindowSelectionParameters);
                         calbnDB.saveObject(profile);
                     }
                     //Process the AverageCalibnProfiles
@@ -202,7 +209,9 @@ public class RunInializationProvider implements RunInitializationService {
     }
 
     /**
-     * Generates a yes/no dialog asking the user whether to continue when an Experiment database is not open.
+     * Generates a yes/no dialog asking the user whether to continue when an
+     * Experiment database is not open.
+     *
      * @return whether the user wants to continue with data import
      */
     public boolean experimentDatabaseNotOpen() {
@@ -214,7 +223,9 @@ public class RunInializationProvider implements RunInitializationService {
     }
 
     /**
-     * Generates a yes/no dialog asking the user whether to continue when a Calibration database is not open.
+     * Generates a yes/no dialog asking the user whether to continue when a
+     * Calibration database is not open.
+     *
      * @return whether the user wants to continue with data import
      */
     public boolean calibrationDatabaseNotOpen() {

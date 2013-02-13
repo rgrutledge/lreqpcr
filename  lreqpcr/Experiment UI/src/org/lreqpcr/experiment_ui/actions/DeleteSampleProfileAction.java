@@ -28,7 +28,7 @@ import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
-import org.lreqpcr.core.utilities.GeneralUtilities;
+import org.lreqpcr.core.utilities.GenerateAverageFcDataset;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.ui_components.PanelMessages;
 import org.openide.explorer.ExplorerManager;
@@ -123,7 +123,7 @@ public class DeleteSampleProfileAction extends AbstractAction {
             sampleProfile.getRun().calculateAverageFmax();
             //Need to recalculate the average Fc dataset in the AverageSample Profile
             avProfile.setFcReadings(null);//Fb will need to be recalculated
-            avProfile.setRawFcReadings(GeneralUtilities.generateAverageFcDataset(samplePrfList));
+            avProfile.setRawFcReadings(GenerateAverageFcDataset.generateAverageFcDataset(samplePrfList));
             //Reinitialize the Average Profile
             LreAnalysisService profileIntialization =
                     Lookup.getDefault().lookup(LreAnalysisService.class);

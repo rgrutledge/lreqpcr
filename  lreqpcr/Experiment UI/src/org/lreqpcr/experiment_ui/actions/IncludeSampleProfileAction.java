@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010  Bob Rutledge
+ * Copyright (C) 2013   Bob Rutledge
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
-import org.lreqpcr.core.utilities.GeneralUtilities;
+import org.lreqpcr.core.utilities.GenerateAverageFcDataset;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.ui_components.PanelMessages;
 import org.openide.explorer.ExplorerManager;
@@ -78,7 +78,7 @@ class IncludeSampleProfileAction extends AbstractAction {
 
             //Update the parent Average Sample Profile
             LreNode avSampleProfileLreNode = (LreNode) nodes[0].getParentNode();
-            parentAvProfile.setRawFcReadings(GeneralUtilities.generateAverageFcDataset(profileList));
+            parentAvProfile.setRawFcReadings(GenerateAverageFcDataset.generateAverageFcDataset(profileList));
             parentAvProfile.setFcReadings(null);//This will trigger a new Fc dataset to be generated from the raw Fc dataset
             //Reinitialize the Average Profile
             LreAnalysisService profileIntialization = Lookup.getDefault().lookup(LreAnalysisService.class);
