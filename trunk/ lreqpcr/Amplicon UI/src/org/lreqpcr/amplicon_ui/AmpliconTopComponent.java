@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010  Bob Rutledge
+ * Copyright (C) 2013   Bob Rutledge
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -410,11 +410,9 @@ public final class AmpliconTopComponent extends TopComponent
             LreObject selectedAmplicon = (LreObject) selectedNode.getLookup().lookup(LreObject.class);
             createTree();
                 //Set selection to the modified node
-                //Open the tree to the new Run node
                 LreObjectChildren children = (LreObjectChildren) mgr.getRootContext().getChildren();
                 LreNode ampNode = (LreNode) children.findChild(selectedAmplicon.getName());
                 Node[] newSelectedNodes = new Node[] {ampNode};
-//                mgr.setExploredContext(ampNode);
             try {
                 mgr.setSelectedNodes(newSelectedNodes);
             } catch (PropertyVetoException ex) {

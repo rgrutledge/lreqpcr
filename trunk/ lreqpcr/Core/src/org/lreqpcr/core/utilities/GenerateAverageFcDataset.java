@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010  Bob Rutledge
+ * Copyright (C) 2013  Bob Rutledge
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,15 +16,15 @@
  */
 package org.lreqpcr.core.utilities;
 
-import org.lreqpcr.core.data_objects.Profile;
 import java.util.ArrayList;
 import java.util.List;
+import org.lreqpcr.core.data_objects.Profile;
 
 /**
  * Static utility methods
  * @author Bob Rutledge
  */
-public class GeneralUtilities {
+public class GenerateAverageFcDataset {
 
     /**
      * Generates an average Fc dataset from the provided list of 

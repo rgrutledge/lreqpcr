@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010  Bob Rutledge
+ * Copyright (C) 2013   Bob Rutledge
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
-import org.lreqpcr.core.utilities.GeneralUtilities;
+import org.lreqpcr.core.utilities.GenerateAverageFcDataset;
 import java.awt.event.ActionEvent;
 import java.util.List;
 import javax.swing.AbstractAction;
@@ -135,7 +135,7 @@ public class DeleteAverageCalibrationProfileAction extends AbstractAction {
             db.saveObject(calibrationPrfList);
             //Need to recalculate the average Fc dataset in the AverageSample Profile
             avProfile.setFcReadings(null);//Fb will need to be recalculated
-            avProfile.setRawFcReadings(GeneralUtilities.generateAverageFcDataset(calibrationPrfList));
+            avProfile.setRawFcReadings(GenerateAverageFcDataset.generateAverageFcDataset(calibrationPrfList));
             //Reinitialize the Average Profile
             LreAnalysisService profileIntialization =
                     Lookup.getDefault().lookup(LreAnalysisService.class);
