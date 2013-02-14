@@ -95,9 +95,11 @@ public class AmpliconEditPanel extends JPanel
                 }
                 if (evt.getComponent() == ampSeqDisplay) {
                     String ampSeq = ampSeqDisplay.getText();
-                    selectedAmplicon.setAmpSequence(ampSeq.trim());//Remove any terminal white spaces
-                    ampSeqLabel.setText("Amplicon Sequence (" + 
-                            String.valueOf(selectedAmplicon.getAmpSequence().length()) 
+                    //Additional check for allowable characters would be implement here
+                    String newAmpSeq = ampSeq.replace("\n", "");//Remove all line breaks
+                    selectedAmplicon.setAmpSequence(newAmpSeq.trim());//Remove any terminal white spaces
+                    ampSeqLabel.setText("Amplicon Sequence ("
+                            + String.valueOf(selectedAmplicon.getAmpSequence().length())
                             + " bp)");
                 }
                 if (evt.getComponent() == ampliconSizeDisplay) {
@@ -129,7 +131,7 @@ public class AmpliconEditPanel extends JPanel
         shortDescriptionDisplay.addKeyListener(keyListener);
         ampSeqDisplay.addKeyListener(keyListener);
         uniGeneDisplay.addKeyListener(keyListener);
-        
+
         uniGeneDisplay.setToolTipText("UniGene or Accession Number");
 
         nodeResult = Utilities.actionsGlobalContext().lookupResult(LreNode.class);
@@ -175,7 +177,7 @@ public class AmpliconEditPanel extends JPanel
         if (selectedAmplicon.getName() != null) {
             if (selectedAmplicon.getName().equals("New Amplicon")) {
                 nameDisplay.setText("");
-            }else{
+            } else {
                 nameDisplay.setText(selectedAmplicon.getName());
             }
         } else {
@@ -452,8 +454,12 @@ public class AmpliconEditPanel extends JPanel
     public void universalLookupChangeEvent(Object key) {
         if (key == PanelMessages.UPDATE_AMPLICON_PANELS) {
             //Open, New or Close database file changed
-            if(!ampliconDB.isDatabaseOpen()){
+            if (ampliconDB == null) {
                 clearPanel();
+            } else {
+                if (!ampliconDB.isDatabaseOpen()) {
+                    clearPanel();
+                }
             }
         }
     }

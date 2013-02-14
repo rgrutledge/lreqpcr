@@ -154,15 +154,20 @@ public class RunInializationProvider implements RunInitializationService {
                             ocf,
                             winSelectionParameters);
                     experimentDB.saveObject(averageSampleProfileList);
-                    //This will force the average Fmax to be calculated
                     run.setAverageProfileList((ArrayList<AverageSampleProfile>) averageSampleProfileList);
                     //Deactivated due to a bug that can produce long delays during file import
 //        RunImportUtilities.importCyclerDatafile(run);
                     if (dbInfo.isTargetQuantityNormalizedToFax()) {
+                        //Need to first calculate the run average Fmax
                         run.calculateAverageFmax();
-                        for (SampleProfile sampleProfile : sampleProfileList) {
-                            sampleProfile.setIsTargetQuantityNormalizedToFmax(true);
-                            experimentDB.saveObject(sampleProfile);
+                        //Cycle through all the sample profiles and set Fmax normalization to true
+                        for (AverageSampleProfile avProfile : averageSampleProfileList) {
+                            avProfile.setIsTargetQuantityNormalizedToFmax(true);
+                            experimentDB.saveObject(avProfile);
+                            for (SampleProfile sampleProfile : avProfile.getReplicateProfileList()) {
+                                sampleProfile.setIsTargetQuantityNormalizedToFmax(true);
+                                experimentDB.saveObject(sampleProfile);
+                            }
                         }
                     }
                     experimentDB.saveObject(run);

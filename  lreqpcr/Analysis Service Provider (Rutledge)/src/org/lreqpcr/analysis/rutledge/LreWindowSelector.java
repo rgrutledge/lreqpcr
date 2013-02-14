@@ -215,7 +215,9 @@ public class LreWindowSelector {
      * difference between the average LRE window Fo and
      * the Fo value derived from the first cycle above
      * the LRE window. If this difference is smaller than the Fo threshold,
-     * this next cycle is added to the LRE window and the analysis repeated.
+     * this next cycle is added to the LRE window and the analysis repeated. 
+     * Note however, that the upper limit of this expansion is limited to the 
+     * cycle Fc less than 95% of Fmax. 
      *
      * @param prfSum the ProfileSummary to be processed
      * @param foThreshold the Fo threshold
@@ -237,7 +239,8 @@ public class LreWindowSelector {
         if (runner.getNextCycle() == null) {//This is most certainly redundant
             return false;//Have reached the last cycle of the profile
         }
-        while (Math.abs(runner.getNextCycle().getFoFracFoAv()) < foThreshold) {
+        while (Math.abs(runner.getNextCycle().getFoFracFoAv()) < foThreshold 
+                && runner.getNextCycle().getFc() < profile.getFmax() * 0.95) {
             //Increase and set the LRE window size by 1 cycle
             profile.setLreWinSize(profile.getLreWinSize() + 1);
             ProfileInitializer.calcLreParameters(prfSum);
