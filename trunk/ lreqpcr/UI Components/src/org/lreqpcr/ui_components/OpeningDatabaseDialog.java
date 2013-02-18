@@ -18,12 +18,9 @@
 package org.lreqpcr.ui_components;
 
 import java.awt.BorderLayout;
-import java.awt.Dialog.ModalityType;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.JTextArea;
 import org.openide.windows.WindowManager;
 
@@ -40,7 +37,7 @@ public class OpeningDatabaseDialog extends JPanel{
 //        progressBar = new JProgressBar(0, 100);
 //        progressBar.setIndeterminate(true);
         
-        JTextArea text = new JTextArea("Loading Database File...                         ");
+        JTextArea text = new JTextArea("Loading Database File... Please be patient            ");
         
         JPanel panel = new JPanel();
 //        panel.add(progressBar);
