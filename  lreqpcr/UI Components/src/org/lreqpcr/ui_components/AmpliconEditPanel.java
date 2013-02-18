@@ -70,7 +70,7 @@ public class AmpliconEditPanel extends JPanel
                         return;//Prevents saving of a non-unique amplicon
                     } else {//Name is unique
                         if (selectedAmplicon != null) {
-                            selectedAmplicon.setName(nameDisplay.getText().trim());
+                            selectedAmplicon.setName(nameDisplay.getText());
                             nameErrorDisplay.setText("");
                             selectedNode.saveLreObject();
                             selectedNode.refreshNodeLabel();
