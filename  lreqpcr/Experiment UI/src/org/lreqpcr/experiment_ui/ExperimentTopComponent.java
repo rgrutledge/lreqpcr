@@ -297,21 +297,9 @@ public final class ExperimentTopComponent extends TopComponent
 
     private void openLastDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openLastDBbuttonActionPerformed
         CountDownLatch latch = new CountDownLatch(1);
-        JFrame message;
-        //This is a failed attempt to have the message dialog box to display properly while the DB is opening
-        try{
-            //Want to see Something while the DB is being opened
-            message = OpeningDatabaseDialog.makeDialog();
-        }finally{
-            latch.countDown();
-        }
-        
+        JFrame message = OpeningDatabaseDialog.makeDialog();
+        //This is a failed attempt to have the message dialog box to display properly while the DB is opening        
         try {
-            try {
-                latch.await();
-            } catch (InterruptedException ex) {
-                Exceptions.printStackTrace(ex);
-            }
             if (experimentDB.openLastDatabaseFile()) {
                 experimentDbTree.createTree();
                 UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, experimentDB);

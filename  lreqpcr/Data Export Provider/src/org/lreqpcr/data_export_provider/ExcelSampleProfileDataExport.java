@@ -16,12 +16,10 @@
  */
 package org.lreqpcr.data_export_provider;
 
-import com.google.common.collect.Lists;
 import java.awt.Desktop;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -153,16 +151,14 @@ public class ExcelSampleProfileDataExport {
             Number number;
             DateFormat customDateFormat = new DateFormat("ddMMMyy");
 
-            List<AverageSampleProfile> profileList = groupList.get(pageName);
-            Collections.sort(profileList);
-            ArrayList<SampleProfile> belowTenMoleculeList = Lists.newArrayList();
+            List<AverageSampleProfile> avProfileList = groupList.get(pageName);
+            //Need to extract well label and assign well number to each profile
+            //Sort the profiles based on well number. 
+            //Could display a Y/N dialog asking if this is an LC export that needs sorting
+            Collections.sort(avProfileList);
 
-            for (AverageSampleProfile avProfile : profileList) {
+            for (AverageSampleProfile avProfile : avProfileList) {
                 for (SampleProfile sampleProfile : avProfile.getReplicateProfileList()) {
-                    if (sampleProfile.getNo() < 10 && !sampleProfile.isExcluded()) {
-                        belowTenMoleculeList.add(sampleProfile);
-                        continue;
-                    }
                     WritableCellFormat dateFormat = new WritableCellFormat(customDateFormat);
                     dateFormat.setAlignment(Alignment.CENTRE);
                     DateTime dateCell = new DateTime(0, row, sampleProfile.getRunDate(), dateFormat);

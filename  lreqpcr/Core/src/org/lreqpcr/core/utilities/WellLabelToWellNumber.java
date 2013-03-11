@@ -415,8 +415,9 @@ public class WellLabelToWellNumber {
         }
         if(wellLabel.compareTo("H12") == 0){
             profile.setWellNumber(96);
-            return;
         }
     }
-
+ public  void wellLabelToNumber384Well_AB7900(Profile profile){
+//     HashTable hash = ;     
+ }
 }
