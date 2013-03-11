@@ -55,7 +55,9 @@ public class ProfileEditor extends JPanel implements
     private Lookup.Result nodeResult;
     private UniversalLookup universalLookup;
 
-    /** Creates new form ProfileView */
+    /**
+     * Creates new form ProfileView
+     */
     public ProfileEditor() {
         initComponents();
         initProfileView();
@@ -94,11 +96,11 @@ public class ProfileEditor extends JPanel implements
 //Display and editing of a profile is conducted through the ProfileSummary interface
             prfSum = analysisService.initializeProfileSummary(profile, selectionParameters);
             updatePanels();
-        }else {//LRE window not found
+        } else {//LRE window not found
             clearPanels();
             lreObjectInfo.displayMember(selectedNode);
         }
-        
+
     }
 
     private void updatePanels() {
@@ -270,9 +272,10 @@ public class ProfileEditor extends JPanel implements
     }
 
     /**
-     * A general policy is that the parent panel is responsible for responding to 
-     * changes within it's children panels. E.g. if the user changes the LRE window, 
-     * this panel is responsible for initiating profile and display updating. 
+     * A general policy is that the parent panel is responsible for responding
+     * to changes within it's children panels. E.g. if the user changes the LRE
+     * window, this panel is responsible for initiating profile and display
+     * updating.
      *
      * @param key
      */
@@ -323,8 +326,8 @@ public class ProfileEditor extends JPanel implements
                 } else {
                     //This could cause problems 
                     selectionParameters = null;
-                    clearPanels();
                 }
+                clearPanels();
             }
         }
     }
