@@ -37,7 +37,7 @@ public class OpeningDatabaseDialog extends JPanel{
 //        progressBar = new JProgressBar(0, 100);
 //        progressBar.setIndeterminate(true);
         
-        JTextArea text = new JTextArea("Loading Database File... Please be patient            ");
+        JTextArea text = new JTextArea("Loading Database File...                  ");
         
         JPanel panel = new JPanel();
 //        panel.add(progressBar);

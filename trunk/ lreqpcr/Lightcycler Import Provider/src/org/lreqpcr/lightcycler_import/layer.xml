@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
 <filesystem>
-    <folder name="Actions">
+<!--    <folder name="Actions">
         <folder name="Tools">
             <file name="org-lreqpcr-lightcycler_import-LightCyclerAction.instance">
                 <attr name="delegate" newvalue="org.lreqpcr.lightcycler_import.LightCyclerAction"/>
@@ -18,5 +18,5 @@
                 <attr name="position" intvalue="800"/>
             </file>
         </folder>
-    </folder>
+    </folder>-->
 </filesystem>

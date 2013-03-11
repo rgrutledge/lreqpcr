@@ -16,12 +16,12 @@
  */
 package org.lreqpcr.calibration_ui.components;
 
-import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
-import org.lreqpcr.core.data_objects.CalibrationProfile;
-import org.lreqpcr.core.ui_elements.LabelFactory;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
+import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.LreObject;
+import org.lreqpcr.core.ui_elements.LabelFactory;
 import org.lreqpcr.core.utilities.FormatingUtilities;
 
 /**
@@ -46,20 +46,20 @@ public class CalbnTreeNodeLabels implements LabelFactory {
         if (calbrnProfile.isExcluded()) {
             if (calbrnProfile instanceof AverageCalibrationProfile) {
                 calbrnProfile.setShortDescription("This Profile has been excluded by the user");
-            } else {//Must be a SampleProfile
+            } else {//Must be a CalibrationProfile
                 calbrnProfile.setShortDescription("This Calibration Profile has been excluded by the user and will not be included in the Average Profile");
             }
-            return rundate + ": " + profileName + " ...PROFILE IS EXCLUDED";
+            return rundate + ": " + profileName + "<PROFILE EXCLUDED>";
         }
         String emax;
         //Determine what to display for Emax
         if (calbrnProfile.isEmaxFixedTo100() && calbrnProfile.hasAnLreWindowBeenFound()) {
             df.applyPattern("#0.0");
-            calbrnProfile.setShortDescription("Emax overridden");
-            emax = "(100%<-- " + df.format(calbrnProfile.getEmax() * 100) + "%)";
+            calbrnProfile.setShortDescription("Emax fixed to 100%");
+            emax = "<100%>";
         } else {
             if (!calbrnProfile.hasAnLreWindowBeenFound()) {
-                emax = "(LRE window not found) ";
+                emax = "<LRE window not found>";
                 calbrnProfile.setShortDescription("An LRE window could not be found, likely due to being a flat profile"
                         + " or the Min Fc is set too high");
             } else {
