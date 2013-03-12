@@ -155,10 +155,10 @@ public class AverageProfileGenerator {
             AverageCalibrationProfile avCalbnProfile = new AverageCalibrationProfile(run);
             avCalbnProfile.setProfileToVer0_8_0(true);
             CalibrationProfile firstCalibrationProfile = calibrationProfileList.get(0);
-            //Amplicon size is required for initializing mo
-            avCalbnProfile.setAmpliconSize(firstCalibrationProfile.getAmpliconSize());
+//LamdaMass is required for initializing mo and must be converted back to pg as it is stored as ng in CalibrationProfile
+            avCalbnProfile.setLambdaMass(firstCalibrationProfile.getLambdaMass() * 1000000);
             //This initializes mo
-            avCalbnProfile.setLambdaMass(firstCalibrationProfile.getLambdaMass());
+            avCalbnProfile.setAmpliconSize(firstCalibrationProfile.getAmpliconSize());
             avCalbnProfile.setName(firstCalibrationProfile.getName());
             avCalbnProfile.setTargetStrandedness(TargetStrandedness.DOUBLESTRANDED);
             avCalbnProfile.setReplicateProfileList(calibrationProfileList);

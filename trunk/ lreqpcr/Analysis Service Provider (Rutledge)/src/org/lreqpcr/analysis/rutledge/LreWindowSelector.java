@@ -79,7 +79,7 @@ public class LreWindowSelector {
             fcEcArray[1][4] = runner.getNextCycle().getNextCycle().getEc();
 
             //Calc cycle LRE paramaters [dE, Emax, r2]
-            double[] regressionValues = null;
+            double[] regressionValues;
             runner.setCycLREparam(MathFunctions.linearRegressionAnalysis(fcEcArray));
             int cycNum = runner.getCycNum();
             double fc = runner.getFc();
@@ -100,7 +100,7 @@ public class LreWindowSelector {
         }
         double fb = profile.getFb();
         /*-----Finds start cycle based on the cycle LRE r2-----*/
-        Cycle strCycle = null;
+        Cycle strCycle;
         runner = cycZero.getNextCycle().getNextCycle().getNextCycle(); //Start at cycle 3
         while (runner.getNextCycle().getNextCycle().getNextCycle() != null) {
 

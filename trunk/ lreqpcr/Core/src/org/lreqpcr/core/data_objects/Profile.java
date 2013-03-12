@@ -453,7 +453,7 @@ public abstract class Profile extends LreObject {
      * Indicates whether a this is a valid Profile. If an LRE window has 
      * not been found the Profile is not displayable. 
      * 
-     * @param hasAnLreWindowFound sets whether an LRE window has been found
+     * @param hasAnLreWindowFound indicates whether an LRE window has been found
      */
     public void setHasAnLreWindowBeenFound(boolean hasAnLreWindowFound) {
         this.hasAnLreWindowBeenFound = hasAnLreWindowFound;
