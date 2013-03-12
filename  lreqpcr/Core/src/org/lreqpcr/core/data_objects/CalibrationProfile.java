@@ -23,7 +23,7 @@ package org.lreqpcr.core.data_objects;
  * lambda gDNA is used to determine the optical intensity of an assay. This then 
  * requires that the mass of lambda used in the amplification to be provided. 
  * 
- * Note that the default target strandedness for a Profile is double stranded
+ * Note that the default target strandedness for a Calibration Profile is double stranded
  * so it is not necessary to set the target strandedness for a lambda-derived calibration
  * profile.
  * @author Bob Rutledge
@@ -64,8 +64,6 @@ public class CalibrationProfile extends Profile {
      */
     public void setLambdaMass(double lambdaMass) {
         this.lambdaMass = lambdaMass / 1000000;//converted to nanograms
-        mo = (lambdaMass * getAmpliconSize()) / 48502;//Mo for OCF determination expressed in nanograms
-        updateCalibrationProfile();
     }
 
 //Override all setters for all paramaters that change No values in order to recalculate
@@ -73,6 +71,7 @@ public class CalibrationProfile extends Profile {
     @Override
     public void setAmpliconSize(int ampliconSize) {
         super.setAmpliconSize(ampliconSize);
+        mo = (lambdaMass * getAmpliconSize()) / 48502;//Mo for OCF determination expressed in nanograms
         updateCalibrationProfile();
     }
 
