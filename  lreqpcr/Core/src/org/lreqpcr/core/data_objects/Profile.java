@@ -47,7 +47,7 @@ public abstract class Profile extends LreObject {
     private double ampTm;//The amplicon Tm
     private double ct, ft;//Threshold cycle and fluorescence threshold
     private int fbStart, fbWindow;//Start and size of the Fb window for determining background fluorescence
-    // TODO fcReadings should be stored in a HashTable in order to preserve cycle number
+    // TODO fcReadings should be stored in a HashMap in order to preserve cycle number
     private double[] fcReadings; //Fluorescence dataset (Background subtracted)
     private double fb;//Average fluorescence backgroung used for background substraction
     private boolean hasAnLreWindowBeenFound;//Is this a flat profile or has any abberrancy that dissallows an LRE window to be located
