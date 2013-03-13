@@ -43,10 +43,10 @@ public class GenerateAverageFcDataset {
         int numberOfCycles = replicates.get(0).getRawFcReadings().length;
         double[] newAvFcDataset = new double[numberOfCycles];
 
-        //Remove excluded profiles from the average
+        //Remove excluded profiles and profiles which do not have a LRE window from the average
         ArrayList<Profile> profileList = new ArrayList<Profile>();
         for (Profile profile : replicates) {
-            if (!profile.isExcluded()) {
+            if (!profile.isExcluded() && profile.hasAnLreWindowBeenFound()) {
                 profileList.add(profile);
             }
         }

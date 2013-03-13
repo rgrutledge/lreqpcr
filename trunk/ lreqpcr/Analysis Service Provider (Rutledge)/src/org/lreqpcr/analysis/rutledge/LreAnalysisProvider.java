@@ -47,9 +47,10 @@ public class LreAnalysisProvider extends LreAnalysisService {
 
     @Override
     public boolean conductAutomatedLreWindowSelection(Profile profile, LreWindowSelectionParameters parameters) {
+        //This will force a new LRE window to be found so that complete reinitialized is conducted
         profile.setHasAnLreWindowBeenFound(false);
         //Construct a ProfileSummary which is used for automated LRE window selection 
-        //Subtract background fluorescence
+        //Subtract background fluorescence if needed
         if (profile.getFcReadings() == null) {
             //A new profile that requires baseline substraction
             BaselineSubtraction.baselineSubtraction(profile);
@@ -100,7 +101,7 @@ public class LreAnalysisProvider extends LreAnalysisService {
      * @param db the database to be converted to version 0.8.0
      */
     @Override
-    public void convertDatabaseToNewVersion(DatabaseServices db) {
+    public void convertDatabaseToNewVersion(DatabaseServices db) {// TODO eliminate this !!!****************************************************
 
         if (db.getDatabaseType() == DatabaseType.EXPERIMENT) {
             //Need to retrieve the OCF
