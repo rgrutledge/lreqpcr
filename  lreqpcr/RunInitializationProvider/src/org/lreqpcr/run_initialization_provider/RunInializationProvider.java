@@ -133,7 +133,7 @@ public class RunInializationProvider implements RunInitializationService {
                     ExperimentDbInfo dbInfo = (ExperimentDbInfo) experimentDB.getAllObjects(ExperimentDbInfo.class).get(0);
                     double ocf = dbInfo.getOcf();
                     for (SampleProfile sampleProfile : sampleProfileList) {
-                        // TODO This conversion should be moved to a dedicated module 
+                        // TODO This conversion should be eliminated********************************************************************** 
                         sampleProfile.setProfileToVer0_8_0(true);//Needed for back compatablity
                         if (ampliconDB != null) {
                             if (ampliconDB.isDatabaseOpen()

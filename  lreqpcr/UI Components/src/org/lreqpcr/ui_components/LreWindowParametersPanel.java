@@ -142,7 +142,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                             selectionParameters.setMinFc(minFc);
                             //Now reset
                             resetSelectionParameters();
-                        }else {//Display the previous minFc value
+                        } else {//Display the previous minFc value
                             updateDisplay();
                         }
                     }
@@ -164,6 +164,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                                     "Invalid Number",
                                     JOptionPane.ERROR_MESSAGE);
                             //Do not change the current Fo threshold
+                            updateDisplay();
                         }
                         if (newFoThreshold < 0) {
                             Toolkit.getDefaultToolkit().beep();
@@ -172,8 +173,9 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                                     "Invalid Fo Theshold",
                                     JOptionPane.ERROR_MESSAGE);
                             //Do not change the current Fo threshold
+                            updateDisplay();
                         }
-                        if (newFoThreshold != 0) {
+                        if (newFoThreshold > 0) {
                             foThreshold = newFoThreshold;
                             //A vailid Fo threshold was entered, so store it
                             selectionParameters.setFoThreshold(foThreshold);
@@ -211,26 +213,35 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
     }
 
     /**
-     * The new minimum Fmax must not less than or equal to zero. 
+     * The new minimum Fmax must not less than or equal to zero.
+     *
      * @param newMinFmax
-     * @return whether newMinFmax is within an acceptable range (5-60% of the average Fmax)
+     * @return whether newMinFmax is within an acceptable range (5-60% of the
+     * average Fmax)
      */
     private boolean determineIfminFcIsAcceptable(double newMinFmax) {
-        if (newMinFmax <= 0){
+        if (newMinFmax <= 0) {
             return false;
         }
 //Uses the average Fmax to provide scale for determiing is the newMinFc is acceptable
-         //Average Fmax across all runs is calculated by the Experiment panel Tree 
-         //everytime a new profile database is opened
-            averageFmax = selectionParameters.getAvRunFmax();
-            double fractionOfFmax = newMinFmax/averageFmax;
+        //Average Fmax across all runs is calculated by the Experiment panel Tree 
+        //everytime a new profile database is opened
+        //This is a quickfix for Calibration databases as they yet do not have avFmax implemented
+        // TODO implement average Fmax for calibration databases
+        if (selectionParameters.getAvRunFmax() == null) {
+            return true;
+        }
+        averageFmax = selectionParameters.getAvRunFmax();
+        double fractionOfFmax = newMinFmax / averageFmax;
         if (fractionOfFmax > 0.6) {//Greater then 60%
             Toolkit.getDefaultToolkit().beep();
             boolean yes = RunImportUtilities.requestYesNoAnswer("Minimum Fc too high?",
                     "The Minimum Fc appears to be too high.\n Do you want to continue?");
             if (yes) {
                 return true;
-            }else {return false;}
+            } else {
+                return false;
+            }
         }
         if (fractionOfFmax < 0.05) {//<5%
             Toolkit.getDefaultToolkit().beep();
@@ -238,7 +249,9 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                     "The Minimum Fc appears to be too low.\n Do you want to continue?");
             if (yes) {
                 return true;
-            }else {return false;}
+            } else {
+                return false;
+            }
         }
         return true;
     }

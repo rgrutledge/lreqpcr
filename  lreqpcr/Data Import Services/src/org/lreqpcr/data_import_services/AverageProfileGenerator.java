@@ -18,18 +18,18 @@ package org.lreqpcr.data_import_services;
 
 //import org.lreqpcr.analysis_services.*;
 //import org.lreqpcr.analysis_services.*;
-import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
-import org.lreqpcr.core.data_objects.Profile;
-import org.lreqpcr.core.data_objects.AverageSampleProfile;
-import org.lreqpcr.core.data_objects.CalibrationProfile;
-import org.lreqpcr.core.data_objects.Run;
-import org.lreqpcr.core.data_objects.AverageProfile;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import javax.swing.JOptionPane;
 import org.lreqpcr.analysis_services.LreAnalysisService;
+import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
+import org.lreqpcr.core.data_objects.AverageProfile;
+import org.lreqpcr.core.data_objects.AverageSampleProfile;
+import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
+import org.lreqpcr.core.data_objects.Profile;
+import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.data_objects.TargetStrandedness;
 import org.openide.util.Lookup;
@@ -171,14 +171,16 @@ public class AverageProfileGenerator {
         }
         return averageCalbnProfileList;
     }
-
+// TODO this is redundant to org.lreqpcr.core.utilities 
+//GenerateAverageFcDataset.public static double[] generateAverageFcDataset(List<? extends Profile> replicates)
     private static double[] generateAverageFcDataset(ArrayList<? extends Profile> replicateProfiles) {
         int numberOfCycles = replicateProfiles.get(0).getRawFcReadings().length;
         int numberOfProfiles = replicateProfiles.size();
         HashMap<Integer, double[]> fcMap = new HashMap<Integer, double[]>();
         int key = 0;
         for (int i = 0; i < numberOfProfiles; i++) {
-            if (!replicateProfiles.get(i).isExcluded()) {
+            if (!replicateProfiles.get(i).isExcluded() 
+                    && replicateProfiles.get(i).hasAnLreWindowBeenFound()) {
                 fcMap.put(key, replicateProfiles.get(i).getRawFcReadings());
                 key++;
             }
@@ -203,6 +205,7 @@ public class AverageProfileGenerator {
                             msg,
                             "Data Emport Error",
                             JOptionPane.ERROR_MESSAGE);
+                    // TODO Do something with this...low priority
 //                    throw new Exception();
 //                    return null;
                 }
