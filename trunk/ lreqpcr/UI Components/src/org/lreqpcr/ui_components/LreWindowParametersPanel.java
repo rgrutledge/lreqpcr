@@ -57,6 +57,7 @@ import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 
 /**
+ * Displays and processes changes to the LRE window selection parameters.
  *
  * @author Bob Rutledge
  */
@@ -64,7 +65,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
 
     private KeyAdapter keyAdapter;
     private Double minFc;//Can be set to zero to reset to automated StartCycle selection
-    private Double foThreshold;
+    private Double foThreshold = 0d;
     private DecimalFormat df = new DecimalFormat();
     private DatabaseServices currentDB;//Experiment or Calibration database
     private LreWindowSelectionParameters selectionParameters;
@@ -73,7 +74,9 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
     private UniversalLookup universalLookup = UniversalLookup.getDefault();
     private double averageFmax;
 
-    /** Creates new form LreWindowParametersPanel */ 
+    /**
+     * Displays and processes changes to the LRE window selection parameters.
+     */
     public LreWindowParametersPanel() {
         initComponents();
         createKeyAdapter();
@@ -110,111 +113,148 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
 
     private void createKeyAdapter() {
         keyAdapter = new KeyAdapter() {
-
             @Override
             @SuppressWarnings(value = "unchecked")
             public void keyReleased(KeyEvent e) {
                 if (e.getKeyCode() == 10) {//"Return" key
-                    String minFcString = minFcDisplay.getText();
-                    String foThresholdString = foThresholdDisplay.getText();
-                    //Remove any commas from the minimum Fc
-                    while (minFcString.contains(",")) {
-                        int index = minFcString.indexOf(",");
-                        minFcString = minFcString.substring(0, index) + minFcString.substring(index + 1);
-                    }
-                    try {
-                        minFc = Double.valueOf(minFcString);
-                    } catch (NumberFormatException nan) {
-                        Toolkit.getDefaultToolkit().beep();
-                        JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
-                                "The minimum Fc must be a valid number",
-                                "Invalid Number",
-                                JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    if (averageFmax == 0) {
-                        calcAverageFmax();//Limited to the first 100 profiles as this is time consuming
-                    }
-                    if (minFc > averageFmax) {
-                        Toolkit.getDefaultToolkit().beep();
-                        boolean yes = RunImportUtilities.requestYesNoAnswer("Minimum Fc too high?",
-                                "The Minimum Fc appears to be too high.\n Do you want to continue?");
-                        if (!yes) {
-                            return;
+                    if (e.getComponent().equals(minFcDisplay)) {
+                        double newMinFc = -1;//Signifies that an acceptable value has not been found
+                        //Reset minFcDisplay
+                        String minFcString = minFcDisplay.getText();
+                        if (!minFcString.equals("")) {
+                            //Process the retrieved String
+                            newMinFc = parseMinFcString(minFcString);//Returns -1 if parse fails
+                            //If zero is returned, a zero must have been entered, indicating  reset to default (minFc = 0)
+                            if (newMinFc > 0 && !determineIfminFcIsAcceptable(newMinFc)) {
+                                //newMinFc is not within an acceptable range
+                                //So do nothing, as signified by -1
+                                newMinFc = -1;
+                            }//Else the newMinFc has a valid value
+                        } else {
+                            //Must be a blank entry
+                            //This signals that first cycle below C1/2 is to be used for minFc (default)
+                            newMinFc = 0;
+                        }
+                        //Process the newMinFc value
+                        if (newMinFc != -1) {//-1 signifies that the current minFc is not to be changed
+                            minFc = newMinFc;
+                            //Set the new value
+                            selectionParameters.setMinFc(minFc);
+                            //Now reset
+                            resetSelectionParameters();
+                        }else {//Display the previous minFc value
+                            updateDisplay();
                         }
                     }
-                    if (minFc < (averageFmax * 0.05) && minFc != 0d) {//<5%
-                        Toolkit.getDefaultToolkit().beep();
-                        boolean yes = RunImportUtilities.requestYesNoAnswer("Minimum Fc too low?",
-                                "The Minimum Fc appears to be too low.\n Do you want to continue?");
-                        if (!yes) {
-                            return;
+                    if (e.getComponent().equals(foThresholdDisplay)) {
+                        double newFoThreshold = 0;
+                        //Process the new Fo threshold
+                        String foThresholdString = foThresholdDisplay.getText();
+                        //Remove "%" at the end of the Fo threshold string, if one exsists
+                        if (foThresholdString.contains("%")) {
+                            int index = foThresholdString.indexOf("%");
+                            foThresholdString = new String(foThresholdString.substring(0, index));
                         }
-                    }
-
-                    //Remove "%" at the end of the Fo threshold string, if one exsists
-                    if (foThresholdString.contains("%")) {
-                        int index = foThresholdString.indexOf("%");
-                        foThresholdString = new String(foThresholdString.substring(0, index));
-                    }
-                    try {
-                        foThreshold = Double.valueOf(foThresholdString) / 100;
-                    } catch (NumberFormatException nan) {
-                        Toolkit.getDefaultToolkit().beep();
-                        JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
-                                "The Fo Threshold must be a valid number",
-                                "Invalid Number",
-                                JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    if (foThreshold <= 0) {
-                        Toolkit.getDefaultToolkit().beep();
-                        JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
-                                "The Fo Theshold must be greater than zero",
-                                "Invalid Fo Theshold",
-                                JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    selectionParameters.setMinFc(minFc);
-                    selectionParameters.setFoThreshold(foThreshold);
-                    currentDB.saveObject(selectionParameters);
-                    reinitializeAllProfiles();
-                    updateDisplay();
-                    //Clear the profile editor display
-                    universalLookup.fireChangeEvent(PanelMessages.CLEAR_PROFILE_EDITOR);
-                    //Triggers parent panel updates
-                    if (currentDB.getDatabaseType() == DatabaseType.EXPERIMENT) {
-                        universalLookup.fireChangeEvent(PanelMessages.UPDATE_EXPERIMENT_PANELS);
-                    }
-                    if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION) {
-                        universalLookup.fireChangeEvent(PanelMessages.UPDATE_CALIBRATION_PANELS);
+                        try {
+                            newFoThreshold = Double.valueOf(foThresholdString) / 100;
+                        } catch (NumberFormatException nan) {
+                            Toolkit.getDefaultToolkit().beep();
+                            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                                    "The Fo Threshold must be a valid number",
+                                    "Invalid Number",
+                                    JOptionPane.ERROR_MESSAGE);
+                            //Do not change the current Fo threshold
+                        }
+                        if (newFoThreshold < 0) {
+                            Toolkit.getDefaultToolkit().beep();
+                            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                                    "The Fo Theshold must be greater than zero",
+                                    "Invalid Fo Theshold",
+                                    JOptionPane.ERROR_MESSAGE);
+                            //Do not change the current Fo threshold
+                        }
+                        if (newFoThreshold != 0) {
+                            foThreshold = newFoThreshold;
+                            //A vailid Fo threshold was entered, so store it
+                            selectionParameters.setFoThreshold(foThreshold);
+                            //Now reset
+                            resetSelectionParameters();
+                        }
                     }
                 }
             }
         };
     }
 
-    @SuppressWarnings("unchecked")
-    private void calcAverageFmax() {
-        //This is limited to the first 100 profiles as this is very time intensive when the database is large
-        if (currentDB != null) {
-            if (currentDB.isDatabaseOpen()) {
-                List<Profile> profileList = currentDB.getAllObjects(Profile.class);
-                double sum = 0;
-                int counter = 0;
-                for (Profile profile : profileList) {
-                    if (profile.hasAnLreWindowBeenFound()) {
-                        double fmax = profile.getEmax() / (-1 * profile.getDeltaE());
-                        sum += fmax;
-                        counter++;
-                        if (counter > 100) {
-                            averageFmax = sum / counter;
-                            return;
-                        }
-                    }
-                }
-                averageFmax = sum / counter;
-            }
+    /**
+     * Returns -1 if parse fails.
+     *
+     * @param minFcString
+     * @return
+     */
+    private double parseMinFcString(String minFcString) {
+        //Remove any commas from the minimum Fc
+        while (minFcString.contains(",")) {
+            int index = minFcString.indexOf(",");
+            minFcString = minFcString.substring(0, index) + minFcString.substring(index + 1);
+        }
+        try {
+            return Double.valueOf(minFcString);
+        } catch (NumberFormatException nan) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                    "The minimum Fc must be a valid number",
+                    "Invalid Number",
+                    JOptionPane.ERROR_MESSAGE);
+            return -1;
+        }
+    }
+
+    /**
+     * The new minimum Fmax must not less than or equal to zero. 
+     * @param newMinFmax
+     * @return whether newMinFmax is within an acceptable range (5-60% of the average Fmax)
+     */
+    private boolean determineIfminFcIsAcceptable(double newMinFmax) {
+        if (newMinFmax <= 0){
+            return false;
+        }
+//Uses the average Fmax to provide scale for determiing is the newMinFc is acceptable
+         //Average Fmax across all runs is calculated by the Experiment panel Tree 
+         //everytime a new profile database is opened
+            averageFmax = selectionParameters.getAvRunFmax();
+            double fractionOfFmax = newMinFmax/averageFmax;
+        if (fractionOfFmax > 0.6) {//Greater then 60%
+            Toolkit.getDefaultToolkit().beep();
+            boolean yes = RunImportUtilities.requestYesNoAnswer("Minimum Fc too high?",
+                    "The Minimum Fc appears to be too high.\n Do you want to continue?");
+            if (yes) {
+                return true;
+            }else {return false;}
+        }
+        if (fractionOfFmax < 0.05) {//<5%
+            Toolkit.getDefaultToolkit().beep();
+            boolean yes = RunImportUtilities.requestYesNoAnswer("Minimum Fc too low?",
+                    "The Minimum Fc appears to be too low.\n Do you want to continue?");
+            if (yes) {
+                return true;
+            }else {return false;}
+        }
+        return true;
+    }
+
+    private void resetSelectionParameters() {
+        currentDB.saveObject(selectionParameters);
+        reinitializeAllProfiles();
+        updateDisplay();
+        //Clear the profile editor display
+        universalLookup.fireChangeEvent(PanelMessages.CLEAR_PROFILE_EDITOR);
+        //Triggers parent panel updates
+        if (currentDB.getDatabaseType() == DatabaseType.EXPERIMENT) {
+            universalLookup.fireChangeEvent(PanelMessages.UPDATE_EXPERIMENT_PANELS);
+        }
+        if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION) {
+            universalLookup.fireChangeEvent(PanelMessages.UPDATE_CALIBRATION_PANELS);
         }
     }
 
@@ -229,12 +269,12 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         List<AverageProfile> profileList;
 //This is necessary becuase for unknown reasons retrieving AverageProfiles 
 //objects fail for calibration profiles
-        if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION){
-           profileList =  currentDB.getAllObjects(AverageCalibrationProfile.class);
+        if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION) {
+            profileList = currentDB.getAllObjects(AverageCalibrationProfile.class);
         } else {
             profileList = currentDB.getAllObjects(AverageProfile.class);
         }
-        
+
         if (profileList.isEmpty()) {
             return;
         }
@@ -256,13 +296,9 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
 
     private void updateDisplay() {
         if (selectionParameters != null) {
-            if (minFc != null) {
-                if (minFc != 0) {
-                    df.applyPattern(FormatingUtilities.decimalFormatPattern(minFc));
-                    minFcDisplay.setText(df.format(minFc));
-                } else {
-                    minFcDisplay.setText("First cycle below C1/2");
-                }
+            if (minFc != null && minFc != 0) {
+                df.applyPattern(FormatingUtilities.decimalFormatPattern(minFc));
+                minFcDisplay.setText(df.format(minFc));
             } else {
                 minFcDisplay.setText("First cycle below C1/2");
             }
@@ -270,6 +306,8 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         if (foThreshold != null) {
             df.applyPattern("#.0%");
             foThresholdDisplay.setText(df.format(foThreshold));
+        } else {
+            foThresholdDisplay.setText("ERROR");//This absolutely should never happen...
         }
         avReplCvDisplay.setText("");
     }
@@ -281,13 +319,14 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
     }
 
     /**
-     * Provides an indicate of quantitative variance based on variance of the 
-     * replicate profile CV, that is average No CV for sample profiles when an OCF 
-     * has been applied. Note that replicates with less than 10 molecules are excluded
-     * for SampleProfile and that it is expected that calibration profiles to always have
-     * target quantities above 10 molecules.
+     * Provides an indicate of quantitative variance based on variance of the
+     * replicate profile CV, that is average No CV for sample profiles when an
+     * OCF has been applied. Note that replicates with less than 10 molecules
+     * are excluded for SampleProfile and that it is expected that calibration
+     * profiles to always have target quantities above 10 molecules.
      *
-     * @return the replicate CV or -1 if the replicate CV cannot be determined or 0 if too few replicates are available.
+     * @return the replicate CV or -1 if the replicate CV cannot be determined
+     * or 0 if too few replicates are available.
      */
     @SuppressWarnings(value = "unchecked")
     private double calcReplicateFoCV() {
@@ -362,10 +401,10 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         return 0;//Too few replicates are available
     }
 
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -468,7 +507,9 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
     // End of variables declaration//GEN-END:variables
 
     /**
-     * This provides update functionality that is independent from the parent panel
+     * This provides update functionality that is independent from the parent
+     * panel
+     *
      * @param key the event key
      */
     public void universalLookupChangeEvent(Object key) {
@@ -511,7 +552,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
             //Test if the database holds profiles
             if (type == DatabaseType.EXPERIMENT || type == DatabaseType.CALIBRATION) {
                 if (currentDB != dbProvider.getDatabaseServices()) {
-       //A new Experiment or Calibration TC has been selected thus the parameters need to be updated
+                    //A new Experiment or Calibration TC has been selected thus the parameters need to be updated
                     currentDB = dbProvider.getDatabaseServices();
                     if (currentDB.isDatabaseOpen()) {
                         selectionParameters = (LreWindowSelectionParameters) currentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);

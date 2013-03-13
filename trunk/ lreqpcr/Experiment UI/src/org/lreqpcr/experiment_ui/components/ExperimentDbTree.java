@@ -164,6 +164,7 @@ public class ExperimentDbTree extends JPanel {
     }//End of create tree
 
     public void calcAvFmaxForAllRuns(List<? extends Run> runList) {
+        //This could be intensive but currently deemed acceptable as it avoids complex situtations with new exp databases
         ArrayList<Double> fmaxList = Lists.newArrayList();//Used to determine SD
         double fmaxSum = 0;
         for (Run run : runList) {
@@ -172,6 +173,11 @@ public class ExperimentDbTree extends JPanel {
         }
         if (fmaxList.size() >= 1 && fmaxSum > 0) {
             avRunFmax = fmaxSum / fmaxList.size();
+            //Store avRunFmax in the LRE window selection parameters for use by the parameters panel
+            LreWindowSelectionParameters selectionParameters = 
+                    (LreWindowSelectionParameters) experimentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
+            selectionParameters.setAvRunFmax(avRunFmax);
+            experimentDB.saveObject(selectionParameters);
             if (fmaxList.size() > 1) {
                 avRunFmaxCV = MathFunctions.calcStDev(fmaxList) / avRunFmax;
             }

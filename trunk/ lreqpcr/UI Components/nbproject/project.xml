@@ -103,6 +103,7 @@
         <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
             <word>Amplicon</word>
             <word>Amplicons</word>
+            <word>Fmax</word>
         </spellchecker-wordlist>
     </configuration>
 </project>
