@@ -53,17 +53,6 @@ public class RootCalibrationChildren extends LreObjectChildren {
     public RootCalibrationChildren(ExplorerManager mgr, DatabaseServices db, List<AverageCalibrationProfile> avCalProfileList,
             LreActionFactory actionFactory, LabelFactory labelFactory) {
         super(mgr, db, avCalProfileList, actionFactory, labelFactory);
-
-//Profile conversin to ver 0.8.0
-        //Check to see if the database contains any profile
-        if (avCalProfileList != null && avCalProfileList.size() >0) {
-            //Check the version of the AverageProfiles...if not 0.8.0 then all the profiles need to be updated.
-            //Assume that the first profile is indicative of all the profiles in the database
-            if (!avCalProfileList.get(0).isProfileVer0_8_0()) {
-                //All of the profiles within this database need to be converted to version 0.8.0
-                    analysisService.convertDatabaseToNewVersion(db);
-            }
-        }
     }
 
     /**

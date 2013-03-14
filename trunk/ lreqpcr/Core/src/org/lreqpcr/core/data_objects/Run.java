@@ -40,9 +40,13 @@ public abstract class Run extends LreObject {
     private double runOCF = 0;//Run-specific OCF
     private double averageFmax = 0;//Average Fmax of all replicate profiles
     private double avFmaxCV = 0;//Average Fmax coefficient of variation 
+    private String versionNumber;
     
     /**
-     * The child class is set to AverageProfile.
+     * The child class is set to AverageProfile. This allows average profiles 
+     * within a Run to be retrieved via its child objects. However, for performance 
+     * reasons, this has been largely abandoned, relying instead on a List of 
+     * average profiles. 
      */
     public Run() {
         setChildClass(AverageProfile.class);
@@ -64,10 +68,22 @@ public abstract class Run extends LreObject {
         this.operators.add(operator);
     }
 
+    /**
+     * 
+     * 
+     * @return list containing all of the average profiles within this Run
+     */
     public List<AverageSampleProfile> getAverageProfileList() {
         return averageProfileList;
     }
 
+    /**
+     * All average profiles within a Run are stored in a list, allow direct 
+     * access without having to conduct a database search. Note that order 
+     * is not important. 
+     * 
+     * @param averageProfileList list containing all of the average profiles within this Run
+     */
     public void setAverageProfileList(List<AverageSampleProfile> averageProfileList) {
         this.averageProfileList = averageProfileList;
     }
@@ -81,8 +97,12 @@ public abstract class Run extends LreObject {
     }
 
     /**
-     * Sets the date on which the run was conducted.
-     * @param runDate the run date
+     * Sets the date on which the run was conducted. While this was initially 
+     * considered inappropriate as Run date is set during data import. However, 
+     * it is provided to allow an incorrect date to be changed without re-importing  
+     * the Run.  
+     * 
+     * @param runDate the new Run date
      */
     public void setRunDate(Date runDate) {
         this.runDate = runDate;
@@ -108,6 +128,10 @@ public abstract class Run extends LreObject {
         return year;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public double getAverageFmax() {
         if(averageFmax == 0){
             calculateAverageFmax();            
@@ -134,9 +158,28 @@ public abstract class Run extends LreObject {
     public void setRunOCF(double runOCF) {
         this.runOCF = runOCF;
     }
+
+    /**
+     * Included in version 0.8 to allow database compatability to be assessed.
+     * 
+     * @return the version number
+     */
+    public String getVersionNumber() {
+        return versionNumber;
+    }
+
+    /**
+     * Version number to allow database compatability to be assessed.
+     * 
+     * @param versionNumber the version number that can contain characters
+     */
+    public void setVersionNumber(String versionNumber) {
+        this.versionNumber = versionNumber;
+    }
     
     /**
-     * Calculates the average Fmax and CV based only on the replicate profiles. Note that the
+     * Calculates the average Fmax and it's CV based only on the replicate profiles
+     * within this Run. Note that the
      * AverageProfiles are ignored, as are excluded SampleProfiles, along with  
      * SampleProfiles for which an LRE window has not been found.
      */

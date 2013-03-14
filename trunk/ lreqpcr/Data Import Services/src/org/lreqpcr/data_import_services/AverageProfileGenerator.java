@@ -67,7 +67,7 @@ public class AverageProfileGenerator {
         while (!listCopy.isEmpty()) {
             SampleProfile profile = listCopy.get(0);
             AverageSampleProfile avSampleProfile = new AverageSampleProfile(parentRun);
-            avSampleProfile.setProfileToVer0_8_0(true);
+//            avSampleProfile.setProfileToVer0_8_0(true);
             avSampleProfile.setTargetStrandedness(profile.getTargetStrandedness());
             ArrayList<SampleProfile> replicateProfileList = new ArrayList<SampleProfile>();
             for (SampleProfile prf : listCopy) {
@@ -153,7 +153,6 @@ public class AverageProfileGenerator {
             }
             //Average the replicates Profile raw Fc datasets
             AverageCalibrationProfile avCalbnProfile = new AverageCalibrationProfile(run);
-            avCalbnProfile.setProfileToVer0_8_0(true);
             CalibrationProfile firstCalibrationProfile = calibrationProfileList.get(0);
 //LamdaMass is required for initializing mo and must be converted back to pg as it is stored as ng in CalibrationProfile
             avCalbnProfile.setLambdaMass(firstCalibrationProfile.getLambdaMass() * 1000000);
