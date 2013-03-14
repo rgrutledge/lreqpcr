@@ -16,11 +16,11 @@
  */
 package org.lreqpcr.experiment_ui.components;
 
-import org.lreqpcr.core.data_objects.LreObject;
 import java.util.List;
 import javax.swing.Action;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
+import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LabelFactory;
@@ -75,20 +75,7 @@ public class RootRunChildren extends LreObjectChildren {
                 actions = new Action[]{};//i.e. there are no Actions for this Node
             }
         }
-
-        //Check the version of the AverageProfiles...if not 0.8.0 then all the
-        //profiles need to be updated.
         List<AverageSampleProfile> avProfileList = run.getAverageProfileList();
-        if (avProfileList != null) {
-            if (!avProfileList.isEmpty()) {
-    //Assume that the first profile is indicative of all the profiles in the Run
-                if (!avProfileList.get(0).isProfileVer0_8_0()) {
-//All of the profiles within this database need to be converted to version 0.8.0
-                    analysisService.convertDatabaseToNewVersion(db);
-                }
-            }
-        }
-
         LreNode node = new LreNode(new RunChildren(mgr, db, avProfileList, nodeActionFactory, nodeLabelFactory),
                 Lookups.singleton(lreObject), actions);
         node.setExplorerManager(mgr);

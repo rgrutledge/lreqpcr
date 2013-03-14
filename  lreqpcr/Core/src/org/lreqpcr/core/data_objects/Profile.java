@@ -20,18 +20,18 @@ package org.lreqpcr.core.data_objects;
 import java.util.Date;
 
 /**
- * Abstract class for the basic object representing an
- * amplification profile. Stores all basic parameters of a Profile in which target quantity is expressed
- * in fluorescence units. Note that this is designed to only be a data storage 
- * object such that it contains only setter and getter methods. 
- * Note also that target quantity is only expressed in fluorescence units. 
+ * Abstract class representing an amplification profile. 
+ * Stores all basic parameters of a Profile 
+ * in which target quantity is expressed in fluorescence units. 
+ * Note that this is designed to primarily be a data storage 
+ * object containing only setter and getter methods. 
  *
  * @author Bob Rutledge
  */
 public abstract class Profile extends LreObject {
 
     //Profile creation parameters
-    private Run run;//The run that generated this profile
+    private Run run;//The Run that generated this profile
     private Date runDate;
     private String wellLabel;//Plate well label i.e. A1-A12, A1-H1
     private int wellNumber;//Plate well number 1-96, used as an alternative to well label
@@ -290,10 +290,23 @@ public abstract class Profile extends LreObject {
         this.nonR2 = nonR2;
     }
 
+    /**
+     * Retrieves the raw fluorescence readings (no background subtraction) in an ordered array 
+     * that starts with Cycle 1 and is continuous to the last cycle. Cycle number 
+     * is based on the array index.
+     * @return the array containing the raw fluorescence readings for each cycle
+     */
     public double[] getRawFcReadings() {
         return rawFcReadings;
     }
 
+    /**
+     * Sets the raw fluorescence readings (no background subtraction) in an ordered array 
+     * that must start with Cycle 1 and must be continuous to the last cycle. 
+     * Cycle number is derived from the array index and thus must contain 
+     * fluorescence readings from every cycle. 
+     * @param rawFcReadings raw fluorescence readings starting with Cycle 1
+     */
     public void setRawFcReadings(double[] rawFcReadings) {
         this.rawFcReadings = rawFcReadings;
     }
@@ -326,10 +339,7 @@ public abstract class Profile extends LreObject {
         return ampliconSize;
     }
 
-    /**
-     * Note that 
-     * @param ampliconSize
-     */
+
     public void setAmpliconSize(int ampliconSize) {
         this.ampliconSize = ampliconSize;
     }
@@ -356,8 +366,7 @@ public abstract class Profile extends LreObject {
 
     /**
      * Note that Run data is set via the constructor so that setting the Run date
-     * is redundant. It is provided solely for future options that could allow
-     * the Run date to be changed.
+     * is redundant. It is provided solely for the option to change the Run date.
      * @param runDate
      */
     public void setRunDate(Date runDate) {
@@ -372,10 +381,20 @@ public abstract class Profile extends LreObject {
         this.fbIntercept = fbIntercept;
     }
 
+    /**
+     * Linear correlation coefficient of the region used to determine background fluorescence. 
+     * Provided as a crude indicator of baseline drifting.
+     * @return linear correlation coefficient of the baseline region used to calculate background fluorescence
+     */
     public double getFbR2() {
         return fbR2;
     }
 
+    /**
+     * Linear correlation coefficient of the region used to determine background fluorescence.
+     * Provided as a crude indicator of baseline drifting.
+     * @param fbR2 linear correlation coefficient of the baseline region used to calculate background fluorescence
+     */
     public void setFbR2(double fbR2) {
         this.fbR2 = fbR2;
     }
@@ -398,6 +417,12 @@ public abstract class Profile extends LreObject {
         this.fbSlope = fbSlope;
     }
 
+    /**
+     * Flag indicating whether a profile has been excluded, primarily due to 
+     * failed amplification or anomalous amplification kinetics. 
+     * 
+     * @return whether the profile been excluded from analysis
+     */
     public boolean isExcluded() {
         return excluded;
     }
@@ -420,7 +445,7 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * Indicates whether the LRE-derived Emax has been fixed to 100% 
+     * Indicates whether the  Emax has been fixed to 100% 
      * @return whether Emax is fixed to 100%
      */
     public boolean isEmaxFixedTo100() {
@@ -428,11 +453,14 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * Allows the LRE-derived Emax to be fixed/unfixed to 100%.
-     * Note that Emax fixed to 100% is only applied during conversion of Fo to No, and
-     * thus does not impact LRE analysis used to generate Fo values, as this 
-     * would generate aberrant biases. 
-     * Note also that this updates the Run's average Fmax. 
+     * Allows the Emax to be fixed/unfixed to 100% but only impacts downstream data processing. 
+     * Fixing Emax to 100% is only applied during conversion of Fo 
+     * to No or OCF, within Sample and Calibration profiles, respectively.
+     * Thus this does not impact LRE analysis used to generate Fo values, 
+     * as this would generate aberrant biases. This was placed into Profile solely 
+     * for reasons of convenience, and does not impact how  
+     * a Profile generates Fo values.
+     * 
      * @param isEmaxFixedTo100
      */
     public void setIsEmaxFixedTo100(boolean isEmaxFixedTo100) {
@@ -441,7 +469,8 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * Indicates whether an LRE window has been found for this Profile.
+     * Indicates whether an LRE window has been found for this Profile. Lack of 
+     * a LRE window is primarily indicative of a flat profile.
      * 
      * @return whether an LRE window has been found
      */
@@ -450,32 +479,12 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * Indicates whether a this is a valid Profile. If an LRE window has 
-     * not been found the Profile is not displayable. 
+     * Indicates whether a this is a valid Profile.  
      * 
      * @param hasAnLreWindowFound indicates whether an LRE window has been found
      */
     public void setHasAnLreWindowBeenFound(boolean hasAnLreWindowFound) {
         this.hasAnLreWindowBeenFound = hasAnLreWindowFound;
-    }
-
-    /**
-     * Implemented in version 0.8.0 in order to maintain
-     * back compatability, which requires that pre 0.8.0 profiles be reinitialized.
-     * @return whether this Profile is version 0.8.0 or later
-     */
-    public boolean isProfileVer0_8_0() {
-        return isProfileVer0_8_0;
-    }
-
-    /**
-     * Used for back compatability, it is necessary to set to true for all 
-     * new Profiles during Profile creation.
-     * 
-     * @param setProfileToVer0_8_0 true for all new Profiles
-     */
-    public void setProfileToVer0_8_0(boolean isProfileVer0_8_0) {
-        this.isProfileVer0_8_0 = isProfileVer0_8_0;
     }
 
     @Override

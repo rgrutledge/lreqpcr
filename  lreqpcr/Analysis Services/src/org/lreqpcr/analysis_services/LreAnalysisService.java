@@ -20,7 +20,6 @@ package org.lreqpcr.analysis_services;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_processing.ProfileSummary;
-import org.lreqpcr.core.database_services.DatabaseServices;
 
 /**
  * Initialize all fields within the provided Profile and the
@@ -69,12 +68,4 @@ public abstract class LreAnalysisService {
      */
     public abstract boolean updateLreWindow(ProfileSummary profileSummary);
 
-    /**
-     * Primarily for back compatability, provides all the needed actions to
-     * update a preexisting Profile to a new version.
-     *
-     * @param db the database to be converted
-     * @return true if the update was successful
-     */
-    public abstract void convertDatabaseToNewVersion(DatabaseServices db);
 }
