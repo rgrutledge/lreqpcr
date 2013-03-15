@@ -37,7 +37,7 @@ public class LreAnalysisProvider extends LreAnalysisService {
 
     @Override
     public boolean conductAutomatedLreWindowSelection(Profile profile, LreWindowSelectionParameters parameters) {
-        //This will force a new LRE window to be found so that complete reinitialized is conducted
+        //This will force a new LRE window to be found so that complete reinitialized will be conducted
         profile.setHasAnLreWindowBeenFound(false);
         //Construct a ProfileSummary which is used for automated LRE window selection 
         //Subtract background fluorescence if needed

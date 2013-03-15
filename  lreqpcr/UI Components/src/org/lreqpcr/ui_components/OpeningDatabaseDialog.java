@@ -25,7 +25,9 @@ import javax.swing.JTextArea;
 import org.openide.windows.WindowManager;
 
 /**
- *
+ * An attempt to present something visual while a database is being opened, 
+ * but multiple attempts failed to properly generate even a simple progression bar.
+ * 
  * @author Bob Rutledge
  */
 public class OpeningDatabaseDialog extends JPanel{

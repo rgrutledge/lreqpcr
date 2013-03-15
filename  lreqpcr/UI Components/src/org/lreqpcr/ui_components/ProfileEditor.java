@@ -16,8 +16,10 @@
  */
 package org.lreqpcr.ui_components;
 
+import java.awt.Toolkit;
 import java.util.Collection;
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageProfile;
@@ -36,7 +38,6 @@ import org.openide.util.Lookup.Result;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.util.Utilities;
-import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 
 /**
@@ -79,25 +80,34 @@ public class ProfileEditor extends JPanel implements
         if (currentDB != null) {
             if (currentDB.isDatabaseOpen()) {
                 List<LreWindowSelectionParameters> l = currentDB.getAllObjects(LreWindowSelectionParameters.class);
-//This list should never be empty, as a LreWindowSelectionParameters object is created during DB creation
+                if (l.isEmpty()) {
+                //0.7.7 database
+                    displayVersionIncompatiblityMessage();
+                    return;
+            }
                 selectionParameters = l.get(0);
             }
         }
     }
 
     private void displayNewProfile(Profile profile) {
+        clearPanels();
         this.profile = profile;
+//Display and editing of a profile is conducted through the ProfileSummary interface
+        prfSum = analysisService.initializeProfileSummary(profile, selectionParameters);
         if (profile.isExcluded()) {
-            clearPanels();
+            plotFo.clearPlot();
+            plotLREs.clearPlot();
+            plotFc.iniPlot(prfSum);
             lreObjectInfo.displayMember(selectedNode);
             return;
         }
         if (profile.hasAnLreWindowBeenFound()) {
-//Display and editing of a profile is conducted through the ProfileSummary interface
-            prfSum = analysisService.initializeProfileSummary(profile, selectionParameters);
             updatePanels();
         } else {//LRE window not found
-            clearPanels();
+            plotFo.clearPlot();
+            plotLREs.clearPlot();
+            plotFc.iniPlot(prfSum);
             lreObjectInfo.displayMember(selectedNode);
         }
 
@@ -118,16 +128,15 @@ public class ProfileEditor extends JPanel implements
                 return;
             }
         }
-        if (profile instanceof AverageProfile) {
-            AverageProfile avProfile = (AverageProfile) profile;
-            if (avProfile.isTheReplicateAverageNoLessThan10Molecules()
-                    || profile.isExcluded() //                    || !profile.hasAnLreWindowBeenFound()
-                    ) {
-                clearPanels();
-                lreObjectInfo.displayMember(selectedNode);
-                return;
-            }
-        }
+//        if (profile instanceof AverageProfile) {
+//            AverageProfile avProfile = (AverageProfile) profile;
+//            if (avProfile.isTheReplicateAverageNoLessThan10Molecules()){
+////                    || profile.isExcluded()) {
+//                clearPanels();
+//                lreObjectInfo.displayMember(selectedNode);
+//                return;
+//            }
+//        }
         plotLREs.iniPlotLREs(prfSum, currentDB);
         numericalTable.iniNumTable(prfSum);
         plotFc.iniPlot(prfSum);
@@ -237,7 +246,6 @@ public class ProfileEditor extends JPanel implements
             //Reject if this is an Amplicon database object
             DatabaseType type = selectedNode.getDatabaseServices().getDatabaseType();
             if (type == DatabaseType.AMPLICON) {
-//                clearPanels();
                 return;
             }
             if (selectedNode.getDatabaseServices() != currentDB) {
@@ -246,10 +254,9 @@ public class ProfileEditor extends JPanel implements
                 currentDB = selectedNode.getDatabaseServices();
                 List<LreWindowSelectionParameters> l = currentDB.getAllObjects(LreWindowSelectionParameters.class);
                 if (l.isEmpty()) {
-                    // TODO delete this back compatability correction
 //This occurs with databases created before implementation of the LRE window parameters
-                    currentDB.saveObject(new LreWindowSelectionParameters());
-                    l = currentDB.getAllObjects(LreWindowSelectionParameters.class);
+                    displayVersionIncompatiblityMessage();
+                    return;
                 }
                 selectionParameters = l.get(0);
             }
@@ -261,13 +268,6 @@ public class ProfileEditor extends JPanel implements
             }
             clearPanels();
             lreObjectInfo.displayMember(selectedNode);
-            return;
-        }
-//This is a crude attempt to clear the panel when the selected window changes,
-//but not when the Profile Editor is selected in order to allow profile editing
-        TopComponent selectedTC = WindowManager.getDefault().getRegistry().getActivated();
-        if (!selectedTC.getName().equals("Profile Editor")) {
-//            clearPanels();//Not an LRE node and not the Profile Editor window
         }
     }
 
@@ -289,11 +289,7 @@ public class ProfileEditor extends JPanel implements
             LreObject member = selectedNode.getLookup().lookup(LreObject.class);
             if (member instanceof Profile) {
                 profile = (Profile) member;
-                if (prfSum == null) {
-                    displayNewProfile(profile);
-                } else {
-                    updatePanels();
-                }
+                displayNewProfile(profile);
             } else {
                 clearPanels();
             }
@@ -322,13 +318,25 @@ public class ProfileEditor extends JPanel implements
                 clearPanels();
             } else {
                 if (currentDB.isDatabaseOpen()) {
-                    selectionParameters = (LreWindowSelectionParameters) currentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
-                } else {
-                    //This could cause problems 
-                    selectionParameters = null;
+                    List<LreWindowSelectionParameters> l = currentDB.getAllObjects(LreWindowSelectionParameters.class);
+                if (l.isEmpty()) {
+//This occurs with databases created before implementation of the LRE window parameters
+                    displayVersionIncompatiblityMessage();
+                    return;
+                }
+                    selectionParameters = (LreWindowSelectionParameters) l.get(0);
                 }
                 clearPanels();
             }
         }
+    }
+
+    private void displayVersionIncompatiblityMessage() {
+        Toolkit.getDefaultToolkit().beep();
+        JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                "This database appears to incompatible with this version\nof the LRE Analyzer "
+                + "and thus cannot be loaded",
+                "Invalid Database Version",
+                JOptionPane.ERROR_MESSAGE);
     }
 }

@@ -22,7 +22,7 @@ import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_processing.ProfileSummary;
 
 /**
- * Initialize all fields within the provided Profile and the
+ * Initialize all fields within the provided Profile, along with the
  * ProfileSummary that encapsulates it.
  *
  * @author Bob Rutledge
@@ -46,9 +46,9 @@ public abstract class LreAnalysisService {
      * Constructs a ProfileSummary for the supplied Profile. This will also update 
      * all of the quantitative parameters such as the average Fo, so this function 
      * can be used to update the profile, such as after fixing Emax to 100%. Note 
-     * that ProfileSummary is also used to view and edit a Profiles.
+     * that ProfileSummary is also used to view and edit a Profile.
      *
-     * Note also that the averageFo is recalculated and that it is upto the calling
+     * Note also that the average Fo is recalculated and that it is upto the calling
      * function to save the changes to the corresponding database.
      * 
      * @param profile the profile to be viewed

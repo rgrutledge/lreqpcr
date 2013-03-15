@@ -20,19 +20,22 @@ import org.lreqpcr.core.data_objects.Profile;
 
 /**
  * Methods for analyzing the Profile baseline fluorescence.
- * Future functions could include detection of basline drift.
+ * Future functions could include detection of baseline drifting.
  * 
  * @author Bob Rutledge
  */
 public class BaselineSubtraction {
 
     /**
-     * This is a very crude method based on cycles 4-9. An Analysis Service
-     * Provider are welcome to use their own baseline subtraction methodology.
-     *
-     * It is very important that the earliest (bottom) cycles of the profile
-     * are no earlier than cycle 10. Also note that any loss in reaction 
-     * fluorescence during cycles 1-3 is assumed not to continue into cycle 4.
+     * This is a very crude method based on cycles 4-9. Starting at cycle 4 
+     * avoids changes in background fluorescence that is commonly observed for 
+     * cycles 1-3 . 
+     * <p>
+     * An Analysis Service Provider are welcome to use their own baseline subtraction methodology.
+     * It is very important that the earliest stages of profile formation 
+     * does not earlier than cycle 10, as this can impact determination of 
+     * background fluorescence. Also note that any loss in reaction 
+     * fluorescence that occurs during cycles 1-3 is assumed not to continue into cycle 4.
      *
      * @param profile the Profile to be processed
      */
@@ -47,11 +50,9 @@ public class BaselineSubtraction {
         //The initial Fb start and end cycles
         int start = 4;
         int end = 9;
-//        int start = 7;
-//        int end = 12;
         int fbWindow = (end - start) + 1;
         double fb = 0d;//The fluorescence background
-        //Start with a 6 cycle average from cycle 4-8
+        //Start with a 6 cycle average from cycle 4-9
         for (int i = start; i < end + 1; i++) {
             fb = fb + rawFc[i - 1];//List starts at 0
         }

@@ -174,7 +174,7 @@ public class ExcelSampleProfileDataExport {
                         label = new Label(11, row, sampleProfile.getWellLabel());
                         sheet.addCell(label);
                         String s;
-                        if (avProfile.getLongDescription() != null) {
+                        if (sampleProfile.getLongDescription() != null) {
                             s = "EXCLUDED " + sampleProfile.getLongDescription();
                         } else {
                             s = "EXCLUDED ";
