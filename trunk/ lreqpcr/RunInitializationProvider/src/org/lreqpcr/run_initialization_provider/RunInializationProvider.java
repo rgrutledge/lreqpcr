@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
 import org.lreqpcr.analysis_services.LreAnalysisService;
-import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
+import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.ExperimentDbInfo;
@@ -133,8 +133,6 @@ public class RunInializationProvider implements RunInitializationService {
                     ExperimentDbInfo dbInfo = (ExperimentDbInfo) experimentDB.getAllObjects(ExperimentDbInfo.class).get(0);
                     double ocf = dbInfo.getOcf();
                     for (SampleProfile sampleProfile : sampleProfileList) {
-                        // TODO This conversion should be eliminated********************************************************************** 
-//                        sampleProfile.setProfileToVer0_8_0(true);//Needed for back compatablity
                         if (ampliconDB != null) {
                             if (ampliconDB.isDatabaseOpen()
                                     && !sampleProfile.getAmpliconName().equals("")
@@ -147,21 +145,22 @@ public class RunInializationProvider implements RunInitializationService {
                         sampleProfile.setOCF(ocf);
                         experimentDB.saveObject(sampleProfile);
                     }
-                    List<AverageSampleProfile> averageSampleProfileList =
+                    List<AverageProfile> averageSampleProfileList =
                             AverageProfileGenerator.averageSampleProfileConstruction(
                             sampleProfileList,
                             run,
                             ocf,
                             winSelectionParameters);
                     experimentDB.saveObject(averageSampleProfileList);
-                    run.setAverageProfileList((ArrayList<AverageSampleProfile>) averageSampleProfileList);
+                    run.setAverageProfileList((ArrayList<AverageProfile>) averageSampleProfileList);
                     //Deactivated due to a bug that can produce long delays during file import
 //        RunImportUtilities.importCyclerDatafile(run);
                     if (dbInfo.isTargetQuantityNormalizedToFax()) {
                         //Need to first calculate the run average Fmax
                         run.calculateAverageFmax();
                         //Cycle through all the sample profiles and set Fmax normalization to true
-                        for (AverageSampleProfile avProfile : averageSampleProfileList) {
+                        for (AverageProfile profile : averageSampleProfileList) {
+                            AverageSampleProfile avProfile = (AverageSampleProfile) profile;
                             avProfile.setIsTargetQuantityNormalizedToFmax(true);
                             experimentDB.saveObject(avProfile);
                             for (SampleProfile sampleProfile : avProfile.getReplicateProfileList()) {
@@ -198,12 +197,13 @@ public class RunInializationProvider implements RunInitializationService {
                         calbnDB.saveObject(profile);
                     }
                     //Process the AverageCalibnProfiles
-                    List<AverageCalibrationProfile> averageCalbnProfileList =
-                            (List<AverageCalibrationProfile>) AverageProfileGenerator.averageCalbrationProfileConstruction(
+                    List<AverageProfile> averageCalbnProfileList =
+                            (List<AverageProfile>) AverageProfileGenerator.averageCalbrationProfileConstruction(
                             calibnProfileList,
                             lreWindowSelectionParameters,
                             run);
                     calbnDB.saveObject(averageCalbnProfileList);
+                    run.setAverageProfileList((ArrayList<AverageProfile>) averageCalbnProfileList);
                     calbnDB.commitChanges();
                     //Broadcast that the calibration panels must be updated
                     UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_CALIBRATION_PANELS);

@@ -35,7 +35,6 @@ public abstract class Cycle {
     private double foEmax100;//Fo calculated with Emax fixed to 100%
     private double pFc; //Predicted Fc based on the current LRE window settings
     private double oFfracFoAv;//The fractional difference between Fo and the average Fo
-    private double oFfracFoAvEmax100;//The fractional difference between Fo and the average Fo with Emax fixed to 100%
     private double[] cycLREparam;//Linear regression values [slope, intercept, r2]
 
     /**

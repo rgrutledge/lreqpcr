@@ -128,7 +128,6 @@ public class ExperimentDbTree extends JPanel {
             root.setName("No Experiment database is open");
             mgr.setRootContext(root);
             ocfDisplay.setText("");
-//            totalNumberOfProfiles.setText("n/a");
             fmaxNormalizeChkBox.setSelected(false);
             return;
         }
@@ -137,7 +136,6 @@ public class ExperimentDbTree extends JPanel {
         File dbFile = experimentDB.getDatabaseFile();
         String dbFileName = dbFile.getName();
         int length = dbFileName.length();
-//        displayTotalNumberOfProfilesInTheDatabase();
         String displayName = dbFileName.substring(0, length - 4);
         ocf = dbInfo.getOcf();
         df.applyPattern(FormatingUtilities.decimalFormatPattern(ocf));
@@ -155,7 +153,7 @@ public class ExperimentDbTree extends JPanel {
             df.applyPattern("#0.0");
             String cv = df.format(avRunFmaxCV * 100);
             df.applyPattern(FormatingUtilities.decimalFormatPattern(avRunFmax));
-            root.setDisplayName(displayName + " [Average Run Fmax: " + df.format(avRunFmax) + " ±" + cv + "%]");
+            root.setDisplayName(displayName + " [Av Run Fmax: " + df.format(avRunFmax) + " ±" + cv + "%]");
         } else {
             root.setDisplayName(displayName);
         }
@@ -184,11 +182,6 @@ public class ExperimentDbTree extends JPanel {
         }
     }
 
-//    public void displayTotalNumberOfProfilesInTheDatabase() {
-//        //Determine the total number of profiles in the database
-//        List profiles = experimentDB.getAllObjects(Profile.class);
-//        totalNumberOfProfiles.setText(String.valueOf(profiles.size()));
-//    }
     /**
      * Creates a tree displaying all AverageSampleProfiles created using the
      * designated amplicon.

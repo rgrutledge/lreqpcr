@@ -17,13 +17,6 @@
 package org.lreqpcr.calibration_ui.components;
 
 import com.google.common.collect.Lists;
-import org.lreqpcr.core.utilities.MathFunctions;
-import org.lreqpcr.core.utilities.FormatingUtilities;
-import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
-import org.lreqpcr.calibration_ui.actions.CalbnTreeNodeActions;
-import org.lreqpcr.core.ui_elements.LabelFactory;
-import org.lreqpcr.core.ui_elements.LreActionFactory;
-import org.lreqpcr.core.ui_elements.LreNode;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -31,9 +24,16 @@ import java.util.Collections;
 import java.util.List;
 import javax.swing.Action;
 import javax.swing.JPanel;
+import org.lreqpcr.calibration_ui.actions.CalbnTreeNodeActions;
 import org.lreqpcr.calibration_ui.actions.FixAllCalibrationProfileEmaxTo100percentAction;
 import org.lreqpcr.calibration_ui.actions.ReturnAllCalibrationProfileEmaxToLreAction;
+import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.database_services.DatabaseServices;
+import org.lreqpcr.core.ui_elements.LabelFactory;
+import org.lreqpcr.core.ui_elements.LreActionFactory;
+import org.lreqpcr.core.ui_elements.LreNode;
+import org.lreqpcr.core.utilities.FormatingUtilities;
+import org.lreqpcr.core.utilities.MathFunctions;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.ui_components.PanelMessages;
 import org.openide.explorer.ExplorerManager;
@@ -80,12 +80,6 @@ public class CalbnTree extends JPanel {
         String dbFileName = dbFile.getName();
         int length = dbFileName.length();
         String displayName = dbFileName.substring(0, length - 4);
-        //As of version 0.8.0 implementation of ReactionSetup has been removed
-//        //Implementation of ReactionSetup allows multiple reaction setups to be 
-//        //viewed and stored within a single database as a future option
-//        List<? extends LreObject> rxnSetupList = (List<? extends LreObject>) calbnDB.getAllObjects(ReactionSetupImpl.class);
-//        LreNode root = new LreNode(new LreObjectChildren(mgr, calbnDB, rxnSetupList, nodeActionFactory,
-//                nodeLabelFactory), null, new Action[]{});
         List<AverageCalibrationProfile> avCalProfileList = (List<AverageCalibrationProfile>) calbnDB.getAllObjects(AverageCalibrationProfile.class);
    //This is necessary because DB4O lists cannot be sorted via Collections.sort
         ArrayList<AverageCalibrationProfile> lreObjectArray = new ArrayList<AverageCalibrationProfile>(avCalProfileList);

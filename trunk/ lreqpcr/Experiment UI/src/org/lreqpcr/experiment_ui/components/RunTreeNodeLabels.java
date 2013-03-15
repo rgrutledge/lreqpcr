@@ -37,32 +37,32 @@ public class RunTreeNodeLabels implements LabelFactory {
     private DecimalFormat df = new DecimalFormat();
 
     public String getNodeLabel(LreObject member) {
+        
         if (member instanceof Run) {
             Run run = (Run) member;
+            
             double runOCF = run.getRunOCF();
+            //Place the Run average Fmax into the short description
+            df.applyPattern("#0");
+            double avFmax = run.getAverageFmax();
+            df.applyPattern(FormatingUtilities.decimalFormatPattern(avFmax));
+            String avFmaxString = df.format(avFmax);
+            String cv = df.format(run.getAvFmaxCV() * 100);
+            run.setShortDescription(" [Av Fmax: " + avFmaxString + " ±" + cv + "%]");
             //Display a Run-specific OCF if one has been applied to this Run
-            // TODO displaying run-specfic OCF must be reviewed
             if (runOCF != 0) {
                 df.applyPattern(FormatingUtilities.decimalFormatPattern(runOCF));
-                return sdf.format(run.getRunDate()) + " <" + df.format(runOCF) + ">-" + member.getName();
+                String runOCFstring = df.format(runOCF);
+                return sdf.format(run.getRunDate()) + ": <OCF " + runOCFstring + "> " + member.getName();
             } else {
-                if (run.getAverageFmax() == 0) {
-                    run.calculateAverageFmax();//This is temporary for testing
-                }
-                df.applyPattern("#0.0");
-                String cv = df.format(run.getAvFmaxCV() * 100);
-                df.applyPattern(FormatingUtilities.decimalFormatPattern(run.getAverageFmax()));
-                return sdf.format(run.getRunDate()) + "-" + member.getName()
-                        + " [Av Fmax: " + df.format(run.getAverageFmax())
-                        + " ±" + cv + "%]";
+                return sdf.format(run.getRunDate()) + ": " + member.getName();
             }
-
         }
+        
         //Label madeup of three components: name + Emax + No
         if (member instanceof Profile) {
             SampleProfile profile = (SampleProfile) member;
             profile.setShortDescription("");
-
             String profileName = profile.getAmpliconName() + "@ " + profile.getSampleName() + " ";
             //If excluded no Emax or No to be displayed
             if (profile.isExcluded()) {
@@ -85,10 +85,10 @@ public class RunTreeNodeLabels implements LabelFactory {
                     df.applyPattern("0.00");
                     profile.setShortDescription("Less than 10 molecules requires averaging the replicate profiles quantities");
                     double no = avPrf.getNo();
-                    if (avPrf.isEmaxFixedTo100()) {
-                        return profileName + "<100%> [avRep= " + df.format(no) + "]";
-                    }
-                    return profileName + "[avRep= " + df.format(no) + "]";
+//                    if (avPrf.isEmaxFixedTo100()) {
+//                        return profileName + "<10N [avRep= " + df.format(no) + "]";
+//                    }
+                    return profileName + "  <10N  [avRep= " + df.format(no) + "]";
                 }
             }
             String emax;
@@ -104,7 +104,7 @@ public class RunTreeNodeLabels implements LabelFactory {
             //Profile is OK
             if (profile.isEmaxFixedTo100() && profile.hasAnLreWindowBeenFound()) {
                 profile.setShortDescription("Emax is fixed to 100%");
-                emax = "<100%> ";
+                emax = "<100%>";
             } else {
                 df.applyPattern("#0.0");
                 emax = "(" + df.format(profile.getEmax() * 100) + "%) ";
@@ -127,7 +127,7 @@ public class RunTreeNodeLabels implements LabelFactory {
             if (!profile.hasAnLreWindowBeenFound()) {
                 no = "";
             } else {
-                no = df.format(profile.getNo());
+                no = "  N= " + df.format(profile.getNo());
             }
             return profileName + emax + no;
         }

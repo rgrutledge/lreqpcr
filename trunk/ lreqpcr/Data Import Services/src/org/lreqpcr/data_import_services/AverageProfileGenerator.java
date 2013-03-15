@@ -53,14 +53,14 @@ public class AverageProfileGenerator {
      * @return a list containing generated AverageSampleProfiles
      */
     @SuppressWarnings(value = "unchecked")
-    public static ArrayList<AverageSampleProfile> averageSampleProfileConstruction(
+    public static ArrayList<AverageProfile> averageSampleProfileConstruction(
             List<SampleProfile> profileList,
             Run parentRun,
             double ocf,
             LreWindowSelectionParameters parameters) {
         ArrayList<SampleProfile> profileArray = new ArrayList<SampleProfile>(profileList);
         //Generate new ReplicatSampleProfiles for each replicate profile set within the profile list
-        ArrayList<AverageSampleProfile> averageProfileList = new ArrayList<AverageSampleProfile>();
+        ArrayList<AverageProfile> averageProfileList = new ArrayList<AverageProfile>();
         //Parse out the replicate Profiles based on identical sample and amlipcon names
         //Prevent changes to the passed Profile list
         ArrayList<SampleProfile> listCopy = (ArrayList<SampleProfile>) profileArray.clone();
@@ -114,14 +114,14 @@ public class AverageProfileGenerator {
      * @return a list of AverageCalibrationProfiles
      */
     @SuppressWarnings(value = "unchecked")
-    public static ArrayList<AverageCalibrationProfile> averageCalbrationProfileConstruction(
+    public static ArrayList<AverageProfile> averageCalbrationProfileConstruction(
             List<CalibrationProfile> profileList,
             LreWindowSelectionParameters parameters,
             Run run) {
         ArrayList<CalibrationProfile> profileArray = new ArrayList<CalibrationProfile>(profileList);
         //Generate new AverageCalibrationProfile for each replicate profile set within the profile list
-        ArrayList<AverageCalibrationProfile> averageCalbnProfileList =
-                new ArrayList<AverageCalibrationProfile>();
+        ArrayList<AverageProfile> averageCalbnProfileList =
+                new ArrayList<AverageProfile>();
         //Parse out the replicate Profiles based on identical sample and amlipcon names
         //Prevent changes to the passed Profile list
         ArrayList<CalibrationProfile> listCopy = (ArrayList<CalibrationProfile>) profileArray.clone();

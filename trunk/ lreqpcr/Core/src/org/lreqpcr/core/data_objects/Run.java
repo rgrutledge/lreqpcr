@@ -34,7 +34,7 @@ public abstract class Run extends LreObject {
     
     private Date runDate;
     private List<String> operators;//The person(s) conducting the Run
-    private List<AverageSampleProfile> averageProfileList;
+    private List<AverageProfile> averageProfileList;
     private int year;
     private int month;
     private double runOCF = 0;//Run-specific OCF
@@ -73,7 +73,7 @@ public abstract class Run extends LreObject {
      * 
      * @return list containing all of the average profiles within this Run
      */
-    public List<AverageSampleProfile> getAverageProfileList() {
+    public List<AverageProfile> getAverageProfileList() {
         return averageProfileList;
     }
 
@@ -84,7 +84,7 @@ public abstract class Run extends LreObject {
      * 
      * @param averageProfileList list containing all of the average profiles within this Run
      */
-    public void setAverageProfileList(List<AverageSampleProfile> averageProfileList) {
+    public void setAverageProfileList(List<AverageProfile> averageProfileList) {
         this.averageProfileList = averageProfileList;
     }
 
@@ -190,8 +190,8 @@ public abstract class Run extends LreObject {
         if (averageProfileList == null){
             return;
         }
-        for (AverageSampleProfile avProfile: averageProfileList){
-            for(SampleProfile profile: avProfile.getReplicateProfileList()){
+        for (AverageProfile avProfile: averageProfileList){
+            for(Profile profile: avProfile.getReplicateProfileList()){
                 if(profile.hasAnLreWindowBeenFound() && !profile.isExcluded()){
                     fmaxSum += profile.getFmax();
                     profileCount++;
@@ -204,6 +204,8 @@ public abstract class Run extends LreObject {
             if(fmaxList.size()>1){
                 avFmaxCV = MathFunctions.calcStDev(fmaxList)/averageFmax;
             }
+        } else {
+            averageFmax = 0;
         }
     }
 

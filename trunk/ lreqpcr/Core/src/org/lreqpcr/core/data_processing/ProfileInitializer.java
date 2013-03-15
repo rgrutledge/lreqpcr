@@ -18,8 +18,8 @@ package org.lreqpcr.core.data_processing;
 
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
-import org.lreqpcr.core.utilities.LREmath;
 import org.lreqpcr.core.data_objects.Profile;
+import org.lreqpcr.core.utilities.LREmath;
 import org.lreqpcr.core.utilities.MathFunctions;
 
 /**
@@ -36,7 +36,7 @@ public class ProfileInitializer {
      * Note that no additional analysis is conducted other than to generate 
      * the link list.
      *
-     * @param fc the array containing the Fc dataset
+     * @param fc the array containing the background substracted Fc dataset
      * @return the header (cycle zero) of the Cycle linked list
      */
     public static Cycle makeCycleList(double[] fc) {
@@ -136,7 +136,8 @@ public class ProfileInitializer {
     }
 
     /**
-     * Calculates the average Fo for both Emax and Emax fixed to 100% across the LRE Window using the Cycle
+     * Calculates the average Fo for both Emax and Emax 
+     * fixed to 100% across the LRE Window using the Cycle
      * linked list generated from the Profile.
      *
      * @param prfSum the ProfileSummary holding the Profile to be processed
@@ -178,8 +179,9 @@ public class ProfileInitializer {
     }
 
     /**
-     * Calculates the predicted Fc across the entire cycle profile using the LRE derived Emax.
-     * Note that fixing Emax to 100% does NOT change predicted Fc.
+     * Calculates the predicted cycle fluorescence (Fc) across the entire cycle profile using the LRE derived Emax.
+     * Note that fixing Emax to 100% does NOT change predicted Fc, as Emax is 
+     * used only to determine target quantity. 
      * 
      * @param prfSum the ProfileSummary holding the Profile to be processed
      */

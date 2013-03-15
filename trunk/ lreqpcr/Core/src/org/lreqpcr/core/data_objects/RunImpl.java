@@ -31,5 +31,7 @@ public class RunImpl extends Run {
      */
     public RunImpl() {
         
+        setVersionNumber("0.8.6");
+        
     }
     }

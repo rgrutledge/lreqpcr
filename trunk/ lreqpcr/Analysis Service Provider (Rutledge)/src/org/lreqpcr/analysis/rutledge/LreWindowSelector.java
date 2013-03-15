@@ -17,9 +17,9 @@
 package org.lreqpcr.analysis.rutledge;
 
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
-import org.lreqpcr.core.data_processing.ProfileInitializer;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_processing.Cycle;
+import org.lreqpcr.core.data_processing.ProfileInitializer;
 import org.lreqpcr.core.data_processing.ProfileSummary;
 import org.lreqpcr.core.utilities.LREmath;
 import org.lreqpcr.core.utilities.MathFunctions;
@@ -36,9 +36,9 @@ public class LreWindowSelector {
 
     /**
      * Automated selection of the LRE window start cycle. This is initiated by
-     * identifying the first cycle in which the LRE r2 value derived from LRE analysis
-     * of a window that encompassing the two preceeding and two following Cycles
-     * (5 cycles total) above the "r2 tolerance". To prevent setting
+     * identifying the first cycle in which the LRE plot r2 value derived from 
+     * a window encompassing the two preceeding and two following Cycles
+     * (5 cycles total), is above the "r2 tolerance". To prevent setting
      * the start cycle within the baseline region, the cycle Fc must be a specified fold
      * greater that the fluorescence background (Fb).
      *
@@ -64,7 +64,7 @@ public class LreWindowSelector {
         //the profile until an LRE linear region is found based on the r2
         Cycle cycZero = prfSum.getZeroCycle();
         Cycle runner = cycZero.getNextCycle().getNextCycle(); //Go to cycle 2
-        //Calculate the LRE parameters for all the Cycles in the profile
+        //Calculate and set the LRE parameters across all Cycles within the profile
         while (runner.getNextCycle().getNextCycle() != null) {
             double[][] fcEcArray = new double[2][5];
             fcEcArray[0][0] = runner.getPrevCycle().getPrevCycle().getFc();
@@ -99,29 +99,23 @@ public class LreWindowSelector {
             runner = runner.getNextCycle();
         }
         double fb = profile.getFb();
-        /*-----Finds start cycle based on the cycle LRE r2-----*/
+        /*-----Finds start cycle based on the Cycle LRE r2-----*/
         Cycle strCycle;
         runner = cycZero.getNextCycle().getNextCycle().getNextCycle(); //Start at cycle 3
+        //Limit the analysis to 3 cycles before the end of the profile
         while (runner.getNextCycle().getNextCycle().getNextCycle() != null) {
 
-            /*Tests for the minimum r2 >r2 tolerance across 3 cycles*/
+  //Test for the minimum r2 >r2 tolerance across 1 cycle before and after the target cycle
+            //Testing Emax was found to greatly increase the accuracy of the analysis ver 0.8.5
+            //[slope, intercept, r2]
             if (runner.getPrevCycle().getCycLREparam()[2] > r2Tolerance
                     && runner.getCycLREparam()[2] > r2Tolerance
-                    && runner.getNextCycle().getCycLREparam()[2] > r2Tolerance) {
-                double fbRatio = runner.getFc() / fb;
-                if (fbRatio < 0) {
-                    fbRatio = fbRatio * -1;
-                }
-//Tests for the minimum Fc relative to Fb in an attempt to avoid setting the StartCycle in the baseline
-//Note that small Fmax vs. large Fb such as for MXP profiles can can fail
-//this step, resulting in a "AN LRE WINDOW COULD NOT BE FOUND" error
-                if (fbRatio > foldAboveFb) {
+                    && runner.getNextCycle().getCycLREparam()[2] > r2Tolerance
+                    && runner.getCycLREparam()[1] > 0.4) {//Emax > 40%
                     strCycle = runner;
                     profile.setStrCycleInt(strCycle.getCycNum()); //Sets the integer start cycle
                     prfSum.setStrCycle(strCycle);
                     profile.setHasAnLreWindowBeenFound(true);
-                    break;
-                }
             }
             if (runner.getNextCycle() == null) {
                 profile.setHasAnLreWindowBeenFound(false);
