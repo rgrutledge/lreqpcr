@@ -20,8 +20,9 @@ import java.awt.event.ActionEvent;
 import java.util.List;
 import javax.swing.AbstractAction;
 import org.lreqpcr.analysis_services.LreAnalysisService;
+import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
+import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
-import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.utilities.UniversalLookup;
@@ -34,14 +35,14 @@ import org.openide.util.Lookup;
  *
  * @author Bob Rutledge
  */
-public class FixCalibrationProfileEmaxTo100percentAction extends AbstractAction {
+public class FixAvCaibnPrfEmaxTo100PercentAction extends AbstractAction {
 
     private ExplorerManager mgr;
     private DatabaseServices db;
     private LreWindowSelectionParameters selectionParameters;
     private LreAnalysisService analysisService;
 
-    public FixCalibrationProfileEmaxTo100percentAction(ExplorerManager mgr) {
+    public FixAvCaibnPrfEmaxTo100PercentAction(ExplorerManager mgr) {
         this.mgr = mgr;
         putValue(NAME, "Fix Emax to 100%");
     }
@@ -55,7 +56,8 @@ public class FixCalibrationProfileEmaxTo100percentAction extends AbstractAction 
         if (db != null) {
             if (db.isDatabaseOpen()) {
                 List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
-//This list should never be empty, as a LreWindowSelectionParameters object is created during DB creation
+//This list should never be empty, as a LreWindowSelectionParameters object is created during DB creation, 
+//except for very old database versions
                 selectionParameters = l.get(0);
             } else {
                 //This should never happen
@@ -63,14 +65,26 @@ public class FixCalibrationProfileEmaxTo100percentAction extends AbstractAction 
             }
             for (Node n : nodes) {
                 LreNode node = (LreNode) n;
-                Profile profile = node.getLookup().lookup(Profile.class);
-                profile.setIsEmaxFixedTo100(true);
-                analysisService.initializeProfileSummary(profile, selectionParameters);
-                db.saveObject(profile);
+                //Only average profiles have access to this action and thus this must be an average calibration profile
+                AverageCalibrationProfile avCalbnPrf = node.getLookup().lookup(AverageCalibrationProfile.class);
+                avCalbnPrf.setIsEmaxFixedTo100(true);
+                analysisService.initializeProfileSummary(avCalbnPrf, selectionParameters);
+                db.saveObject(avCalbnPrf);
                 node.refreshNodeLabel();
-            }
-            db.commitChanges();
-            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_CHANGED);
+                //Get the replicate profile nodes
+                Node[] replicateNodes = node.getChildren().getNodes();
+                //Set all to Emax fixed to 100% and process them
+                for (Node n2 : replicateNodes) {
+                    LreNode node2 = (LreNode) n2;
+                    CalibrationProfile calbnPrf = node2.getLookup().lookup(CalibrationProfile.class);
+                    calbnPrf.setIsEmaxFixedTo100(true);
+                    analysisService.initializeProfileSummary(calbnPrf, selectionParameters);
+                    db.saveObject(calbnPrf);
+                    node2.refreshNodeLabel();
+                }
+            }//End of node for loop
         }
+        db.commitChanges();
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_CHANGED);
     }
 }

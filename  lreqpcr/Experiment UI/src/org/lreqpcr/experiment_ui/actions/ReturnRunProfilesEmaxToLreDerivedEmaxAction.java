@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import java.util.List;
 import javax.swing.AbstractAction;
 import org.lreqpcr.analysis_services.LreAnalysisService;
+import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
@@ -68,8 +69,9 @@ public class ReturnRunProfilesEmaxToLreDerivedEmaxAction extends AbstractAction 
                 LreNode node = (LreNode) n;
                 Run run = node.getLookup().lookup(Run.class);
 //Process all profiles within the run, including the replicate profiles
-                for (AverageSampleProfile avProfile : run.getAverageProfileList()) {
-                    avProfile.setIsEmaxFixedTo100(false);
+                for (AverageProfile avProfile : run.getAverageProfileList()) {
+                    AverageSampleProfile avSamplePrf = (AverageSampleProfile) avProfile;
+                    avSamplePrf.setIsEmaxFixedTo100(false);
                     //Process the replicate profiles
                     for (Profile repProfile : avProfile.getReplicateProfileList()) {
                         //Ignore profiles that do not have an LRE window
@@ -84,14 +86,14 @@ public class ReturnRunProfilesEmaxToLreDerivedEmaxAction extends AbstractAction 
                     //selection must be conducted on the average profile.
                     if (!avProfile.isTheReplicateAverageNoLessThan10Molecules()) {
                         //Must conduct an automated LRE window selection
-                        analysisService.conductAutomatedLreWindowSelection(avProfile, selectionParameters);
+                        analysisService.conductAutomatedLreWindowSelection(avSamplePrf, selectionParameters);
                     }
                     //Ignore average sample profiles that do not have an LRE window
-                    if (avProfile.hasAnLreWindowBeenFound()) {
+                    if (avSamplePrf.hasAnLreWindowBeenFound()) {
                         //Need to update avFo and avNo
-                        analysisService.initializeProfileSummary(avProfile, selectionParameters);
+                        analysisService.initializeProfileSummary(avSamplePrf, selectionParameters);
                     }
-                    db.saveObject(avProfile);
+                    db.saveObject(avSamplePrf);
                 }
                 //Update the Run's average Fmax and save it
                 run.calculateAverageFmax();

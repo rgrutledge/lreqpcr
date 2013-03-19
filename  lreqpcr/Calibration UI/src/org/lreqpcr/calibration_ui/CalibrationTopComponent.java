@@ -64,7 +64,6 @@ public final class CalibrationTopComponent extends TopComponent
     private UniversalLookup universalLookup = UniversalLookup.getDefault();
     private DatabaseServices calibrationDB;
     private ExplorerManager mgr = new ExplorerManager();
-    private DataExportServices exportServices;
     private final Result<AmpliconNode> ampliconNodeResult;
     private final Result<SampleNode> sampleNodeResult;
 
@@ -99,7 +98,6 @@ public final class CalibrationTopComponent extends TopComponent
     private void initServices() {
         // TODO Could throw an exception of any of the services are null??
         Lookup servicesLookup = Lookup.getDefault();
-        exportServices = servicesLookup.lookup(DataExportServices.class);
         calibrationDB = servicesLookup.lookup(DatabaseServiceFactory.class).createDatabaseService(DatabaseType.CALIBRATION);
         if (calibrationDB != null) {
             UniversalLookup.getDefault().add(DatabaseType.CALIBRATION, calibrationDB);

@@ -38,20 +38,33 @@ public class DataExportProvider implements DataExportServices {
 
     public void exportReplicateSampleProfilesFromRuns(List<Run> runList) {
 //Defer to HashMap exportation of replicate sample profiles in which only the run name is used from the Run
+        //Run name, 
         HashMap<String, List<SampleProfile>> map = new HashMap<String, List<SampleProfile>>();
         for (Run run : runList){
             List<SampleProfile> sampleList = Lists.newArrayList();
             for (AverageProfile avProfile : run.getAverageProfileList()){
-                for(Profile profile : avProfile){
+                for(Profile profile : avProfile.getReplicateProfileList()){
                     SampleProfile sampleProfile = (SampleProfile) profile;
                     sampleList.add(sampleProfile);
                 }
                 AverageSampleProfile avSampleProfile = (AverageSampleProfile) avProfile;
-                avSampleList.add(avSampleProfile);
+                sampleList.add(avSampleProfile);
             }
-            map.put(run.getName(), avSampleList);
+            map.put(run.getName(),sampleList);
         }
         exportReplicateSampleProfiles(map);
+    }
+
+    public void exportAverageCalibrationProfiles(HashMap<String, List<AverageCalibrationProfile>> groupList) {
+        
+    }
+
+    public void exportAverageSampleProfiles(HashMap<String, List<AverageSampleProfile>> groupList) {
+        try {
+            ExcelAverageSampleProfileDataExport.exportProfiles(groupList);
+        } catch (Exception ex) {
+            Exceptions.printStackTrace(ex);
+        }
     }
 
     public void exportAverageCalibrationProfiles(List<AverageCalibrationProfile> profileList) {
@@ -63,20 +76,19 @@ public class DataExportProvider implements DataExportServices {
             Exceptions.printStackTrace(ex);
         }
     }
-
-    public void exportAverageSampleProfiles(HashMap<String, List<AverageSampleProfile>> groupList) {
-        try {
-            ExcelAverageSampleProfileDataExport.exportProfiles(groupList);
-        } catch (Exception ex) {
-            Exceptions.printStackTrace(ex);
-        }
-    }
-
-    public void exportReplicateSampleProfiles(HashMap<String, List<AverageSampleProfile>> groupList) {
+    
+    public void exportReplicateSampleProfiles(HashMap<String, List<SampleProfile>> groupList) {
         try {
             ExcelSampleProfileDataExport.exportProfiles(groupList);
         } catch (Exception ex) {
             Exceptions.printStackTrace(ex);
         }
     }
+
+    public void exportReplicateCalibrationProfiles(List<AverageCalibrationProfile> profileList) {
+    }
+
+    public void exportReplicateCalibrationProfiles(HashMap<String, List<AverageCalibrationProfile>> profileList) {
+    }
+
 }

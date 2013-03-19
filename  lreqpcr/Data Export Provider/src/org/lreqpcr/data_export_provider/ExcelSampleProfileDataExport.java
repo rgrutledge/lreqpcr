@@ -49,7 +49,7 @@ public class ExcelSampleProfileDataExport {
      */
     // TODO JavaDoc text
     @SuppressWarnings("unchecked")
-    public static void exportProfiles(HashMap<String, List<AverageSampleProfile>> groupList) throws IOException, WriteException {
+    public static void exportProfiles(HashMap<String, List<SampleProfile>> groupList) throws IOException, WriteException {
         //Setup the the workbook based on the file choosen by the user
         File selectedFile = IOUtilities.newExcelFile();
         if (selectedFile == null) {
@@ -151,14 +151,14 @@ public class ExcelSampleProfileDataExport {
             Number number;
             DateFormat customDateFormat = new DateFormat("ddMMMyy");
 
-            List<AverageSampleProfile> avProfileList = groupList.get(pageName);
+            List<SampleProfile> profileList = groupList.get(pageName);
             //Need to extract well label and assign well number to each profile
             //Sort the profiles based on well number. 
             //Could display a Y/N dialog asking if this is an LC export that needs sorting
-            Collections.sort(avProfileList);
+            Collections.sort(profileList);
 
-            for (AverageSampleProfile avProfile : avProfileList) {
-                for (SampleProfile sampleProfile : avProfile.getReplicateProfileList()) {
+            for (SampleProfile sampleProfile : profileList) {
+//                for (SampleProfile sampleProfile : avProfile.getReplicateProfileList()) {
                     WritableCellFormat dateFormat = new WritableCellFormat(customDateFormat);
                     dateFormat.setAlignment(Alignment.CENTRE);
                     DateTime dateCell = new DateTime(0, row, sampleProfile.getRunDate(), dateFormat);
@@ -225,7 +225,7 @@ public class ExcelSampleProfileDataExport {
                     label = new Label(11, row, sampleProfile.getWellLabel());
                     sheet.addCell(label);
                     row++;
-                }
+//                }
             }
             pageCounter++;
         }

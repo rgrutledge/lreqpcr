@@ -17,7 +17,6 @@
 package org.lreqpcr.sample_overview;
 
 import java.awt.Toolkit;
-import org.lreqpcr.sample_overview.ui_components.SampleChildren;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -39,10 +38,8 @@ import org.lreqpcr.core.utilities.MathFunctions;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.core.utilities.UniversalLookupListener;
 import org.lreqpcr.data_export_services.DataExportServices;
+import org.lreqpcr.sample_overview.ui_components.SampleChildren;
 import org.lreqpcr.ui_components.PanelMessages;
-import org.openide.util.NbBundle;
-import org.openide.windows.TopComponent;
-import org.openide.windows.WindowManager;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
@@ -51,6 +48,9 @@ import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
+import org.openide.util.NbBundle;
+import org.openide.windows.TopComponent;
+import org.openide.windows.WindowManager;
 
 /**
  * Top component which displays something.
@@ -127,8 +127,8 @@ public final class SampleOverviewTopComponent extends TopComponent
     private List<Sample> getSampleList() {
         List<Sample> sampleList = new ArrayList<Sample>();
         //Retrieve all amplicon names from the database
-        List profileList = null;
-        //This was needed to avoid, for unclear reasons, a DB4O "not supported" exception that occurred when retrieving AveragProfile.class.
+        List profileList;
+        //This was needed to avoid, for unclear reasons, a DB4O "not supported" exception that occurred when retrieving AverageProfile.class.
         if (dbType == DatabaseType.CALIBRATION) {
             profileList = currentDB.getAllObjects(AverageCalibrationProfile.class);
         } else {//Must be an Experiment database
@@ -207,6 +207,15 @@ public final class SampleOverviewTopComponent extends TopComponent
         }
         return groupList;
     }
+    
+    private void noNodesSelectedError() {
+        Toolkit.getDefaultToolkit().beep();
+        JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                "No Amplicons have not been selected",
+                "Must select an Amplicon(s) to export",
+                JOptionPane.ERROR_MESSAGE);
+    }
+
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -288,11 +297,12 @@ public final class SampleOverviewTopComponent extends TopComponent
 }//GEN-LAST:event_exportAvProfileButtonActionPerformed
 
     private void exportRepPrfsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportRepPrfsButtonActionPerformed
+//THIS IS CURRENTLY NOT WORKING************************************************************************
         HashMap<String, List<AverageSampleProfile>> groupList = getSelectedAmplicons();
         if (groupList == null) {
-            return;
+            noNodesSelectedError();
         }
-        Lookup.getDefault().lookup(DataExportServices.class).exportReplicateSampleProfiles(groupList);
+//        Lookup.getDefault().lookup(DataExportServices.class).exportReplicateSampleProfiles(groupList);
 }//GEN-LAST:event_exportRepPrfsButtonActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton exportAvProfileButton;

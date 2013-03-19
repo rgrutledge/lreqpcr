@@ -204,12 +204,14 @@ public class RunInializationProvider implements RunInitializationService {
                             run);
                     calbnDB.saveObject(averageCalbnProfileList);
                     run.setAverageProfileList((ArrayList<AverageProfile>) averageCalbnProfileList);
+                    run.calculateAverageFmax();
+                    calbnDB.saveObject(run);
                     calbnDB.commitChanges();
                     //Broadcast that the calibration panels must be updated
                     UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_CALIBRATION_PANELS);
                 }
             }
-        }
+        }//End of calibration profile initialization
     }
 
     /**

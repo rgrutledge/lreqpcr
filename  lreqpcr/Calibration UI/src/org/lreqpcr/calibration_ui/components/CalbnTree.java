@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.swing.Action;
 import javax.swing.JPanel;
+import org.lreqpcr.calibration_ui.VersionVerification;
 import org.lreqpcr.calibration_ui.actions.CalbnTreeNodeActions;
 import org.lreqpcr.calibration_ui.actions.FixAllCalibrationProfileEmaxTo100percentAction;
 import org.lreqpcr.calibration_ui.actions.ReturnAllCalibrationProfileEmaxToLreAction;
@@ -80,16 +81,18 @@ public class CalbnTree extends JPanel {
         String dbFileName = dbFile.getName();
         int length = dbFileName.length();
         String displayName = dbFileName.substring(0, length - 4);
-        List<AverageCalibrationProfile> avCalProfileList = (List<AverageCalibrationProfile>) calbnDB.getAllObjects(AverageCalibrationProfile.class);
+        List<AverageCalibrationProfile>  avCalPrfList = (List<AverageCalibrationProfile>) calbnDB.getAllObjects(AverageCalibrationProfile.class);
    //This is necessary because DB4O lists cannot be sorted via Collections.sort
-        ArrayList<AverageCalibrationProfile> lreObjectArray = new ArrayList<AverageCalibrationProfile>(avCalProfileList);
-        displayName = displayName + " (" + String.valueOf(lreObjectArray.size()) + ")";
-        Collections.sort(lreObjectArray);
+        ArrayList<AverageCalibrationProfile>  avCalPrfArray= new ArrayList<AverageCalibrationProfile>(avCalPrfList);
+        displayName = displayName + " (" + String.valueOf(avCalPrfList.size()) + ")";
+        Collections.sort(avCalPrfArray);
+        //For back compatablity, mainly for Fc plot, check if the Run average Fmax has been determined
+        VersionVerification.updateCalibrationProfiles(calbnDB, avCalPrfList);
         Action[] actions = new Action[]{
             new FixAllCalibrationProfileEmaxTo100percentAction(mgr),
             new ReturnAllCalibrationProfileEmaxToLreAction(mgr)
         };
-        LreNode root = new LreNode(new RootCalibrationChildren(mgr, calbnDB, avCalProfileList, nodeActionFactory,
+        LreNode root = new LreNode(new RootCalibrationChildren(mgr, calbnDB, avCalPrfArray, nodeActionFactory,
                 nodeLabelFactory), null, actions);
         root.setDatabaseService(calbnDB);
         root.setDisplayName(displayName);
