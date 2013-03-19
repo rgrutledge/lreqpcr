@@ -21,9 +21,11 @@ import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
+import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.ExperimentDbInfo;
 import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.database_services.DatabaseServices;
@@ -50,12 +52,12 @@ class ApplyRunSpecficOCF extends AbstractAction {
 
     @SuppressWarnings("unchecked")
     public void actionPerformed(ActionEvent e) {
-        double runOCF = 0;
+        double runOCF;
         Node[] nodes = mgr.getSelectedNodes();
         LreNode selectedRunNode = (LreNode) nodes[0];
         db = selectedRunNode.getDatabaseServices();
         Run selectedRun = selectedRunNode.getLookup().lookup(Run.class);
-        List<AverageSampleProfile> averageSampleProfileList = selectedRun.getAverageProfileList();
+        List<AverageProfile> averageProfileList = selectedRun.getAverageProfileList();
         String s = JOptionPane.showInputDialog(WindowManager.getDefault().getMainWindow(),
                 "Enter the OCF, or zero to reset to the average OCF",
                 "Apply a Run-specific OCF",
@@ -81,16 +83,17 @@ class ApplyRunSpecficOCF extends AbstractAction {
         db.saveObject(selectedRun);
         ExperimentDbInfo dbInfo = (ExperimentDbInfo) db.getAllObjects(ExperimentDbInfo.class).get(0);
         double avOCF = dbInfo.getOcf();
-        for (AverageSampleProfile avProfile : averageSampleProfileList) {
+        for (AverageProfile avProfile : averageProfileList) {
+            AverageSampleProfile avSamplePrf = (AverageSampleProfile) avProfile;
             //Zero indicates to revert the OCF back to the average OCF
             if (runOCF == 0) {
-                avProfile.setOCF(avOCF);
+                avSamplePrf.setOCF(avOCF);
             } else {
                 //apply the run ocf
-                avProfile.setOCF(runOCF);
+                avSamplePrf.setOCF(runOCF);
             }
-            db.saveObject(avProfile);
-            List<SampleProfile> sampleProfileList = avProfile.getReplicateProfileList();
+            db.saveObject(avSamplePrf);
+            List<SampleProfile> sampleProfileList = avSamplePrf.getReplicateProfileList();
             for (SampleProfile sampleProfile : sampleProfileList) {
                 if (runOCF == 0) {
                     //This resets the ocf to the average OCF
@@ -107,7 +110,13 @@ class ApplyRunSpecficOCF extends AbstractAction {
 
         //Update the tree
         LreObjectChildren runChildren = (LreObjectChildren) selectedRunNode.getChildren();
-        runChildren.setLreObjectList(selectedRun.getAverageProfileList());
+        //Must cast to AverageSampleProfile
+        List<AverageSampleProfile> avSamplePrfList = new ArrayList<AverageSampleProfile>();
+        for (AverageProfile avPrf : selectedRun.getAverageProfileList()){
+            AverageSampleProfile avSamplePrf = (AverageSampleProfile) avPrf;
+            avSamplePrfList.add(avSamplePrf);
+        }
+        runChildren.setLreObjectList(avSamplePrfList);
         //Update the Run tree
         //Call createTree
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_EXPERIMENT_PANELS);

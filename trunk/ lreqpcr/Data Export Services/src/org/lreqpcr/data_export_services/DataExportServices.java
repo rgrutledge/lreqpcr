@@ -1,10 +1,11 @@
 package org.lreqpcr.data_export_services;
 
-import org.lreqpcr.core.data_objects.Run;
 import java.util.HashMap;
 import java.util.List;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
+import org.lreqpcr.core.data_objects.Run;
+import org.lreqpcr.core.data_objects.SampleProfile;
 
 /**
  * Service interface for exporting profiles. This service needs to be better implemented.
@@ -28,12 +29,6 @@ public interface DataExportServices {
     public void exportReplicateSampleProfilesFromRuns(List<Run> runList);
 
     /**
-     * Average calibration profile export.
-     * @param profileList list containing the average calibration profile to be exported
-     */
-    public void exportAverageCalibrationProfiles(List<AverageCalibrationProfile> profileList);
-
-    /**
      * Data export of a lists of average sample profiles based on sorting by Run, Amplicon or
      * Sample. The resulting excel workbook will
      * contain a worksheet for each parent, with the parent name as the worksheet
@@ -54,5 +49,17 @@ public interface DataExportServices {
      * @param groupList Map with the key being the name of the element (run, amplicon or sample used to
      * sort the sample profiles (e.g. the name of the Run, Amplicon or Sample)
      */
-    public void exportReplicateSampleProfiles(HashMap<String, List<AverageSampleProfile>> groupList);
+    public void exportReplicateSampleProfiles(HashMap<String, List<SampleProfile>> groupList);
+    
+    /**
+     * Average calibration profile export.
+     * @param profileList list containing the average calibration profile to be exported
+     */
+    public void exportAverageCalibrationProfiles(List<AverageCalibrationProfile> profileList);
+    
+    public void exportReplicateCalibrationProfiles(List<AverageCalibrationProfile> profileList);
+    
+    public void exportAverageCalibrationProfiles(HashMap<String, List<AverageCalibrationProfile>> profileList);
+    
+    public void exportReplicateCalibrationProfiles(HashMap<String, List<AverageCalibrationProfile>> profileList);
 }

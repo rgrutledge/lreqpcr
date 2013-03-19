@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import java.util.List;
 import javax.swing.AbstractAction;
 import org.lreqpcr.analysis_services.LreAnalysisService;
+import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
@@ -71,8 +72,9 @@ public class FixRunEmaxTo100percentAction extends AbstractAction {
                 LreNode runLreNode = (LreNode) runNode;
                 Run run = runLreNode.getLookup().lookup(Run.class);
 //Process all profiles within the run, including the replicate profiles
-                for (AverageSampleProfile avProfile : run.getAverageProfileList()) {
-                    avProfile.setIsEmaxFixedTo100(true);//
+                for (AverageProfile avProfile : run.getAverageProfileList()) {
+                    AverageSampleProfile avSamplePrf = (AverageSampleProfile) avProfile;
+                    avSamplePrf.setIsEmaxFixedTo100(true);//
                     //Process the replicate profiles
                     for (Profile repProfile : avProfile.getReplicateProfileList()) {
                         //Ignore profiles that do not have an LRE window
@@ -86,16 +88,16 @@ public class FixRunEmaxTo100percentAction extends AbstractAction {
                     //the average replicate No >10 as indicated by lacking an LRE
                     //window. If so then an automated LRE window
                     //selection must be conducted on the average profile.
-                    if (!avProfile.isTheReplicateAverageNoLessThan10Molecules() && !avProfile.hasAnLreWindowBeenFound()) {
+                    if (!avProfile.isTheReplicateAverageNoLessThan10Molecules() && !avSamplePrf.hasAnLreWindowBeenFound()) {
                         //Must conduct an automated LRE window selection
-                        analysisService.conductAutomatedLreWindowSelection(avProfile, selectionParameters);
+                        analysisService.conductAutomatedLreWindowSelection(avSamplePrf, selectionParameters);
                     }
                     //Ignore average sample profiles that do not have an LRE window
                     if (!avProfile.isTheReplicateAverageNoLessThan10Molecules()) {
                         //Need to update avFo and avNo
-                        analysisService.initializeProfileSummary(avProfile, selectionParameters);
+                        analysisService.initializeProfileSummary(avSamplePrf, selectionParameters);
                     }//When <10N the averageProfile inherits the average replicate profile No so no need to update
-                    db.saveObject(avProfile);
+                    db.saveObject(avSamplePrf);
                 }
             }
         } else {

@@ -79,6 +79,12 @@ public class AverageCalibrationProfile extends CalibrationProfile implements Ave
         return numberOfActiveReplicateProfiles;
     }
 
+    /**
+     * Sorted by date. 
+     * 
+     * @param o
+     * @return 
+     */
     @Override
     public int compareTo(Object o) {
         AverageCalibrationProfile profile = (AverageCalibrationProfile) o;
@@ -110,7 +116,7 @@ public class AverageCalibrationProfile extends CalibrationProfile implements Ave
         return avTm;
     }
 
-    private void calculateAvTm() {
+    public void calculateAvTm() {
         double tmSum = 0;
         int counter = 0;
         for (CalibrationProfile calProfile : lambdaProfileList) {

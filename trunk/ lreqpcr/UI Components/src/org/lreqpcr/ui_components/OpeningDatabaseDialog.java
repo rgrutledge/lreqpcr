@@ -35,11 +35,11 @@ public class OpeningDatabaseDialog extends JPanel{
 
     public OpeningDatabaseDialog() {
         super(new BorderLayout());
-
+//All attempts to get the progress bars to function failed
 //        progressBar = new JProgressBar(0, 100);
 //        progressBar.setIndeterminate(true);
         
-        JTextArea text = new JTextArea("Loading Database File...                  ");
+        JTextArea text = new JTextArea("Loading Database File...                                 ");
         
         JPanel panel = new JPanel();
 //        panel.add(progressBar);

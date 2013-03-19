@@ -141,5 +141,8 @@
                 <package>org.lreqpcr.calibration_ui</package>
             </public-packages>
         </data>
+        <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
+            <word>Fmax</word>
+        </spellchecker-wordlist>
     </configuration>
 </project>

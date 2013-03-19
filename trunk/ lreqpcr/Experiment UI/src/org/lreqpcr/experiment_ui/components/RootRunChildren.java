@@ -16,9 +16,11 @@
  */
 package org.lreqpcr.experiment_ui.components;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Action;
 import org.lreqpcr.analysis_services.LreAnalysisService;
+import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.data_objects.Run;
@@ -75,8 +77,14 @@ public class RootRunChildren extends LreObjectChildren {
                 actions = new Action[]{};//i.e. there are no Actions for this Node
             }
         }
-        List<AverageSampleProfile> avProfileList = run.getAverageProfileList();
-        LreNode node = new LreNode(new RunChildren(mgr, db, avProfileList, nodeActionFactory, nodeLabelFactory),
+        List<AverageProfile> avProfileList = run.getAverageProfileList();
+        List<AverageSampleProfile> avSamplePrfList = new ArrayList<AverageSampleProfile>();
+        //Must cast to AverageSampleProfile
+        for (AverageProfile avPrf : avProfileList){
+            AverageSampleProfile avSamplePrf = (AverageSampleProfile) avPrf;
+            avSamplePrfList.add(avSamplePrf);
+        }
+        LreNode node = new LreNode(new RunChildren(mgr, db, avSamplePrfList, nodeActionFactory, nodeLabelFactory),
                 Lookups.singleton(lreObject), actions);
         node.setExplorerManager(mgr);
         node.setDatabaseService(db);

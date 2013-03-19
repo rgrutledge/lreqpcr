@@ -16,9 +16,9 @@
  */
 package org.lreqpcr.core.database_services;
 
-import org.lreqpcr.core.data_objects.Family;
 import java.io.File;
 import java.util.List;
+import org.lreqpcr.core.data_objects.Family;
 
 /**
  * The database services interface.
@@ -108,17 +108,17 @@ public interface DatabaseServices {
     public List<? extends Family> getChildren(Family member, Class childClass);
 
     /**
-     * An extended version of "getChildren" that retrieves all instances of a specified
-     * class that contains a specified value within the specified field. For example,
-     * all Profiles holding the specified amplicon name within the ampliconName field.
-     * In this case, all Profiles containing a specified amplicon would be retrieved.
-     *
-     * @param clazz the Class of the objects to be retrieve
-     * @param fieldName the name of the field within the Class
-     * @param fieldValue the field value to base the search on
+     * Retrieves all instances of a specified
+     * class that contains a specific field value within the designated field. For example,
+     * all Profiles using a specific amplicon: (Profile.class, "amplicon", Amplicon Name), 
+     * or all Profiles within a Run: (Profile.class,  "run", the Run object)
+     * 
+     * @param clazz the Class of the objects to be retrieved (e.g. Profiles)
+     * @param fieldName the name of the field within the Class (e.g. run
+     * @param theFieldValue the object holding reference to the target within the field (e.g. a specific Run)
      * @return a List of all retrieved Objects
      */
-    public List retrieveUsingFieldValue(Class clazz, String fieldName, Object fieldValue);
+    public List retrieveUsingFieldValue(Class clazz, String fieldName, Object theFieldValue);
 
     /**
      * Save the supplied Object to the database

@@ -17,14 +17,14 @@
 
 package org.lreqpcr.calibration_ui.actions;
 
-import org.lreqpcr.core.ui_elements.LreActionFactory;
 import java.util.TreeMap;
 import javax.swing.Action;
+import org.lreqpcr.core.ui_elements.LreActionFactory;
 import org.openide.explorer.ExplorerManager;
 
 /**
  * Only provides for deletion of Calibration Profiles because only a single
- * reaction setup is provided in this verion. This thus requires separate
+ * reaction setup is provided in this version. This thus requires separate
  * databases for each reaction setup...this could be changed in future
  * verions.
  * @author Bob Rutledge
@@ -42,7 +42,7 @@ public class CalbnTreeNodeActions implements LreActionFactory {
             null,
             new DeleteAverageCalibrationProfileAction(mgr),
             null,
-            new FixCalibrationProfileEmaxTo100percentAction(mgr),
+            new FixAvCaibnPrfEmaxTo100PercentAction(mgr),
             new ReturnCalibrationProfileEmaxToLreAction(mgr)
         };
         actionMap.put("AverageCalibrationProfile", actions);
@@ -50,9 +50,6 @@ public class CalbnTreeNodeActions implements LreActionFactory {
         actions = new Action[]{
             new ExcludeCalibrationProfileAction(mgr),
             new IncludeCalibrationProfileAction(mgr),
-            null,
-            new FixCalibrationProfileEmaxTo100percentAction(mgr),
-            new ReturnCalibrationProfileEmaxToLreAction(mgr)
         };
         actionMap.put("CalibrationProfile", actions);
     }

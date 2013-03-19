@@ -169,7 +169,7 @@ public abstract class Run extends LreObject {
     }
 
     /**
-     * Version number to allow database compatability to be assessed.
+     * Allows updating to a new version to maintain database compatability.
      * 
      * @param versionNumber the version number that can contain characters
      */

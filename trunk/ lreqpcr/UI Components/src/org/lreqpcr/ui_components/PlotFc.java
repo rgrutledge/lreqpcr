@@ -151,17 +151,20 @@ public class PlotFc extends javax.swing.JPanel {
         //Need to determin scale for Fc (Y-axis)
         if (profile.getRun().getAverageFmax() == 0) {
             profile.getRun().calculateAverageFmax();
-            if (profile.getRun().getAverageFmax() == 0){
-            //Failed average Fmax calculation...likely a very rare event
-            Toolkit.getDefaultToolkit().beep();
-            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
-                    "This database appears to lack any valid profiles so\n"
-                    + "that an average Fmax could not be determined.\n"
-                    + "This prevents profiles from being viewed. ",
-                    "An average Fmax could not be determined",
-                    JOptionPane.ERROR_MESSAGE);
-            clearPlot();
-            return;
+            if (profile.getRun().getAverageFmax() == 0) {
+                profile.getRun().calculateAverageFmax();
+                if (profile.getRun().getAverageFmax() == 0) {
+                    //Most likely due to old dataset in which Fmax was not implemented
+                    //Failed average Fmax calculation...likely a very rare event
+                    Toolkit.getDefaultToolkit().beep();
+                    JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                            "This Run appears to lack an average Fmax.\n"
+                            + "This prevents profiles from being viewed. ",
+                            "An average Fmax could not be determined",
+                            JOptionPane.ERROR_MESSAGE);
+                    clearPlot();
+                    return;
+                }
             }
         }
         maxFc = profile.getRun().getAverageFmax() * 1.3;//Provides 20% spacing for the top of the profile
@@ -173,7 +176,7 @@ public class PlotFc extends javax.swing.JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         g2 = (Graphics2D) g;
-        if (clearPlot) {
+        if (clearPlot || zeroCycle == null) {
             return;
         }
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -189,7 +192,7 @@ public class PlotFc extends javax.swing.JPanel {
         if (isInitiated) {
             Cycle runner = zeroCycle.getNextCycle();//Cycle #1
             //Allows display of the Fc plot if a LRE window has not been found
-            if (!profile.hasAnLreWindowBeenFound()) {
+            if (!profile.hasAnLreWindowBeenFound() || profile.isExcluded()) {
                 do {
                     double x = (runner.getCycNum() * scalingFactorX) - offsetX;
                     double y = height - (runner.getFc() * 0.000001) - offsetY;
