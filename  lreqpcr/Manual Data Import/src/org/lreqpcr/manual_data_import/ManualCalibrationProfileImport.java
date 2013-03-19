@@ -18,10 +18,6 @@ package org.lreqpcr.manual_data_import;
 
 import java.awt.Desktop;
 import java.awt.Toolkit;
-import org.lreqpcr.data_import_services.RunImportData;
-import org.lreqpcr.data_import_services.RunImportUtilities;
-import org.lreqpcr.core.data_objects.*;
-import org.lreqpcr.core.utilities.IOUtilities;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -48,11 +44,15 @@ import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
+import org.lreqpcr.core.data_objects.*;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
+import org.lreqpcr.core.utilities.IOUtilities;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.data_import_services.DataImportType;
+import org.lreqpcr.data_import_services.RunImportData;
 import org.lreqpcr.data_import_services.RunImportService;
+import org.lreqpcr.data_import_services.RunImportUtilities;
 import org.openide.util.Exceptions;
 import org.openide.windows.WindowManager;
 
@@ -60,18 +60,14 @@ import org.openide.windows.WindowManager;
  *
  * @author Bob Rutledge
  */
-public class CalibrationProfileTemplateImport extends RunImportService {
+public class ManualCalibrationProfileImport extends RunImportService {
 
      /**
-     * Creates a calibration Excel template xls file in a directory
-     * selected by the user.
+     * Creates an Excel calibration template file.
      *
-     * @return the template xls file
      * @throws jxl.write.WriteException
      */
     public static void createCalbnProfileTemplate() throws WriteException, IOException {
-        // TODO implement the new Run import severvice
-
         File selectedFile = IOUtilities.newExcelFile();
         if(selectedFile != null){
 
@@ -132,7 +128,7 @@ public class CalibrationProfileTemplateImport extends RunImportService {
             workbook.write();
             workbook.close();
 
-            Desktop desktop = null;
+            Desktop desktop;
             if (Desktop.isDesktopSupported()) {
                 desktop = Desktop.getDesktop();
                 desktop.open(selectedFile);
@@ -142,7 +138,10 @@ public class CalibrationProfileTemplateImport extends RunImportService {
         }
     }
 
-//    @SuppressWarnings(value = "unchecked")
+    /**
+     * Manual import of calibration profiles using an Excel template.
+     * @return import data object ready for processing
+     */
     @Override
     public RunImportData importRunData() {
         //Determine if a Calibration database is open
@@ -156,10 +155,6 @@ public class CalibrationProfileTemplateImport extends RunImportService {
                     JOptionPane.ERROR_MESSAGE);
             return null;
             }
-        }else{
-  //No Calibration database service is available...this should never happen
-            //Throw some type of error
-            return null;
         }
         //Retrieve the Excel sample profile import file
         File excelImportFile = IOUtilities.openImportExcelFile("Manual Calibration Profile Data Import");
@@ -196,9 +191,9 @@ public class CalibrationProfileTemplateImport extends RunImportService {
         int colCount = sheet.getColumns();
         int rowCount = sheet.getRows();
         int col = 2;//Start column
-        DateCell date = null;
+        DateCell date;
         try {
-            date = date = (DateCell) sheet.getCell(col, 1);
+            date = (DateCell) sheet.getCell(col, 1);
         } catch (Exception e) {
             Toolkit.getDefaultToolkit().beep();
             String msg = "The Run Date appears to be invalid. Manually enter " +

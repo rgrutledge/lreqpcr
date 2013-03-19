@@ -54,7 +54,7 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
      * Will throw an illegal cast exception if the list does not contain Sample
      * Profiles.
      *
-     * @param replicateProfileList
+     * @param replicate Profile list containing SampleProfiles
      */
     @SuppressWarnings(value = "unchecked")
     public void setReplicateProfileList(List<? extends Profile> replicateProfileList) {

@@ -22,8 +22,7 @@ import org.openide.util.Lookup;
  * Data import service using data generated from a run. This is divided into
  * two steps: 1. generating a generic RunImportData object that holds all of the
  * run information and 2. initialization of the profiles within the run via
- * the Run Initialization Service. Note that it is necessary to set "isProfileVer0_8_0(boolean)"
- * to true to signify that this is a post version 0.8.0 import. If not....
+ * the Run Initialization Service. 
  *
  * @author Bob Rutledge
  */

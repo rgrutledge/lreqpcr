@@ -254,11 +254,8 @@ public final class CalibrationTopComponent extends TopComponent
             int length = dbFileName.length();
             setDisplayName(dbFileName.substring(0, length - 4));
             setToolTipText(calibrationDB.getDatabaseFile().getName());
-        } else {
-            // TODO present an error dialog...this might not be necessary
         }
     }//GEN-LAST:event_openLastDBbuttonActionPerformed
-
     @SuppressWarnings("unchecked")
     private void exportProfilesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportProfilesButtonActionPerformed
         if (!calibrationDB.isDatabaseOpen()) {

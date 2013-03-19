@@ -23,10 +23,7 @@ import org.lreqpcr.core.ui_elements.LreActionFactory;
 import org.openide.explorer.ExplorerManager;
 
 /**
- * Only provides for deletion of Calibration Profiles because only a single
- * reaction setup is provided in this version. This thus requires separate
- * databases for each reaction setup...this could be changed in future
- * verions.
+ * Provides actions for a Calibration database explorer tree.
  * @author Bob Rutledge
  */
 public class CalbnTreeNodeActions implements LreActionFactory {

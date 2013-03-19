@@ -23,6 +23,6 @@ public final class CalibrationProfileTemplateImportAction implements ActionListe
 
     @Override
     public void actionPerformed(ActionEvent e) {
-       new CalibrationProfileTemplateImport();
+       new ManualCalibrationProfileImport();
     }
 }

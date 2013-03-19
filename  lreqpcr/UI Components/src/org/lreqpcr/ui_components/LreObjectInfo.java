@@ -206,11 +206,12 @@ public class LreObjectInfo extends JPanel {
                 tmLabel.setVisible(false);
             }
             //Display the average Tm, if available
-            if (profile instanceof AverageSampleProfile) {
-                AverageSampleProfile avProfile = (AverageSampleProfile) profile;
-                if (avProfile.isExcluded()) {
+            if (profile instanceof AverageProfile) {
+                AverageProfile avProfile = (AverageProfile) profile;
+                if (profile.isExcluded()) {
                     avTmLabel.setVisible(false);
                     avTmDisplay.setVisible(false);
+//This is a pretty crude approach but has very low overhead and ensures a current value
                 } else {
                     if (avProfile.calculateAvAmpTm() > 0) {
                         avTmDisplay.setText(df.format(avProfile.calculateAvAmpTm()) + " °C");
