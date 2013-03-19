@@ -45,6 +45,12 @@ public interface AverageProfile {
      * @param replicateProfileList List of replicate profiles
      */
     public void setReplicateProfileList(List<? extends Profile> replicateProfileList);
+    
+    /**
+     * Calculate the average amplicon melting temperature from 
+     * the replicate profile Tms.
+     */
+    public double calculateAvAmpTm();
 
     public int getTheNumberOfActiveReplicateProfiles();
     

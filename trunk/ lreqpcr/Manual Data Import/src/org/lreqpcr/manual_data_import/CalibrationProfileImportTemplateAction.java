@@ -26,7 +26,7 @@ public final class CalibrationProfileImportTemplateAction implements ActionListe
 
     public void actionPerformed(ActionEvent e) {
         try {
-            CalibrationProfileTemplateImport.createCalbnProfileTemplate();
+            ManualCalibrationProfileImport.createCalbnProfileTemplate();
         } catch (WriteException ex) {
             Exceptions.printStackTrace(ex);
         } catch (IOException ex) {

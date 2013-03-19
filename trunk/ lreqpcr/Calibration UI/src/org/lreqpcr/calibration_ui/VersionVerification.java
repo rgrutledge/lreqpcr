@@ -33,10 +33,11 @@ public class VersionVerification {
 
     /**
      * Determines if Run average Fmax needs to be calculated, which for earlier 
-     * versions was not set during Run import.
+     * versions, was not set during Run import.
      * @param avProfileList 
      */
     public static void updateCalibrationProfiles(DatabaseServices db, List<AverageCalibrationProfile> avProfileList){
+//Expectations are that these are small databases and thus cycling through all will not be a performance issue
         for (AverageCalibrationProfile avCalPrf : avProfileList){
             Run run = avCalPrf.getRun();
             if (run.getAverageFmax() == 0){
@@ -49,9 +50,6 @@ public class VersionVerification {
                 }
                 avCalPrf.getRun().calculateAverageFmax();
                 db.saveObject(run);
-            }
-            if (avCalPrf.getAvAmpTm() == 0){
-                avCalPrf.calculateAvTm();
             }
         }
     }

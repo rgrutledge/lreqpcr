@@ -111,12 +111,12 @@ public class AverageCalibrationProfile extends CalibrationProfile implements Ave
      */
     public double getAvAmpTm() {
         if (avTm == 0) {
-            calculateAvTm();
+            calculateAvAmpTm();
         }
         return avTm;
     }
 
-    public void calculateAvTm() {
+    public double calculateAvAmpTm() {
         double tmSum = 0;
         int counter = 0;
         for (CalibrationProfile calProfile : lambdaProfileList) {
@@ -132,5 +132,6 @@ public class AverageCalibrationProfile extends CalibrationProfile implements Ave
                 avTm = -1;
             }
         }
+        return avTm;
     }
 }
