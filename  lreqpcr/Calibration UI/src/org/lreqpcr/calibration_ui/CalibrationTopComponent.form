@@ -19,7 +19,7 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="calbnTree" alignment="0" pref="366" max="32767" attributes="0"/>
+                  <Component id="calbnTree" alignment="0" pref="447" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="openLastDBbutton" linkSize="1" min="-2" pref="33" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>

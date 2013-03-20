@@ -407,7 +407,7 @@ public final class AmpliconTopComponent extends TopComponent
                 return;
             }
             Node selectedNode = selectedNodes[0];
-            LreObject selectedAmplicon = (LreObject) selectedNode.getLookup().lookup(LreObject.class);
+            LreObject selectedAmplicon = selectedNode.getLookup().lookup(LreObject.class);
             createTree();
                 //Set selection to the modified node
                 LreObjectChildren children = (LreObjectChildren) mgr.getRootContext().getChildren();

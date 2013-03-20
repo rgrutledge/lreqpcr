@@ -16,15 +16,20 @@
  */
 package org.lreqpcr.core.utilities;
 
+import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
+import org.lreqpcr.core.data_objects.DatabaseInfo;
+import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
+import org.lreqpcr.core.data_objects.Run;
+import org.lreqpcr.core.database_services.DatabaseServices;
 
 /**
  * Static utility methods
  * @author Bob Rutledge
  */
-public class GenerateAverageFcDataset {
+public class ProfileUtilities {
 
     /**
      * Generates an average Fc dataset from the provided list of 
@@ -72,5 +77,27 @@ public class GenerateAverageFcDataset {
             newAvFcDataset = profileList.get(0).getRawFcReadings();
         }
         return newAvFcDataset;
-    }
+    }//End of generate average Fc dataset
+    
+    public static void calcAvFmaxForAllRuns(DatabaseServices db) {
+        DatabaseInfo dbInfo = (DatabaseInfo) db.getAllObjects(DatabaseInfo.class).get(0);
+        List<Run> runList = db.getAllObjects(Run.class);
+        ArrayList<Double> fmaxList = Lists.newArrayList();//Used to determine SD
+        double fmaxSum = 0;
+        for (Run run : runList) {
+            //Sum Fmax averages from all runs
+            fmaxSum += run.getAverageFmax();
+            fmaxList.add(run.getAverageFmax());
+        }
+        if (fmaxList.size() >= 1 && fmaxSum > 0) {
+            double avRunFmax = fmaxSum / fmaxList.size();
+            dbInfo.setAvRunFmax(avRunFmax);
+            //Calculate the avFmax CV is there is more than one value
+            if (fmaxList.size() > 1) {
+                double avRunFmaxCV = MathFunctions.calcStDev(fmaxList) / avRunFmax;
+                dbInfo.setAvRunFmaxCV(avRunFmaxCV);
+            }
+            db.saveObject(dbInfo);
+        }
+    }//End of calculate average run Fmax
 }

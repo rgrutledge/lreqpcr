@@ -33,6 +33,9 @@ import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.database_services.DatabaseServices;
+import org.netbeans.api.progress.ProgressHandle;
+import org.netbeans.api.progress.ProgressHandleFactory;
+import org.openide.util.Exceptions;
 import org.openide.windows.WindowManager;
 
 /**
@@ -57,35 +60,69 @@ public abstract class Db4oDatabaseServices implements DatabaseServices {
     }
 
     /**
-     * Opens a DB4O database file. If successful, the current database file is set
-     * to the supplied database file.
+     * Opens a DB4O database file. If successful, the current database file is
+     * set to the supplied database file.
      *
-     * @param db4oDatabaseFile the DB4O database file was opened or false if it failed to open
+     * @param db4oDatabaseFile the DB4O database file was opened or false if it
+     * failed to open
      */
     public boolean openDatabaseFile(File db4oDatabaseFile) {
         if (db4oDatabaseFile == null) {
             return false;
         }
         closeDatabase();
-        try {
+        final String path = db4oDatabaseFile.getAbsolutePath();
+        final String fileName = db4oDatabaseFile.getName();
+        Runnable run = new Runnable() {
+            public void run() {
+                ProgressHandle p = ProgressHandleFactory.createHandle("Database is loading");
+                p.start();
+                try {
 //This throws an IllegalArguentException for ver 7.4.155, which is not documented when a second file is opened!!
-            db4o = Db4o.openFile(config, db4oDatabaseFile.getAbsolutePath());
-        } catch (Exception e) {
-            String msg = "The database file \"" + db4oDatabaseFile.getName()
-                    + "\" could not be opened due to the error: \""
-                    + e.getClass().getSimpleName() + "\"";
-            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Unable to open the database file",
-                    JOptionPane.ERROR_MESSAGE);
-            return false;
+                    db4o = Db4o.openFile(config, path);
+                } catch (Exception e) {
+                    String msg = "The database file \"" + fileName
+                            + "\" could not be opened due to the error: \""
+                            + e.getClass().getSimpleName() + "\"";
+                    JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Unable to open the database file",
+                            JOptionPane.ERROR_MESSAGE);
+//                        return false;
+                }
+                p.finish();
+            }
+        };
+
+        Thread t = new Thread(run);
+        t.start();
+        while (t.isAlive()){
+            try {
+//                t.join(1000);
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                Exceptions.printStackTrace(ex);
+            }
         }
+//        try {
+//            t.join();
+//        } catch (InterruptedException ex) {
+//            Exceptions.printStackTrace(ex);
+//        }
+//        try {
+        //                    while (thread.getState() != Thread.State.TERMINATED){
+        //                        wait...
+//                                Thread.sleep(250);
+//        } catch (InterruptedException ex) {
+//            Exceptions.printStackTrace(ex);
+//        }
+//                    }
         currentDatabaseFile = db4oDatabaseFile;
         return true;
     }
 
     /**
-     * Closes the current DB4O database file, which also triggers a full commit of data 
-     * in memory to disk. Note also that getDatabaseFile() will return null
-     * once the current database file is closed.
+     * Closes the current DB4O database file, which also triggers a full commit
+     * of data in memory to disk. Note also that getDatabaseFile() will return
+     * null once the current database file is closed.
      */
     public boolean closeDb4oDatabase() {
         if (db4o != null) {
@@ -120,12 +157,11 @@ public abstract class Db4oDatabaseServices implements DatabaseServices {
     }
 
     /**
-     * Object-specific deletion, based on
-     * a deletion depth of 1, which is necessary in order
-     * to preserve linked data objects (e.g. a Run object linked to
-     * a Profile). This however requires that other types
-     * such as ListArrays be manually deleted. Unfortunately,
-     * this leads to a dreaded "if" cascade.
+     * Object-specific deletion, based on a deletion depth of 1, which is
+     * necessary in order to preserve linked data objects (e.g. a Run object
+     * linked to a Profile). This however requires that other types such as
+     * ListArrays be manually deleted. Unfortunately, this leads to a dreaded
+     * "if" cascade.
      *
      * @param object
      */
@@ -168,10 +204,12 @@ public abstract class Db4oDatabaseServices implements DatabaseServices {
     }
 
     /**
-     * Retrieves all objects of clazz, or if a database file is not open
-     * returns a empty list. 
+     * Retrieves all objects of clazz, or if a database file is not open returns
+     * a empty list.
+     *
      * @param clazz
-     * @return List of all objects or an empty list if a database file is not open
+     * @return List of all objects or an empty list if a database file is not
+     * open
      */
     @SuppressWarnings(value = "unchecked")
     public List getAllObjects(Class clazz) {

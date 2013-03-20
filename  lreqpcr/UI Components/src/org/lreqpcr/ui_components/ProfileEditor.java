@@ -324,7 +324,7 @@ public class ProfileEditor extends JPanel implements
                     displayVersionIncompatiblityMessage();
                     return;
                 }
-                    selectionParameters = (LreWindowSelectionParameters) l.get(0);
+                    selectionParameters = l.get(0);
                 }
                 clearPanels();
             }

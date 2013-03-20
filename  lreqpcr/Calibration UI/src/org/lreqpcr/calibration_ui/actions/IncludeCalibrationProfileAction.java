@@ -21,7 +21,7 @@ import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
-import org.lreqpcr.core.utilities.GenerateAverageFcDataset;
+import org.lreqpcr.core.utilities.ProfileUtilities;
 import java.awt.event.ActionEvent;
 import java.util.List;
 import javax.swing.AbstractAction;
@@ -78,7 +78,7 @@ class IncludeCalibrationProfileAction extends AbstractAction {
             //Update the parent Average Sample Profile
             LreNode parentNode = (LreNode) nodes[0].getParentNode();
             parentAvProfile.setFcReadings(null);//Fb will need to be recalculated
-            parentAvProfile.setRawFcReadings(GenerateAverageFcDataset.generateAverageFcDataset(profileList));
+            parentAvProfile.setRawFcReadings(ProfileUtilities.generateAverageFcDataset(profileList));
                         //Conduct automated LRE window selection
             profileIntialization.conductAutomatedLreWindowSelection(parentAvProfile, selectionParameters);
             db.saveObject(parentAvProfile);

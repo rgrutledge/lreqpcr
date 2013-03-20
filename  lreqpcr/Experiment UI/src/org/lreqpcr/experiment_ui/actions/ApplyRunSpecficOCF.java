@@ -79,7 +79,7 @@ class ApplyRunSpecficOCF extends AbstractAction {
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
-        selectedRun.setRunOCF(runOCF);
+        selectedRun.setRunSpecificOCF(runOCF);
         db.saveObject(selectedRun);
         ExperimentDbInfo dbInfo = (ExperimentDbInfo) db.getAllObjects(ExperimentDbInfo.class).get(0);
         double avOCF = dbInfo.getOcf();

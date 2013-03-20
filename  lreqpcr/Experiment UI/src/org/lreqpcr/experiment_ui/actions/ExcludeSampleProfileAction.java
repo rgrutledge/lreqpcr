@@ -28,7 +28,7 @@ import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
-import org.lreqpcr.core.utilities.GenerateAverageFcDataset;
+import org.lreqpcr.core.utilities.ProfileUtilities;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.ui_components.PanelMessages;
 import org.openide.explorer.ExplorerManager;
@@ -92,7 +92,7 @@ class ExcludeSampleProfileAction extends AbstractAction {
             
             //Update the parent Average Sample Profile
             LreNode avSampleProfileLreNode = (LreNode) sampleProfileNodes[0].getParentNode();
-            parentAvProfile.setRawFcReadings(GenerateAverageFcDataset.generateAverageFcDataset(repProfileList));
+            parentAvProfile.setRawFcReadings(ProfileUtilities.generateAverageFcDataset(repProfileList));
             parentAvProfile.setFcReadings(null);//This will trigger a new Fc dataset to be generated from the raw Fc dataset
             //Reinitialize the Average Profile
             LreAnalysisService profileIntialization =

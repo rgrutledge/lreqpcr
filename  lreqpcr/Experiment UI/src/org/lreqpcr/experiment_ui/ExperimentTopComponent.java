@@ -39,6 +39,8 @@ import org.lreqpcr.core.utilities.UniversalLookupListener;
 import org.lreqpcr.data_export_services.DataExportServices;
 import org.lreqpcr.ui_components.OpeningDatabaseDialog;
 import org.lreqpcr.ui_components.PanelMessages;
+import org.netbeans.api.progress.ProgressHandle;
+import org.netbeans.api.progress.ProgressHandleFactory;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
@@ -257,29 +259,39 @@ public final class ExperimentTopComponent extends TopComponent
     }// </editor-fold>//GEN-END:initComponents
 
     private void openDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openDBbuttonActionPerformed
-        CountDownLatch latch = new CountDownLatch(1);
-        JFrame message = OpeningDatabaseDialog.makeDialog();
+//        CountDownLatch latch = new CountDownLatch(1);
+//        Runnable run = new Runnable() {
+//            public void run() {
+//                ProgressHandle p = ProgressHandleFactory.createHandle("Opening Database File");
+//                p.start();
+                try {
+                    if (experimentDB.openUserSelectDatabaseFile()) {
+                        experimentDbTree.createTree();
+                        UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, experimentDB);
+                        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_DATABASE);
+                        String dbFileName = experimentDB.getDatabaseFile().getName();
+                        int length = dbFileName.length();
+                        setDisplayName(dbFileName.substring(0, length - 4));
+                        setToolTipText(experimentDB.getDatabaseFile().getName());
+                    }//If a new file was not opened, do nothing
+                } finally {
+//            latch.countDown();
+//                }
+//                p.finish();
+//            }
+//        };
+//        Thread t = new Thread(run);
+//        t.start(); // start the task and progress visualisation
+//        JFrame message = OpeningDatabaseDialog.makeDialog();
         //Want to see Something while the DB is being opened but this really does not work well...NEED JavaFX!!
-        try {
-            if (experimentDB.openUserSelectDatabaseFile()) {
-                experimentDbTree.createTree();
-                UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, experimentDB);
-                UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_DATABASE);
-                String dbFileName = experimentDB.getDatabaseFile().getName();
-                int length = dbFileName.length();
-                setDisplayName(dbFileName.substring(0, length - 4));
-                setToolTipText(experimentDB.getDatabaseFile().getName());
-            }//If a new file was not opened, do nothing
-        } finally {
-            latch.countDown();
-        }
-        try {
-            latch.await();
-            //This will advance only after the database has been opened
-            message.setVisible(false);
-            message.dispose();
-        } catch (InterruptedException ex) {
-            Exceptions.printStackTrace(ex);
+
+//        try {
+//            latch.await();
+//            //This will advance only after the database has been opened
+////            message.setVisible(false);
+////            message.dispose();
+//        } catch (InterruptedException ex) {
+//            Exceptions.printStackTrace(ex);
         }
     }//GEN-LAST:event_openDBbuttonActionPerformed
 

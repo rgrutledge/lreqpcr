@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2013   Bob Rutledge
- *
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -14,16 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * and open the template in the editor.
  */
+
 package org.lreqpcr.experiment_ui.components;
 
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Action;
-import org.lreqpcr.analysis_services.LreAnalysisService;
-import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreObject;
-import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LabelFactory;
 import org.lreqpcr.core.ui_elements.LreActionFactory;
@@ -31,44 +28,32 @@ import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
-import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 
 /**
- * Displays Run nodes for the supplied list of Runs
+ * Generates AverageSampleProvides nodes for the supplied list
+ * of AverageSampleProfiles
  *
  * @author Bob Rutledge
  */
-public class RootRunChildren extends LreObjectChildren {
+public class SampleRunChildren extends LreObjectChildren{
 
-    private LreAnalysisService analysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
-
-    /**
-     * Generates AverageProfile nodes for a Run.
-     * 
-     * @param mgr the manager of the view
-     * @param db the experiment database that is being viewed
-     * @param runList list of Runs to be displayed
-     * @param actionFactory the node action factory
-     * @param labelFactory the node label factory
-     */
-    public RootRunChildren(ExplorerManager mgr, DatabaseServices db, List<? extends Run> runList,
+    public SampleRunChildren(ExplorerManager mgr, DatabaseServices db,
+            List<AverageSampleProfile> avSampleProfileList,
             LreActionFactory actionFactory, LabelFactory labelFactory) {
-        super(mgr, db, runList, actionFactory, labelFactory);
+        super(mgr, db, avSampleProfileList, actionFactory, labelFactory);
     }
 
     /**
-     * Creates LRE nodes with children of the supplied LRE object, if any exist, 
-     * along with with the corresponding node labels, actions (if any exist) and 
-     * the corresponding Explorer manager and database which is being viewed. 
-     * 
-     * @param lreObject
-     * @return the new node
+     * Displays the AverageSampleProfiles contained within the supplied list
+     *
+     * @param the list of AverageSampleProfiles to be displayed
+     * @return
      */
     @SuppressWarnings(value = "unchecked")
     @Override
     protected Node[] createNodes(LreObject lreObject) {
-        Run run = (Run) lreObject;
+        AverageSampleProfile avSampleProfile = (AverageSampleProfile) lreObject;
         if (nodeActionFactory == null) {
             actions = new Action[]{};//i.e. no Actions have been set
         } else {
@@ -77,15 +62,11 @@ public class RootRunChildren extends LreObjectChildren {
                 actions = new Action[]{};//i.e. there are no Actions for this Node
             }
         }
-        List<AverageProfile> avProfileList = run.getAverageProfileList();
-        List<AverageSampleProfile> avSamplePrfList = new ArrayList<AverageSampleProfile>();
-        //Must cast to AverageSampleProfile
-        for (AverageProfile avPrf : avProfileList){
-            AverageSampleProfile avSamplePrf = (AverageSampleProfile) avPrf;
-            avSamplePrfList.add(avSamplePrf);
-        }
-        LreNode node = new LreNode(new RunChildren(mgr, db, avSamplePrfList, nodeActionFactory, nodeLabelFactory),
-                Lookups.singleton(lreObject), actions);
+//SampleProfiles are retrieved from the AverageSampleProfile rather than searching the database
+        LreNode node = new LreNode(new AvSampleProfileChildren(mgr, db, 
+                avSampleProfile.getReplicateProfileList(),
+                nodeActionFactory, nodeLabelFactory),
+                    Lookups.singleton(avSampleProfile), actions);
         node.setExplorerManager(mgr);
         node.setDatabaseService(db);
         node.setName(lreObject.getName());
@@ -97,4 +78,5 @@ public class RootRunChildren extends LreObjectChildren {
         }
         return new Node[]{node};
     }
+
 }

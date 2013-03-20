@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.LreObject;
+import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.ui_elements.LabelFactory;
 import org.lreqpcr.core.utilities.FormatingUtilities;
 
@@ -34,6 +35,34 @@ public class CalbnTreeNodeLabels implements LabelFactory {
     private DecimalFormat df = new DecimalFormat();
 
     public String getNodeLabel(LreObject member) {
+        if (member instanceof Run) {
+            Run run = (Run) member;
+            //Place the Run average Fmax into the short description
+            double avFmax = run.getAverageFmax();
+            df.applyPattern(FormatingUtilities.decimalFormatPattern(avFmax));
+            String avFmaxString = df.format(avFmax);
+            df.applyPattern("#0");
+            String cv = df.format(run.getAvFmaxCV() * 100);
+            run.setShortDescription(" [Av Fmax: " + avFmaxString + " ±" + cv + "%]");
+            //Recalculate the Run avOCF
+            //This is not expected to impact performance
+            run.calculateAverageOCF();
+            //Display Run's average OCF
+            if (run.getAvOCF() != 0) {
+                double avOCF = run.getAvOCF();
+                df.applyPattern(FormatingUtilities.decimalFormatPattern(avOCF));
+                String avOCFstring = df.format(avOCF);
+                df.applyPattern("#0");
+                String ocfCV = df.format(run.getAvOcfCV() * 100);
+                if (run.getAvOcfCV() != 0){
+                return sdf.format(run.getRunDate()) + ": " + run.getName() + "   Av OCF " + avOCFstring + " ±" + ocfCV + "%";
+                } else {
+                    return sdf.format(run.getRunDate()) + ": OCF " + avOCFstring;
+                }
+            } else {
+                return sdf.format(run.getRunDate()) + ": OCF not available";
+            }
+        }
         CalibrationProfile calbrnProfile = (CalibrationProfile) member;
         calbrnProfile.setShortDescription("");
         //Label madeup of four components: run date, name, Emax and OCF

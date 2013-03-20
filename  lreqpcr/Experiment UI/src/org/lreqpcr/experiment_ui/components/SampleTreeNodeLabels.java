@@ -31,7 +31,7 @@ import org.lreqpcr.core.utilities.FormatingUtilities;
  *
  * @author Bob Rutledge
  */
-public class RunTreeNodeLabels implements LabelFactory {
+public class SampleTreeNodeLabels implements LabelFactory {
 
     private SimpleDateFormat sdf = new SimpleDateFormat("dMMMyy");
     private DecimalFormat df = new DecimalFormat();
@@ -41,7 +41,7 @@ public class RunTreeNodeLabels implements LabelFactory {
         if (member instanceof Run) {
             Run run = (Run) member;
             
-            double runOCF = run.getRunOCF();
+            double runOCF = run.getRunSpecificOCF();
             //Place the Run average Fmax into the short description
             df.applyPattern("#0");
             double avFmax = run.getAverageFmax();

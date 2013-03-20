@@ -28,7 +28,6 @@ public class LreWindowSelectionParameters {
 
     private Double minFc = 0d;
     private Double foThreshold = 0.06;//6% default
-    private Double avRunFmax;
 
     /**
      * Returns he Fo threshold (fraction of the cycle Fo vs the average Fo) beyond which the
@@ -62,24 +61,5 @@ public class LreWindowSelectionParameters {
      */
     public void setMinFc(Double minFc) {
         this.minFc = minFc;
-    }
-
-    /**
-     * Average Run Fmax is used to access the validity of new minimum Fc values 
-     * entered by the user.
-     * @return the average Fmax across all runs within the database 
-     */
-    public Double getAvRunFmax() {
-        return avRunFmax;
-    }
-
-    /**
-     * 
-     * @param avRunFmax the average Fmax across all runs within the database
-     */
-    public void setAvRunFmax(Double avRunFmax) {
-        this.avRunFmax = avRunFmax;
-    }
-    
-    
+    }   
 }
