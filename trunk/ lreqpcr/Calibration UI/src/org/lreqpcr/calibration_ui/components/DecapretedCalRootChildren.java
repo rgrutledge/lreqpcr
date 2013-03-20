@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2013   Bob Rutledge
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -14,12 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * and open the template in the editor.
  */
-
-package org.lreqpcr.experiment_ui.components;
+package org.lreqpcr.calibration_ui.components;
 
 import java.util.List;
 import javax.swing.Action;
-import org.lreqpcr.core.data_objects.AverageSampleProfile;
+import org.lreqpcr.analysis_services.LreAnalysisService;
+import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LabelFactory;
@@ -28,32 +28,45 @@ import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
+import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 
 /**
- * Generates AverageSampleProvides nodes for the supplied list
- * of AverageSampleProfiles
+ * Displays Run nodes for the supplied list of Runs
  *
  * @author Bob Rutledge
  */
-public class RunChildren extends LreObjectChildren{
+public class DecapretedCalRootChildren extends LreObjectChildren {
 
-    public RunChildren(ExplorerManager mgr, DatabaseServices db,
-            List<AverageSampleProfile> avSampleProfileList,
+    private LreAnalysisService analysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
+
+    /**
+     * Generates nodes containing the Runs within the supplied calibration database.
+     * 
+     * @param mgr the manager of the view
+     * @param db the experiment database that is being viewed
+     * @param avCalProfileList list of AverageCalibration profiles to be displayed
+     * @param actionFactory the node action factory
+     * @param labelFactory the node label factory
+     */
+    @SuppressWarnings(value = "unchecked")
+    public DecapretedCalRootChildren(ExplorerManager mgr, DatabaseServices db, List<AverageCalibrationProfile> avCalProfileList,
             LreActionFactory actionFactory, LabelFactory labelFactory) {
-        super(mgr, db, avSampleProfileList, actionFactory, labelFactory);
+        super(mgr, db, avCalProfileList, actionFactory, labelFactory);
     }
 
     /**
-     * Displays the AverageSampleProfiles contained within the supplied list
-     *
-     * @param the list of AverageSampleProfiles to be displayed
+     * Creates LRE nodes with children of the supplied LRE object, is any exist, 
+     * along with with the corresponding node labels, actions (if any exist) and 
+     * the corresponding Explorer manager and database which is being viewed. 
+     * 
+     * @param lreObject
      * @return
      */
     @SuppressWarnings(value = "unchecked")
     @Override
     protected Node[] createNodes(LreObject lreObject) {
-        AverageSampleProfile avSampleProfile = (AverageSampleProfile) lreObject;
+        AverageCalibrationProfile avCalProfile = (AverageCalibrationProfile) lreObject;
         if (nodeActionFactory == null) {
             actions = new Action[]{};//i.e. no Actions have been set
         } else {
@@ -62,11 +75,9 @@ public class RunChildren extends LreObjectChildren{
                 actions = new Action[]{};//i.e. there are no Actions for this Node
             }
         }
-//SampleProfiles are retrieved from the AverageSampleProfile rather than searching the database
-        LreNode node = new LreNode(new AvSampleProfileChildren(mgr, db, 
-                avSampleProfile.getReplicateProfileList(),
-                nodeActionFactory, nodeLabelFactory),
-                    Lookups.singleton(avSampleProfile), actions);
+
+        LreNode node = new LreNode(new AvCalProfileChildren(mgr, db, avCalProfile.getReplicateProfileList(), nodeActionFactory, nodeLabelFactory),
+                Lookups.singleton(lreObject), actions);
         node.setExplorerManager(mgr);
         node.setDatabaseService(db);
         node.setName(lreObject.getName());
@@ -78,5 +89,4 @@ public class RunChildren extends LreObjectChildren{
         }
         return new Node[]{node};
     }
-
 }

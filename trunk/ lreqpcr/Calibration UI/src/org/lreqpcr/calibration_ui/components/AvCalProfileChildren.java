@@ -35,9 +35,9 @@ import org.openide.util.lookup.Lookups;
  * of SampleProfiles
  * @author Bob Rutledge
  */
-public class AvCalibrationProfileChildren extends LreObjectChildren {
+public class AvCalProfileChildren extends LreObjectChildren {
 
-    public AvCalibrationProfileChildren(ExplorerManager mgr, DatabaseServices db, List<? extends CalibrationProfile>
+    public AvCalProfileChildren(ExplorerManager mgr, DatabaseServices db, List<? extends CalibrationProfile>
             calibrationProfileList, LreActionFactory actionFactory, LabelFactory labelFactory) {
         super(mgr, db, calibrationProfileList, actionFactory, labelFactory);
     }

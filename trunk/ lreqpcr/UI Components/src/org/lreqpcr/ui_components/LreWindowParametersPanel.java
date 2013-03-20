@@ -41,6 +41,7 @@ import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
+import org.lreqpcr.core.data_objects.DatabaseInfo;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.SampleProfile;
@@ -68,6 +69,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
     private Double foThreshold = 0d;
     private DecimalFormat df = new DecimalFormat();
     private DatabaseServices currentDB;//Experiment or Calibration database
+    private DatabaseInfo dbInfo;
     private LreWindowSelectionParameters selectionParameters;
     private LreAnalysisService lreAnalysisService =
             Lookup.getDefault().lookup(LreAnalysisService.class);
@@ -88,27 +90,6 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         universalLookup.addListner(PanelMessages.UPDATE_EXPERIMENT_PANELS, this);
         updateDisplay();
         avReplCvDisplay.setText("");
-    }
-
-    @SuppressWarnings("unchecked")
-    public void updateSelectionParameters(DatabaseServices database, LreWindowSelectionParameters parameters) {
-        if (database == null) {
-            return;
-        }
-        currentDB = database;
-        selectionParameters = parameters;
-        if (!currentDB.isDatabaseOpen()) {
-            minFcDisplay.setText("");
-            foThresholdDisplay.setText("");
-            avReplCvDisplay.setText("");
-            avReplCvDisplay.setText("");
-            return;
-        }
-        if (selectionParameters != null) {
-            foThreshold = selectionParameters.getFoThreshold();
-            minFc = selectionParameters.getMinFc();
-            updateDisplay();
-        }
     }
 
     private void createKeyAdapter() {
@@ -228,10 +209,10 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         //everytime a new profile database is opened
         //This is a quickfix for Calibration databases as they yet do not have avFmax implemented
         // TODO implement average Fmax for calibration databases
-        if (selectionParameters.getAvRunFmax() == null) {
+        if (dbInfo.getAvRunFmax() == 0) {
             return true;
         }
-        averageFmax = selectionParameters.getAvRunFmax();
+        averageFmax = dbInfo.getAvRunFmax();
         double fractionOfFmax = newMinFmax / averageFmax;
         if (fractionOfFmax > 0.6) {//Greater then 60%
             Toolkit.getDefaultToolkit().beep();
@@ -533,6 +514,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
             } else {
                 if (currentDB.isDatabaseOpen()) {
                     selectionParameters = (LreWindowSelectionParameters) currentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
+                    dbInfo = (DatabaseInfo) currentDB.getAllObjects(DatabaseInfo.class).get(0);
                     if (selectionParameters == null) {
                         //This should never happen
                         clearPanel();
@@ -569,6 +551,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                     currentDB = dbProvider.getDatabaseServices();
                     if (currentDB.isDatabaseOpen()) {
                         selectionParameters = (LreWindowSelectionParameters) currentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
+                        dbInfo = (DatabaseInfo) currentDB.getAllObjects(DatabaseInfo.class).get(0);
                         if (selectionParameters == null) {
                             clearPanel();
                         } else {
