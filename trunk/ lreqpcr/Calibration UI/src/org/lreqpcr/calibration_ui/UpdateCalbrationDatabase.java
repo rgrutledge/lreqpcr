@@ -39,7 +39,7 @@ public class UpdateCalbrationDatabase {
      * @param avProfileList
      */
     public static void updateCalibrationProfiles(DatabaseServices db, List<AverageCalibrationProfile> avProfileList) {
-//Set the AverageProfile list in each Run and have Run calculate average Fmax
+        //Set the AverageProfile list in each Run and have Run calculate average Fmax
         //Need to sort out all the avProfiles associated with each Run, e.g. CAL1 + CAL2 = 2 avProfiles in one run
         //This is required in order to put the avProfiles into the the correct Run
         HashMap<Run, ArrayList<AverageProfile>> runMap = new HashMap<Run, ArrayList<AverageProfile>>();

@@ -16,24 +16,24 @@
  */
 package org.lreqpcr.ab7900Ver2_3Import;
 
-import org.lreqpcr.core.data_objects.*;
-import org.lreqpcr.data_import_services.RunImportUtilities;
-import org.lreqpcr.core.data_objects.SampleProfile;
-import org.lreqpcr.core.utilities.IOUtilities;
 import java.io.File;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
 import jxl.DateCell;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
+import org.lreqpcr.core.data_objects.*;
+import org.lreqpcr.core.utilities.IOUtilities;
 import org.lreqpcr.core.utilities.WellNumberToLabel;
 import org.lreqpcr.data_import_services.DataImportType;
 import org.lreqpcr.data_import_services.RunImportData;
 import org.lreqpcr.data_import_services.RunImportService;
+import org.lreqpcr.data_import_services.RunImportUtilities;
 import org.openide.util.Exceptions;
 import org.openide.windows.WindowManager;
 
@@ -74,8 +74,8 @@ public class AB7900Ver2_3ImportProvider extends RunImportService {
             return null;
         }
 
-        Sheet resultSheet = null;
-        Sheet fcSheet = null;
+        Sheet resultSheet;
+        Sheet fcSheet;
         try {
             resultSheet = workbook.getSheet(1);
             fcSheet = workbook.getSheet(0);
@@ -88,7 +88,7 @@ public class AB7900Ver2_3ImportProvider extends RunImportService {
                     JOptionPane.ERROR_MESSAGE);
             return null;
         }
-        DateCell date = null;
+        DateCell date;
         try {
             date = (DateCell) resultSheet.getCell(1, 4);
         } catch (Exception e) {
@@ -117,12 +117,9 @@ public class AB7900Ver2_3ImportProvider extends RunImportService {
             is96WellPlate = false;
         }
 
-        //Setup the Run and determine run date
-        RunImpl run = new RunImpl();
         String runName = ver2_3ExcelImportFile.getName();
         runName = runName.substring(0, runName.indexOf(".xls"));
-        run.setName(runName);
-        run.setRunDate(RunImportUtilities.importExcelDate(date));
+        Date runDate = RunImportUtilities.importExcelDate(date);
 
         //Import the data
         List<SampleProfile> sampleProfileList = new ArrayList<SampleProfile>();
@@ -160,7 +157,7 @@ public class AB7900Ver2_3ImportProvider extends RunImportService {
             Profile profile = null;
             //Determine if this is a calibration profile
             if (resultSheet.getCell(4, resultRow).getContents().equals("Standard")) {
-                profile = new CalibrationProfile(run);
+                profile = new CalibrationProfile();
                 CalibrationProfile calbnProfile = (CalibrationProfile) profile;
                 try {
                     Number value = numFormat.parse(resultSheet.getCell(6, resultRow).getContents());
@@ -169,7 +166,7 @@ public class AB7900Ver2_3ImportProvider extends RunImportService {
                     calbnProfile.setLambdaMass(0);
                 }
             } else {//Must be a Sample Profile
-                profile = new SampleProfile(run);
+                profile = new SampleProfile();
                 profile.setTargetStrandedness(targetStrandedness);
             }
             profile.setWellNumber(Integer.parseInt(resultSheet.getCell(0, resultRow).getContents()));
@@ -236,7 +233,7 @@ public class AB7900Ver2_3ImportProvider extends RunImportService {
                 }
             }
         }
-    RunImportData importData = new RunImportData(DataImportType.STANDARD, run);
+    RunImportData importData = new RunImportData(DataImportType.STANDARD, runDate, runName);
     importData.setCalibrationProfileList (calbnProfileList);
     importData.setSampleProfileList (sampleProfileList);
     return importData ;

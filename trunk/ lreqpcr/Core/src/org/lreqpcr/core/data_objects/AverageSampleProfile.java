@@ -37,8 +37,7 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
     /**
      * An average sample profile constructed from its sample replicate profiles.
      */
-    public AverageSampleProfile(Run run) {
-        super(run);
+    public AverageSampleProfile() {
         setChildClass(SampleProfile.class);
     }
 

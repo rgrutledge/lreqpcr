@@ -37,14 +37,16 @@ import org.openide.windows.WindowManager;
 
 /**
  * Static methods for generating initialized AverageProfiles.
+ *
  * @author Bob Rutledge
  */
 public class AverageProfileGenerator {
 
     /**
-     * Generates a list of AverageSampleProfiles from the provided list of SampleProfiles.
-     * Replicate profiles are identified by having identical sample and amplicon names.
-     * Note that the average profiles will also be initialized.
+     * Generates a list of AverageSampleProfiles from the provided list of
+     * SampleProfiles. Replicate profiles are identified by having identical
+     * sample and amplicon names. Note that the average profiles will also be
+     * initialized.
      *
      * @param profileList a list of the Profiles to be processed
      * @param parentRun the Run from which this Profile dataset was derived
@@ -66,12 +68,19 @@ public class AverageProfileGenerator {
         ArrayList<SampleProfile> listCopy = (ArrayList<SampleProfile>) profileArray.clone();
         while (!listCopy.isEmpty()) {
             SampleProfile profile = listCopy.get(0);
-            AverageSampleProfile avSampleProfile = new AverageSampleProfile(parentRun);
-//            avSampleProfile.setProfileToVer0_8_0(true);
+            AverageSampleProfile avSampleProfile = new AverageSampleProfile();
+            avSampleProfile.setRun(parentRun);//Also sets the run date and sets the parent to this Runt
             avSampleProfile.setTargetStrandedness(profile.getTargetStrandedness());
             ArrayList<SampleProfile> replicateProfileList = new ArrayList<SampleProfile>();
+            //This orders the sample profiles into the correct AverageProfile list using the sample and amplicon name.
+            //This assumes that profiles with the same sample and name are replicate profiles
             for (SampleProfile prf : listCopy) {
                 try {
+                    //This is needed because in version 0.8.6 the Run is not available during profile creation 
+                    //Run objects are now created by the Run initializer
+                    if (prf.getRun() == null) {
+                        prf.setRun(parentRun);
+                    }
                     if (profile.getAmpliconName().equals(prf.getAmpliconName()) && profile.getSampleName().equals(prf.getSampleName())) {
                         replicateProfileList.add(prf);
                     }
@@ -103,21 +112,22 @@ public class AverageProfileGenerator {
     }
 
     /**
-     * Generates a list of AverageCalibrationProfiles from the provided list of CalibrationProfiles. 
-     * Replicate profiles are identified by having identical sample and amplicon names.
-     * Note that the average profiles will also be initialized. 
-     * 
-     * @param profileList the list of CalibrationProfiles 
+     * Generates a list of AverageCalibrationProfiles from the provided list of
+     * CalibrationProfiles. Replicate profiles are identified by having
+     * identical sample and amplicon names. Note that the average profiles will
+     * also be initialized.
+     *
+     * @param profileList the list of CalibrationProfiles
      * @param rxnSetup the ReactionSetup object for this calibration
      * @param parameters the LRE window parameters
-     * @param run the Run that generated the Profiles
+     * @param parentRun the Run that generated the Profiles
      * @return a list of AverageCalibrationProfiles
      */
     @SuppressWarnings(value = "unchecked")
     public static ArrayList<AverageProfile> averageCalbrationProfileConstruction(
             List<CalibrationProfile> profileList,
             LreWindowSelectionParameters parameters,
-            Run run) {
+            Run parentRun) {
         ArrayList<CalibrationProfile> profileArray = new ArrayList<CalibrationProfile>(profileList);
         //Generate new AverageCalibrationProfile for each replicate profile set within the profile list
         ArrayList<AverageProfile> averageCalbnProfileList =
@@ -129,6 +139,11 @@ public class AverageProfileGenerator {
             Profile profile = listCopy.get(0);
             ArrayList<CalibrationProfile> calibrationProfileList = new ArrayList<CalibrationProfile>();
             for (CalibrationProfile prf : listCopy) {
+                //This is needed because in version 0.8.6 the Run is not available during profile creation 
+                //Run objects are now created by the Run initializer
+                if (prf.getRun() == null) {
+                    prf.setRun(parentRun);
+                }
                 try {
                     if (profile.getAmpliconName().equals(prf.getAmpliconName()) && profile.getSampleName().equals(prf.getSampleName())) {
                         calibrationProfileList.add(prf);
@@ -152,7 +167,8 @@ public class AverageProfileGenerator {
                 listCopy.remove(prf);
             }
             //Average the replicates Profile raw Fc datasets
-            AverageCalibrationProfile avCalbnProfile = new AverageCalibrationProfile(run);
+            AverageCalibrationProfile avCalbnProfile = new AverageCalibrationProfile();
+            avCalbnProfile.setRun(parentRun);//This also sets the Run data and set the parent to this run
             CalibrationProfile firstCalibrationProfile = calibrationProfileList.get(0);
 //LamdaMass is required for initializing mo and must be converted back to pg as it is stored as ng in CalibrationProfile
             avCalbnProfile.setLambdaMass(firstCalibrationProfile.getLambdaMass() * 1000000);
@@ -172,13 +188,14 @@ public class AverageProfileGenerator {
     }
 // TODO this is redundant to org.lreqpcr.core.utilities 
 //GenerateAverageFcDataset.public static double[] generateAverageFcDataset(List<? extends Profile> replicates)
+
     private static double[] generateAverageFcDataset(ArrayList<? extends Profile> replicateProfiles) {
         int numberOfCycles = replicateProfiles.get(0).getRawFcReadings().length;
         int numberOfProfiles = replicateProfiles.size();
         HashMap<Integer, double[]> fcMap = new HashMap<Integer, double[]>();
         int key = 0;
         for (int i = 0; i < numberOfProfiles; i++) {
-            if (!replicateProfiles.get(i).isExcluded() 
+            if (!replicateProfiles.get(i).isExcluded()
                     && replicateProfiles.get(i).hasAnLreWindowBeenFound()) {
                 fcMap.put(key, replicateProfiles.get(i).getRawFcReadings());
                 key++;
@@ -215,7 +232,9 @@ public class AverageProfileGenerator {
     }
 
     /**
-     * A clumsy attempt to avoid duplicate code for initializing Sample and Calibration AverageProfiles
+     * A clumsy attempt to avoid duplicate code for initializing Sample and
+     * Calibration AverageProfiles
+     *
      * @param averageProfile
      * @param parameters
      */

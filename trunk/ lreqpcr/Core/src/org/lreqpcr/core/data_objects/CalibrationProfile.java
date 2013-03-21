@@ -41,8 +41,7 @@ public class CalibrationProfile extends Profile {
      * profile. 
      * @param run the Run that generated this CalibrationProfile
      */
-    public CalibrationProfile(Run run) {
-        super(run);
+    public CalibrationProfile() {
     }
 
     /**

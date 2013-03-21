@@ -17,11 +17,6 @@
 package org.lreqpcr.manual_data_import;
 
 import java.awt.Desktop;
-import org.lreqpcr.data_import_services.RunImportData;
-import org.lreqpcr.data_import_services.RunImportUtilities;
-import org.lreqpcr.core.data_objects.RunImpl;
-import org.lreqpcr.core.data_objects.SampleProfile;
-import org.lreqpcr.core.utilities.IOUtilities;
 import java.io.File;
 import java.io.IOException;
 import java.text.NumberFormat;
@@ -48,12 +43,16 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import org.lreqpcr.core.data_objects.CalibrationProfile;
+import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.data_objects.TargetStrandedness;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
+import org.lreqpcr.core.utilities.IOUtilities;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.data_import_services.DataImportType;
+import org.lreqpcr.data_import_services.RunImportData;
 import org.lreqpcr.data_import_services.RunImportService;
+import org.lreqpcr.data_import_services.RunImportUtilities;
 import org.openide.util.Exceptions;
 import org.openide.windows.WindowManager;
 
@@ -196,7 +195,7 @@ public class SampleProfileTemplateImport extends RunImportService {
             return null;
         }
 
-        DateCell date = null;
+        DateCell date;
         try {
             date = date = (DateCell) sheet.getCell(2, 0);
         } catch (Exception e) {
@@ -207,9 +206,8 @@ public class SampleProfileTemplateImport extends RunImportService {
                     "Invalid Run Date", JOptionPane.ERROR_MESSAGE);
             return null;
         }
-        RunImpl run = new RunImpl();
-        run.setName(sheet.getCell(2, 1).getContents());
-        run.setRunDate(RunImportUtilities.importExcelDate(date));
+        String runName = (sheet.getCell(2, 1).getContents());
+        Date runDate = RunImportUtilities.importExcelDate(date);
 
         //Import the data
         List<SampleProfile> sampleProfileList = new ArrayList<SampleProfile>();
@@ -221,7 +219,7 @@ public class SampleProfileTemplateImport extends RunImportService {
         int col = 2;//Start column
         int wellNumber = 1;//Used to preserve ordering of the profiles
         while (col < colCount && sheet.getCell(col, 3).getType() != CellType.EMPTY) {
-            SampleProfile profile = new SampleProfile(run);
+            SampleProfile profile = new SampleProfile();
             profile.setWellNumber(wellNumber);
             profile.setName(sheet.getCell(col, 2).getContents());
             profile.setAmpliconName(sheet.getCell(col, 3).getContents());
@@ -265,7 +263,7 @@ public class SampleProfileTemplateImport extends RunImportService {
         }
         workbook.close();
 
-        RunImportData importData = new RunImportData(DataImportType.MANUAL_SAMPLE_PROFILE, run);
+        RunImportData importData = new RunImportData(DataImportType.MANUAL_SAMPLE_PROFILE, runDate, runName);
         importData.setCalibrationProfileList(calbnProfileList);
         importData.setSampleProfileList(sampleProfileList);
         return importData;

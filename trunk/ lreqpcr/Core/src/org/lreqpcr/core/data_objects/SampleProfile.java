@@ -30,8 +30,7 @@ public class SampleProfile extends Profile {
     private double noEmax100;//Number of target molecules when Emax is fixed to 100%
     private boolean isTragetQuantityNormalizedToFmax;//Normalize the target quantity to the Run's average Fmax
 
-    public SampleProfile(Run run) {
-        super(run);
+    public SampleProfile() {
     }
     
 //Need to override setters for all paramaters that change No values in order to recalculate

@@ -57,6 +57,7 @@ public class LC480ImportProvider extends RunImportService {
         return "Lightcycler";
     }
     
+    //*********************************NOT IMPLEMENT YET*************************************************
     public URL getHelpFile() {
         return null;
 //        try {
@@ -130,7 +131,7 @@ public class LC480ImportProvider extends RunImportService {
     //Deterimine if this is a sample or calibration profile
     private Profile createProfileType(Run run) {
         //will need to first import the excel data 
-        return new SampleProfile(run);
+        return new SampleProfile();
     }
     
     private double[] retrieveFcReadings(NodeList cycleList) {

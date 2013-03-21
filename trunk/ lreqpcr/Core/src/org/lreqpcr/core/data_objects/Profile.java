@@ -67,12 +67,20 @@ public abstract class Profile extends LreObject {
      * 
      * @param run the Run from which the Profile was generated. Note that Run date is retrieved from the provided Run.
      */
-    public Profile(Run run) {
-        this.run = run;
-        setParent(run);
-        this.runDate = run.getRunDate();
+    public Profile() {
     }
 
+    /**
+     * Also sets the parent to the Run and the run date retrieved from the Run. 
+     * 
+     * @param run 
+     */
+    public void setRun(Run run){
+        this.run = run;
+        runDate = run.getRunDate();
+        setParent(run);
+    }
+    
     public Run getRun() {
         return run;
     }
@@ -365,8 +373,6 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * Note that Run data is set via the constructor so that setting the Run date
-     * is redundant. It is provided solely for the option to change the Run date.
      * @param runDate
      */
     public void setRunDate(Date runDate) {

@@ -18,6 +18,7 @@ package org.lreqpcr.run_initialization_provider;
 
 import java.awt.Toolkit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
 import org.lreqpcr.analysis_services.LreAnalysisService;
@@ -28,6 +29,7 @@ import org.lreqpcr.core.data_objects.ExperimentDbInfo;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.Run;
+import org.lreqpcr.core.data_objects.RunImpl;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
@@ -118,7 +120,8 @@ public class RunInializationProvider implements RunInitializationService {
             }
         }
 
-        Run run = importData.getRun();
+        Date runDate = importData.getRunDate();
+        //Set run
         List<SampleProfile> sampleProfileList = importData.getSampleProfileList();
         List<CalibrationProfile> calibnProfileList = importData.getCalibrationProfileList();
 
@@ -128,6 +131,8 @@ public class RunInializationProvider implements RunInitializationService {
         if (sampleProfileList != null) {
             if (!sampleProfileList.isEmpty()) {//A manual Calibration Profile import type should have an empty SampleProfile list
                 if (experimentDB.isDatabaseOpen()) {
+                    Run sampleRun = new RunImpl();
+                    sampleRun.setRunDate(runDate);
                     LreWindowSelectionParameters winSelectionParameters =
                             (LreWindowSelectionParameters) experimentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
                     ExperimentDbInfo dbInfo = (ExperimentDbInfo) experimentDB.getAllObjects(ExperimentDbInfo.class).get(0);
@@ -148,16 +153,16 @@ public class RunInializationProvider implements RunInitializationService {
                     List<AverageProfile> averageSampleProfileList =
                             AverageProfileGenerator.averageSampleProfileConstruction(
                             sampleProfileList,
-                            run,
+                            sampleRun,
                             ocf,
                             winSelectionParameters);
                     experimentDB.saveObject(averageSampleProfileList);
-                    run.setAverageProfileList((ArrayList<AverageProfile>) averageSampleProfileList);
+                    sampleRun.setAverageProfileList((ArrayList<AverageProfile>) averageSampleProfileList);
                     //Deactivated due to a bug that can produce long delays during file import
 //        RunImportUtilities.importCyclerDatafile(run);
                     if (dbInfo.isTargetQuantityNormalizedToFax()) {
                         //Need to first calculate the run average Fmax
-                        run.calculateAverageFmax();
+                        sampleRun.calculateAverageFmax();
                         //Cycle through all the sample profiles and set Fmax normalization to true
                         for (AverageProfile profile : averageSampleProfileList) {
                             AverageSampleProfile avProfile = (AverageSampleProfile) profile;
@@ -169,10 +174,10 @@ public class RunInializationProvider implements RunInitializationService {
                             }
                         }
                     }
-                    experimentDB.saveObject(run);
+                    experimentDB.saveObject(sampleRun);
                     experimentDB.commitChanges();
                     //This allows access to the newly imported Run
-                    UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_RUN_IMPORTED, run);
+                    UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_RUN_IMPORTED, sampleRun);
                     //Broadcast that a new Run has been added to the Experiment database
                     UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_RUN_IMPORTED);
                 }
@@ -183,6 +188,8 @@ public class RunInializationProvider implements RunInitializationService {
         if (calibnProfileList != null) {
             if (!calibnProfileList.isEmpty()) {//A manual Sample Profile import should have an empty Calibration Profile list.
                 if (calbnDB.isDatabaseOpen()) {
+                    Run calRun = new RunImpl();
+                    calRun.setRunDate(runDate);
                     LreWindowSelectionParameters lreWindowSelectionParameters = (LreWindowSelectionParameters) calbnDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
                     //Process the CalibnProfiles
                     for (Profile profile : calibnProfileList) {
@@ -201,11 +208,11 @@ public class RunInializationProvider implements RunInitializationService {
                             (List<AverageProfile>) AverageProfileGenerator.averageCalbrationProfileConstruction(
                             calibnProfileList,
                             lreWindowSelectionParameters,
-                            run);
+                            calRun);
                     calbnDB.saveObject(averageCalbnProfileList);
-                    run.setAverageProfileList((ArrayList<AverageProfile>) averageCalbnProfileList);
-                    run.calculateAverageFmax();
-                    calbnDB.saveObject(run);
+                    calRun.setAverageProfileList((ArrayList<AverageProfile>) averageCalbnProfileList);
+                    calRun.calculateAverageFmax();
+                    calbnDB.saveObject(calRun);
                     calbnDB.commitChanges();
                     //Broadcast that the calibration panels must be updated
                     UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_CALIBRATION_PANELS);

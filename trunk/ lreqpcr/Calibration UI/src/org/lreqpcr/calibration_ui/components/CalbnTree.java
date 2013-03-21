@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.swing.Action;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.calibration_ui.UpdateCalbrationDatabase;
@@ -30,6 +31,7 @@ import org.lreqpcr.calibration_ui.actions.CalbnTreeNodeActions;
 import org.lreqpcr.calibration_ui.actions.FixAllCalibrationProfileEmaxTo100percentAction;
 import org.lreqpcr.calibration_ui.actions.ReturnAllCalibrationProfileEmaxToLreAction;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
+import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.CalibrationDbInfo;
 import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
@@ -49,6 +51,7 @@ import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
+import org.openide.windows.WindowManager;
 
 /**
  *
@@ -88,6 +91,22 @@ public class CalbnTree extends JPanel {
             avProfileOCFdisplay.setText("");
             return;
         }
+        List<AverageCalibrationProfile> avCalPrfList =
+                (List<AverageCalibrationProfile>) calbnDB.getAllObjects(AverageCalibrationProfile.class);
+        //Check if this version is to old to process, i.e. lacks a Run
+        if (avCalPrfList.get(0).getRun() == null) {
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                    "The selected calibration database is incompatible\n"
+                    + " with this version of the LRE Analyzer",
+                    "Unable to process this calibration database",
+                    JOptionPane.ERROR_MESSAGE);
+            AbstractNode root = new AbstractNode(Children.LEAF);
+            root.setName("No CalbnDB is open");
+            mgr.setRootContext(root);
+            avProfileOCFdisplay.setText("");
+            calbnDB.closeDatabase();
+            return;
+        }
         List<CalibrationDbInfo> l = calbnDB.getAllObjects(CalibrationDbInfo.class);
         //Check if CalibrationDbInfo is present in the database
         //If not this must be an unconverted database
@@ -98,12 +117,16 @@ public class CalbnTree extends JPanel {
             calbnDB.saveObject(calDbInfo);
             //Must be an old, unconverted database
             //For back compatablity, mainly for Fc plot, set the Run average Fmax
-            List<AverageCalibrationProfile> avCalPrfList = 
-                (List<AverageCalibrationProfile>) calbnDB.getAllObjects(AverageCalibrationProfile.class);
             UpdateCalbrationDatabase.updateCalibrationProfiles(calbnDB, avCalPrfList);
-        }else {
+        } else {
             calDbInfo = l.get(0);
         }
+        
+        //This is only for testing
+        List<AverageSampleProfile> avSamPrfList = calbnDB.getAllObjects(AverageSampleProfile.class);
+        System.out.println("The number of average Calibration profiles = " + avCalPrfList.size());
+        System.out.println("The number of average Sample profiles = " + avSamPrfList.size());
+        
         //Setup the tree with CalbrationDbInfo in root
         //Retrieval all Runs from the database
         List<? extends Run> runList = (List<? extends Run>) calbnDB.getAllObjects(Run.class);
@@ -320,7 +343,6 @@ public class CalbnTree extends JPanel {
     private void fmaxNrmzBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fmaxNrmzBoxActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_fmaxNrmzBoxActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField avProfileOCFdisplay;
     private javax.swing.JScrollPane beanTree;
