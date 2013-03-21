@@ -28,6 +28,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import javax.swing.JOptionPane;
 import jxl.DateCell;
 import jxl.Sheet;
@@ -105,7 +106,7 @@ public class Ab7500Ver1ImportProvider extends RunImportService {
                     JOptionPane.ERROR_MESSAGE);
             return null;
         }
-        DateCell date = null;
+        DateCell date;
         try {
             date = (DateCell) resultSheet.getCell(1, 7);
         } catch (Exception e) {
@@ -119,13 +120,9 @@ public class Ab7500Ver1ImportProvider extends RunImportService {
             return null;
         }
 
-
-        //Setup the Run and determine run date
-        RunImpl run = new RunImpl();
         String runName = ver1ExcelImportFile.getName();
         runName = runName.substring(0, runName.indexOf(".xls"));
-        run.setName(runName);
-        run.setRunDate(RunImportUtilities.importExcelDate(date));
+        Date runDate = RunImportUtilities.importExcelDate(date);
 
         //Import the data
         ArrayList<SampleProfile> sampleProfileList = new ArrayList<SampleProfile>();
@@ -142,7 +139,7 @@ public class Ab7500Ver1ImportProvider extends RunImportService {
             Profile profile = null;
             //Determine if this is a calibration profile
             if (resultSheet.getCell(3, resultRow).getContents().equals("Standard")) {
-                profile = new CalibrationProfile(run);
+                profile = new CalibrationProfile();
                 CalibrationProfile calbnProfile = (CalibrationProfile) profile;
                 try {
                     calbnProfile.setLambdaMass(Double.valueOf(resultSheet.getCell(6, resultRow).getContents()));
@@ -151,7 +148,7 @@ public class Ab7500Ver1ImportProvider extends RunImportService {
                 }
 
             } else {//Must be a Sample Profile
-                profile = new SampleProfile(run);
+                profile = new SampleProfile();
                 profile.setTargetStrandedness(targetStrandedness);
             }
 
@@ -198,7 +195,7 @@ public class Ab7500Ver1ImportProvider extends RunImportService {
             }
 
         }
-        RunImportData importData = new RunImportData(DataImportType.STANDARD, run);
+        RunImportData importData = new RunImportData(DataImportType.STANDARD, runDate, runName);
         importData.setCalibrationProfileList(calbnProfileList);
         importData.setSampleProfileList(sampleProfileList);
         return importData;

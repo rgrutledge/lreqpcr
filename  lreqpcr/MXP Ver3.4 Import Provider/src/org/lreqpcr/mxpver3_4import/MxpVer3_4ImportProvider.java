@@ -16,25 +16,26 @@
  */
 package org.lreqpcr.mxpver3_4import;
 
-import java.net.URL;
-import org.lreqpcr.core.data_objects.*;
-import org.lreqpcr.data_import_services.RunImportUtilities;
-import org.lreqpcr.core.utilities.IOUtilities;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import javax.swing.JOptionPane;
 import jxl.DateCell;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
+import org.lreqpcr.core.data_objects.*;
+import org.lreqpcr.core.utilities.IOUtilities;
 import org.lreqpcr.data_import_services.DataImportType;
 import org.lreqpcr.data_import_services.RunImportData;
 import org.lreqpcr.data_import_services.RunImportService;
+import org.lreqpcr.data_import_services.RunImportUtilities;
 import org.openide.util.Exceptions;
 import org.openide.windows.WindowManager;
 
@@ -100,7 +101,7 @@ public class MxpVer3_4ImportProvider extends RunImportService {
             return null;
         }
 
-        DateCell date = null;
+        DateCell date;
         try {
             date = (DateCell) chartSheet.getCell(0, 0);
         } catch (Exception e) {
@@ -171,12 +172,11 @@ public class MxpVer3_4ImportProvider extends RunImportService {
         }
 
         //Setup the Run and determine run date
-        RunImpl run = new RunImpl();
+//        RunImpl run = new RunImpl();
         String runName = mxpExcelImportFile.getName();
 //        RunImportUtilities.importExcelImportFile(run, mxpExcelImportFile);
         runName = runName.substring(0, runName.indexOf("."));
-        run.setName(runName);
-        run.setRunDate(RunImportUtilities.importExcelDate(date));
+        Date runDate = RunImportUtilities.importExcelDate(date);
 
         //Import the data
         ArrayList<SampleProfile> sampleProfileList = new ArrayList<SampleProfile>();
@@ -193,8 +193,8 @@ public class MxpVer3_4ImportProvider extends RunImportService {
             //Determine if this is a calibration profile
             if (reportSheet.getCell(wellType, reportRow).getContents().equals("Standard")) {
                 //This is a calibration profile
-                profile = new CalibrationProfile(run);
-                profile.setTargetStrandedness(targetStrandedness.DOUBLESTRANDED);
+                profile = new CalibrationProfile();
+                profile.setTargetStrandedness(TargetStrandedness.DOUBLESTRANDED);
                 CalibrationProfile calbnProfile = (CalibrationProfile) profile;
                 if (quantityCol != columnAbsent) {
                     try {
@@ -205,7 +205,7 @@ public class MxpVer3_4ImportProvider extends RunImportService {
                     }
                 }
             } else {//Must be a Sample Profile
-                profile = new SampleProfile(run);
+                profile = new SampleProfile();
                 profile.setTargetStrandedness(targetStrandedness);
             }
 
@@ -279,7 +279,7 @@ public class MxpVer3_4ImportProvider extends RunImportService {
                 }
             }
         }
-        RunImportData importData = new RunImportData(DataImportType.STANDARD, run);
+        RunImportData importData = new RunImportData(DataImportType.STANDARD, runDate, runName);
         importData.setCalibrationProfileList(calbnProfileList);
         importData.setSampleProfileList(sampleProfileList);
         return importData;

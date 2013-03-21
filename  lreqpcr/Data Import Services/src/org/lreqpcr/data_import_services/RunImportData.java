@@ -17,9 +17,9 @@
 
 package org.lreqpcr.data_import_services;
 
+import java.util.Date;
 import java.util.List;
 import org.lreqpcr.core.data_objects.CalibrationProfile;
-import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.data_objects.SampleProfile;
 
 /**
@@ -35,16 +35,19 @@ public class RunImportData {
     private List<SampleProfile> sampleProfileList;
     private List<CalibrationProfile> calibrationProfileList;
     private DataImportType importType;
-    private final Run run;
+    private Date runDate;
+    private String runName;
 
     /**
      * Interface for Run data import.
      * 
-     * @param importType the type of import which cannot be null
+     * @param importType the type of import, which cannot be null
+     * @param runDate the date the Run was conducted
+     * @param runName an optional name of the Run
      */
-    public RunImportData(DataImportType importType, Run run) {
+    public RunImportData(DataImportType importType, Date runDate, String runName) {
         this.importType = importType;
-        this.run = run;
+        this.runDate = runDate;
     }
 
     public List<CalibrationProfile> getCalibrationProfileList() {
@@ -86,8 +89,12 @@ public class RunImportData {
         return importType;
     }
 
-    public Run getRun() {
-        return run;
+    public Date getRunDate() {
+        return runDate;
+    }
+
+    public String getRunName() {
+        return runName;
     }
     
 }

@@ -36,8 +36,7 @@ public class AverageCalibrationProfile extends CalibrationProfile implements Ave
      * An average calibration file constructed from the replicate calibration
      * profiles
      */
-    public AverageCalibrationProfile(Run run) {
-        super(run);
+    public AverageCalibrationProfile() {
         setChildClass(CalibrationProfile.class);
     }
 

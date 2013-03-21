@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
 import jxl.DateCell;
@@ -180,12 +181,13 @@ public class AB7500Ver2ImportProvider extends RunImportService {
         }
 
         //Setup the Run and determine run date
-        Run run = new RunImpl();
+//        Run run = new RunImpl();
         String runName = ver2ExcelImportFile.getName();
         //Remove the file extension
         runName = runName.substring(0, runName.indexOf("."));
-        run.setName(runName);
-        run.setRunDate(RunImportUtilities.importExcelDate(date));
+//        run.setName(runName);
+//        run.setRunDate(
+        Date runDate = RunImportUtilities.importExcelDate(date);
         //Import the data
         List<SampleProfile> sampleProfileList = new ArrayList<SampleProfile>();
         List<CalibrationProfile> calbnProfileList = new ArrayList<CalibrationProfile>();
@@ -202,7 +204,7 @@ public class AB7500Ver2ImportProvider extends RunImportService {
                 Profile profile = null;
                 //Determine if this is a calibration profile
                 if (resultSheet.getCell(taskCol, resultRow).getContents().equals("STANDARD")) {
-                    profile = new CalibrationProfile(run);
+                    profile = new CalibrationProfile();
                     CalibrationProfile calbnProfile = (CalibrationProfile) profile;
                     if (calibratorQuantityCol != columnAbsent) {
                         try {
@@ -213,7 +215,7 @@ public class AB7500Ver2ImportProvider extends RunImportService {
                         }
                     }
                 } else {//Must be a Sample Profile
-                    profile = new SampleProfile(run);
+                    profile = new SampleProfile();
                     profile.setTargetStrandedness(targetStrandedness);
                 }
 
@@ -286,7 +288,7 @@ public class AB7500Ver2ImportProvider extends RunImportService {
             }
         }
 
-        RunImportData importData = new RunImportData(DataImportType.STANDARD, run);
+        RunImportData importData = new RunImportData(DataImportType.STANDARD, runDate, runName);
         importData.setCalibrationProfileList(calbnProfileList);
         importData.setSampleProfileList(sampleProfileList);
         return importData;

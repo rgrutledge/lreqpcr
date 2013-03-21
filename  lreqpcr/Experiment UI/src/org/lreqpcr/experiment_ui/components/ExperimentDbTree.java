@@ -16,13 +16,11 @@
  */
 package org.lreqpcr.experiment_ui.components;
 
-import com.google.common.collect.Lists;
 import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
@@ -34,7 +32,6 @@ import org.lreqpcr.core.ui_elements.LabelFactory;
 import org.lreqpcr.core.ui_elements.LreActionFactory;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.utilities.FormatingUtilities;
-import org.lreqpcr.core.utilities.MathFunctions;
 import org.lreqpcr.core.utilities.ProfileUtilities;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.experiment_ui.actions.ExperimentTreeNodeActions;

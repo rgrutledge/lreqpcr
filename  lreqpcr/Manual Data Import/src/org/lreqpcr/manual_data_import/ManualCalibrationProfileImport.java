@@ -207,11 +207,10 @@ public class ManualCalibrationProfileImport extends RunImportService {
         //Import the data
         List<CalibrationProfile> calbnProfileList = new ArrayList<CalibrationProfile>();
         NumberFormat numFormat = NumberFormat.getInstance();
-        RunImpl run = new RunImpl();
-        run.setRunDate(RunImportUtilities.importExcelDate(date));
+        Date runDate = RunImportUtilities.importExcelDate(date);
 
         while (col < colCount && sheet.getCell(col, 2).getType() != CellType.EMPTY) {
-            CalibrationProfile calbnProfile = new CalibrationProfile(run);
+            CalibrationProfile calbnProfile = new CalibrationProfile();
             calbnProfile.setAmpliconName(sheet.getCell(col, 2).getContents());
             calbnProfile.setSampleName(sheet.getCell(col, 4).getContents() + " fg");
             try {
@@ -250,7 +249,7 @@ public class ManualCalibrationProfileImport extends RunImportService {
         }
         workbook.close();
         
-        RunImportData importData = new RunImportData(DataImportType.MANUAL_CALIBRATION_PROFILE, run);
+        RunImportData importData = new RunImportData(DataImportType.MANUAL_CALIBRATION_PROFILE, runDate, "");
         importData.setCalibrationProfileList(calbnProfileList);
         return importData;
     }
