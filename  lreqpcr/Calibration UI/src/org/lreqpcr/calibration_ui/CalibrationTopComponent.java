@@ -21,9 +21,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.SwingWorker;
 import org.lreqpcr.core.data_objects.Amplicon;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.Sample;
@@ -36,10 +34,7 @@ import org.lreqpcr.core.ui_elements.SampleNode;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.core.utilities.UniversalLookupListener;
 import org.lreqpcr.data_export_services.DataExportServices;
-import org.lreqpcr.ui_components.OpeningDatabaseDialog;
 import org.lreqpcr.ui_components.PanelMessages;
-import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
@@ -207,20 +202,7 @@ public final class CalibrationTopComponent extends TopComponent
 
     @SuppressWarnings(value = "unchecked")
     private void openDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openDBbuttonActionPerformed
-        //The only reason this frame is painted at all is due to the delay produced by opening of a file chooser dialog
-//Many, many attempts were made unsuccefully to have this JFrame paint correctly while the database file was being opened
-//        JFrame message = OpeningDatabaseDialog.makeDialog();
-        ProgressHandle p = ProgressHandleFactory.createSystemHandle("Loading Database");
-        p.start();
-//        SwingWorker<DatabaseServices, Void> worker = new SwingWorker<DatabaseServices, Void>() {
-//
-//            @Override
-//            protected DatabaseServices doInBackground() throws Exception {
-//                throw new UnsupportedOperationException("Not supported yet.");
-//            }
-//        }
         if (calibrationDB.openUserSelectDatabaseFile()) {
-            p.finish();
             calbnTree.createTree();
 //            calbnTree.calcAverageOCF();
             UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, calibrationDB);
@@ -230,8 +212,6 @@ public final class CalibrationTopComponent extends TopComponent
             setDisplayName(dbFileName.substring(0, length - 4));
             setToolTipText(calibrationDB.getDatabaseFile().getName());
         }//If a new file was not opened, do nothing
-//        message.setVisible(false);
-//        message.dispose();
     }//GEN-LAST:event_openDBbuttonActionPerformed
 
     @SuppressWarnings(value = "unchecked")

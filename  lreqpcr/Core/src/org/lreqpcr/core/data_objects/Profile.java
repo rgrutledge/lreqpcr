@@ -471,7 +471,7 @@ public abstract class Profile extends LreObject {
      */
     public void setIsEmaxFixedTo100(boolean isEmaxFixedTo100) {
         this.isEmaxFixedTo100 = isEmaxFixedTo100;
-        run.calculateAverageFmax();
+//        run.calculateAverageFmax();
     }
 
     /**

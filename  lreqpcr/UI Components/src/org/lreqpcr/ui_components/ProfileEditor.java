@@ -95,13 +95,13 @@ public class ProfileEditor extends JPanel implements
         this.profile = profile;
 //Display and editing of a profile is conducted through the ProfileSummary interface
         prfSum = analysisService.initializeProfileSummary(profile, selectionParameters);
-        if (profile.isExcluded()) {
-            plotFo.clearPlot();
-            plotLREs.clearPlot();
-            plotFc.iniPlot(prfSum);
-            lreObjectInfo.displayMember(selectedNode);
-            return;
-        }
+//        if (profile.isExcluded()) {
+//            plotFo.clearPlot();
+//            plotLREs.clearPlot();
+//            plotFc.iniPlot(prfSum);
+//            lreObjectInfo.displayMember(selectedNode);
+//            return;
+//        }
         if (profile.hasAnLreWindowBeenFound()) {
             updatePanels();
         } else {//LRE window not found
@@ -117,8 +117,7 @@ public class ProfileEditor extends JPanel implements
         //Test to see if this is an AverageProfile with just one replicate
         if (profile instanceof AverageSampleProfile) {
             AverageSampleProfile avSampleProfile = (AverageSampleProfile) profile;
-            if (avSampleProfile.getTheNumberOfActiveReplicateProfiles() == 1
-                    && !avSampleProfile.isExcluded()) {
+            if (avSampleProfile.getTheNumberOfActiveReplicateProfiles() == 1) {
 //Display the AverageSampleProfile because it has only one replicate SampleProfile
                 plotLREs.iniPlotLREs(prfSum, currentDB);
                 numericalTable.iniNumTable(prfSum);
@@ -128,6 +127,7 @@ public class ProfileEditor extends JPanel implements
                 return;
             }
         }
+        //Deactivating this allows 
 //        if (profile instanceof AverageProfile) {
 //            AverageProfile avProfile = (AverageProfile) profile;
 //            if (avProfile.isTheReplicateAverageNoLessThan10Molecules()){

@@ -36,6 +36,8 @@ import org.lreqpcr.core.utilities.ProfileUtilities;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.experiment_ui.actions.ExperimentTreeNodeActions;
 import org.lreqpcr.ui_components.PanelMessages;
+import org.openide.awt.StatusDisplayer;
+import org.openide.awt.StatusDisplayer.Message;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.AbstractNode;
@@ -56,14 +58,17 @@ import org.openide.windows.WindowManager;
 public class ExperimentDbTree extends JPanel {
 
     private ExplorerManager mgr;
-    private DatabaseServices experimentDB;
+    private DatabaseServices exptDB;
+    private LreAnalysisService analysisService;
+    private LreWindowSelectionParameters selectionParameters;
     private double ocf;
-    private ExperimentDbInfo dbInfo;
+    private ExptDbInfo exptDbInfo;
     private LreActionFactory nodeActionFactory;
     private LabelFactory runNodeLabelFactory;
     private DecimalFormat df = new DecimalFormat();
     private double avRunFmax = 0;
     private double avRunFmaxCV = 0;
+    private Message statusLineMessage;
 
     /**
      * Creates new form ExperimentDbTree
@@ -74,11 +79,11 @@ public class ExperimentDbTree extends JPanel {
         ocfDisplay.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                if (!experimentDB.isDatabaseOpen()) {
+                if (!exptDB.isDatabaseOpen()) {
                     return;
                 }
                 super.keyReleased(e);
-                if (!experimentDB.isDatabaseOpen()) {
+                if (!exptDB.isDatabaseOpen()) {
                     return;
                 }
                 if (e.getKeyCode() == 10) {//"Return" key
@@ -92,8 +97,8 @@ public class ExperimentDbTree extends JPanel {
                         ocf = Double.valueOf(userSuppliedOcf);
                         df.applyPattern(FormatingUtilities.decimalFormatPattern(ocf));
                         ocfDisplay.setText(df.format(ocf));
-                        dbInfo.setOcf(ocf);
-                        experimentDB.saveObject(dbInfo);
+                        exptDbInfo.setOcf(ocf);
+                        exptDB.saveObject(exptDbInfo);
                         resetToNewOcf();
                     } catch (NumberFormatException nan) {
                         Toolkit.getDefaultToolkit().beep();
@@ -109,9 +114,10 @@ public class ExperimentDbTree extends JPanel {
 
     public void initTreeView(ExplorerManager mgr, DatabaseServices db) {
         this.mgr = mgr;
-        experimentDB = db;
+        exptDB = db;
+        //Note the the db does not have a database file open yet as this is called during component construction
         nodeActionFactory = new ExperimentTreeNodeActions(mgr);
-        runNodeLabelFactory = (LabelFactory) new SampleTreeNodeLabels();
+        runNodeLabelFactory = new SampleTreeNodeLabels();
         createTree();
     }
 
@@ -119,65 +125,80 @@ public class ExperimentDbTree extends JPanel {
      * Creates a tree displaying all runs within the experiment database
      */
     @SuppressWarnings(value = "unchecked")
+    //A new experiment database has been opened
     public void createTree() {
         runViewButton.setSelected(true);
-        if (!experimentDB.isDatabaseOpen()) {
+        if (!exptDB.isDatabaseOpen()) {
             AbstractNode root = new AbstractNode(Children.LEAF);
             root.setName("No Experiment database is open");
             mgr.setRootContext(root);
             ocfDisplay.setText("");
             fmaxNormalizeChkBox.setSelected(false);
+            if (statusLineMessage != null) {
+                statusLineMessage.clear(1);
+            }
             return;
         }
-        dbInfo = (ExperimentDbInfo) experimentDB.getAllObjects(ExperimentDbInfo.class).get(0);
-        fmaxNormalizeChkBox.setSelected(dbInfo.isTargetQuantityNormalizedToFax());
-        File dbFile = experimentDB.getDatabaseFile();
+        //Check if ExperimentDbInfo requires conversion to the new ExptDbInfo which extends DatabaseInfo
+        //This is necessary because DatabaseInfo handles Fmax and Emax normalization
+        //for databases containing Profiles as of 0.8.6
+        List l = exptDB.getAllObjects(ExptDbInfo.class);
+        if (l.isEmpty()) {
+            ExptDbUpdate.exptDbConversion086(exptDB);
+        }
+        exptDbInfo = (ExptDbInfo) exptDB.getAllObjects(ExptDbInfo.class).get(0);
+        analysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
+        selectionParameters = (LreWindowSelectionParameters) exptDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
+        fmaxNormalizeChkBox.setSelected(exptDbInfo.isTargetQuantityNormalizedToFmax());
+        fixEmaxBox.setSelected(exptDbInfo.isIsEmaxFixTo100Percent());
+        File dbFile = exptDB.getDatabaseFile();
         String dbFileName = dbFile.getName();
         int length = dbFileName.length();
         String displayName = dbFileName.substring(0, length - 4);
-        ocf = dbInfo.getOcf();
+        ocf = exptDbInfo.getOcf();
         df.applyPattern(FormatingUtilities.decimalFormatPattern(ocf));
         ocfDisplay.setText(df.format(ocf));
         //Calculate the average Run Fmax, which could reduce performance for larget databases
         //This is clearly a lazy and dirty method
         //Retrieval all Runs from the database
         List<? extends Run> runList =
-                (List<? extends Run>) experimentDB.getAllObjects(Run.class);
-        LreNode root = new LreNode(new SampleRootRunChildren(mgr, experimentDB, runList, nodeActionFactory,
-                runNodeLabelFactory), Lookups.singleton(dbInfo), new Action[]{});
-        root.setDatabaseService(experimentDB);
+                (List<? extends Run>) exptDB.getAllObjects(Run.class);
+        LreNode root = new LreNode(new SampleRootRunChildren(mgr, exptDB, runList, nodeActionFactory,
+                runNodeLabelFactory), Lookups.singleton(exptDbInfo), new Action[]{});
+        root.setDatabaseService(exptDB);
         //Determine if the average Run Fmax should be displayed, i.e. when >1 Run is present
         if (runList.size() > 1) {
             //Calculate and display the average Run Fmax along with correlation of coefficient
             //This could be intensive but currently deemed acceptable as it avoids complex situtations with new exp databases
-            ProfileUtilities.calcAvFmaxForAllRuns(experimentDB);
+            ProfileUtilities.calcAvFmaxForAllRuns(exptDB);
+            avRunFmax = exptDbInfo.getAvRunFmax();
+            avRunFmaxCV = exptDbInfo.getAvRunFmaxCV();
             df.applyPattern("#0.0");
             String cv = df.format(avRunFmaxCV * 100);
             df.applyPattern(FormatingUtilities.decimalFormatPattern(avRunFmax));
-            root.setDisplayName(displayName + " [Av Run Fmax: " + df.format(avRunFmax) + " ±" + cv + "%]");
-        } else {
-            root.setDisplayName(displayName);
+            root.setShortDescription("Av Run Fmax: " + df.format(avRunFmax) + " ±" + cv + "%]");
         }
-        root.setShortDescription(dbFile.getAbsolutePath());
+        root.setDisplayName(displayName);
+        statusLineMessage = StatusDisplayer.getDefault().setStatusText(dbFile.getAbsolutePath(), 1);
         mgr.setRootContext(root);
     }//End of create tree
 
     /**
-     * Creates a tree displaying all AverageSampleProfiles created using the
+     * Creates a tree displaying all AverageSampleProfiles generated by the
      * designated amplicon.
      *
-     * @param ampName the amplicon used to create the AverageSampleProfile
+     * @param ampName the amplicon used to generate the AverageSampleProfile
      */
     @SuppressWarnings(value = "unchecked")
     public void creatAmpliconTree(String ampName) {
-        if (experimentDB.isDatabaseOpen()) {
+        if (exptDB.isDatabaseOpen()) {
             //Retrieve all AverageSampleProfile that used the amplicon "ampName"
-            List avSampleProfileList = experimentDB.retrieveUsingFieldValue(AverageSampleProfile.class, "ampliconName", ampName);
+            List avSampleProfileList = exptDB.retrieveUsingFieldValue(AverageSampleProfile.class, "ampliconName", ampName);
             //Display the list of AverageSampleProfiles
-            LreNode root = new LreNode(new SampleRunChildren(mgr, experimentDB, avSampleProfileList, nodeActionFactory,
-                    runNodeLabelFactory), Lookups.singleton(dbInfo), new Action[]{});
+            LreNode root = new LreNode(new SampleRunChildren(mgr, exptDB, avSampleProfileList, nodeActionFactory,
+                    runNodeLabelFactory), Lookups.singleton(exptDbInfo), new Action[]{});
             root.setName(ampName + " (" + String.valueOf(avSampleProfileList.size()) + ")");
-            root.setDatabaseService(experimentDB);
+            root.setDatabaseService(exptDB);
             mgr.setRootContext(root);
             runViewButton.setSelected(false);
             UniversalLookup.getDefault().fireChangeEvent(PanelMessages.CLEAR_PROFILE_EDITOR);
@@ -192,14 +213,14 @@ public class ExperimentDbTree extends JPanel {
      */
     @SuppressWarnings(value = "unchecked")
     public void createSampleTree(String sampleName) {
-        if (experimentDB.isDatabaseOpen()) {
+        if (exptDB.isDatabaseOpen()) {
             //Retrieve all AverageSampleProfiles generated by the sample "sampleName
-            List avSampleProfileList = experimentDB.retrieveUsingFieldValue(AverageSampleProfile.class, "sampleName", sampleName);
+            List avSampleProfileList = exptDB.retrieveUsingFieldValue(AverageSampleProfile.class, "sampleName", sampleName);
             //Display the list of AverageSampleProfiles
-            LreNode root = new LreNode(new SampleRunChildren(mgr, experimentDB, avSampleProfileList, nodeActionFactory,
-                    runNodeLabelFactory), Lookups.singleton(dbInfo), new Action[]{});
+            LreNode root = new LreNode(new SampleRunChildren(mgr, exptDB, avSampleProfileList, nodeActionFactory,
+                    runNodeLabelFactory), Lookups.singleton(exptDbInfo), new Action[]{});
             root.setName(sampleName + " (" + String.valueOf(avSampleProfileList.size()) + ")");
-            root.setDatabaseService(experimentDB);
+            root.setDatabaseService(exptDB);
             mgr.setRootContext(root);
             runViewButton.setSelected(false);
             UniversalLookup.getDefault().fireChangeEvent(PanelMessages.CLEAR_PROFILE_EDITOR);
@@ -208,11 +229,11 @@ public class ExperimentDbTree extends JPanel {
 
     @SuppressWarnings(value = "unchecked")
     private void resetToNewOcf() {
-        if (!experimentDB.isDatabaseOpen()) {
+        if (!exptDB.isDatabaseOpen()) {
             return;
         }
         List<Profile> avSampleProfileList =
-                (List<Profile>) experimentDB.getAllObjects(AverageSampleProfile.class);
+                (List<Profile>) exptDB.getAllObjects(AverageSampleProfile.class);
         for (Profile profile : avSampleProfileList) {
             AverageSampleProfile avProfile = (AverageSampleProfile) profile;
             //This is needed for back compatability due to Run not being set < version 0.8.0
@@ -228,21 +249,25 @@ public class ExperimentDbTree extends JPanel {
                 //This is because average profile updating depends on replicate profile No values
                 for (SampleProfile repProfile : avProfile.getReplicateProfileList()) {
                     repProfile.setOCF(ocf);
-                    experimentDB.saveObject(repProfile);
+                    exptDB.saveObject(repProfile);
                 }
                 avProfile.setOCF(ocf);
 //Need to check if the LRE window needs reinitialization when av No increases to above >10 molecules
                 if (!avProfile.isTheReplicateAverageNoLessThan10Molecules() && !avProfile.hasAnLreWindowBeenFound()) {
 //>10N but no LRE window found indicates that the LRE window needs to be reiniitialized
                     LreAnalysisService lreAnalysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
-                    LreWindowSelectionParameters selectionParameters = (LreWindowSelectionParameters) experimentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
+                    LreWindowSelectionParameters selectionParameters = (LreWindowSelectionParameters) exptDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
                     lreAnalysisService.conductAutomatedLreWindowSelection(avProfile, selectionParameters);
                 }
-                experimentDB.saveObject(avProfile);
+                exptDB.saveObject(avProfile);
             }
         }
-        experimentDB.commitChanges();
+        exptDB.commitChanges();
         createTree();
+    }
+
+    private void changeFixedToEmaxStatus(boolean arg) {
+        
     }
 
     /**
@@ -338,43 +363,79 @@ public class ExperimentDbTree extends JPanel {
 }//GEN-LAST:event_runViewButtonActionPerformed
     @SuppressWarnings(value = "unchecked")
     private void fmaxNormalizeChkBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fmaxNormalizeChkBoxActionPerformed
-        if (fmaxNormalizeChkBox.isSelected()) {
-            //The checkbox is checked and so normalize all No values within the exp database to the average Fmax
-            //Retrieve all of the SampleProfiles from the database, which should include the AverageSampleProfiles
-            if (!experimentDB.isDatabaseOpen()) {
+        boolean arg = fmaxNormalizeChkBox.isSelected();
+            if (!exptDB.isDatabaseOpen()) {
                 fmaxNormalizeChkBox.setSelected(false);
                 return;
             }
-            List<SampleProfile> sampleProfileList =
-                    (List<SampleProfile>) experimentDB.getAllObjects(SampleProfile.class);
-            for (SampleProfile sampleProfile : sampleProfileList) {
-                sampleProfile.setIsTargetQuantityNormalizedToFmax(true);
-                experimentDB.saveObject(sampleProfile);
+            //Note that this is applied to all profiles in the database
+            List<Run> runList =  exptDB.getAllObjects(Run.class);
+            for (Run run : runList){
+            for (AverageProfile avPrf : run.getAverageProfileList()) {
+                AverageSampleProfile avSamPrf = (AverageSampleProfile) avPrf;
+                avSamPrf.setIsTargetQuantityNormalizedToFmax(arg);
+                exptDB.saveObject(avSamPrf);
+                for (SampleProfile prf : avSamPrf.getReplicateProfileList()){
+                    prf.setIsTargetQuantityNormalizedToFmax(arg);
+                    //There is no need to reinitiaze the profiles because 
+                    //normalization DOES NOT CHANGE Fo
+                    exptDB.saveObject(prf);
+                }
             }
-            dbInfo.setIsTargetQuantityNormalizedToFax(true);
+            }//End of Run for loop
+            exptDbInfo.setIsTargetQuantityNormalizedToFmax(arg);
+            exptDB.saveObject(exptDbInfo);
+            exptDB.commitChanges();
             createTree();
-        } else {//The checkbox must be unchecked
-            fmaxNormalizeChkBox.setSelected(false);
-            if (!experimentDB.isDatabaseOpen()) {
-                return;
-            }
-            List<SampleProfile> sampleProfileList =
-                    (List<SampleProfile>) experimentDB.getAllObjects(SampleProfile.class);
-            for (SampleProfile sampleProfile : sampleProfileList) {
-                sampleProfile.setIsTargetQuantityNormalizedToFmax(false);
-                experimentDB.saveObject(sampleProfile);
-            }
-            dbInfo.setIsTargetQuantityNormalizedToFax(false);
-            createTree();
-        }
-        experimentDB.saveObject(dbInfo);
-        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_EXPERIMENT_PANELS);
+            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_EXPERIMENT_PANELS);
     }//GEN-LAST:event_fmaxNormalizeChkBoxActionPerformed
 
     private void fixEmaxBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fixEmaxBoxActionPerformed
-        // TODO add your handling code here:
+        if (!exptDB.isDatabaseOpen()) {
+                fixEmaxBox.setSelected(false);
+                return;
+            }
+        boolean arg = fixEmaxBox.isSelected();
+        List<Run> runList = exptDB.getAllObjects(Run.class);
+        for (Run run : runList) {
+            for (AverageProfile avPrf : run.getAverageProfileList()) {
+                AverageSampleProfile avSamplePrf = (AverageSampleProfile) avPrf;
+                avSamplePrf.setIsEmaxFixedTo100(arg);
+                exptDB.saveObject(avSamplePrf);
+                //Delay reinitialization of avSamplePrf until the replicate profiles have been processed
+                //Process the replicate profiles
+                for (Profile repProfile : avPrf.getReplicateProfileList()) {
+                    //Ignore profiles that do not have an LRE window
+                    if (repProfile.hasAnLreWindowBeenFound()) {
+                        repProfile.setIsEmaxFixedTo100(arg);
+                        analysisService.initializeProfileSummary(repProfile, selectionParameters);
+                        exptDB.saveObject(repProfile);
+                    }
+                }
+                //Now process the avSamplePrf
+                //Must test to see if replicate profile modifications brings
+                //the average replicate No >10 as indicated by lacking an LRE
+                //window. If so then an automated LRE window
+                //selection must be conducted on the average profile.
+                if (!avPrf.isTheReplicateAverageNoLessThan10Molecules() && !avSamplePrf.hasAnLreWindowBeenFound()) {
+                    //Must conduct an automated LRE window selection
+                    analysisService.conductAutomatedLreWindowSelection(avSamplePrf, selectionParameters);
+                    exptDB.saveObject(avSamplePrf);
+                }
+                //Ignore average sample profiles that do not have an LRE window
+                if (!avPrf.isTheReplicateAverageNoLessThan10Molecules()) {
+                    //Need to update avFo and avNo
+                    analysisService.initializeProfileSummary(avSamplePrf, selectionParameters);
+                    exptDB.saveObject(avSamplePrf);
+                }//When <10N the averageProfile inherits the average replicate profile No so no need to update
+            }
+        }//End of Run for loop
+        exptDbInfo.setIsEmaxFixTo100Percent(fixEmaxBox.isSelected());
+        exptDB.saveObject(exptDbInfo);
+        exptDB.commitChanges();
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_CHANGED);
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_EXPERIMENT_PANELS);
     }//GEN-LAST:event_fixEmaxBoxActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane beanTree;
     private javax.swing.JCheckBox fixEmaxBox;

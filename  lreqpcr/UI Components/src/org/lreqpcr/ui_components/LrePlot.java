@@ -67,6 +67,7 @@ public class LrePlot extends javax.swing.JPanel {
      */
     public void iniPlotLREs(ProfileSummary prfSum, DatabaseServices db) {
         if (prfSum == null) {
+            profile = null;
             clearPlot();
             return;
         }
@@ -130,8 +131,14 @@ public class LrePlot extends javax.swing.JPanel {
     }
 
     public void clearPlot() {
+        if (profile != null){
+            if(!profile.hasAnLreWindowBeenFound()){
+            graphTitle.setText("LRE Plot (Ec vs. Fc)/n" + "AN LRE WINDOW WAS NOT FOUND");
+            }
+        } else {
+            graphTitle.setText("LRE Plot (Ec vs. Fc)");
+        }
         profile = null;
-        graphTitle.setText("LRE Plot (Ec vs. Fc)");
         lreWinSizeDisplay.setText("");
         maxEdisplay.setText("");
         r2display.setText("");
