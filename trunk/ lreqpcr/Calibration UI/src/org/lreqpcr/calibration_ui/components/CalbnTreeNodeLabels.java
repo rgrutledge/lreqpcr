@@ -55,9 +55,9 @@ public class CalbnTreeNodeLabels implements LabelFactory {
                 df.applyPattern("#0");
                 String ocfCV = df.format(run.getAvOcfCV() * 100);
                 if (run.getAvOcfCV() != 0){
-                return sdf.format(run.getRunDate()) + ": " + run.getName() + "   Av OCF " + avOCFstring + " ±" + ocfCV + "%";
-                } else {
-                    return sdf.format(run.getRunDate()) + ": OCF " + avOCFstring;
+                return sdf.format(run.getRunDate()) + ":  Av OCF " + avOCFstring + " ±" + ocfCV + "%";
+                } else {//No CV to display
+                    return sdf.format(run.getRunDate()) + ":  Av OCF = " + avOCFstring;
                 }
             } else {
                 return sdf.format(run.getRunDate()) + ": OCF not available";

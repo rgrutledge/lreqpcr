@@ -64,12 +64,12 @@ public final class ExperimentTopComponent extends TopComponent
 
     private static ExperimentTopComponent instance;
     /**
-     * path to the icon used by the component and its open action
+     * path to the icon used by the component and its open action  
      */
 //    static final String ICON_PATH = "SET/PATH/TO/ICON/HERE";
     private static final String PREFERRED_ID = "ExperimentTopComponent";
     private ExplorerManager mgr = new ExplorerManager();
-    private Lookup servicesLookup = Lookup.getDefault();
+    private Lookup lookup = Lookup.getDefault();
     private DatabaseServices experimentDB;
     private final Result<SampleNode> sampleNodeResult;
     private final Result<AmpliconNode> ampliconNodeResult;
@@ -103,7 +103,7 @@ public final class ExperimentTopComponent extends TopComponent
 
     @SuppressWarnings(value = "unchecked")
     private void initServices() {
-        experimentDB = servicesLookup.lookup(DatabaseServiceFactory.class).createDatabaseService(DatabaseType.EXPERIMENT);
+        experimentDB = lookup.lookup(DatabaseServiceFactory.class).createDatabaseService(DatabaseType.EXPERIMENT);
         if (experimentDB != null) {
             UniversalLookup.getDefault().add(DatabaseType.EXPERIMENT, experimentDB);
         }
@@ -259,40 +259,15 @@ public final class ExperimentTopComponent extends TopComponent
     }// </editor-fold>//GEN-END:initComponents
 
     private void openDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openDBbuttonActionPerformed
-//        CountDownLatch latch = new CountDownLatch(1);
-//        Runnable run = new Runnable() {
-//            public void run() {
-//                ProgressHandle p = ProgressHandleFactory.createHandle("Opening Database File");
-//                p.start();
-                try {
-                    if (experimentDB.openUserSelectDatabaseFile()) {
-                        experimentDbTree.createTree();
-                        UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, experimentDB);
-                        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_DATABASE);
-                        String dbFileName = experimentDB.getDatabaseFile().getName();
-                        int length = dbFileName.length();
-                        setDisplayName(dbFileName.substring(0, length - 4));
-                        setToolTipText(experimentDB.getDatabaseFile().getName());
-                    }//If a new file was not opened, do nothing
-                } finally {
-//            latch.countDown();
-//                }
-//                p.finish();
-//            }
-//        };
-//        Thread t = new Thread(run);
-//        t.start(); // start the task and progress visualisation
-//        JFrame message = OpeningDatabaseDialog.makeDialog();
-        //Want to see Something while the DB is being opened but this really does not work well...NEED JavaFX!!
-
-//        try {
-//            latch.await();
-//            //This will advance only after the database has been opened
-////            message.setVisible(false);
-////            message.dispose();
-//        } catch (InterruptedException ex) {
-//            Exceptions.printStackTrace(ex);
-        }
+        if (experimentDB.openUserSelectDatabaseFile()) {
+            experimentDbTree.createTree();
+            UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, experimentDB);
+            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_DATABASE);
+            String dbFileName = experimentDB.getDatabaseFile().getName();
+            int length = dbFileName.length();
+            setDisplayName(dbFileName.substring(0, length - 4));
+            setToolTipText(experimentDB.getDatabaseFile().getName());
+        }//If a new file was not opened, do nothing
     }//GEN-LAST:event_openDBbuttonActionPerformed
 
     private void newDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newDBbuttonActionPerformed
@@ -308,30 +283,15 @@ public final class ExperimentTopComponent extends TopComponent
     }//GEN-LAST:event_newDBbuttonActionPerformed
 
     private void openLastDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openLastDBbuttonActionPerformed
-        CountDownLatch latch = new CountDownLatch(1);
-        JFrame message = OpeningDatabaseDialog.makeDialog();
-        //This is a failed attempt to have the message dialog box to display properly while the DB is opening        
-        try {
-            if (experimentDB.openLastDatabaseFile()) {
-                experimentDbTree.createTree();
-                UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, experimentDB);
-                UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_DATABASE);
-                String dbFileName = experimentDB.getDatabaseFile().getName();
-                int length = dbFileName.length();
-                setDisplayName(dbFileName.substring(0, length - 4));
-                setToolTipText(experimentDB.getDatabaseFile().getName());
-            }//If a new file was not opened, do nothing
-        } finally {
-            latch.countDown();
-        }
-        try {
-            latch.await();
-            //This will advance only after the database has been opened
-            message.setVisible(false);
-            message.dispose();
-        } catch (InterruptedException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+        if (experimentDB.openLastDatabaseFile()) {
+            experimentDbTree.createTree();
+            UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, experimentDB);
+            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_DATABASE);
+            String dbFileName = experimentDB.getDatabaseFile().getName();
+            int length = dbFileName.length();
+            setDisplayName(dbFileName.substring(0, length - 4));
+            setToolTipText(experimentDB.getDatabaseFile().getName());
+        }//If a new file was not opened, do nothing
     }//GEN-LAST:event_openLastDBbuttonActionPerformed
 
     private void closeDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeDBbuttonActionPerformed

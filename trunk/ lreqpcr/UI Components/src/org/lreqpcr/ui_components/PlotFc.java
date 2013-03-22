@@ -26,6 +26,7 @@ import java.awt.geom.Ellipse2D;
 import java.text.DecimalFormat;
 import javax.swing.JOptionPane;
 import org.lreqpcr.core.data_objects.Profile;
+import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.data_processing.Cycle;
 import org.lreqpcr.core.data_processing.ProfileSummary;
 import org.lreqpcr.core.utilities.FormatingUtilities;
@@ -56,6 +57,7 @@ public class PlotFc extends javax.swing.JPanel {
     public void clearPlot() {
         fbDisplay.setText("");
         fbLabel.setVisible(false);
+        fmaxNrmzd.setVisible(false);
         graphTitle.setText("Fc Plot (Fc vs. Cycle)");
         Dimension size = this.getSize();
         if (g2 != null) {
@@ -77,6 +79,7 @@ public class PlotFc extends javax.swing.JPanel {
         graphTitle = new javax.swing.JLabel();
         fbLabel = new javax.swing.JLabel();
         fbDisplay = new javax.swing.JLabel();
+        fmaxNrmzd = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(244, 245, 247));
         setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -86,15 +89,20 @@ public class PlotFc extends javax.swing.JPanel {
         setName("Fc Plot"); // NOI18N
         setPreferredSize(new java.awt.Dimension(400, 100));
 
-        graphTitle.setFont(new java.awt.Font("Tahoma", 1, 12));
+        graphTitle.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         graphTitle.setForeground(new java.awt.Color(204, 0, 51));
         graphTitle.setText("Fc Plot (Fc vs. Cycle)");
 
-        fbLabel.setFont(new java.awt.Font("Tahoma", 0, 10));
+        fbLabel.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         fbLabel.setText("Fb:");
         fbLabel.setToolTipText("Calculated from the average of the Fo values within the LRE window");
 
         fbDisplay.setText("     ");
+
+        fmaxNrmzd.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        fmaxNrmzd.setForeground(new java.awt.Color(204, 0, 51));
+        fmaxNrmzd.setText("Fmax Normalized");
+        fmaxNrmzd.setToolTipText("Calculated from the average of the Fo values within the LRE window");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -109,7 +117,10 @@ public class PlotFc extends javax.swing.JPanel {
                         .addContainerGap()
                         .addComponent(fbLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(fbDisplay)))
+                        .addComponent(fbDisplay))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(fmaxNrmzd)))
                 .addContainerGap(244, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -121,7 +132,9 @@ public class PlotFc extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(fbLabel)
                     .addComponent(fbDisplay))
-                .addContainerGap(53, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(fmaxNrmzd)
+                .addContainerGap(32, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -140,6 +153,12 @@ public class PlotFc extends javax.swing.JPanel {
         zeroCycle = prfSum.getZeroCycle();
         strCycle = prfSum.getStrCycle();
         profile = prfSum.getProfile();
+        if (profile instanceof SampleProfile){
+            SampleProfile samPrf = (SampleProfile) profile;
+            if (samPrf.isTargetQuantityNormalizedToFmax()){
+                fmaxNrmzd.setVisible(true);
+            }
+        }
         lreWinSize = profile.getLreWinSize();
         DecimalFormat df = new DecimalFormat();
         df.applyPattern(FormatingUtilities.decimalFormatPattern(profile.getFb()));
@@ -158,7 +177,7 @@ public class PlotFc extends javax.swing.JPanel {
                 JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
                         "This Run appears to lack an average Fmax.\n"
                         + "This prevents profiles from being viewed. ",
-                        "An average Fmax could not be determined",
+                        "Fc readings cannot be displayed",
                         JOptionPane.ERROR_MESSAGE);
                 clearPlot();
                 return;
@@ -188,6 +207,18 @@ public class PlotFc extends javax.swing.JPanel {
         double ptSize = 10;
         if (isInitiated) {
             Cycle runner = zeroCycle.getNextCycle();//Cycle #1
+            //Allows display of the Fc plot if a LRE window has not been found
+            if (!profile.hasAnLreWindowBeenFound() || profile.isExcluded()) {
+            do {
+                double x = (runner.getCycNum() * scalingFactorX) - offsetX;
+                    double y = height - (runner.getFc() * 0.000001) - offsetY;
+                    Ellipse2D.Double pt = new Ellipse2D.Double(x + 0.08 * ptSize, y + 0.08 * ptSize, ptSize * 0.32, ptSize * 0.32); //XY offset = 25% of ptSize
+                    g2.setColor(Color.RED);
+                    g2.fill(pt); //Actual Fc
+                    runner = runner.getNextCycle();
+                } while (runner != null);
+                return;
+            }
             do {
                 double x = (runner.getCycNum() * scalingFactorX) - offsetX;
                 double y = height - (runner.getFc() * scalingFactorY) - offsetY;
@@ -236,6 +267,7 @@ public class PlotFc extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel fbDisplay;
     private javax.swing.JLabel fbLabel;
+    private javax.swing.JLabel fmaxNrmzd;
     private javax.swing.JLabel graphTitle;
     // End of variables declaration//GEN-END:variables
 }

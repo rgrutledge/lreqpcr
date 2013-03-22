@@ -20,12 +20,14 @@ package org.lreqpcr.core.db4o_provider;
 import org.lreqpcr.core.database_services.DatabaseServiceFactory;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  *
  * @author Bob Rutledge
  */
+@ServiceProvider(service = DatabaseServiceFactory.class)
 public class DatabaseServiceProvider implements DatabaseServiceFactory {
 
     DatabaseServices service;

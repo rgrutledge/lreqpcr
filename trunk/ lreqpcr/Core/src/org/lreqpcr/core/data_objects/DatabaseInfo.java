@@ -17,7 +17,7 @@
 package org.lreqpcr.core.data_objects;
 
 /**
- * Stores various database related information. 
+ * Stores various Profile database related information. 
  *
  * @author Bob Rutledge
  */
@@ -25,7 +25,7 @@ public abstract class DatabaseInfo extends LreObject {
 
     private double avRunFmax = 0;//The average Fmax derived by averageing the Run Fmax average across all of the Runs in the database
     private double avRunFmaxCV = 0;//The CV for the average Fmax values derived from multiple Runs
-    private boolean isTargetQuantityNormalizedToFax;
+    private boolean isTargetQuantityNormalizedToFmax;
     private boolean isEmaxFixTo100Percent;
 
     /**
@@ -33,9 +33,9 @@ public abstract class DatabaseInfo extends LreObject {
      * within the database, excluding average Profiles. This is used 
      * to correct for well-to-well differences in fluorescence units. 
      * This was derived from the observation that some, if not all, instruments 
-     * calibration fluorescence for each individual wells. Variance in this 
+     * calibration fluorescence for each well individually. Variance in this 
      * calibration can led to large quantitative errors for both Fo and Ct 
-     * based analysis. 
+     * based analysis (> 1 fold). 
      * 
      * @return avRunFmax the average Fmax across all runs within the database
      */
@@ -48,7 +48,7 @@ public abstract class DatabaseInfo extends LreObject {
      * within the database, excluding average Profiles. This is used 
      * to correct for well-to-well differences in fluorescence units. 
      * This was derived from the observation that some, if not all, instruments 
-     * calibration fluorescence for each individual wells. Variance in this 
+     * calibration fluorescence for each well individually. Variance in this 
      * calibration can led to large quantitative errors for both Fo and Ct 
      * based analysis. 
      * 
@@ -66,12 +66,12 @@ public abstract class DatabaseInfo extends LreObject {
         this.avRunFmaxCV = avRunFmaxCV;
     }
 
-    public boolean isTargetQuantityNormalizedToFax() {
-        return isTargetQuantityNormalizedToFax;
+    public boolean isTargetQuantityNormalizedToFmax() {
+        return isTargetQuantityNormalizedToFmax;
     }
 
-    public void setIsTargetQuantityNormalizedToFax(boolean isTargetQuantityNormalizedToFax) {
-        this.isTargetQuantityNormalizedToFax = isTargetQuantityNormalizedToFax;
+    public void setIsTargetQuantityNormalizedToFmax(boolean isTargetQuantityNormalizedToFax) {
+        this.isTargetQuantityNormalizedToFmax = isTargetQuantityNormalizedToFax;
     }
 
     /**

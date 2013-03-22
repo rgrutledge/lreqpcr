@@ -73,8 +73,6 @@ public class CalRootChildren extends LreObjectChildren {
         if (run.getAverageProfileList() == null){
             return null;
         }
-        //Oddly when first implemented and using older databases, unrelated Runs  
-        //were found to be present that contain average profile list containing AverageSampleProfiles
         if (run.getAverageProfileList().get(0) instanceof AverageSampleProfile){
             return null;
         }

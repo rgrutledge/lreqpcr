@@ -79,7 +79,8 @@ public class ProfileUtilities {
     }//End of generate average Fc dataset
     
     public static void calcAvFmaxForAllRuns(DatabaseServices db) {
-        DatabaseInfo dbInfo = (DatabaseInfo) db.getAllObjects(DatabaseInfo.class).get(0);
+        List l = db.getAllObjects(DatabaseInfo.class);
+        DatabaseInfo dbInfo = (DatabaseInfo) l.get(0);
         List<Run> runList = db.getAllObjects(Run.class);
         ArrayList<Double> fmaxList = Lists.newArrayList();//Used to determine SD
         double fmaxSum = 0;

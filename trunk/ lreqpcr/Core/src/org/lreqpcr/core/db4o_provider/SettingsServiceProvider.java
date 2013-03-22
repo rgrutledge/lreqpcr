@@ -16,11 +16,12 @@
  */
 package org.lreqpcr.core.db4o_provider;
 
-import org.lreqpcr.core.data_objects.Settings;
 import java.io.File;
 import java.util.List;
+import org.lreqpcr.core.data_objects.Settings;
 import org.lreqpcr.core.database_services.DatabaseType;
 import org.lreqpcr.core.database_services.SettingsServices;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  * A single Settings database file is used, which is located in the default LRE
@@ -28,6 +29,7 @@ import org.lreqpcr.core.database_services.SettingsServices;
  *
  * @author Bob Rutledge
  */
+@ServiceProvider(service = SettingsServices.class)
 public class SettingsServiceProvider extends Db4oDatabaseServices implements SettingsServices {
 
     private Settings settings;//The object holding the settings
