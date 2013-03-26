@@ -25,6 +25,7 @@ import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.CalibrationProfile;
+import org.lreqpcr.core.data_objects.CalibrationRun;
 import org.lreqpcr.core.data_objects.ExperimentDbInfo;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
@@ -33,6 +34,7 @@ import org.lreqpcr.core.data_objects.RunImpl;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
+import org.lreqpcr.core.utilities.MathFunctions;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.data_import_services.AverageProfileGenerator;
 import org.lreqpcr.data_import_services.DataImportType;
@@ -41,6 +43,7 @@ import org.lreqpcr.data_import_services.RunImportUtilities;
 import org.lreqpcr.data_import_services.RunInitializationService;
 import org.lreqpcr.ui_components.PanelMessages;
 import org.openide.util.Lookup;
+import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.WindowManager;
 
 /**
@@ -49,6 +52,7 @@ import org.openide.windows.WindowManager;
  *
  * @author Bob Rutledge
  */
+@ServiceProvider(service = RunInitializationService.class)
 public class RunInializationProvider implements RunInitializationService {
 
     private UniversalLookup uLookup = UniversalLookup.getDefault();
@@ -56,6 +60,8 @@ public class RunInializationProvider implements RunInitializationService {
     private DatabaseServices calbnDB;
     private DatabaseServices experimentDB;
     private DataImportType importType;
+    private Run sampleRun;
+    private CalibrationRun calRun;
 
     public RunInializationProvider() {
         //Retrieve the databases
@@ -121,7 +127,6 @@ public class RunInializationProvider implements RunInitializationService {
         }
 
         Date runDate = importData.getRunDate();
-        //Set run
         List<SampleProfile> sampleProfileList = importData.getSampleProfileList();
         List<CalibrationProfile> calibnProfileList = importData.getCalibrationProfileList();
 
@@ -131,7 +136,7 @@ public class RunInializationProvider implements RunInitializationService {
         if (sampleProfileList != null) {
             if (!sampleProfileList.isEmpty()) {//A manual Calibration Profile import type should have an empty SampleProfile list
                 if (experimentDB.isDatabaseOpen()) {
-                    Run sampleRun = new RunImpl();
+                    sampleRun = new RunImpl();//This is the Run object that will hold the sample profiles
                     sampleRun.setRunDate(runDate);
                     LreWindowSelectionParameters winSelectionParameters =
                             (LreWindowSelectionParameters) experimentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
@@ -182,13 +187,13 @@ public class RunInializationProvider implements RunInitializationService {
                     UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_RUN_IMPORTED);
                 }
             }
-        }
+        }//End of sample profile processing
 
         //Process the CalibnProfileList
         if (calibnProfileList != null) {
             if (!calibnProfileList.isEmpty()) {//A manual Sample Profile import should have an empty Calibration Profile list.
                 if (calbnDB.isDatabaseOpen()) {
-                    Run calRun = new RunImpl();
+                    calRun = new CalibrationRun();
                     calRun.setRunDate(runDate);
                     LreWindowSelectionParameters lreWindowSelectionParameters = (LreWindowSelectionParameters) calbnDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
                     //Process the CalibnProfiles
@@ -212,13 +217,47 @@ public class RunInializationProvider implements RunInitializationService {
                     calbnDB.saveObject(averageCalbnProfileList);
                     calRun.setAverageProfileList((ArrayList<AverageProfile>) averageCalbnProfileList);
                     calRun.calculateAverageFmax();
+                    calculateAverageFmax();
                     calbnDB.saveObject(calRun);
                     calbnDB.commitChanges();
                     //Broadcast that the calibration panels must be updated
                     UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_CALIBRATION_PANELS);
                 }
             }
-        }//End of calibration profile initialization
+        }//End of calibration profile processing
+    }//End of initialize run
+    //Determine the avFmax across all profiles and set this within the Calibration Run
+
+    private void calculateAverageFmax() {
+        ArrayList<Double> fmaxList = new ArrayList<Double>();//Used to determine the SD
+        double fmaxSum = 0;
+        int profileCount = 0;
+        double averageFmax;
+        double avFmaxCV = 0;
+        //Combine the Sample and Calibration average profiles into a single array
+        List<AverageProfile> allAvPrfs = new ArrayList<AverageProfile>(sampleRun.getAverageProfileList());
+        allAvPrfs.addAll(calRun.getAverageProfileList());
+        for (AverageProfile avProfile : allAvPrfs) {
+            for (Profile profile : avProfile.getReplicateProfileList()) {
+                if (profile.hasAnLreWindowBeenFound() && !profile.isExcluded()) {
+                    fmaxSum += profile.getFmax();
+                    profileCount++;
+                    fmaxList.add(profile.getFmax());
+                }
+            }
+        }
+        if (profileCount >= 1 && fmaxSum > 0) {
+            averageFmax = fmaxSum / profileCount;
+            if (fmaxList.size() > 1) {
+                avFmaxCV = MathFunctions.calcStDev(fmaxList) / averageFmax;
+            } else {
+                avFmaxCV = 0;
+            }
+        } else {
+            averageFmax = 0;
+        }
+        calRun.setCompleteRunAvFmax(averageFmax);
+        calRun.setCompleteRunAvFmaxCV(avFmaxCV);
     }
 
     /**
