@@ -24,6 +24,7 @@ import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.CalibrationRun;
 import org.lreqpcr.core.data_objects.Run;
+import org.lreqpcr.core.data_objects.RunImpl;
 import org.lreqpcr.core.database_services.DatabaseServices;
 
 /**
@@ -87,7 +88,7 @@ public class UpdateCalbrationDatabase {
         //Testing indicates that duplicate runs with no average profile list are generated, so delete them
         List<Run> runList = (List<Run>) calbnDB.getAllObjects(Run.class);
         for (Run run : runList){
-            if (run.getAverageProfileList() == null){
+            if (run instanceof RunImpl){
                 calbnDB.deleteObject(run);
             }
         }
