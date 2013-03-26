@@ -25,6 +25,7 @@ import java.awt.Toolkit;
 import java.awt.geom.Ellipse2D;
 import java.text.DecimalFormat;
 import javax.swing.JOptionPane;
+import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.data_processing.Cycle;
@@ -158,6 +159,11 @@ public class PlotFc extends javax.swing.JPanel {
             if (samPrf.isTargetQuantityNormalizedToFmax()){
                 fmaxNrmzd.setVisible(true);
             }
+        } else if (profile instanceof CalibrationProfile){
+            CalibrationProfile calPrf = (CalibrationProfile) profile;
+            if (calPrf.isIsOcfNormalizedToFmax()){
+                fmaxNrmzd.setVisible(true);
+            }
         }
         lreWinSize = profile.getLreWinSize();
         DecimalFormat df = new DecimalFormat();
@@ -211,7 +217,7 @@ public class PlotFc extends javax.swing.JPanel {
             if (!profile.hasAnLreWindowBeenFound() || profile.isExcluded()) {
             do {
                 double x = (runner.getCycNum() * scalingFactorX) - offsetX;
-                    double y = height - (runner.getFc() * 0.000001) - offsetY;
+                    double y = height - (runner.getFc() * scalingFactorY) - offsetY;
                     Ellipse2D.Double pt = new Ellipse2D.Double(x + 0.08 * ptSize, y + 0.08 * ptSize, ptSize * 0.32, ptSize * 0.32); //XY offset = 25% of ptSize
                     g2.setColor(Color.RED);
                     g2.fill(pt); //Actual Fc
