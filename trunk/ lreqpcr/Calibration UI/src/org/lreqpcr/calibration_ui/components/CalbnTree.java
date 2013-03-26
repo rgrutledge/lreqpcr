@@ -32,6 +32,7 @@ import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.CalibrationDbInfo;
 import org.lreqpcr.core.data_objects.CalibrationProfile;
+import org.lreqpcr.core.data_objects.CalibrationRun;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.Run;
@@ -141,8 +142,8 @@ public class CalbnTree extends JPanel {
         System.out.println("The number of average Sample profiles = " + avSamPrfList.size());
 
         //Setup the tree with CalbrationDbInfo in root
-        //Retrieval all Runs from the database
-        List<? extends Run> runList = (List<? extends Run>) calbnDB.getAllObjects(Run.class);
+        //Retrieval all Calibration Runs from the database
+        List<CalibrationRun> runList = (List<CalibrationRun>) calbnDB.getAllObjects(CalibrationRun.class);
         CalRootChildren calRootChildren = new CalRootChildren(mgr, calbnDB, runList, nodeActionFactory, nodeLabelFactory);
         LreNode root = new LreNode(calRootChildren, Lookups.singleton(calDbInfo), new Action[]{});
         root.setDatabaseService(calbnDB);
@@ -161,17 +162,6 @@ public class CalbnTree extends JPanel {
         } else {
             root.setDisplayName(displayName);
         }
-//        displayName = displayName + " (" + String.valueOf(avCalPrfList.size()) + ")";
-//        Collections.sort(avCalPrfArray);
-//        Action[] actions = new Action[]{
-//            new FixAllCalibrationProfileEmaxTo100percentAction(mgr),
-//            new ReturnAllCalibrationProfileEmaxToLreAction(mgr)
-//        };
-//        LreNode root = new LreNode(new DecapretedCalRootChildren(mgr, calbnDB, avCalPrfArray, nodeActionFactory,
-//                nodeLabelFactory), null, actions);
-//        root.setDatabaseService(calbnDB);
-//        root.setDisplayName(displayName);
-//        root.setShortDescription(dbFile.getAbsolutePath());
         statusLineMessage = StatusDisplayer.getDefault().setStatusText(dbFile.getAbsolutePath(), 1);
         mgr.setRootContext(root);
         calcAverageOCF();

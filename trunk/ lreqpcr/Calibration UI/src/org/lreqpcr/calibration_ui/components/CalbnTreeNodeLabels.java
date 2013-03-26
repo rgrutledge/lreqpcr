@@ -20,8 +20,8 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.CalibrationProfile;
+import org.lreqpcr.core.data_objects.CalibrationRun;
 import org.lreqpcr.core.data_objects.LreObject;
-import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.ui_elements.LabelFactory;
 import org.lreqpcr.core.utilities.FormatingUtilities;
 
@@ -35,8 +35,8 @@ public class CalbnTreeNodeLabels implements LabelFactory {
     private DecimalFormat df = new DecimalFormat();
 
     public String getNodeLabel(LreObject member) {
-        if (member instanceof Run) {
-            Run run = (Run) member;
+        if (member instanceof CalibrationRun) {
+            CalibrationRun run = (CalibrationRun) member;
             //Place the Run average Fmax into the short description
             double avFmax = run.getAverageFmax();
             df.applyPattern(FormatingUtilities.decimalFormatPattern(avFmax));
@@ -46,7 +46,6 @@ public class CalbnTreeNodeLabels implements LabelFactory {
             run.setShortDescription(" [Av Fmax: " + avFmaxString + " ±" + cv + "%]");
             //Recalculate the Run avOCF
             //This is not expected to impact performance
-            run.calculateAverageOCF();
             //Display Run's average OCF
             if (run.getAvOCF() != 0) {
                 double avOCF = run.getAvOCF();
