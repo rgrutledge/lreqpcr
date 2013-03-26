@@ -94,14 +94,14 @@ public abstract class Db4oDatabaseServices implements DatabaseServices {
 
         Thread t = new Thread(run);
         t.start();
-        while (t.isAlive()){
-            try {
-//                t.join(1000);
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                Exceptions.printStackTrace(ex);
-            }
-        }
+//        while (t.isAlive()){
+//            try {
+////                t.join(1000);
+//                Thread.sleep(1000);
+//            } catch (InterruptedException ex) {
+//                Exceptions.printStackTrace(ex);
+//            }
+//        }
 //        try {
 //            t.join();
 //        } catch (InterruptedException ex) {

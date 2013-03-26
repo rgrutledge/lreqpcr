@@ -68,8 +68,8 @@ public class IOUtilities {
      * @return the byte array, or null if it could not be read
      */
     public static byte[] dataFileImport(File file) {
-        byte[] byteFile = null;
-        FileInputStream in = null;
+        byte[] byteFile;
+        FileInputStream in;
         try {
             in = new FileInputStream(file);
         } catch (FileNotFoundException ex) {
@@ -111,7 +111,7 @@ public class IOUtilities {
      */
     public static File newExcelFile() {
         SettingsServices settingsDB = Lookup.getDefault().lookup(SettingsServices.class);
-        File directory = null;
+        File directory;
         try {
             directory = new File(settingsDB.getLastExperimentDatabaseDirectory());
         } catch (NullPointerException ev) {
@@ -203,7 +203,7 @@ public class IOUtilities {
             fc.setDialogTitle(title);
         }
         fc.setFileFilter(filter);
-        File directory = null;
+        File directory;
         if (settingsDB.getLastDataImportDirectory() != null) {
             try {
                 directory = new File(settingsDB.getLastDataImportDirectory());
