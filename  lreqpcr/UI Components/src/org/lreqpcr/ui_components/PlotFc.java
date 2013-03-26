@@ -26,6 +26,7 @@ import java.awt.geom.Ellipse2D;
 import java.text.DecimalFormat;
 import javax.swing.JOptionPane;
 import org.lreqpcr.core.data_objects.CalibrationProfile;
+import org.lreqpcr.core.data_objects.CalibrationRun;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.data_processing.Cycle;
@@ -174,7 +175,10 @@ public class PlotFc extends javax.swing.JPanel {
         graphTitle.setText("C1/2: " + df.format(profile.getMidC()));
         df.applyPattern("0.0000");
         //Need to determin scale for Fc (Y-axis)
-        if (profile.getRun().getAverageFmax() == 0) {
+        double avFmax;
+        if(profile.getRun() instanceof CalibrationRun){
+            avFmax = profile.getRun().getAverageFmax();
+        }else if (profile.getRun().getAverageFmax() == 0) {
             profile.getRun().calculateAverageFmax();
             if (profile.getRun().getAverageFmax() == 0) {
                 //Most likely due to old dataset in which Fmax was not implemented
@@ -187,9 +191,9 @@ public class PlotFc extends javax.swing.JPanel {
                         JOptionPane.ERROR_MESSAGE);
                 clearPlot();
                 return;
-            }
-        }
-        maxFc = profile.getRun().getAverageFmax() * 1.3;//Provides 20% spacing for the top of the profile
+            }else {avFmax = profile.getRun().getAverageFmax();}
+        }else {avFmax = profile.getRun().getAverageFmax();}
+        maxFc = avFmax * 1.3;//Provides 20% spacing for the top of the profile
         isInitiated = true;
         repaint();
     }
