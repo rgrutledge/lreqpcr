@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageProfile;
+import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.database_services.DatabaseServices;
 
@@ -32,34 +33,56 @@ import org.lreqpcr.core.database_services.DatabaseServices;
 public class UpdateCalbrationDatabase {
 
     /**
-     * Determines if average Run Fmax needs to be calculated, which for earlier
-     * versions, was not set during Run import. This includes generating an
-     * AverageProfile list in the Run.
+     *  
      *
      * @param avProfileList
      */
-    public static void updateCalibrationProfiles(DatabaseServices db, List<AverageCalibrationProfile> avProfileList) {
+    
+    /**
+     * Updates calibration databases from 085 and deletes any AverageSampleProfiles found in the 
+     * database.
+     * @param db the calibration database
+     * @param avProfileList list of the average profiles to be processed
+     */
+    public static void updateCalibrationProfiles(DatabaseServices calbnDB) {
+        List<Run> runList1 = (List<Run>) calbnDB.getAllObjects(Run.class);
+        for(Run run : runList1){
+            if (run.getAverageProfileList() != null && run.getAverageProfileList().get(0) instanceof AverageSampleProfile){
+                calbnDB.deleteObject(run);
+            }
+        }
+//        List<Run> runList2 = (List<Run>) calbnDB.getAllObjects(Run.class);
+//        List<AverageSampleProfile> avSampleList2 = (List<AverageSampleProfile>) calbnDB.getAllObjects(AverageSampleProfile.class);
+        List<AverageCalibrationProfile> avCalPrfList = (List<AverageCalibrationProfile>) calbnDB.getAllObjects(AverageCalibrationProfile.class);
         //Set the AverageProfile list in each Run and have Run calculate average Fmax
         //Need to sort out all the avProfiles associated with each Run, e.g. CAL1 + CAL2 = 2 avProfiles in one run
         //This is required in order to put the avProfiles into the the correct Run
         HashMap<Run, ArrayList<AverageProfile>> runMap = new HashMap<Run, ArrayList<AverageProfile>>();
-        for (AverageCalibrationProfile avCalPrf : avProfileList) {
+        for (AverageProfile avPrf : avCalPrfList) {
+            AverageCalibrationProfile avCalPrf = (AverageCalibrationProfile) avPrf;
             if (!runMap.containsKey(avCalPrf.getRun())) {
-                ArrayList<AverageProfile> array = new ArrayList<AverageProfile>();
-                array.add(avCalPrf);
-                runMap.put(avCalPrf.getRun(), array);
+                ArrayList<AverageProfile> newAvPrfList = new ArrayList<AverageProfile>();
+                newAvPrfList.add(avCalPrf);
+                runMap.put(avCalPrf.getRun(), newAvPrfList);
             } else {
-                ArrayList<AverageProfile> gottedArray = runMap.get(avCalPrf.getRun());
-                gottedArray.add(avCalPrf);
+                ArrayList<AverageProfile> retrievedRun = runMap.get(avCalPrf.getRun());
+                retrievedRun.add(avCalPrf);
             }
-            for (Run run : runMap.keySet()) {
-                db.saveObject(runMap.get(run));
-                run.setAverageProfileList(runMap.get(run));
-                run.calculateAverageFmax();
-                run.calculateAverageOCF();
-                db.saveObject(run);
-            }
-            db.commitChanges();
+        }//End of avPrf loop
+        for (Run run : runMap.keySet()) {
+            calbnDB.saveObject(runMap.get(run));
+            run.setAverageProfileList(runMap.get(run));
+            run.calculateAverageFmax();
+            run.calculateAverageOCF();
+            calbnDB.saveObject(run);
         }
+        //Testing indicates that duplicate runs with no average profile list are generated, so delete them
+        List<Run> runList = (List<Run>) calbnDB.getAllObjects(Run.class);
+        for (Run run : runList){
+            if (run.getAverageProfileList() == null){
+                calbnDB.deleteObject(run);
+            }
+        }
+        calbnDB.commitChanges();
     }
 }

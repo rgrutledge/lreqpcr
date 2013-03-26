@@ -149,7 +149,7 @@ public class SampleProfile extends Profile {
      * @return No, the number of target molecules or -1 if a value is unavailable
      */
     public double getNo() {
-        //This is a little junky but seems to work well
+        //This is a little clumsy but seems to work well
         if (no == -1){//Signifies that no value is available
             return -1;
         }

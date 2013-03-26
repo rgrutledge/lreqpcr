@@ -108,7 +108,7 @@
     <Component class="javax.swing.JCheckBox" name="fmaxNormalizeChkBox">
       <Properties>
         <Property name="text" type="java.lang.String" value="Fmax Normalize"/>
-        <Property name="toolTipText" type="java.lang.String" value="Normalize target quantity to average Fmax"/>
+        <Property name="toolTipText" type="java.lang.String" value="Normalize target quantity to the average Fmax"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="fmaxNormalizeChkBoxActionPerformed"/>
@@ -117,6 +117,7 @@
     <Component class="javax.swing.JCheckBox" name="fixEmaxBox">
       <Properties>
         <Property name="text" type="java.lang.String" value="&lt;100%&gt; Emax"/>
+        <Property name="toolTipText" type="java.lang.String" value="Fix Emax to 100%"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="fixEmaxBoxActionPerformed"/>

@@ -24,6 +24,7 @@ package org.lreqpcr.core.data_objects;
 public class ExptDbInfo extends DatabaseInfo{
     
     private double ocf = 0;//The average OCF derived from the corresponding Reaction Setup
+    private boolean isTargetQuantityNormalizedToFmax;
 
     /**
      * This OCF is by default used to determine target quantity over an 
@@ -52,4 +53,13 @@ public class ExptDbInfo extends DatabaseInfo{
     public void setOcf(double ocf) {
         this.ocf = ocf;
     }
+
+    public boolean isIsTargetQuantityNormalizedToFmax() {
+        return isTargetQuantityNormalizedToFmax;
+    }
+
+    public void setIsTargetQuantityNormalizedToFmax(boolean isTargetQuantityNormalizedToFmax) {
+        this.isTargetQuantityNormalizedToFmax = isTargetQuantityNormalizedToFmax;
+    }
+    
 }

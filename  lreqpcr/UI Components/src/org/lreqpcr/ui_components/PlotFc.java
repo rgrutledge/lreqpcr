@@ -52,6 +52,8 @@ public class PlotFc extends javax.swing.JPanel {
      */
     public PlotFc() {
         initComponents();
+        fbLabel.setVisible(false);
+        fmaxNrmzd.setVisible(false);
     }
 
     public void clearPlot() {
@@ -65,7 +67,6 @@ public class PlotFc extends javax.swing.JPanel {
             clearPlot = true;
             repaint();
         }
-
     }
 
     /**
@@ -102,7 +103,7 @@ public class PlotFc extends javax.swing.JPanel {
         fmaxNrmzd.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         fmaxNrmzd.setForeground(new java.awt.Color(204, 0, 51));
         fmaxNrmzd.setText("Fmax Normalized");
-        fmaxNrmzd.setToolTipText("Calculated from the average of the Fo values within the LRE window");
+        fmaxNrmzd.setToolTipText("Tartget or OCF normalized to the average Run Fmax");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -141,8 +142,7 @@ public class PlotFc extends javax.swing.JPanel {
     /**
      * Set Fc, predicted Fc and R2
      *
-     *
-     * @param prfSum the Profile Summary
+     * @param prfSum the Profile Summary to display
      */
     public void iniPlot(ProfileSummary prfSum) {
         if (prfSum == null) {
