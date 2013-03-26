@@ -17,9 +17,6 @@
 package org.lreqpcr.data_import_services;
 
 import java.awt.Toolkit;
-import org.lreqpcr.core.utilities.*;
-import org.lreqpcr.core.data_objects.AmpliconImpl;
-import org.lreqpcr.core.data_objects.Profile;
 import java.io.File;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
@@ -30,11 +27,14 @@ import java.util.List;
 import java.util.TimeZone;
 import javax.swing.JOptionPane;
 import jxl.DateCell;
+import org.lreqpcr.core.data_objects.AmpliconImpl;
+import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.RunDatafileStorage;
 import org.lreqpcr.core.data_objects.TargetStrandedness;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
 import org.lreqpcr.core.database_services.SettingsServices;
+import org.lreqpcr.core.utilities.*;
 import org.openide.util.Lookup;
 import org.openide.windows.WindowManager;
 
@@ -181,9 +181,9 @@ public class RunImportUtilities {
     public static DatabaseServices[] getDatabases() {
         UniversalLookup uLookup = UniversalLookup.getDefault();
         //This assumes only one database file is open for each database type
-        DatabaseServices exptDB = null;
-        DatabaseServices calbnDB = null;
-        DatabaseServices ampliconDB = null;
+        DatabaseServices exptDB;
+        DatabaseServices calbnDB;
+        DatabaseServices ampliconDB;
         DatabaseServices[] dbArray = new DatabaseServices[3];//ampDB, calDB, exptDB (alphabetic order)
 
         //Check if the necessary database services have active databases
