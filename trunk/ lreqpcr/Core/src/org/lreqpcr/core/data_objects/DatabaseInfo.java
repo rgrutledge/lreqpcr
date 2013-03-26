@@ -25,7 +25,7 @@ public abstract class DatabaseInfo extends LreObject {
 
     private double avRunFmax = 0;//The average Fmax derived by averageing the Run Fmax average across all of the Runs in the database
     private double avRunFmaxCV = 0;//The CV for the average Fmax values derived from multiple Runs
-    private boolean isTargetQuantityNormalizedToFmax;
+//    private boolean isTargetQuantityNormalizedToFmax;
     private boolean isEmaxFixTo100Percent;
 
     /**
@@ -65,14 +65,14 @@ public abstract class DatabaseInfo extends LreObject {
     public void setAvRunFmaxCV(double avRunFmaxCV) {
         this.avRunFmaxCV = avRunFmaxCV;
     }
-
-    public boolean isTargetQuantityNormalizedToFmax() {
-        return isTargetQuantityNormalizedToFmax;
-    }
-
-    public void setIsTargetQuantityNormalizedToFmax(boolean isTargetQuantityNormalizedToFax) {
-        this.isTargetQuantityNormalizedToFmax = isTargetQuantityNormalizedToFax;
-    }
+//
+//    public boolean isTargetQuantityNormalizedToFmax() {
+//        return isTargetQuantityNormalizedToFmax;
+//    }
+//
+//    public void setIsTargetQuantityNormalizedToFmax(boolean isTargetQuantityNormalizedToFax) {
+//        this.isTargetQuantityNormalizedToFmax = isTargetQuantityNormalizedToFax;
+//    }
 
     /**
      * This indicates whether Emax is fixed to 100% for all profiles 

@@ -34,6 +34,7 @@ public class CalibrationProfile extends Profile {
     private double mo;//Mo calculated from the lambdaMass
     private double ocf;//OCF calculated using the LRE-derived Emax
     private double ocfEmax100;//OCF calculated using Emax fixed to 100%
+    private boolean isOcfNormalizedToFmax;//Normalize the OCF to the Run's average Fmax
 
     /**
      * Note that the default target strandedness for a Profile is double stranded 
@@ -102,11 +103,37 @@ public class CalibrationProfile extends Profile {
      * per 
      */
     public double getOCF() {
+        if (isOcfNormalizedToFmax){
+            return getOcfAdjustedToFmax();
+        }
         if (isEmaxFixedTo100()) {
             return ocfEmax100;
         } else {
             return ocf;
         }
+    }
+
+    protected double getOcfAdjustedToFmax(){
+        double avFmax = super.getRun().getAverageFmax();
+//Note that using the Run avFmax is solely for correcting variances in well to well flourescence calibration
+        double fmax = getFmax();
+        if (fmax <= 0 || avFmax <= 0) {
+            return 0;
+        }
+        double correctionFactor = avFmax / fmax;
+        if (isEmaxFixedTo100()) {
+            return ocfEmax100 * correctionFactor;
+        } else {
+            return ocf * correctionFactor;
+        }
+    }
+    
+    public boolean isIsOcfNormalizedToFmax() {
+        return isOcfNormalizedToFmax;
+    }
+
+    public void setIsOcfNormalizedToFmax(boolean isOcfNormalizedToFmax) {
+        this.isOcfNormalizedToFmax = isOcfNormalizedToFmax;
     }
 
     /**

@@ -62,13 +62,13 @@ public class ExperimentTreeNodeActions implements LreActionFactory {
                     //            new SaveCyclerDatafileAction(mgr),
                     //            new RetrieveDatafileAction(mgr),
                     //            new RetrieveExcelImportFileAction(mgr),
-                    new ApplyRunSpecficOCF(mgr),
-                    null,
+//                    new ApplyRunSpecficOCF(mgr),
+//                    null,
                     new DeleteRunAction(mgr),
-                    null,
+//                    null,
 //Policy is to allow fix/unfix Emax for an entire Run, which in future will likely be limited to the entire exp database
-                    new FixRunEmaxTo100percentAction(mgr),
-                    new ReturnRunProfilesEmaxToLreDerivedEmaxAction(mgr)
+//                    new FixRunEmaxTo100percentAction(mgr),
+//                    new ReturnRunProfilesEmaxToLreDerivedEmaxAction(mgr)
                 };
         actionMap.put("RunImpl", actions);
     }

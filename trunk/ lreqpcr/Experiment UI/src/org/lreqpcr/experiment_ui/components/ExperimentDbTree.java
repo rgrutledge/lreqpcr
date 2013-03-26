@@ -127,6 +127,7 @@ public class ExperimentDbTree extends JPanel {
     @SuppressWarnings(value = "unchecked")
     //A new experiment database has been opened
     public void createTree() {
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.CLEAR_PROFILE_EDITOR);
         runViewButton.setSelected(true);
         if (!exptDB.isDatabaseOpen()) {
             AbstractNode root = new AbstractNode(Children.LEAF);
@@ -134,6 +135,7 @@ public class ExperimentDbTree extends JPanel {
             mgr.setRootContext(root);
             ocfDisplay.setText("");
             fmaxNormalizeChkBox.setSelected(false);
+            fixEmaxBox.setSelected(false);
             if (statusLineMessage != null) {
                 statusLineMessage.clear(1);
             }
@@ -149,7 +151,7 @@ public class ExperimentDbTree extends JPanel {
         exptDbInfo = (ExptDbInfo) exptDB.getAllObjects(ExptDbInfo.class).get(0);
         analysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
         selectionParameters = (LreWindowSelectionParameters) exptDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
-        fmaxNormalizeChkBox.setSelected(exptDbInfo.isTargetQuantityNormalizedToFmax());
+        fmaxNormalizeChkBox.setSelected(exptDbInfo.isIsTargetQuantityNormalizedToFmax());
         fixEmaxBox.setSelected(exptDbInfo.isIsEmaxFixTo100Percent());
         File dbFile = exptDB.getDatabaseFile();
         String dbFileName = dbFile.getName();
@@ -256,7 +258,7 @@ public class ExperimentDbTree extends JPanel {
                 if (!avProfile.isTheReplicateAverageNoLessThan10Molecules() && !avProfile.hasAnLreWindowBeenFound()) {
 //>10N but no LRE window found indicates that the LRE window needs to be reiniitialized
                     LreAnalysisService lreAnalysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
-                    LreWindowSelectionParameters selectionParameters = (LreWindowSelectionParameters) exptDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
+                    selectionParameters = (LreWindowSelectionParameters) exptDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
                     lreAnalysisService.conductAutomatedLreWindowSelection(avProfile, selectionParameters);
                 }
                 exptDB.saveObject(avProfile);
@@ -264,10 +266,6 @@ public class ExperimentDbTree extends JPanel {
         }
         exptDB.commitChanges();
         createTree();
-    }
-
-    private void changeFixedToEmaxStatus(boolean arg) {
-        
     }
 
     /**
@@ -310,7 +308,7 @@ public class ExperimentDbTree extends JPanel {
         });
 
         fmaxNormalizeChkBox.setText("Fmax Normalize");
-        fmaxNormalizeChkBox.setToolTipText("Normalize target quantity to average Fmax");
+        fmaxNormalizeChkBox.setToolTipText("Normalize target quantity to the average Fmax");
         fmaxNormalizeChkBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 fmaxNormalizeChkBoxActionPerformed(evt);
@@ -318,6 +316,7 @@ public class ExperimentDbTree extends JPanel {
         });
 
         fixEmaxBox.setText("<100%> Emax");
+        fixEmaxBox.setToolTipText("Fix Emax to 100%");
         fixEmaxBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 fixEmaxBoxActionPerformed(evt);

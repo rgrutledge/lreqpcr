@@ -81,7 +81,7 @@ public class ProfileEditor extends JPanel implements
             if (currentDB.isDatabaseOpen()) {
                 List<LreWindowSelectionParameters> l = currentDB.getAllObjects(LreWindowSelectionParameters.class);
                 if (l.isEmpty()) {
-                //0.7.7 database
+ //This is 0.7.7 database that preceeded implementatin of window selection parameters
                     displayVersionIncompatiblityMessage();
                     return;
             }
@@ -95,13 +95,6 @@ public class ProfileEditor extends JPanel implements
         this.profile = profile;
 //Display and editing of a profile is conducted through the ProfileSummary interface
         prfSum = analysisService.initializeProfileSummary(profile, selectionParameters);
-//        if (profile.isExcluded()) {
-//            plotFo.clearPlot();
-//            plotLREs.clearPlot();
-//            plotFc.iniPlot(prfSum);
-//            lreObjectInfo.displayMember(selectedNode);
-//            return;
-//        }
         if (profile.hasAnLreWindowBeenFound()) {
             updatePanels();
         } else {//LRE window not found
@@ -114,7 +107,7 @@ public class ProfileEditor extends JPanel implements
     }
 
     private void updatePanels() {
-        //Test to see if this is an AverageProfile with just one replicate
+ //Test to see if this is an AverageProfile with just one replicate
         if (profile instanceof AverageSampleProfile) {
             AverageSampleProfile avSampleProfile = (AverageSampleProfile) profile;
             if (avSampleProfile.getTheNumberOfActiveReplicateProfiles() == 1) {
@@ -127,16 +120,6 @@ public class ProfileEditor extends JPanel implements
                 return;
             }
         }
-        //Deactivating this allows 
-//        if (profile instanceof AverageProfile) {
-//            AverageProfile avProfile = (AverageProfile) profile;
-//            if (avProfile.isTheReplicateAverageNoLessThan10Molecules()){
-////                    || profile.isExcluded()) {
-//                clearPanels();
-//                lreObjectInfo.displayMember(selectedNode);
-//                return;
-//            }
-//        }
         plotLREs.iniPlotLREs(prfSum, currentDB);
         numericalTable.iniNumTable(prfSum);
         plotFc.iniPlot(prfSum);

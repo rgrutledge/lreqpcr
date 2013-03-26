@@ -20,7 +20,6 @@ import com.google.common.collect.Lists;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
@@ -28,8 +27,6 @@ import javax.swing.JPanel;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.calibration_ui.UpdateCalbrationDatabase;
 import org.lreqpcr.calibration_ui.actions.CalbnTreeNodeActions;
-import org.lreqpcr.calibration_ui.actions.FixAllCalibrationProfileEmaxTo100percentAction;
-import org.lreqpcr.calibration_ui.actions.ReturnAllCalibrationProfileEmaxToLreAction;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
@@ -97,7 +94,9 @@ public class CalbnTree extends JPanel {
             root.setName("No CalbnDB is open");
             mgr.setRootContext(root);
             avProfileOCFdisplay.setText("");
-            if (statusLineMessage != null){
+            fixEmaxBox.setSelected(false);
+            fmaxNrmzBox.setSelected(false);
+            if (statusLineMessage != null) {
                 statusLineMessage.clear(1);
             }
             return;
@@ -124,17 +123,18 @@ public class CalbnTree extends JPanel {
         //Check if CalibrationDbInfo is present in the database
         //If not this must be an unconverted database
         if (l.isEmpty()) {
-            calDbInfo = new CalibrationDbInfo();
             //Assumes no Emax or Fmax normalization has not been applied, 
             //but this most certainly does not mattter
+            calDbInfo = new CalibrationDbInfo();
             calbnDB.saveObject(calDbInfo);
             //Must be an old, unconverted database
             //For back compatablity, mainly for Fc plot, set the Run average Fmax
-            UpdateCalbrationDatabase.updateCalibrationProfiles(calbnDB, avCalPrfList);
+            UpdateCalbrationDatabase.updateCalibrationProfiles(calbnDB);
         } else {
             calDbInfo = l.get(0);
         }
-
+        fixEmaxBox.setSelected(calDbInfo.isIsEmaxFixTo100Percent());
+        fmaxNrmzBox.setSelected(calDbInfo.isIsOcfNormalizedToFmax());
         //This is only for testing
         List<AverageSampleProfile> avSamPrfList = calbnDB.getAllObjects(AverageSampleProfile.class);
         System.out.println("The number of average Calibration profiles = " + avCalPrfList.size());
@@ -243,44 +243,6 @@ public class CalbnTree extends JPanel {
             avProfileOCFdisplay.setText(df.format(averageOCF) + " +/-" + dfCV.format(cv * 100) + "%");
         }
     }
-    
-    private void changeFixedToEmaxStatus(boolean arg) {
-        List<Run> runList = calbnDB.getAllObjects(Run.class);
-        for (Run run : runList) {
-            for (AverageProfile avPrf : run.getAverageProfileList()) {
-                AverageCalibrationProfile avCalPrf = (AverageCalibrationProfile) avPrf;
-                avCalPrf.setIsEmaxFixedTo100(true);
-                //Delay reinitialization of avSamplePrf until the replicate profiles have been processed
-                //Process the replicate profiles
-                for (Profile repProfile : avPrf.getReplicateProfileList()) {
-                    //Ignore profiles that do not have an LRE window
-                    if (repProfile.hasAnLreWindowBeenFound()) {
-                        repProfile.setIsEmaxFixedTo100(arg);
-                        analysisService.initializeProfileSummary(repProfile, selectionParameters);
-                        calbnDB.saveObject(repProfile);
-                    }
-                }
-                //Now process the avSamplePrf
-                //Must test to see if replicate profile modifications brings
-                //the average replicate No >10 as indicated by lacking an LRE
-                //window. If so then an automated LRE window
-                //selection must be conducted on the average profile.
-                if (!avPrf.isTheReplicateAverageNoLessThan10Molecules() && !avCalPrf.hasAnLreWindowBeenFound()) {
-                    //Must conduct an automated LRE window selection
-                    analysisService.conductAutomatedLreWindowSelection(avCalPrf, selectionParameters);
-                    calbnDB.saveObject(avCalPrf);
-                }
-                //Ignore average sample profiles that do not have an LRE window
-                if (!avPrf.isTheReplicateAverageNoLessThan10Molecules()) {
-                    //Need to update avFo and avNo
-                    analysisService.initializeProfileSummary(avCalPrf, selectionParameters);
-                    calbnDB.saveObject(avCalPrf);
-                }//When <10N the averageProfile inherits the average replicate profile No so no need to update
-            }
-        }//End of Run for loop
-        calbnDB.commitChanges();
-        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_CALIBRATION_PANELS);
-    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -378,19 +340,67 @@ public class CalbnTree extends JPanel {
     }//GEN-LAST:event_runViewButtonActionPerformed
 
     private void fixEmaxBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fixEmaxBoxActionPerformed
-        boolean isChecked = fixEmaxBox.isSelected();
-        if (isChecked) {
-            changeFixedToEmaxStatus(true);
-        } else {//The checkbox must be unchecked
-            changeFixedToEmaxStatus(false);
+        if (!calbnDB.isDatabaseOpen()) {
+            fixEmaxBox.setSelected(false);
+            return;
         }
-        calDbInfo.setIsEmaxFixTo100Percent(isChecked);
+        boolean arg = fixEmaxBox.isSelected();
+        List<Run> runList = calbnDB.getAllObjects(Run.class);
+        for (Run run : runList) {
+            for (AverageProfile avPrf : run.getAverageProfileList()) {
+                //This is required for back compatibility <0.8.6 in which the 
+                //Cal databases contain AverageSampleProfiles due to a data import bug
+                if (run.getAverageProfileList() != null) {
+                    if (avPrf instanceof AverageCalibrationProfile) {
+                        AverageCalibrationProfile avCalPrf = (AverageCalibrationProfile) avPrf;
+                        avCalPrf.setIsEmaxFixedTo100(arg);
+                        analysisService.conductAutomatedLreWindowSelection(avCalPrf, selectionParameters);
+                        calbnDB.saveObject(avCalPrf);
+                        for (Profile repProfile : avPrf.getReplicateProfileList()) {
+                            //Ignore profiles that do not have an LRE window
+                            if (repProfile.hasAnLreWindowBeenFound()) {
+                                repProfile.setIsEmaxFixedTo100(arg);
+                                analysisService.initializeProfileSummary(repProfile, selectionParameters);
+                                calbnDB.saveObject(repProfile);
+                            }
+                        }
+                    }
+                }
+            }
+        }//End of Run loop
+        calDbInfo.setIsEmaxFixTo100Percent(arg);
         calbnDB.saveObject(calDbInfo);
         calbnDB.commitChanges();
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_CALIBRATION_PANELS);
     }//GEN-LAST:event_fixEmaxBoxActionPerformed
 
     private void fmaxNrmzBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fmaxNrmzBoxActionPerformed
-        // TODO add your handling code here:
+        boolean arg = fmaxNrmzBox.isSelected();
+        if (!calbnDB.isDatabaseOpen()) {
+            fmaxNrmzBox.setSelected(false);
+            return;
+        }
+        //Note that this is applied to all profiles in the database
+        List<Run> runList = calbnDB.getAllObjects(Run.class);
+        for (Run run : runList) {
+            for (AverageProfile avPrf : run.getAverageProfileList()) {
+                AverageCalibrationProfile avCalPrf = (AverageCalibrationProfile) avPrf;
+                avCalPrf.setIsOcfNormalizedToFmax(arg);
+                calbnDB.saveObject(avCalPrf);
+                for (CalibrationProfile prf : avCalPrf.getReplicateProfileList()) {
+                    prf.setIsOcfNormalizedToFmax(arg);
+                    //There is no need to reinitiaze the profiles because 
+                    //normalization DOES NOT CHANGE the Fo
+                    calbnDB.saveObject(prf);
+                }
+            }
+        }//End of Run for loop
+        calDbInfo.setIsOcfNormalizedToFmax(arg);
+        calbnDB.saveObject(calDbInfo);
+        calbnDB.commitChanges();
+        calcAverageOCF();
+        createTree();
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_CALIBRATION_PANELS);
     }//GEN-LAST:event_fmaxNrmzBoxActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField avProfileOCFdisplay;

@@ -110,7 +110,7 @@
           <Color blue="33" green="0" red="cc" type="rgb"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Fmax Normalized"/>
-        <Property name="toolTipText" type="java.lang.String" value="Calculated from the average of the Fo values within the LRE window"/>
+        <Property name="toolTipText" type="java.lang.String" value="Tartget or OCF normalized to the average Run Fmax"/>
       </Properties>
     </Component>
   </SubComponents>
