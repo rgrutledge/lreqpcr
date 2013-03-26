@@ -22,6 +22,7 @@ import java.util.List;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
+import org.lreqpcr.core.data_objects.CalibrationRun;
 import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.database_services.DatabaseServices;
 
@@ -70,11 +71,18 @@ public class UpdateCalbrationDatabase {
             }
         }//End of avPrf loop
         for (Run run : runMap.keySet()) {
+            //Move the AverageCalibrationProfiles into new CalibrationRuns and delete the now outdated Runs
             calbnDB.saveObject(runMap.get(run));
-            run.setAverageProfileList(runMap.get(run));
+            CalibrationRun calRun = new CalibrationRun();
+            calRun.setRunDate(run.getRunDate());
             run.calculateAverageFmax();
-            run.calculateAverageOCF();
-            calbnDB.saveObject(run);
+            //This is obvious incomplete but should suffice
+            calRun.setCompleteRunAvFmax(run.getAverageFmax());
+            calRun.setAverageProfileList(runMap.get(run));
+            calRun.calculateAverageOCF();
+            calbnDB.saveObject(calRun);
+            run.setAverageProfileList(null);
+            calbnDB.deleteObject(run);
         }
         //Testing indicates that duplicate runs with no average profile list are generated, so delete them
         List<Run> runList = (List<Run>) calbnDB.getAllObjects(Run.class);
