@@ -2,7 +2,7 @@
 
 <head>
 <meta http-equiv="Content-Language" content="en-ca">
-<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="GENERATOR" content="Microsoft FrontPage 12.0">
 <meta name="ProgId" content="FrontPage.Editor.Document">
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 <title>New Page 1</title>
@@ -11,6 +11,35 @@
 <body>
 
 <h1 align="center">F<sub>max</sub> Normalization</h1>
+
+<p>Due to the fact that LRE quantification is based on fluorescence units, 
+target quantification is directly dependent on the fluorescence units generated 
+the qPCR instrument. As such, any variance in fluorescence scale will impact 
+quantitative accuracy. Extensive use of lambda gDNA as a quantitative standard 
+for optical calibration has indicated that this is generally not a concern. 
+Indeed, this is the basis of being able to use a single optical calibration 
+factor (OCF) for convering target quantities into the number of molecules. REF?&nbsp;
+</p>
+<p>However, closer examination revealed significant differences in well to well 
+fluorescence intensity can occur, which can generate quantitative errors in the 
+range of 0.5- to 2.0-fold. Provide an example... While such variance was 
+generally found to be small for most instruments, a simple method for 
+quantifying and correcting for such variances was implemented, based on profile 
+height (AKA, the plateau region). Under the LRE model profile height is 
+expressed as F<sub>max</sub>, which is one of the variables used to determine 
+target quantity (F<sub>0</sub>). Provide a link.</p>
+<p>Because F<sub>max</sub> is directly related to fluorescence scale within 
+individual wells (assuming of course that the amplification reaction generated a 
+profile), it first provides the ability to quantify variance in fluorescence 
+scale across all wells within a run. This is accomplished by determining the 
+average F<sub>max</sub> , along with the coefficient of&nbsp; variation (CV = 
+standard deviation / average X 100%). In addition to providing the ability to 
+determine both intra and inter run variance in fluorescent scale, the average F<sub>max</sub> 
+provides a reference for normalizing the fluorescence units within individual 
+wells. </p>
+<p>For example, if a profile generates a F<sub>max</sub> that is 25% higher that 
+the run average F<sub>max</sub>, it will generate ~25% overestimation of target 
+quantity</p>
 
 </body>
 
