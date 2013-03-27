@@ -12,34 +12,38 @@
 
 <h1 align="center">F<sub>max</sub> Normalization</h1>
 
-<p>Due to the fact that LRE quantification is based on fluorescence units, 
-target quantification is directly dependent on the fluorescence units generated 
-the qPCR instrument. As such, any variance in fluorescence scale will impact 
-quantitative accuracy. Extensive use of lambda gDNA as a quantitative standard 
-for optical calibration has indicated that this is generally not a concern. 
-Indeed, this is the basis of being able to use a single optical calibration 
-factor (OCF) for convering target quantities into the number of molecules. REF?&nbsp;
-</p>
-<p>However, closer examination revealed significant differences in well to well 
-fluorescence intensity can occur, which can generate quantitative errors in the 
-range of 0.5- to 2.0-fold. Provide an example... While such variance was 
-generally found to be small for most instruments, a simple method for 
-quantifying and correcting for such variances was implemented, based on profile 
-height (AKA, the plateau region). Under the LRE model profile height is 
-expressed as F<sub>max</sub>, which is one of the variables used to determine 
-target quantity (F<sub>0</sub>). Provide a link.</p>
-<p>Because F<sub>max</sub> is directly related to fluorescence scale within 
-individual wells (assuming of course that the amplification reaction generated a 
-profile), it first provides the ability to quantify variance in fluorescence 
-scale across all wells within a run. This is accomplished by determining the 
-average F<sub>max</sub> , along with the coefficient of&nbsp; variation (CV = 
-standard deviation / average X 100%). In addition to providing the ability to 
-determine both intra and inter run variance in fluorescent scale, the average F<sub>max</sub> 
-provides a reference for normalizing the fluorescence units within individual 
-wells. </p>
+<p>Due to the fact that LRE determines target quantity expressed fluorescence 
+units, quantitative accuracy is directly dependent on the optical precision of 
+the qPCR instrument. Extensive work with optical calibration using lambda gDNA 
+as a quantitative standard, has indicated that this is generally not a major 
+concern. However, close examination has revealed that significant well to well 
+differences in fluorescence intensity can occur, at least for some instruments, 
+which can generate quantitative errors in the range of 0.5- to 2.0-fold. While 
+such variance has generally been found to be small, a simple method for 
+quantifying and correcting such variances was developed, based on comparing 
+profile height. Under the LRE model the maximal fluorescence (F<sub>max</sub>) 
+is a quantitative measurement of profile height, that in turn </p>
+<p>, and so is available . Provide a link.</p>
+<p>Because profile height is directly linked to the fluorescence scale, F<sub>max</sub> 
+can be used to quantify differences between individual wells, in addition to 
+differences between runs. This is expressed as the coefficient of&nbsp; 
+variation (CV = standard deviation / average X 100%) along with the average F<sub>max</sub> 
+which in turn provides a reference for normalizing the fluorescence units within 
+each individual well within a run, in addition to providing the ability to 
+assess both intra and inter run variance in fluorescent scale. </p>
 <p>For example, if a profile generates a F<sub>max</sub> that is 25% higher that 
-the run average F<sub>max</sub>, it will generate ~25% overestimation of target 
-quantity</p>
+the average F<sub>max</sub>, it will generate ~25% overestimation of target 
+quantity. When F<sub>max</sub> normalization is applied, this bias is corrected 
+by simply lowering the predicted target quantity by 25%.</p>
+<p>The average F<sub>max</sub> also allows run to run differences in 
+fluorescence scale to be assessed, by comparing their respective average F<sub>max</sub> 
+values. The average F<sub>max</sub> across all runs contained within a database, 
+is presented in the top node within the profile explorer tree panel, along with 
+the corresponding CV. Although these differences are generally small (&lt;10%), 
+this does allow any aberrations in the optical intensity of a run to be easily 
+identified. This could be produced, for example, by technical errors in reaction 
+setup or aberrations in an instrument optical system. Although such situations 
+are expected to be rare, it does pr</p>
 
 </body>
 
