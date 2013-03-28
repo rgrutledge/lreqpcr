@@ -12,14 +12,38 @@
 
 <h1 align="center">F<sub>max</sub> Normalization</h1>
 
-<p>Due to the fact that LRE determines target quantity expressed fluorescence 
+<p>Fmax normalization corrects for well-to-well differences in fluorescence 
+calibration, that is, differences in the fluorescence scale assigned by the 
+instrument to each individual well. While the impact of variances in 
+well-specific calibration is generally small , the simplistic natural of Fmax 
+normalization makes it an attractive option for potentially increasing the 
+accuracy of LRE quantification, which can be significant in some cases. As 
+discussed below, analysis of a run's average Fmax also introduces an additional 
+quality control component that is available whether Fmax normalization is 
+implemented or not. </p>
+<p>So how can&nbsp; of fluorescence calibration be analyzed, and how does it 
+impact quantitative accuracy? Due to the fact that LRE determines target quantity expressed fluorescence 
 units, quantitative accuracy is directly dependent on the optical precision of 
-the qPCR instrument. Extensive work with optical calibration using lambda gDNA 
-as a quantitative standard, has indicated that this is generally not a major 
-concern. However, close examination has revealed that significant well to well 
-differences in fluorescence intensity can occur, at least for some instruments, 
-which can generate quantitative errors in the range of 0.5- to 2.0-fold. While 
-such variance has generally been found to be small, a simple method for 
+the qPCR instrument. Extensive use of optical calibration, conducted with lambda gDNA, has 
+historically indicated that for most modern qPCR instruments, this is not a major 
+concern. However, close examination has revealed that significant well-to-well 
+differences in fluorescence scale can still occur, despite the high levels of 
+optical precision that these instruments generate. </p>
+<p>Although still under investigation, 
+such variances have been found to generate quantitative errors in the range of 0.5- to 2.0-fold, 
+based on comparing quantification of identical samples amplified within 
+different wells. Further examination revealed that these differences correlated 
+directly to the height of each respective profile, which in the absence of any 
+other factor, directly reflects differences in the fluorescence units assigned 
+by the instrument, to each respective well. Should provide a graphic 
+illustrating this.</p>
+<p>Under the LRE model, quantifying profile height is an integral component of 
+target quantification, defined as the maximal fluorescence, F<sub>max</sub>. 
+This in turn provides a simple but quantitative approach to addressing variances 
+in instrument calibration, including the </p>
+<p>The approach taken in this version of the LRE Analyzer is to first determine 
+the average F<sub>max</sub> across all wells within an individual run.&nbsp; </p>
+<p>Nevertheless, the simplicity of 
 quantifying and correcting such variances was developed, based on comparing 
 profile height. Under the LRE model the maximal fluorescence (F<sub>max</sub>) 
 is a quantitative measurement of profile height, that in turn </p>
