@@ -1,0 +1,71 @@
+<!--
+Copyright (C) 2013   Bob Rutledge
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>
+and open the template in the editor.
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>Emax Normalization</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <style type="text/css">
+.auto-style1 {
+	text-align: center;
+}
+.auto-style2 {
+	border-width: 0px;
+}
+</style>
+  </head>
+  <body>
+        <h1 align="center">E<sub>max</sub> Normalization</h1>
+      	<p>Emax normalization is applied by selecting the checkbox ("&lt;100%&gt; 
+		Emax") located just above the explorer panel tree. In addition, the LRE 
+		derived Emax displayed in the profile node label is replaced by "&lt;100%&gt; 
+		to signify that Emax has been fixed to 100%. Note that Emax 
+		normalization is applied to all profiles contained within the database. 
+		To return to the LRE-derived Emax , simply deselect the checkbox. </p>
+		<p>Particularly for Qiagen&#39;s QuantiTect enzyme formulation, LRE 
+		analysis has been found to generate Emax values &gt;100%, which are most 
+		likely due to aberrant amplification kinetics that produce systematic 
+		biases in Emax determination (the source of these aberrancies remains 
+		unknown). Depending on the amplicon, Emax can reach up to 107-110%, 
+		although most amplicons generate Emax values 
+		in the 100-104% range. Empirical testing has shown that a 1% 
+		overestimation roughly generates a 10% underestimation of target quantity, 
+		although this relationship is not linear (i.e. the overestimation 
+		increases as the Emax bias becomes larger). </p>
+		<p>Extensive testing has subsequently shown that fixing Emax to 100% is 
+		effective in reducing, or in many cases eliminating, the quantitative 
+		errors caused by this systematic bias. A key component of this testing was to use &quot;limiting dilution assay&quot; 
+		(LDA) to provide an independent determination of target quantity, which 
+		has shown that fixing to Emax to 100% produces target quantities within 
+		15-30% of the actual quantity, even for amplicons that generate Emax values of 107-110%. As discussed in the
+		<a href="../quantitative_accuracy/assessing_accuracy.html">verification 
+		of quantitative accuracy</a> section, LDA is simple to conduct and does 
+		not require a quantitative standard, thus providing a compelling 
+		methodology for confirmation of the quantitative accuracy of any qPCR 
+		assay, irrespective of how it is implemented</p>
+		<p>Note that fixing Emax to 100% does not 
+		modify any of the other parameters used to calculate target quantity. 
+		This is because 100% Emax is applied only during
+		<a href="../lre_overview/lre_introduction.html#Fo determination">calculation of target 
+		quantity</a> (F<sub>0</sub>), in which the Fmax is derived from the
+		<a href="../lre_overview/lre_introduction.html#LRE Analysis">LRE 
+		analysis</a> conducted on the profile. </p>
+		<p class="auto-style1">&nbsp;
+		<a href="../lre_overview/lre_introduction.html">
+		<img alt="" class="auto-style2" height="73" src="../lre_overview/images/Fo_equation.gif" width="230"></a></p>
+      </body>
+</html>
