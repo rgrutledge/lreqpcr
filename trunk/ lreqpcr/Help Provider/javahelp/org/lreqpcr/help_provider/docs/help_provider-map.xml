@@ -49,6 +49,9 @@ and open the template in the editor.
     <mapID target="experiment-database-window" url="explorer_panel/experiment_database_window.html"/>
     <mapID target="calibration-database-window" url="explorer_panel/calibration_database_window.html"/>
     <mapID target="amplicon-database-window" url="explorer_panel/amplicon_database_window.html"/>
+    <mapID target="lre-adjust-overview" url="lre_adjust/lre_adjust_options.html"/>
+    <mapID target="fmax-normalization" url="lre_adjust/fmax_normalization.htm"/>
+    <mapID target="emax-normalization" url="lre_adjust/high_emax.html"/>
 <!--Getting Started    -->
     <mapID target="getting-started" url="getting_started/getting_started.html"/>
     <mapID target="program-intro" url="getting_started/lre_analyzer_intro.html"/>
@@ -60,7 +63,6 @@ and open the template in the editor.
     <mapID target="known-issues" url="issues/known_issues_overview.html"/>
     <mapID target="profile-arcing" url="issues/profile_arcing.html"/>
     <mapID target="profile-anomalies" url="issues/profile_anomalies.html"/>
-    <mapID target="emax-normalization" url="issues/high_emax.html"/>
     <mapID target="ab7500-fast-ramping" url="issues/ab7500_fast_ramping.html"/>
     <mapID target="rox-normalization" url="issues/rox_normalization.html"/>
     <mapID target="baseline-drifting" url="issues/baseline_drifting.html"/>
