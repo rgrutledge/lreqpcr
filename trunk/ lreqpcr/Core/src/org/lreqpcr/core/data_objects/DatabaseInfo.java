@@ -80,7 +80,7 @@ public abstract class DatabaseInfo extends LreObject {
      *
      * @return whether Fmax is fixed to 100%
      */
-    public boolean isIsEmaxFixTo100Percent() {
+    public boolean isEmaxFixTo100Percent() {
         return isEmaxFixTo100Percent;
     }
 

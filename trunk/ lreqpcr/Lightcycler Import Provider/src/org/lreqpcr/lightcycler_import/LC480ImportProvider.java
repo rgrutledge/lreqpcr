@@ -36,6 +36,7 @@ import org.lreqpcr.data_import_services.DataImportType;
 import org.lreqpcr.data_import_services.RunImportData;
 import org.lreqpcr.data_import_services.RunImportService;
 import org.openide.util.Exceptions;
+import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.WindowManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -51,6 +52,7 @@ import org.xml.sax.InputSource;
  *
  * @author Bob Rutledge
  */
+//@ServiceProvider(service=RunImportService.class)
 public class LC480ImportProvider extends RunImportService {
     
     public String getRunImportServiceName() {

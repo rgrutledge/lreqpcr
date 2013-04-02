@@ -40,8 +40,6 @@ public abstract class Profile extends LreObject {
     private String ampliconName;//Used to recover amplicon size from the amplicon database
     private int ampliconSize = 0;
     private TargetStrandedness targetStrandedness = TargetStrandedness.DOUBLESTRANDED;
-    //This is a very clumsy method for maintaiing back compatability...a better versioning method is clearly needed
-    private boolean isProfileVer0_8_0 = false;//This must be set to true during data import!!!!!
         
     //Profile processing parameters
     private double ampTm;//The amplicon Tm
@@ -471,7 +469,6 @@ public abstract class Profile extends LreObject {
      */
     public void setIsEmaxFixedTo100(boolean isEmaxFixedTo100) {
         this.isEmaxFixedTo100 = isEmaxFixedTo100;
-//        run.calculateAverageFmax();
     }
 
     /**

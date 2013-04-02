@@ -22,11 +22,13 @@ import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
 import org.lreqpcr.analysis_services.LreAnalysisService;
+import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
+import org.lreqpcr.core.data_objects.CalibrationDbInfo;
 import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.CalibrationRun;
-import org.lreqpcr.core.data_objects.ExperimentDbInfo;
+import org.lreqpcr.core.data_objects.ExptDbInfo;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.Run;
@@ -127,6 +129,7 @@ public class RunInializationProvider implements RunInitializationService {
         }
 
         Date runDate = importData.getRunDate();
+        String runName = importData.getRunName();
         List<SampleProfile> sampleProfileList = importData.getSampleProfileList();
         List<CalibrationProfile> calibnProfileList = importData.getCalibrationProfileList();
 
@@ -138,10 +141,12 @@ public class RunInializationProvider implements RunInitializationService {
                 if (experimentDB.isDatabaseOpen()) {
                     sampleRun = new RunImpl();//This is the Run object that will hold the sample profiles
                     sampleRun.setRunDate(runDate);
+                    sampleRun.setName(runName);
                     LreWindowSelectionParameters winSelectionParameters =
                             (LreWindowSelectionParameters) experimentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
-                    ExperimentDbInfo dbInfo = (ExperimentDbInfo) experimentDB.getAllObjects(ExperimentDbInfo.class).get(0);
+                    ExptDbInfo dbInfo = (ExptDbInfo) experimentDB.getAllObjects(ExptDbInfo.class).get(0);
                     double ocf = dbInfo.getOcf();
+                    boolean isEmaxFixed = dbInfo.isEmaxFixTo100Percent();
                     for (SampleProfile sampleProfile : sampleProfileList) {
                         if (ampliconDB != null) {
                             if (ampliconDB.isDatabaseOpen()
@@ -165,16 +170,30 @@ public class RunInializationProvider implements RunInitializationService {
                     sampleRun.setAverageProfileList((ArrayList<AverageProfile>) averageSampleProfileList);
                     //Deactivated due to a bug that can produce long delays during file import
 //        RunImportUtilities.importCyclerDatafile(run);
-                    if (dbInfo.isTargetQuantityNormalizedToFax()) {
+                    //Determine if normalized to Fmax must be applied
+                    if (dbInfo.isTargetQuantityNormalizedToFmax()) {
                         //Need to first calculate the run average Fmax
                         sampleRun.calculateAverageFmax();
                         //Cycle through all the sample profiles and set Fmax normalization to true
+                        //Set Emax fixed and Fmax normalization
                         for (AverageProfile profile : averageSampleProfileList) {
                             AverageSampleProfile avProfile = (AverageSampleProfile) profile;
                             avProfile.setIsTargetQuantityNormalizedToFmax(true);
                             experimentDB.saveObject(avProfile);
                             for (SampleProfile sampleProfile : avProfile.getReplicateProfileList()) {
                                 sampleProfile.setIsTargetQuantityNormalizedToFmax(true);
+                                experimentDB.saveObject(sampleProfile);
+                            }
+                        }
+                    }
+                    //Determin if Emax must be fixed to 100%
+                    if (dbInfo.isEmaxFixTo100Percent()) {
+                        for (AverageProfile profile : averageSampleProfileList) {
+                            AverageSampleProfile avProfile = (AverageSampleProfile) profile;
+                            avProfile.setIsEmaxFixedTo100(true);
+                            experimentDB.saveObject(avProfile);
+                            for (SampleProfile sampleProfile : avProfile.getReplicateProfileList()) {
+                                sampleProfile.setIsEmaxFixedTo100(true);
                                 experimentDB.saveObject(sampleProfile);
                             }
                         }
@@ -195,7 +214,9 @@ public class RunInializationProvider implements RunInitializationService {
                 if (calbnDB.isDatabaseOpen()) {
                     calRun = new CalibrationRun();
                     calRun.setRunDate(runDate);
-                    LreWindowSelectionParameters lreWindowSelectionParameters = (LreWindowSelectionParameters) calbnDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
+                    calRun.setName(runName);
+                    LreWindowSelectionParameters lreWindowSelectionParameters =
+                            (LreWindowSelectionParameters) calbnDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
                     //Process the CalibnProfiles
                     for (Profile profile : calibnProfileList) {
                         if (ampliconDB != null) {
@@ -216,10 +237,40 @@ public class RunInializationProvider implements RunInitializationService {
                             calRun);
                     calbnDB.saveObject(averageCalbnProfileList);
                     calRun.setAverageProfileList((ArrayList<AverageProfile>) averageCalbnProfileList);
-                    calRun.calculateAverageFmax();
-                    calculateAverageFmax();
+                    calRun.calculateAverageOCF();
+                    //This is needed for imports that donot contain  SampleProfiles
+                    if (sampleRun != null){
+                        calculateTotalAvFmax();
+                    }else {
+                        calRun.calculateAverageFmax();
+                    }
                     calbnDB.saveObject(calRun);
-                    calbnDB.commitChanges();
+                    //Determine if Fmax normalization must be set
+                    CalibrationDbInfo calDbinfo = (CalibrationDbInfo) calbnDB.getAllObjects(CalibrationDbInfo.class).get(0);
+                    if (calDbinfo.isOcfNormalizedToFmax()) {
+                        for (AverageProfile profile : averageCalbnProfileList) {
+                            AverageCalibrationProfile avProfile = (AverageCalibrationProfile) profile;
+                            avProfile.setIsOcfNormalizedToFmax(true);
+                            calbnDB.saveObject(avProfile);
+                            for (CalibrationProfile calibrationProfile : avProfile.getReplicateProfileList()) {
+                                calibrationProfile.setIsOcfNormalizedToFmax(true);
+                                calbnDB.saveObject(calibrationProfile);
+                            }
+                        }
+                    }
+                    //Determine if Emax must be fixed to 100%
+                    if (calDbinfo.isEmaxFixTo100Percent()) {
+                        for (AverageProfile profile : averageCalbnProfileList) {
+                            AverageCalibrationProfile avProfile = (AverageCalibrationProfile) profile;
+                            avProfile.setIsEmaxFixedTo100(true);
+                            calbnDB.saveObject(avProfile);
+                            for (CalibrationProfile calibrationProfile : avProfile.getReplicateProfileList()) {
+                                calibrationProfile.setIsEmaxFixedTo100(true);
+                                calbnDB.saveObject(calibrationProfile);
+                            }
+                        }
+                    }
+                        calbnDB.commitChanges();
                     //Broadcast that the calibration panels must be updated
                     UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_CALIBRATION_PANELS);
                 }
@@ -228,7 +279,7 @@ public class RunInializationProvider implements RunInitializationService {
     }//End of initialize run
     //Determine the avFmax across all profiles and set this within the Calibration Run
 
-    private void calculateAverageFmax() {
+    private void calculateTotalAvFmax() {
         ArrayList<Double> fmaxList = new ArrayList<Double>();//Used to determine the SD
         double fmaxSum = 0;
         int profileCount = 0;

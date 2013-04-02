@@ -73,10 +73,10 @@ public abstract class Db4oDatabaseServices implements DatabaseServices {
         closeDatabase();
         final String path = db4oDatabaseFile.getAbsolutePath();
         final String fileName = db4oDatabaseFile.getName();
-        Runnable run = new Runnable() {
-            public void run() {
-                ProgressHandle p = ProgressHandleFactory.createHandle("Database is loading");
-                p.start();
+//        Runnable run = new Runnable() {
+//            public void run() {
+//                ProgressHandle p = ProgressHandleFactory.createHandle("Database is loading");
+//                p.start();
                 try {
 //This throws an IllegalArguentException for ver 7.4.155, which is not documented when a second file is opened!!
                     db4o = Db4o.openFile(config, path);
@@ -88,12 +88,12 @@ public abstract class Db4oDatabaseServices implements DatabaseServices {
                             JOptionPane.ERROR_MESSAGE);
 //                        return false;
                 }
-                p.finish();
-            }
-        };
+//                p.finish();
+//            }
+//        };
 
-        Thread t = new Thread(run);
-        t.start();
+//        Thread t = new Thread(run);
+//        t.start();
 //        while (t.isAlive()){
 //            try {
 ////                t.join(1000);

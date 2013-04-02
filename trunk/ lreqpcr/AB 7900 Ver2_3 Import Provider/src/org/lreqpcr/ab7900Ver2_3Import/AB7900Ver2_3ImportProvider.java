@@ -35,6 +35,7 @@ import org.lreqpcr.data_import_services.RunImportData;
 import org.lreqpcr.data_import_services.RunImportService;
 import org.lreqpcr.data_import_services.RunImportUtilities;
 import org.openide.util.Exceptions;
+import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.WindowManager;
 
 /**
@@ -46,6 +47,7 @@ import org.openide.windows.WindowManager;
  * 
  * @author Bob Rutledge
  */
+@ServiceProvider(service = RunImportService.class)
 public class AB7900Ver2_3ImportProvider extends RunImportService {
 
     @Override

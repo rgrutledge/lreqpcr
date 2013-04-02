@@ -162,7 +162,7 @@ public class PlotFc extends javax.swing.JPanel {
             }
         } else if (profile instanceof CalibrationProfile){
             CalibrationProfile calPrf = (CalibrationProfile) profile;
-            if (calPrf.isIsOcfNormalizedToFmax()){
+            if (calPrf.isOcfNormalizedToFmax()){
                 fmaxNrmzd.setVisible(true);
             }
         }
@@ -193,7 +193,7 @@ public class PlotFc extends javax.swing.JPanel {
                 return;
             }else {avFmax = profile.getRun().getAverageFmax();}
         }else {avFmax = profile.getRun().getAverageFmax();}
-        maxFc = avFmax * 1.3;//Provides 20% spacing for the top of the profile
+        maxFc = avFmax * 1.5;//Provides 50% spacing for the top of the profile
         isInitiated = true;
         repaint();
     }

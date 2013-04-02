@@ -24,7 +24,7 @@ package org.lreqpcr.core.data_objects;
 public class CalibrationDbInfo extends DatabaseInfo {
     private boolean isOcfNormalizedToFmax;
 
-    public boolean isIsOcfNormalizedToFmax() {
+    public boolean isOcfNormalizedToFmax() {
         return isOcfNormalizedToFmax;
     }
 

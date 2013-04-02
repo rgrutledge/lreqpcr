@@ -106,19 +106,21 @@ public class CalbnTree extends JPanel {
         selectionParameters = (LreWindowSelectionParameters) calbnDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
         List<AverageCalibrationProfile> avCalPrfList =
                 (List<AverageCalibrationProfile>) calbnDB.getAllObjects(AverageCalibrationProfile.class);
-        //Check if this version is to old to process, i.e. lacks a Run
-        if (avCalPrfList.get(0).getRun() == null) {
-            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
-                    "The selected calibration database is incompatible\n"
-                    + " with this version of the LRE Analyzer",
-                    "Unable to process this calibration database",
-                    JOptionPane.ERROR_MESSAGE);
-            AbstractNode root = new AbstractNode(Children.LEAF);
-            root.setName("No CalbnDB is open");
-            mgr.setRootContext(root);
-            avProfileOCFdisplay.setText("");
-            calbnDB.closeDatabase();
-            return;
+        if (!avCalPrfList.isEmpty()) {
+            //Check if this version is too old to process, i.e. lacks a Run
+            if (avCalPrfList.get(0).getRun() == null) {
+                JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                        "The selected calibration database is incompatible\n"
+                        + " with this version of the LRE Analyzer",
+                        "Unable to process this calibration database",
+                        JOptionPane.ERROR_MESSAGE);
+                AbstractNode root = new AbstractNode(Children.LEAF);
+                root.setName("No CalbnDB is open");
+                mgr.setRootContext(root);
+                avProfileOCFdisplay.setText("");
+                calbnDB.closeDatabase();
+                return;
+            }
         }
         List<CalibrationDbInfo> l = calbnDB.getAllObjects(CalibrationDbInfo.class);
         //Check if CalibrationDbInfo is present in the database
@@ -134,8 +136,8 @@ public class CalbnTree extends JPanel {
         } else {
             calDbInfo = l.get(0);
         }
-        fixEmaxBox.setSelected(calDbInfo.isIsEmaxFixTo100Percent());
-        fmaxNrmzBox.setSelected(calDbInfo.isIsOcfNormalizedToFmax());
+        fixEmaxBox.setSelected(calDbInfo.isEmaxFixTo100Percent());
+        fmaxNrmzBox.setSelected(calDbInfo.isOcfNormalizedToFmax());
         //This is only for testing
         List<AverageSampleProfile> avSamPrfList = calbnDB.getAllObjects(AverageSampleProfile.class);
         System.out.println("The number of average Calibration profiles = " + avCalPrfList.size());
@@ -335,24 +337,22 @@ public class CalbnTree extends JPanel {
             return;
         }
         boolean arg = fixEmaxBox.isSelected();
-        List<Run> runList = calbnDB.getAllObjects(Run.class);
-        for (Run run : runList) {
+        List<CalibrationRun> runList = calbnDB.getAllObjects(CalibrationRun.class);
+        for (CalibrationRun run : runList) {
             for (AverageProfile avPrf : run.getAverageProfileList()) {
-                //This is required for back compatibility <0.8.6 in which the 
-                //Cal databases contain AverageSampleProfiles due to a data import bug
                 if (run.getAverageProfileList() != null) {
-                    if (avPrf instanceof AverageCalibrationProfile) {
-                        AverageCalibrationProfile avCalPrf = (AverageCalibrationProfile) avPrf;
-                        avCalPrf.setIsEmaxFixedTo100(arg);
-                        analysisService.conductAutomatedLreWindowSelection(avCalPrf, selectionParameters);
-                        calbnDB.saveObject(avCalPrf);
-                        for (Profile repProfile : avPrf.getReplicateProfileList()) {
-                            //Ignore profiles that do not have an LRE window
-                            if (repProfile.hasAnLreWindowBeenFound()) {
-                                repProfile.setIsEmaxFixedTo100(arg);
-                                analysisService.initializeProfileSummary(repProfile, selectionParameters);
-                                calbnDB.saveObject(repProfile);
-                            }
+                    AverageCalibrationProfile avCalPrf = (AverageCalibrationProfile) avPrf;
+                    avCalPrf.setIsEmaxFixedTo100(arg);
+                    analysisService.conductAutomatedLreWindowSelection(avCalPrf, selectionParameters);
+                    calbnDB.saveObject(avCalPrf);
+                    run.calculateAverageOCF();
+                    calbnDB.saveObject(run);
+                    for (Profile repProfile : avPrf.getReplicateProfileList()) {
+                        //Ignore profiles that do not have an LRE window
+                        if (repProfile.hasAnLreWindowBeenFound()) {
+                            repProfile.setIsEmaxFixedTo100(arg);
+                            analysisService.initializeProfileSummary(repProfile, selectionParameters);
+                            calbnDB.saveObject(repProfile);
                         }
                     }
                 }
@@ -371,12 +371,14 @@ public class CalbnTree extends JPanel {
             return;
         }
         //Note that this is applied to all profiles in the database
-        List<Run> runList = calbnDB.getAllObjects(Run.class);
-        for (Run run : runList) {
+        List<CalibrationRun> runList = calbnDB.getAllObjects(CalibrationRun.class);
+        for (CalibrationRun run : runList) {
             for (AverageProfile avPrf : run.getAverageProfileList()) {
                 AverageCalibrationProfile avCalPrf = (AverageCalibrationProfile) avPrf;
                 avCalPrf.setIsOcfNormalizedToFmax(arg);
                 calbnDB.saveObject(avCalPrf);
+                run.calculateAverageOCF();
+                calbnDB.saveObject(run);
                 for (CalibrationProfile prf : avCalPrf.getReplicateProfileList()) {
                     prf.setIsOcfNormalizedToFmax(arg);
                     //There is no need to reinitiaze the profiles because 

@@ -20,6 +20,7 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import org.lreqpcr.core.data_objects.CalibrationDbInfo;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
@@ -44,7 +45,7 @@ public class CalibrationDb4oServiceProvider extends Db4oDatabaseServices impleme
                 "Calibration database files", "cal");
         fc.setFileFilter(filter);
         fc.setDialogTitle("New Calibration Database");
-        File directory = null;
+        File directory;
         if (settingsDB.getLastCalibrationDatabaseDirectory() != null) {
             try {
                 directory = new File(settingsDB.getLastCalibrationDatabaseDirectory());
@@ -88,6 +89,7 @@ public class CalibrationDb4oServiceProvider extends Db4oDatabaseServices impleme
                 }
                 if (openDatabaseFile(selectedFile)) {
                     saveObject(new LreWindowSelectionParameters());
+                    saveObject(new CalibrationDbInfo());
                     commitChanges();
                     settingsDB.setLastCalibrationDatabaseFile(previousDatabaseFile);
                     return true;
@@ -119,7 +121,7 @@ public class CalibrationDb4oServiceProvider extends Db4oDatabaseServices impleme
         fc.setFileFilter(filter);
         fc.setDialogTitle("Open Calibration Database");
         //This allows the last directory to be retrieved
-        File directory = null;
+        File directory;
         if (settingsDB.getLastCalibrationDatabaseDirectory() != null) {
             try {
                 directory = new File(settingsDB.getLastCalibrationDatabaseDirectory());
