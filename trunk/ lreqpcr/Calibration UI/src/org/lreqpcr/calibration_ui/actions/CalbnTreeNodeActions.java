@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * and open the template in the editor.
  */
-
 package org.lreqpcr.calibration_ui.actions;
 
 import java.util.TreeMap;
@@ -24,6 +23,7 @@ import org.openide.explorer.ExplorerManager;
 
 /**
  * Provides actions for a Calibration database explorer tree.
+ *
  * @author Bob Rutledge
  */
 public class CalbnTreeNodeActions implements LreActionFactory {
@@ -37,22 +37,24 @@ public class CalbnTreeNodeActions implements LreActionFactory {
             new ExcludeAverageCalibrationProfileAction(mgr),
             new IncludeAverageCalibrationProfileAction(mgr),
             null,
-            new DeleteAverageCalibrationProfileAction(mgr),
-//            null,
-//            new FixAvCaibnPrfEmaxTo100PercentAction(mgr),
-//            new ReturnCalibrationProfileEmaxToLreAction(mgr)
+            new DeleteAverageCalibrationProfileAction(mgr), //            null,
+        //            new FixAvCaibnPrfEmaxTo100PercentAction(mgr),
+        //            new ReturnCalibrationProfileEmaxToLreAction(mgr)
         };
         actionMap.put("AverageCalibrationProfile", actions);
         //Calbn Profile actions
         actions = new Action[]{
             new ExcludeCalibrationProfileAction(mgr),
-            new IncludeCalibrationProfileAction(mgr),
-        };
+            new IncludeCalibrationProfileAction(mgr),};
         actionMap.put("CalibrationProfile", actions);
+
+        //Run actions
+        actions = new Action[]{
+            new DeleteRunAction(mgr),};
+        actionMap.put("CalibrationRun", actions);
     }
-    
+
     public Action[] getActions(String className) {
         return actionMap.get(className);
     }
-
 }

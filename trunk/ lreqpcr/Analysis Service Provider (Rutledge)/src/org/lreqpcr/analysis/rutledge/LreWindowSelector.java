@@ -131,7 +131,7 @@ public class LreWindowSelector {
         ProfileInitializer.calcLreParameters(prfSum);
         optimizeLreWin(prfSum, foThreshold);
 //Use C1/2 as a reference point to adjust the initial start cycle
-        double midC = (int) profile.getMidC();
+        double midC = profile.getMidC();
         runner = prfSum.getZeroCycle();
         //Move the runner to 1 cycle below C1/2
         while (midC > runner.getCycNum()) {
@@ -143,6 +143,8 @@ public class LreWindowSelector {
             profile.setHasAnLreWindowBeenFound(false);
             return;
         }
+        //Go back one cycle
+        runner = runner.getPrevCycle();
         profile.setStrCycleInt(runner.getCycNum());
         prfSum.setStrCycle(runner);
         profile.setLreWinSize(3);
