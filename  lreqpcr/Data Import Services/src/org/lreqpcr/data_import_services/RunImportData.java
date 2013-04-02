@@ -48,6 +48,7 @@ public class RunImportData {
     public RunImportData(DataImportType importType, Date runDate, String runName) {
         this.importType = importType;
         this.runDate = runDate;
+        this.runName = runName;
     }
 
     public List<CalibrationProfile> getCalibrationProfileList() {

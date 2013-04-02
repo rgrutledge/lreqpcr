@@ -37,28 +37,27 @@ public class SampleTreeNodeLabels implements LabelFactory {
     private DecimalFormat df = new DecimalFormat();
 
     public String getNodeLabel(LreObject member) {
-        
+
         if (member instanceof Run) {
             Run run = (Run) member;
-            
-            double runOCF = run.getRunSpecificOCF();
+
+//            double runOCF = run.getRunSpecificOCF();
             //Place the Run average Fmax into the short description
             df.applyPattern("#0");
             double avFmax = run.getAverageFmax();
             df.applyPattern(FormatingUtilities.decimalFormatPattern(avFmax));
             String avFmaxString = df.format(avFmax);
-            String cv = df.format(run.getAvFmaxCV() * 100);
-            run.setShortDescription(" [Av Fmax: " + avFmaxString + " ±" + cv + "%]");
+            
+//            run.setShortDescription();
             //Display a Run-specific OCF if one has been applied to this Run
-            if (runOCF != 0) {
-                df.applyPattern(FormatingUtilities.decimalFormatPattern(runOCF));
-                String runOCFstring = df.format(runOCF);
-                return sdf.format(run.getRunDate()) + ": <OCF " + runOCFstring + "> " + member.getName();
+            if (run.getAvFmaxCV() != 0) {
+                String cv = df.format(run.getAvFmaxCV() * 100);
+                return sdf.format(run.getRunDate()) + "-" + member.getName() + "  [Av Fmax: " + avFmaxString + " ±" + cv + "%]";
             } else {
-                return sdf.format(run.getRunDate()) + ": " + member.getName();
+                return sdf.format(run.getRunDate()) + "-" + member.getName() + "  [Av Fmax: " + avFmaxString;
             }
         }
-        
+
         //Label madeup of three components: name + Emax + No
         if (member instanceof Profile) {
             SampleProfile profile = (SampleProfile) member;
@@ -78,23 +77,19 @@ public class SampleTreeNodeLabels implements LabelFactory {
             if (profile instanceof AverageSampleProfile) {
                 AverageSampleProfile avPrf = (AverageSampleProfile) profile;
                 //This assumes that excluded profiles would not reach to this point
-                if (avPrf.isTheReplicateAverageNoLessThan10Molecules()) {
+                if (avPrf.isTheReplicateAverageNoLessThan10Molecules() && avPrf.getOCF() > 0) {
                     //An average profile does not exist, so No is inherented 
                     //from the average replicate No
-                    //Do any of the replicate profiles have an LRE window?
                     df.applyPattern("0.00");
                     profile.setShortDescription("Less than 10 molecules requires averaging the replicate profiles quantities");
                     double no = avPrf.getNo();
-//                    if (avPrf.isEmaxFixedTo100()) {
-//                        return profileName + "<10N [avRep= " + df.format(no) + "]";
-//                    }
                     return profileName + "  <10N  [avRep= " + df.format(no) + "]";
                 }
             }
             String emax;
             String no;
             //Determine what to display for Emax
-            if (!profile.hasAnLreWindowBeenFound()) {
+            if (!profile.hasAnLreWindowBeenFound() && profile.getOCF() > 0) {
 //This assumes an AverageSampleProfile that has <10N would not reach here 
                 profile.setShortDescription("An LRE window could not be found, likely due to being a flat profile"
                         + " or the Min Fc being set too high");
@@ -103,7 +98,7 @@ public class SampleTreeNodeLabels implements LabelFactory {
             }
             //Profile is OK
             if (profile.isEmaxFixedTo100() && profile.hasAnLreWindowBeenFound()) {
-                profile.setShortDescription("Emax is fixed to 100%");
+                profile.setShortDescription("Emax fixed to 100%");
                 emax = "<100%>";
             } else {
                 df.applyPattern("#0.0");
@@ -114,7 +109,7 @@ public class SampleTreeNodeLabels implements LabelFactory {
                 profile.setShortDescription("Target quantity could not be determined because an amplicon size has not been provided");
                 return profileName + emax + "n.d.<Amplicon size absent> ";
             }
-            if (!(profile.getOCF() >= 0)) {
+            if (!(profile.getOCF() > 0)) {
                 profile.setShortDescription("Target quantity could not be determined because an OCF has not been applied");
                 return profileName + emax + "n.d. <No OCF>";
             }
@@ -126,7 +121,11 @@ public class SampleTreeNodeLabels implements LabelFactory {
             }
             if (!profile.hasAnLreWindowBeenFound()) {
                 no = "";
-            } else {
+            }
+            if (profile.isTargetQuantityNormalizedToFmax()){
+                no = "  N= " + df.format(profile.getNo()) + "*";
+                profile.setShortDescription("Target quantity has be normalized to the average Fmax");
+            }else {
                 no = "  N= " + df.format(profile.getNo());
             }
             return profileName + emax + no;

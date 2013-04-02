@@ -39,10 +39,6 @@ public class SampleProfile extends Profile {
     @Override
     public void setEmax(double eMax) {
         super.setEmax(eMax);
-        //Some nearly flat profiles generate a negative Emax
-        if (eMax < 0 || eMax == Double.NaN || getDeltaE() > 0) {
-            setAvFoValues(0, 0);
-        }
         updateSampleProfile();
     }
 

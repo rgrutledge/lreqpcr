@@ -128,7 +128,7 @@ public class CalibrationProfile extends Profile {
         }
     }
     
-    public boolean isIsOcfNormalizedToFmax() {
+    public boolean isOcfNormalizedToFmax() {
         return isOcfNormalizedToFmax;
     }
 

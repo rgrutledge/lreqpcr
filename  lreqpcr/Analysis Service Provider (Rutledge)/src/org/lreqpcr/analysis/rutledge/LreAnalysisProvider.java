@@ -24,12 +24,14 @@ import org.lreqpcr.core.data_processing.Cycle;
 import org.lreqpcr.core.data_processing.ProfileInitializer;
 import org.lreqpcr.core.data_processing.ProfileSummary;
 import org.lreqpcr.core.data_processing.ProfileSummaryImp;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  *
  * @author Bob Rutledge
  */
+@ServiceProvider(service = LreAnalysisService.class)
 public class LreAnalysisProvider extends LreAnalysisService {
 
     public LreAnalysisProvider() {
@@ -72,6 +74,7 @@ public class LreAnalysisProvider extends LreAnalysisService {
             prfSum.setStrCycle(runner);
             //Calculate the cycle parameters for Cycle list
             ProfileInitializer.calcAllFo(prfSum);
+            //Both LRE-derived Emax and Emax =100% Fo values are calculated
             ProfileInitializer.calcAverageFo(prfSum);
             ProfileInitializer.calcAllpFc(prfSum);
         }

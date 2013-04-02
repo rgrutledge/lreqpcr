@@ -22,6 +22,7 @@ import javax.swing.AbstractAction;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.CalibrationProfile;
+import org.lreqpcr.core.data_objects.CalibrationRun;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LreNode;
@@ -70,7 +71,12 @@ public class FixAvCaibnPrfEmaxTo100PercentAction extends AbstractAction {
                 avCalbnPrf.setIsEmaxFixedTo100(true);
                 analysisService.initializeProfileSummary(avCalbnPrf, selectionParameters);
                 db.saveObject(avCalbnPrf);
-                node.refreshNodeLabel();
+                CalibrationRun run = (CalibrationRun) avCalbnPrf.getRun();
+                run.calculateAverageOCF();
+                db.saveObject(run);
+                //Update the Run node
+                LreNode parentNode = (LreNode) n.getParentNode();
+                parentNode.refreshNodeLabel();
                 //Get the replicate profile nodes
                 Node[] replicateNodes = node.getChildren().getNodes();
                 //Set all to Emax fixed to 100% and process them
@@ -82,6 +88,7 @@ public class FixAvCaibnPrfEmaxTo100PercentAction extends AbstractAction {
                     db.saveObject(calbnPrf);
                     node2.refreshNodeLabel();
                 }
+                
             }//End of node for loop
         }
         db.commitChanges();

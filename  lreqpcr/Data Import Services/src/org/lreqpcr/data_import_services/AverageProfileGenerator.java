@@ -16,8 +16,6 @@
  */
 package org.lreqpcr.data_import_services;
 
-//import org.lreqpcr.analysis_services.*;
-//import org.lreqpcr.analysis_services.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -168,18 +166,18 @@ public class AverageProfileGenerator {
             }
             //Average the replicates Profile raw Fc datasets
             AverageCalibrationProfile avCalbnProfile = new AverageCalibrationProfile();
-            avCalbnProfile.setRun(parentRun);//This also sets the Run data and set the parent to this run
+            avCalbnProfile.setRun(parentRun);//This also sets the Run data and the parent to this run
             CalibrationProfile firstCalibrationProfile = calibrationProfileList.get(0);
 //LamdaMass is required for initializing mo and must be converted back to pg as it is stored as ng in CalibrationProfile
             avCalbnProfile.setLambdaMass(firstCalibrationProfile.getLambdaMass() * 1000000);
-            //This initializes mo
+            //This initializes mo and OCF
             avCalbnProfile.setAmpliconSize(firstCalibrationProfile.getAmpliconSize());
             avCalbnProfile.setName(firstCalibrationProfile.getName());
             avCalbnProfile.setTargetStrandedness(TargetStrandedness.DOUBLESTRANDED);
             avCalbnProfile.setReplicateProfileList(calibrationProfileList);
             avCalbnProfile.setRawFcReadings(generateAverageFcDataset(calibrationProfileList));
             if (avCalbnProfile.getRawFcReadings().length != 0) {
-                //0 indicates that sll replicate profiles must be excluded
+                //0 indicates that all replicate profiles must be excluded
                 intializeAverageProfile(avCalbnProfile, parameters);
             }
             averageCalbnProfileList.add(avCalbnProfile);

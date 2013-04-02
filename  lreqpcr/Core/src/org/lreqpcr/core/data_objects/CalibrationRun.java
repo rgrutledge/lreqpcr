@@ -64,7 +64,8 @@ public class CalibrationRun extends Run {
     /**
      * This only applies to Runs containing CalibrationProfiles. Indeed, this
      * reflects the poor class structure that has evolved due to the pressure to
-     * maintain back compatability
+     * maintain back compatability. Note that the average calibration profiles 
+     * are used to determine a Run's average OCF.
      *
      */
     public void calculateAverageOCF() {
@@ -96,14 +97,11 @@ public class CalibrationRun extends Run {
     }//End of calculate average OCF
 
     /**
-     * INACTIVATED in order to preserve the average Fmax derived from all of the 
-     * profiles from the full Run from which this Run was derived. This initial value 
-     * was calculated during Run initialization and included both sample and calibration 
-     * profiles within the Run.
+     * DONOT use this unless the the total Run Fmax average is not available.
      */
     @Override
     public void calculateAverageFmax() {
-        //Inactivated 
+        super.calculateAverageFmax();
     }
     
     /**

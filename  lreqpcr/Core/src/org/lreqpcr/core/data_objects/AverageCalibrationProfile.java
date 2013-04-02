@@ -49,14 +49,6 @@ public class AverageCalibrationProfile extends CalibrationProfile implements Ave
         return lambdaProfileList;
     }
 
-    public boolean isTargetQuantityNormalizedToFmax() {
-        return isTragetQuantityNormalizedToFmax;
-    }
-
-    public void setIsTargetQuantityNormalizedToFmax(boolean normalizeToFmax) {
-        this.isTragetQuantityNormalizedToFmax = normalizeToFmax;
-    }
-
     /**
      * Will throw an illegal cast exception if the list does not contain
      * Calibration Profiles.

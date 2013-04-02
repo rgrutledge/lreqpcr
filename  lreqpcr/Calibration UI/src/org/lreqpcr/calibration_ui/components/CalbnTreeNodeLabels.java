@@ -53,13 +53,22 @@ public class CalbnTreeNodeLabels implements LabelFactory {
                 String avOCFstring = df.format(avOCF);
                 df.applyPattern("#0");
                 String ocfCV = df.format(run.getAvOcfCV() * 100);
-                if (run.getAvOcfCV() != 0){
-                return sdf.format(run.getRunDate()) + ":  Av OCF " + avOCFstring + " ±" + ocfCV + "%";
+                if (run.getAvOcfCV() != 0) {
+                    //Determine if Fmax normalization has been applied
+                    CalibrationProfile calPrf = (CalibrationProfile) run.getAverageProfileList().get(0);
+                    if (calPrf.isOcfNormalizedToFmax()) {
+                        return sdf.format(run.getRunDate()) + "-" + member.getName() + "  [Run Av OCF: "
+                            + avOCFstring + " ±" + ocfCV + "%]*";
+                    }else {
+                    return sdf.format(run.getRunDate()) + "-" + member.getName() + "  [Run Av OCF: "
+                            + avOCFstring + " ±" + ocfCV + "%]";
+                    }
                 } else {//No CV to display
-                    return sdf.format(run.getRunDate()) + ":  Av OCF = " + avOCFstring;
+                    return sdf.format(run.getRunDate()) + "-" + member.getName() + "  [Run Av OCF: "
+                            + avOCFstring + "]";
                 }
             } else {
-                return sdf.format(run.getRunDate()) + ": OCF not available";
+                return sdf.format(run.getRunDate()) + " Run Av OCF not available";
             }
         }
         CalibrationProfile calbrnProfile = (CalibrationProfile) member;
@@ -79,8 +88,8 @@ public class CalbnTreeNodeLabels implements LabelFactory {
             }
             return rundate + ": " + profileName + "<PROFILE EXCLUDED>";
         }
-        String emax;
         //Determine what to display for Emax
+        String emax;
         if (calbrnProfile.isEmaxFixedTo100() && calbrnProfile.hasAnLreWindowBeenFound()) {
             df.applyPattern("#0.0");
             calbrnProfile.setShortDescription("Emax fixed to 100%");
@@ -89,14 +98,21 @@ public class CalbnTreeNodeLabels implements LabelFactory {
             if (!calbrnProfile.hasAnLreWindowBeenFound()) {
                 emax = "<LRE window not found>";
                 calbrnProfile.setShortDescription("An LRE window could not be found, likely due to being a flat profile"
-                        + " or the Min Fc is set too high");
+                        + " or that the Min Fc is set too high");
             } else {
                 df.applyPattern("#0.0");
                 emax = "(" + df.format(calbrnProfile.getEmax() * 100) + "%) ";
             }
         }
+        //Determine what to display for the OCF
+        String ocf;
         df.applyPattern(FormatingUtilities.decimalFormatPattern(calbrnProfile.getOCF()));
-        String ocf = "OCF= " + df.format(calbrnProfile.getOCF());
+        //Determine if Fmax normalization has been set
+        if (calbrnProfile.isOcfNormalizedToFmax()) {
+            ocf = "OCF= " + df.format(calbrnProfile.getOCF()) + "*";
+        } else {
+            ocf = "OCF= " + df.format(calbrnProfile.getOCF());
+        }
         return rundate + ": " + profileName + emax + " " + ocf;
 
     }

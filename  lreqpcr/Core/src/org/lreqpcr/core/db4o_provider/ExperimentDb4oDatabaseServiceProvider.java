@@ -20,7 +20,7 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import org.lreqpcr.core.data_objects.ExperimentDbInfo;
+import org.lreqpcr.core.data_objects.ExptDbInfo;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.database_services.DatabaseType;
 import org.lreqpcr.core.database_services.SettingsServices;
@@ -44,7 +44,7 @@ public class ExperimentDb4oDatabaseServiceProvider extends Db4oDatabaseServices 
                 "Experiment database files", "exp");
         fc.setFileFilter(filter);
         fc.setDialogTitle("New Experiment Database");
-        File directory = null;
+        File directory;
         if (settingsDB.getLastExperimentDatabaseDirectory() != null) {
             try {
                 directory = new File(settingsDB.getLastExperimentDatabaseDirectory());
@@ -88,7 +88,7 @@ public class ExperimentDb4oDatabaseServiceProvider extends Db4oDatabaseServices 
                 }
                 if (openDatabaseFile(selectedFile)) {
                     saveObject(new LreWindowSelectionParameters());
-                    saveObject(new ExperimentDbInfo());
+                    saveObject(new ExptDbInfo());
                     commitChanges();
                     settingsDB.setLastExperimentDatabaseFile(previousDatabaseFile);
                     return true;
@@ -126,7 +126,7 @@ public class ExperimentDb4oDatabaseServiceProvider extends Db4oDatabaseServices 
         fc.setFileFilter(filter);
         fc.setDialogTitle("Open Experiment Database");
         //This allows the last directory to be retrieved
-        File directory = null;
+        File directory;
         if (settingsDB.getLastExperimentDatabaseDirectory() != null) {
             try {
                 directory = new File(settingsDB.getLastExperimentDatabaseDirectory());

@@ -14,11 +14,13 @@ import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.data_export_services.DataExportServices;
 import org.openide.util.Exceptions;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Bob Rutledge
  */
+@ServiceProvider(service=DataExportServices.class)
 public class DataExportProvider implements DataExportServices {
 
     public void exportAverageSampleProfilesFromRuns(List<Run> runList) {

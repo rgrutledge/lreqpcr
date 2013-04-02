@@ -151,8 +151,8 @@ public class ExperimentDbTree extends JPanel {
         exptDbInfo = (ExptDbInfo) exptDB.getAllObjects(ExptDbInfo.class).get(0);
         analysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
         selectionParameters = (LreWindowSelectionParameters) exptDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
-        fmaxNormalizeChkBox.setSelected(exptDbInfo.isIsTargetQuantityNormalizedToFmax());
-        fixEmaxBox.setSelected(exptDbInfo.isIsEmaxFixTo100Percent());
+        fmaxNormalizeChkBox.setSelected(exptDbInfo.isTargetQuantityNormalizedToFmax());
+        fixEmaxBox.setSelected(exptDbInfo.isEmaxFixTo100Percent());
         File dbFile = exptDB.getDatabaseFile();
         String dbFileName = dbFile.getName();
         int length = dbFileName.length();

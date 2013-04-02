@@ -54,7 +54,7 @@ public class ExptDbInfo extends DatabaseInfo{
         this.ocf = ocf;
     }
 
-    public boolean isIsTargetQuantityNormalizedToFmax() {
+    public boolean isTargetQuantityNormalizedToFmax() {
         return isTargetQuantityNormalizedToFmax;
     }
 

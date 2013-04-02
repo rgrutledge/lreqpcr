@@ -45,7 +45,7 @@ public class AmpliconDb4oServiceProvider extends Db4oDatabaseServices implements
                 "Amplicon database files", "amp");
         fc.setFileFilter(filter);
         fc.setDialogTitle("New Amplicon Database");
-        File directory = null;
+        File directory;
         if (settingsDB.getLastAmpliconDatabaseDirectory() != null) {
             try {
                 directory = new File(settingsDB.getLastAmpliconDatabaseDirectory());
@@ -55,7 +55,7 @@ public class AmpliconDb4oServiceProvider extends Db4oDatabaseServices implements
             fc.setCurrentDirectory(directory);
         }
         int returnVal = fc.showDialog(WindowManager.getDefault().getMainWindow(), "New Amp DB");
-        File selectedFile = null;
+        File selectedFile;
         while (returnVal == JFileChooser.APPROVE_OPTION) {
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File previousDatabaseFile = getDatabaseFile();
@@ -116,7 +116,7 @@ public class AmpliconDb4oServiceProvider extends Db4oDatabaseServices implements
         fc.setFileFilter(filter);
         fc.setDialogTitle("Open Amplicon Database");
         //This allows the last directory to be retrieved
-        File directory = null;
+        File directory;
         if (settingsDB.getLastAmpliconDatabaseDirectory() != null) {
             try {
                 directory = new File(settingsDB.getLastAmpliconDatabaseDirectory());
