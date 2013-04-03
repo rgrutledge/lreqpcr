@@ -57,15 +57,15 @@ public class CalbnTreeNodeLabels implements LabelFactory {
                     //Determine if Fmax normalization has been applied
                     CalibrationProfile calPrf = (CalibrationProfile) run.getAverageProfileList().get(0);
                     if (calPrf.isOcfNormalizedToFmax()) {
-                        return sdf.format(run.getRunDate()) + "-" + member.getName() + "  [Run Av OCF: "
-                            + avOCFstring + " ±" + ocfCV + "%]*";
+                        return sdf.format(run.getRunDate()) + "-" + member.getName() + ":  Av OCF= "
+                            + avOCFstring + " ±" + ocfCV + "%*";
                     }else {
-                    return sdf.format(run.getRunDate()) + "-" + member.getName() + "  [Run Av OCF: "
-                            + avOCFstring + " ±" + ocfCV + "%]";
+                    return sdf.format(run.getRunDate()) + "-" + member.getName() + ":  Av OCF= "
+                            + avOCFstring + " ±" + ocfCV + "%";
                     }
                 } else {//No CV to display
-                    return sdf.format(run.getRunDate()) + "-" + member.getName() + "  [Run Av OCF: "
-                            + avOCFstring + "]";
+                    return sdf.format(run.getRunDate()) + "-" + member.getName() + ":  Av OCF= "
+                            + avOCFstring;
                 }
             } else {
                 return sdf.format(run.getRunDate()) + " Run Av OCF not available";

@@ -23,6 +23,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
 import java.text.DecimalFormat;
 import javax.swing.JOptionPane;
 import org.lreqpcr.core.data_objects.CalibrationProfile;
@@ -47,6 +48,7 @@ public class PlotFc extends javax.swing.JPanel {
     private Cycle strCycle, zeroCycle; //LRE window start cycle
     private Profile profile;
     private boolean clearPlot;
+    double avFmax;
 
     /**
      * Generates a plot of reaction fluorescence and predicted fluorescence
@@ -83,6 +85,7 @@ public class PlotFc extends javax.swing.JPanel {
         fbLabel = new javax.swing.JLabel();
         fbDisplay = new javax.swing.JLabel();
         fmaxNrmzd = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(244, 245, 247));
         setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -107,6 +110,9 @@ public class PlotFc extends javax.swing.JPanel {
         fmaxNrmzd.setText("Fmax Normalized");
         fmaxNrmzd.setToolTipText("Tartget or OCF normalized to the average Run Fmax");
 
+        jLabel1.setText("                                                            ");
+        jLabel1.setToolTipText("Av Fmax");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -118,13 +124,15 @@ public class PlotFc extends javax.swing.JPanel {
                         .addComponent(graphTitle))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(fbLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(fbDisplay))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
                         .addComponent(fmaxNrmzd)))
                 .addContainerGap(244, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(fbLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(fbDisplay)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -134,10 +142,11 @@ public class PlotFc extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(fbLabel)
-                    .addComponent(fbDisplay))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(fbDisplay)
+                    .addComponent(jLabel1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(fmaxNrmzd)
-                .addContainerGap(32, Short.MAX_VALUE))
+                .addContainerGap(27, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -175,7 +184,6 @@ public class PlotFc extends javax.swing.JPanel {
         graphTitle.setText("C1/2: " + df.format(profile.getMidC()));
         df.applyPattern("0.0000");
         //Need to determin scale for Fc (Y-axis)
-        double avFmax;
         if(profile.getRun() instanceof CalibrationRun){
             avFmax = profile.getRun().getAverageFmax();
         }else if (profile.getRun().getAverageFmax() == 0) {
@@ -216,7 +224,23 @@ public class PlotFc extends javax.swing.JPanel {
         double offsetY = height * 0.1;
         double ptSize = 10;
         if (isInitiated) {
+            //Draw a line at Average Fmax
             Cycle runner = zeroCycle.getNextCycle();//Cycle #1
+            //Move to cycle 12
+            for(int i = 0; i<12; i++){
+                runner = runner.getNextCycle();
+            }
+            double yFmax = avFmax * scalingFactorY * (0.5);
+            double xMin = runner.getCycNum() * scalingFactorX;
+            //Run to the end of the profile
+            while (runner.getNextCycle() != null){
+                runner = runner.getNextCycle();
+            }
+            double xMax = runner.getCycNum() * scalingFactorX;
+            Line2D.Double lreLine = new Line2D.Double(xMin, yFmax, xMax, yFmax);
+            g2.draw(lreLine);
+            //Go back to cycle 1
+            runner = zeroCycle.getNextCycle();//Cycle #1
             //Allows display of the Fc plot if a LRE window has not been found
             if (!profile.hasAnLreWindowBeenFound() || profile.isExcluded()) {
             do {
@@ -279,5 +303,6 @@ public class PlotFc extends javax.swing.JPanel {
     private javax.swing.JLabel fbLabel;
     private javax.swing.JLabel fmaxNrmzd;
     private javax.swing.JLabel graphTitle;
+    private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
 }
