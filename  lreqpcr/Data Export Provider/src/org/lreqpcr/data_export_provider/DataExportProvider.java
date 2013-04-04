@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2013   Bob Rutledge
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>
+ * and open the template in the editor.
+ */
 package org.lreqpcr.data_export_provider;
 
 import com.google.common.collect.Lists;
@@ -43,16 +59,14 @@ public class DataExportProvider implements DataExportServices {
         //Run name, 
         HashMap<String, List<SampleProfile>> map = new HashMap<String, List<SampleProfile>>();
         for (Run run : runList){
-            List<SampleProfile> sampleList = Lists.newArrayList();
+            List<SampleProfile> samplePrfList = Lists.newArrayList();
             for (AverageProfile avProfile : run.getAverageProfileList()){
                 for(Profile profile : avProfile.getReplicateProfileList()){
                     SampleProfile sampleProfile = (SampleProfile) profile;
-                    sampleList.add(sampleProfile);
+                    samplePrfList.add(sampleProfile);
                 }
-                AverageSampleProfile avSampleProfile = (AverageSampleProfile) avProfile;
-                sampleList.add(avSampleProfile);
             }
-            map.put(run.getName(),sampleList);
+            map.put(run.getName(),samplePrfList);
         }
         exportReplicateSampleProfiles(map);
     }
@@ -88,9 +102,11 @@ public class DataExportProvider implements DataExportServices {
     }
 
     public void exportReplicateCalibrationProfiles(List<AverageCalibrationProfile> profileList) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     public void exportReplicateCalibrationProfiles(HashMap<String, List<AverageCalibrationProfile>> profileList) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
 }

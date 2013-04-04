@@ -20,11 +20,10 @@ import java.awt.Desktop;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import javax.swing.JOptionPane;
 import jxl.Workbook;
 import jxl.format.Alignment;
@@ -34,7 +33,6 @@ import jxl.format.Colour;
 import jxl.write.*;
 import jxl.write.Number;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
-import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.utilities.IOUtilities;
 import org.openide.windows.WindowManager;
 
@@ -45,7 +43,7 @@ import org.openide.windows.WindowManager;
 public class ExcelAverageSampleProfileDataExport {
 
     /**
-     * 
+     *
      */
     // TODO JavaDoc text
     @SuppressWarnings("unchecked")
@@ -98,11 +96,11 @@ public class ExcelAverageSampleProfileDataExport {
         WritableCellFormat ocfFormat = new WritableCellFormat(nfOCF);
 
         int pageCounter = 0;
-        Set<String> groupNames = groupList.keySet();
-        Iterator<String> it = groupNames.iterator();
-        while (it.hasNext()) {
+        //This is to sort the resulting worksheets
+        List<String> nameArray = new ArrayList<String>(groupList.keySet());
+        Collections.sort(nameArray);
+        for (String pageName : nameArray) {
 //Test whether the run name is >30 characters as this can create identical page names
-            String pageName = it.next();
             if (pageName.length() > 30) {
                 Toolkit.getDefaultToolkit().beep();
                 String msg = "The Parent name ''" + pageName + "'' is longer that 30 characters.\n"
@@ -115,7 +113,7 @@ public class ExcelAverageSampleProfileDataExport {
             }
             WritableSheet sheet = workbook.createSheet(pageName, pageCounter);
 
-            Label label = new Label(0, 0, "Name:", boldRight);
+            Label label = new Label(1, 0, "Name:", boldRight);
             sheet.addCell(label);
             label = new Label(0, 2, "Run Date", centerBoldUnderline);
             sheet.addCell(label);
@@ -139,14 +137,10 @@ public class ExcelAverageSampleProfileDataExport {
             sheet.addCell(label);
             label = new Label(10, 2, "OCF", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(11, 1, "Fmax", boldCenter);
-            sheet.addCell(label);
-            label = new Label(11, 2, "Normlzed", centerBoldUnderline);
-            sheet.addCell(label);
-            label = new Label(12, 2, "Notes", centerBoldUnderline);
+            label = new Label(11, 2, "Notes", centerBoldUnderline);
             sheet.addCell(label);
             int row = 3;
-            label = new Label(1, 0, pageName);
+            label = new Label(2, 0, pageName);
             sheet.addCell(label);
 
             Number number;
@@ -155,19 +149,10 @@ public class ExcelAverageSampleProfileDataExport {
             List<AverageSampleProfile> profileList = groupList.get(pageName);
             Collections.sort(profileList);
             for (AverageSampleProfile avProfile : profileList) {
-//                //Calculate an average amplicon Tm taken from the replicate profiles
-//                double avTm = 0;
-//                int tmCnt = 0;
-//                for (Profile sampleProfile : avProfile.getReplicateProfileList()) {
-//                    if (sampleProfile.getAmpTm() != 0) {
-//                        avTm += sampleProfile.getAmpTm();
-//                        tmCnt++;
-//                    }
-//                }
-//                if (avTm != 0) {
-//                    avTm = avTm / tmCnt;
-//                }
-
+                if (avProfile.isTargetQuantityNormalizedToFmax()) {
+                    label = new Label(2, 1, "Target quantities are normalized to the run's average Fmax", boldLeft);
+                    sheet.addCell(label);
+                }
                 WritableCellFormat dateFormat = new WritableCellFormat(customDateFormat);
                 dateFormat.setAlignment(Alignment.CENTRE);
                 DateTime dateCell = new DateTime(0, row, avProfile.getRunDate(), dateFormat);
@@ -186,37 +171,25 @@ public class ExcelAverageSampleProfileDataExport {
                     } else {
                         s = "EXCLUDED ";
                     }
-                    label = new Label(12, row, s, leftYellow);
+                    label = new Label(11, row, s, leftYellow);
                     sheet.addCell(label);
                     row++;
                     continue;
                 } else {
-//Note that all of this is redundant in that an AverageProfile <10N has the average Replicate No already set as its No
-//Need to determine if No <10 molecules so that an average No must be calculated from the replicate profiles
-//This is because an average profile is not reliable when the average No is below 10 molecules
-                    //Calculate an average No from the replicate profile No values
-                    double noSum = 0;
-                    for (SampleProfile prf : avProfile.getReplicateProfileList()) {
-                        //Excluded Profiles are the user-defined indicating
-                        //they are not to be used for quantification
-                        if (!prf.isExcluded()) {
-                            noSum = noSum + prf.getNo();
-                        }
-                    }
-                    double average = noSum / avProfile.getReplicateProfileList().size();
-//If the average is <10 molecules the average profile is considered inaccurate
-                    if (average < 10) {
+                    if (avProfile.isTheReplicateAverageNoLessThan10Molecules()) {
                         //Target quantity == replicate average No
-                        number = new Number(3, row, average, integerFormat);
+                        number = new Number(3, row, avProfile.getNo(), integerFormat);
                         sheet.addCell(number);
 //Leave all other values empty but put a statement in the notes denoting that the No <10
-                        String note;
-
-                        if (avProfile.getLongDescription() != null) {
-                            note = "<10 Molecules... " + avProfile.getLongDescription();
+                        if (avProfile.isEmaxFixedTo100()) {
+                            label = new Label(4, row, "Fixed to 100%");
+                            sheet.addCell(label);
                         } else {
-                            note = "<10 Molecules";
+                            label = new Label(4, row, "LRE-derived");
+                            sheet.addCell(label);
                         }
+                        label = new Label(5, row, "na <10N");
+                        sheet.addCell(label);
                         if (avProfile.calculateAvAmpTm() != -1) {
                             number = new Number(8, row, avProfile.calculateAvAmpTm(), floatFormat);
                             sheet.addCell(number);
@@ -225,9 +198,10 @@ public class ExcelAverageSampleProfileDataExport {
                         sheet.addCell(number);
                         number = new Number(10, row, avProfile.getOCF(), floatFormat);
                         sheet.addCell(number);
-                       
-                        label = new Label(12, row, note);
-                        sheet.addCell(label);
+                        if (avProfile.getLongDescription() != null) {
+                            label = new Label(11, row, avProfile.getLongDescription());
+                            sheet.addCell(label);
+                        }
                         //Move to the next average profile
                         row++;
                         continue;
@@ -235,22 +209,13 @@ public class ExcelAverageSampleProfileDataExport {
                         number = new Number(3, row, avProfile.getNo(), integerFormat);
                         sheet.addCell(number);
                     }
-                    String note2;
-                    String note1 = "";
-                    if (avProfile.getLongDescription() != null) {
-                        note1 = avProfile.getLongDescription();
-                    }
                     if (avProfile.isEmaxFixedTo100()) {
-                        note2 = "Emax is fixed to 100%" + note1;
-                        label = new Label(12, row, note2);
-                        number = new Number(4, row, 1, percentFormat);
+                        label = new Label(4, row, "Fixed to 100%");
+                        sheet.addCell(label);
                     } else {
-                        note2 = note1;
-                        label = new Label(12, row, note2);
-                        number = new Number(4, row, avProfile.getEmax(), percentFormat);
+                        label = new Label(4, row, "LRE-derived");
+                        sheet.addCell(label);
                     }
-                    sheet.addCell(label);
-                    sheet.addCell(number);
                     if (avProfile.getEmax() != 0) {
                         number = new Number(5, row, avProfile.getEmax(), percentFormat);
                         sheet.addCell(number);
@@ -272,10 +237,10 @@ public class ExcelAverageSampleProfileDataExport {
                     sheet.addCell(number);
                     number = new Number(10, row, avProfile.getOCF(), floatFormat);
                     sheet.addCell(number);
-                     // TODO this is not working; produces a blank cell
-                        String s = String.valueOf(avProfile.isTargetQuantityNormalizedToFmax());
-                        label = new Label(11, row, s, center);
+                    if (avProfile.getLongDescription() != null) {
+                        label = new Label(11, row, avProfile.getLongDescription());
                         sheet.addCell(label);
+                    }
                     row++;
                 }
             }

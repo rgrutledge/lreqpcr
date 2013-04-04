@@ -176,7 +176,11 @@ public class PlotFc extends javax.swing.JPanel {
         fbDisplay.setText(df.format(profile.getFb()));
         fbLabel.setVisible(true);
         df.applyLocalizedPattern("0.00");
+        if (profile.getMidC() > 0){
         graphTitle.setText("C1/2 = " + df.format(profile.getMidC()));
+        } else{
+            graphTitle.setText("C1/2 = n.d.");
+        }
         df.applyPattern("0.0000");
         //Need to determine scale for Fc (Y-axis)
         if (profile.getRun() instanceof CalibrationRun) {

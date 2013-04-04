@@ -20,11 +20,10 @@ import java.awt.Desktop;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import javax.swing.JOptionPane;
 import jxl.Workbook;
 import jxl.format.Alignment;
@@ -33,7 +32,6 @@ import jxl.format.BorderLineStyle;
 import jxl.format.Colour;
 import jxl.write.*;
 import jxl.write.Number;
-import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.utilities.IOUtilities;
 import org.openide.windows.WindowManager;
@@ -45,7 +43,7 @@ import org.openide.windows.WindowManager;
 public class ExcelSampleProfileDataExport {
 
     /**
-     * 
+     *
      */
     // TODO JavaDoc text
     @SuppressWarnings("unchecked")
@@ -98,11 +96,11 @@ public class ExcelSampleProfileDataExport {
         WritableCellFormat ocfFormat = new WritableCellFormat(nfOCF);
 
         int pageCounter = 0;
-        Set<String> groupNames = groupList.keySet();
-        Iterator<String> it = groupNames.iterator();
-        while (it.hasNext()) {
+        //This is to sort the resulting worksheets
+        List<String> nameArray = new ArrayList<String>(groupList.keySet());
+        Collections.sort(nameArray);
+        for (String pageName : nameArray) {
 //Test whether the run name is >30 characters as this can create identical page names
-            String pageName = it.next();
             if (pageName.length() > 30) {
                 Toolkit.getDefaultToolkit().beep();
                 String msg = "The Parent name ''" + pageName + "'' is longer that 30 characters.\n"
@@ -116,7 +114,7 @@ public class ExcelSampleProfileDataExport {
             }
             WritableSheet sheet = workbook.createSheet(pageName, pageCounter);
 
-            Label label = new Label(0, 0, "Name:", boldRight);
+            Label label = new Label(1, 0, "Name:", boldRight);
             sheet.addCell(label);
             label = new Label(0, 2, "Run Date", centerBoldUnderline);
             sheet.addCell(label);
@@ -145,87 +143,80 @@ public class ExcelSampleProfileDataExport {
             label = new Label(12, 2, "Notes", centerBoldUnderline);
             sheet.addCell(label);
             int row = 3;
-            label = new Label(1, 0, pageName);
+            label = new Label(2, 0, pageName);
             sheet.addCell(label);
 
             Number number;
             DateFormat customDateFormat = new DateFormat("ddMMMyy");
 
             List<SampleProfile> profileList = groupList.get(pageName);
-            //Need to extract well label and assign well number to each profile
-            //Sort the profiles based on well number. 
-            //Could display a Y/N dialog asking if this is an LC export that needs sorting
             Collections.sort(profileList);
-
             for (SampleProfile sampleProfile : profileList) {
-//                for (SampleProfile sampleProfile : avProfile.getReplicateProfileList()) {
-                    WritableCellFormat dateFormat = new WritableCellFormat(customDateFormat);
-                    dateFormat.setAlignment(Alignment.CENTRE);
-                    DateTime dateCell = new DateTime(0, row, sampleProfile.getRunDate(), dateFormat);
-                    sheet.addCell(dateCell);
-                    label = new Label(1, row, sampleProfile.getAmpliconName());
+                if (sampleProfile.isTargetQuantityNormalizedToFmax()) {
+                    label = new Label(2, 1, "Target quantities are normalized to the run's average Fmax", boldLeft);
                     sheet.addCell(label);
-                    label = new Label(2, row, sampleProfile.getSampleName());
+                }
+                WritableCellFormat dateFormat = new WritableCellFormat(customDateFormat);
+                dateFormat.setAlignment(Alignment.CENTRE);
+                DateTime dateCell = new DateTime(0, row, sampleProfile.getRunDate(), dateFormat);
+                sheet.addCell(dateCell);
+                label = new Label(1, row, sampleProfile.getAmpliconName());
+                sheet.addCell(label);
+                label = new Label(2, row, sampleProfile.getSampleName());
+                sheet.addCell(label);
+                if (sampleProfile.isExcluded()) {
+                    //All replicate profiles have been excluded
+                    label = new Label(3, row, "nd", center);
                     sheet.addCell(label);
-                    if (sampleProfile.isExcluded()) {
-                        //All replicate profiles have been excluded
-                        label = new Label(3, row, "nd", center);
-                        sheet.addCell(label);
-                        label = new Label(11, row, sampleProfile.getWellLabel());
-                        sheet.addCell(label);
-                        String s;
-                        if (sampleProfile.getLongDescription() != null) {
-                            s = "EXCLUDED " + sampleProfile.getLongDescription();
-                        } else {
-                            s = "EXCLUDED ";
-                        }
-                        label = new Label(12, row, s, boldLeft);
-                        sheet.addCell(label);
-                        row++;
-                        continue;
-                    } else {
-                        number = new Number(3, row, sampleProfile.getNo(), integerFormat);
-                        sheet.addCell(number);
-                    }
-                    String notes;
-                    String note = "";
-                    if (sampleProfile.getLongDescription() != null) {
-                        note = sampleProfile.getLongDescription();
-                    }
-                    if (sampleProfile.isEmaxFixedTo100()) {
-                        notes = "Emax is fixed to 100%" + note;
-                        label = new Label(12, row, notes);
-                        number = new Number(4, row, 1, percentFormat);
-                    } else {
-                        notes = note;
-                        label = new Label(12, row, notes);
-                        number = new Number(4, row, sampleProfile.getEmax(), percentFormat);
-                    }
-                    sheet.addCell(label);
-                    sheet.addCell(number);
-                    number = new Number(5, row, sampleProfile.getEmax(), percentFormat);
-                    sheet.addCell(number);
-                    if (sampleProfile.getMidC() != 0) {
-                        number = new Number(6, row, sampleProfile.getMidC(), floatFormat);
-                        sheet.addCell(number);
-                    }
-                    if (sampleProfile.getEmax() != 0) {
-                        double fmax = (sampleProfile.getEmax() / sampleProfile.getDeltaE()) * -1;
-                        number = new Number(7, row, fmax, floatFormat);
-                        sheet.addCell(number);
-                    }
-                    if (sampleProfile.getAmpTm() != 0) {
-                        number = new Number(8, row, sampleProfile.getAmpTm(), floatFormat);
-                        sheet.addCell(number);
-                    }
-                    number = new Number(9, row, sampleProfile.getAmpliconSize(), integerFormat);
-                    sheet.addCell(number);
-                    number = new Number(10, row, sampleProfile.getOCF(), floatFormat);
-                    sheet.addCell(number);
                     label = new Label(11, row, sampleProfile.getWellLabel());
                     sheet.addCell(label);
+                    String s;
+                    if (sampleProfile.getLongDescription() != null) {
+                        s = "EXCLUDED " + sampleProfile.getLongDescription();
+                    } else {
+                        s = "EXCLUDED ";
+                    }
+                    label = new Label(12, row, s);
+                    sheet.addCell(label);
                     row++;
-//                }
+                    continue;
+                } else {
+                    number = new Number(3, row, sampleProfile.getNo(), integerFormat);
+                    sheet.addCell(number);
+                }
+                if (sampleProfile.isEmaxFixedTo100()) {
+                    label = new Label(4, row, "Fixed to 100%");
+                    sheet.addCell(label);
+                } else {
+                    label = new Label(4, row, "LRE-derived");
+                    sheet.addCell(label);
+                }
+                number = new Number(5, row, sampleProfile.getEmax(), percentFormat);
+                sheet.addCell(number);
+                if (sampleProfile.getMidC() != 0) {
+                    number = new Number(6, row, sampleProfile.getMidC(), floatFormat);
+                    sheet.addCell(number);
+                }
+                if (sampleProfile.getEmax() != 0) {
+                    double fmax = (sampleProfile.getEmax() / sampleProfile.getDeltaE()) * -1;
+                    number = new Number(7, row, fmax, floatFormat);
+                    sheet.addCell(number);
+                }
+                if (sampleProfile.getAmpTm() != 0) {
+                    number = new Number(8, row, sampleProfile.getAmpTm(), floatFormat);
+                    sheet.addCell(number);
+                }
+                number = new Number(9, row, sampleProfile.getAmpliconSize(), integerFormat);
+                sheet.addCell(number);
+                number = new Number(10, row, sampleProfile.getOCF(), floatFormat);
+                sheet.addCell(number);
+                label = new Label(11, row, sampleProfile.getWellLabel());
+                sheet.addCell(label);
+                if (sampleProfile.getLongDescription() != null) {
+                    label = new Label(12, row, sampleProfile.getLongDescription());
+                    sheet.addCell(label);
+                }
+                row++;
             }
             pageCounter++;
         }

@@ -46,6 +46,7 @@ public class UpdateCalbrationDatabase {
      * @param db the calibration database
      * @param avProfileList list of the average profiles to be processed
      */
+    @SuppressWarnings("unchecked")
     public static void updateCalibrationProfiles(DatabaseServices calbnDB) {
         List<Run> runList1 = (List<Run>) calbnDB.getAllObjects(Run.class);
         for(Run run : runList1){
@@ -53,8 +54,6 @@ public class UpdateCalbrationDatabase {
                 calbnDB.deleteObject(run);
             }
         }
-//        List<Run> runList2 = (List<Run>) calbnDB.getAllObjects(Run.class);
-//        List<AverageSampleProfile> avSampleList2 = (List<AverageSampleProfile>) calbnDB.getAllObjects(AverageSampleProfile.class);
         List<AverageCalibrationProfile> avCalPrfList = (List<AverageCalibrationProfile>) calbnDB.getAllObjects(AverageCalibrationProfile.class);
         //Set the AverageProfile list in each Run and have Run calculate average Fmax
         //Need to sort out all the avProfiles associated with each Run, e.g. CAL1 + CAL2 = 2 avProfiles in one run

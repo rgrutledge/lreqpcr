@@ -31,7 +31,9 @@ import org.lreqpcr.core.data_objects.AmpliconImpl;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
+import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.Profile;
+import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.database_services.DatabaseProvider;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
@@ -197,6 +199,7 @@ public final class AmpliconOverviewTopComponent extends TopComponent
                 JOptionPane.ERROR_MESSAGE);
     }
 
+    @SuppressWarnings("unchecked")
     private HashMap<String, List<AverageSampleProfile>> getAvSamplePrfForSelectedAmplicons() {
         Node[] nodes = mgr.getSelectedNodes();
         HashMap<String, List<AverageSampleProfile>> groupList = new HashMap<String, List<AverageSampleProfile>>();
@@ -209,21 +212,63 @@ public final class AmpliconOverviewTopComponent extends TopComponent
         }
         return groupList;
     }
-
-    private HashMap<String, List<AverageCalibrationProfile>> getAvCalibrationPrfForSelectedAmplicons() {
+//Amplicon/Sample based export of Calibration profiles is not available in this version
+//    private HashMap<String, List<AverageCalibrationProfile>> getAvCalibrationPrfForSelectedAmplicons() {
+//        Node[] nodes = mgr.getSelectedNodes();
+//        HashMap<String, List<AverageCalibrationProfile>> groupList = new HashMap<String, List<AverageCalibrationProfile>>();
+//        for (Node node : nodes) {
+//            AmpliconImpl amplicon = node.getLookup().lookup(AmpliconImpl.class);
+//            if (amplicon != null) {
+//                if (currentDB.getDatabaseType() == DatabaseType.EXPERIMENT) {
+//                    List profileList = currentDB.retrieveUsingFieldValue(AverageSampleProfile.class, "ampliconName", amplicon.getName());
+//                    groupList.put(amplicon.getName(), new ArrayList<AverageCalibrationProfile>(profileList));
+//                }
+//            }
+//        }
+//        return groupList;
+//    }
+    
+    private HashMap<String, List<SampleProfile>> getSamplePrfsForSelectedAmplicons(){
         Node[] nodes = mgr.getSelectedNodes();
-        HashMap<String, List<AverageCalibrationProfile>> groupList = new HashMap<String, List<AverageCalibrationProfile>>();
+        HashMap<String, List<SampleProfile>> groupList = new HashMap<String, List<SampleProfile>>();
         for (Node node : nodes) {
             AmpliconImpl amplicon = node.getLookup().lookup(AmpliconImpl.class);
             if (amplicon != null) {
-                if (currentDB.getDatabaseType() == DatabaseType.EXPERIMENT) {
-                    List profileList = currentDB.retrieveUsingFieldValue(AverageSampleProfile.class, "ampliconName", amplicon.getName());
-                    groupList.put(amplicon.getName(), new ArrayList<AverageCalibrationProfile>(profileList));
-                }
+                    List<SampleProfile> allProfileList = currentDB.retrieveUsingFieldValue(SampleProfile.class, "ampliconName", amplicon.getName());
+                    //This will also retrieve average profiles, so they must be removed
+                    //But the db4o list causes an error to revert to creating an ArrayList
+                    List<SampleProfile> samplePrfList = new ArrayList<SampleProfile>();
+                    for (SampleProfile samplePrf : allProfileList){
+                        if (samplePrf instanceof AverageProfile){
+                            //Do nothing
+                        }else{
+                            samplePrfList.add(samplePrf);
+                        }
+                    }
+                    groupList.put(amplicon.getName(), samplePrfList);
             }
         }
         return groupList;
     }
+    //Amplicon/Sample based export of Calibration profiles is not available in this version
+//    private HashMap<String, List<CalibrationProfile>> getCalPrfsForSelectedAmplicons(){
+//        Node[] nodes = mgr.getSelectedNodes();
+//        HashMap<String, List<CalibrationProfile>> groupList = new HashMap<String, List<CalibrationProfile>>();
+//        for (Node node : nodes) {
+//            AmpliconImpl amplicon = node.getLookup().lookup(AmpliconImpl.class);
+//            if (amplicon != null) {
+//                    List<CalibrationProfile> profileList = currentDB.retrieveUsingFieldValue(CalibrationProfile.class, "ampliconName", amplicon.getName());
+//                    //This will also retrieve average profiles, so they must be removed
+//                    for (CalibrationProfile calPrf : profileList){
+//                        if (calPrf instanceof AverageCalibrationProfile){
+//                            profileList.remove(calPrf);
+//                        }
+//                    }
+//                    groupList.put(amplicon.getName(), new ArrayList<CalibrationProfile>(profileList));
+//            }
+//        }
+//        return groupList;
+//    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -297,7 +342,7 @@ public final class AmpliconOverviewTopComponent extends TopComponent
     }// </editor-fold>//GEN-END:initComponents
 
     private void exportAvProfileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportAvProfileButtonActionPerformed
-        //Profile export encompasses both Sample and Calibration profiles but data export services needs to know which one
+        //Profile export is only available for Sample in this version so this check is redundant
         if (currentDB.getDatabaseType() == DatabaseType.EXPERIMENT) {
             HashMap<String, List<AverageSampleProfile>> groupList = getAvSamplePrfForSelectedAmplicons();
             if (!groupList.isEmpty()) {
@@ -305,30 +350,31 @@ public final class AmpliconOverviewTopComponent extends TopComponent
             }else {
                 noNodesSelectedError();
             }
-        } else if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION) {
-            HashMap<String, List<AverageCalibrationProfile>> groupList = getAvCalibrationPrfForSelectedAmplicons();
-            if (!groupList.isEmpty()) {
-                Lookup.getDefault().lookup(DataExportServices.class).exportAverageCalibrationProfiles(groupList);
-            }else{
-                noNodesSelectedError();
-            }
-        }
-    }//GEN-LAST:event_exportAvProfileButtonActionPerformed
-
-    private void exportRepPrfsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportRepPrfsButtonActionPerformed
-//THIS IS CURRENTLY NOT WORKING************************************************************************
-        //Profile export encompasses both Sample and Calibration profiles but data export services needs to know which one
-//        if (currentDB.getDatabaseType() == DatabaseType.EXPERIMENT) {
-//            HashMap<String, List<AverageSampleProfile>> groupList = getAvSamplePrfForSelectedAmplicons();
-//            if (!groupList.isEmpty()) {
-//                Lookup.getDefault().lookup(DataExportServices.class).exportAverageSampleProfiles(groupList);
-//            }else {
-//                noNodesSelectedError();
-//            }
-//        } else if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION) {
+        } 
+//        else if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION) {
 //            HashMap<String, List<AverageCalibrationProfile>> groupList = getAvCalibrationPrfForSelectedAmplicons();
 //            if (!groupList.isEmpty()) {
 //                Lookup.getDefault().lookup(DataExportServices.class).exportAverageCalibrationProfiles(groupList);
+//            }else{
+//                noNodesSelectedError();
+//            }
+//        }
+    }//GEN-LAST:event_exportAvProfileButtonActionPerformed
+
+    private void exportRepPrfsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportRepPrfsButtonActionPerformed
+        //Profile export is only available for Sample in this version
+        if (currentDB.getDatabaseType() == DatabaseType.EXPERIMENT) {
+            HashMap<String, List<SampleProfile>> groupList = getSamplePrfsForSelectedAmplicons();
+            if (!groupList.isEmpty()) {
+                Lookup.getDefault().lookup(DataExportServices.class).exportReplicateSampleProfiles(groupList);
+            }else {
+                noNodesSelectedError();
+            }
+        } 
+//        else if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION) {
+//            HashMap<String, List<CalibrationProfile>> groupList = getCalPrfsForSelectedAmplicons();
+//            if (!groupList.isEmpty()) {
+//                Lookup.getDefault().lookup(DataExportServices.class).exportReplicateCalibrationProfiles(groupList);
 //            }else{
 //                noNodesSelectedError();
 //            }
