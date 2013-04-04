@@ -64,9 +64,13 @@ public class AmpliconExcelExport {
             sheet.addCell(label);
             label = new Label(3, 0, "3' Primer", centerUnderline);
             sheet.addCell(label);
-            label = new Label(4, 0, "Short Description", centerUnderline);
+            label = new Label(4, 0, "Amplicon Sequence", centerUnderline);
             sheet.addCell(label);
-            label = new Label(5, 0, "Notes", centerUnderline);
+            label = new Label(5, 0, "Target Description", centerUnderline);
+            sheet.addCell(label);
+            label = new Label(6, 0, "Target ID", centerUnderline);
+            sheet.addCell(label);
+            label = new Label(7, 0, "Notes", centerUnderline);
             sheet.addCell(label);
             int row = 1;//Starting row
             List<Amplicon> ampList = ampliconDB.getAllObjects(Amplicon.class);
@@ -79,13 +83,16 @@ public class AmpliconExcelExport {
                 sheet.addCell(label);
                 label = new Label(3, row, amp.getDownPrimer(), centerArial);
                 sheet.addCell(label);
-                label = new Label(4, row, amp.getShortDescription(), centerArial);
+                label = new Label(4, row, amp.getAmpSequence(), centerArial);
                 sheet.addCell(label);
-                label = new Label(5, row, amp.getLongDescription(), centerArial);
+                label = new Label(5, row, amp.getShortDescription(), centerArial);
+                sheet.addCell(label);
+                label = new Label(6, row, amp.getUniGene(), centerArial);
+                sheet.addCell(label);
+                label = new Label(7, row, amp.getLongDescription(), centerArial);
                 sheet.addCell(label);
                 row++;
             }
-            //That's it!!!!!
             workbook.write();
             workbook.close();
 

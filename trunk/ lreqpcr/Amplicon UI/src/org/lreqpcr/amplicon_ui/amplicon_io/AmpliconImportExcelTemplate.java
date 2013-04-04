@@ -63,11 +63,14 @@ public class AmpliconImportExcelTemplate {
             sheet.addCell(label);
             label = new Label(3, 0, "3' Primer", centerUnderline);
             sheet.addCell(label);
-            label = new Label(4, 0, "Short Description", centerUnderline);
+            label = new Label(4, 0, "Amplicon Sequence", centerUnderline);
             sheet.addCell(label);
-            label = new Label(5, 0, "Notes", centerUnderline);
+            label = new Label(5, 0, "Target Description", centerUnderline);
             sheet.addCell(label);
-            //That's it!!!!!
+            label = new Label(6, 0, "Target ID", centerUnderline);
+            sheet.addCell(label);
+            label = new Label(7, 0, "Notes", centerUnderline);
+            sheet.addCell(label);
             workbook.write();
             workbook.close();
 

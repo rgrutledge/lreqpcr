@@ -102,8 +102,10 @@ public class AmpliconImport {
             }
             amp.setUpPrimer(sheet.getCell(2, row).getContents());
             amp.setDownPrimer(sheet.getCell(3, row).getContents());
-            amp.setShortDescription(sheet.getCell(4, row).getContents());
-            amp.setLongDescription(sheet.getCell(5, row).getContents());
+            amp.setAmpSequence(sheet.getCell(4, row).getContents());
+            amp.setShortDescription(sheet.getCell(5, row).getContents());
+            amp.setUniGene(sheet.getCell(6, row).getContents());
+            amp.setLongDescription(sheet.getCell(7, row).getContents());
             ampliconDB.saveObject(amp);
             row++;
         }

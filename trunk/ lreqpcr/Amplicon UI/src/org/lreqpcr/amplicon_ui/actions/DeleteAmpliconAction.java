@@ -65,7 +65,7 @@ public class DeleteAmpliconAction extends AbstractAction {
         LreObjectChildren children = (LreObjectChildren) rootNode.getChildren();
         if (nodes.length == 1) {
             amplicon = selectedNode.getLookup().lookup(AmpliconImpl.class);
-            String msg = "Are you sure you want to delete '" + amplicon.getName() +
+            String msg = "Are you sure you want to permanently delete '" + amplicon.getName() +
                     "'?";
              int n = JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(),
                     msg, "Delete Amplicon",
@@ -76,7 +76,7 @@ public class DeleteAmpliconAction extends AbstractAction {
                 ampliconDB.commitChanges();
             }
         } else {
-            String msg = "Are you sure you want to delete " + String.valueOf(nodes.length) +
+            String msg = "Are you sure you want to permanently delete " + String.valueOf(nodes.length) +
                     " Amplicons?";
              int n = JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(),
                     msg, "Delete Amplicons",
