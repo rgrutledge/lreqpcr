@@ -21,24 +21,29 @@ and open the template in the editor.
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     </head>
     <body>
-        <h1 align="center">A Brief Introduction to LRE</h1>
+        <h1 align="center">An Introduction to LRE</h1>
 		<p>Linear regression of efficiency (LRE) originated from recognition 
 		that real-time qPCR could be greatly simplified through the application 
-		of sigmoidal mathematics. Based on the ability to derive target quantity 
-		directly from individual fluorescence readings within the central region 
-		of an amplification profile, LRE provides an alternative to the 
-		relative quantification upon which most current qPCR methodologies are based. 
-		A key component is adopting lambda gDNA as a universal quantitative 
+		of sigmoidal mathematics, which if automated, would allow absolute qPCR 
+		to be conducted with little or no user intervention. </p>
+		<p>Derived from on the ability to determine target quantity directly 
+		from individual fluorescence readings within the central region of an 
+		amplification profile, LRE provides an alternative to the relative 
+		quantification upon which most current qPCR methodologies are based. A 
+		key component was to adopt lambda gDNA as a universal quantitative 
 		standard, which, among other capabilities, allows absolute quantification 
-		to be conducted without construction of target-specific standard curves.</p>
-		<p>Real-time PCR is based on the ability to monitor the increase in 
-		amplicon DNA within an amplification reaction, using some form of 
+		to be conducted without the need to construction of target-specific standard curves. 
+		The following provides a step by step overview of how LRE functions, 
+		most of which is described in <a href="lre_literature.html">Rutledge and 
+		Stewart (2008a)</a>.</p>
+		<p>Real-time PCR was developed from the ability to monitor the increase in 
+		amplicon DNA quantity using some form of 
 		fluorescence chemistry. This in turn generates an&nbsp; &quot;amplification 
 		profile&quot; (or profile for short) in which&nbsp; reaction fluorescence is 
 		plotted against cycle number:</p>
 		<p align="center"><b>The Amplification Profile</b><br>
 		<img border="0" src="images/fc_plot1.gif" width="358" height="108"></p>
-		<p>Each cycle is thus defined only by its &quot;cycle fluorescence&quot; (F<sub>C</sub>), 
+		<p>Each cycle is thus defined by the &quot;cycle fluorescence&quot; (F<sub>C</sub>), 
 		which when using the fluorescent dye SYBR Green I, is proportional to 
 		the amount amplicon DNA mass present at the end of each cycle. 
 		Conventional qPCR methods determine target quantity based on the 
@@ -46,7 +51,7 @@ and open the template in the editor.
 		(among many others) is that absolute quantification requires 
 		construction of target-specific standard curves. </p>
 		<p>LRE expands the capabilities of qPCR by extending data analysis 
-		beyond simple determination of profile position. This is accomplished by 
+		beyond simple determination of profile position. This was accomplished by 
 		first determining the amplification efficiency produced during each 
 		cycle, based on the increase in amplicon DNA mass relative to the amount 
 		of amplicon DNA present at the beginning of the cycle. This of course is 
@@ -57,7 +62,7 @@ and open the template in the editor.
 		<p>The definition of a cycle can thus expanded to include its 
 		amplification efficiency, referred to as &quot;cycle efficiency&quot; or E<sub>C</sub>. 
 		</p>
-		<p>The core functionality of LRE is derived from the ability to view PCR 
+		<p>The core functionality of LRE was derived from the ability to view PCR 
 		amplification not as the increase in amplicon DNA, but rather as the 
 		loss in amplification efficiency. This is done by plotting the E<sub>C</sub> 
 		of each cycle against its F<sub>C</sub>, generating what is referred to 
@@ -78,7 +83,7 @@ and open the template in the editor.
 		amplification, which are the maximal amplification efficiency (E<sub>max</sub>) 
 		determined from the Y-intercept and the rate of loss in amplification 
 		efficiency (ΔE) determined from the slope. The cycles included into the 
-		analysis are taken from the central region of the profile, which avoids 
+		linear regression analysis are taken from the central region of the profile, which avoids 
 		distortions caused by low reaction fluorescence in the earliest cycles, and aberrations associated with cycles within the upper 
 		region. This central region is referred as the &quot;LRE 
 		window&quot;, which is denoted by black and red circles within the LRE 
@@ -87,20 +92,22 @@ and open the template in the editor.
 		</b><img border="0" src="images/lre_plot.gif" width="357" height="206"></p>
 		<p align="center"><b>The LRE Window<br>
 		</b><img border="0" src="images/fc_plot2.gif" width="355" height="107"></p>
-		<p align="left"><a name="Fmax determination"></a>Note also that the maximal fluorescence (F<sub>max</sub>), 
+		<p align="left">Note also that the plateau phase is described by the maximal fluorescence (F<sub>max</sub>), 
 		which corresponds to the X-intercept within the LRE plot, can be 
 		calculated using the equation:</p>
 		<p align="center"><b>X-intercept<br>
 		</b>
 		<img border="0" src="images/Fmax_equation.gif" width="103" height="51"></p>
-		<p align="left"><a name="Fo determination"></a>Using a derivative of the classic Boltzmann sigmoid 
-		function that has been adapted to PCR, target quantity can 
-		be determined directly from a cycle&#39;s F<sub>C</sub>:</p>
+		<p align="left">In addition to generating a linear representation of PCR 
+		amplification, a derivative of the classic Boltzmann sigmoid 
+		function that has been adapted to PCR <a href="lre_literature.html">
+		(Rutledge and Stewart 2008a)</a> can be used to determine target quantity can 
+		be directly from a cycle&#39;s F<sub>C</sub>:</p>
 		<p align="center">
 		<img border="0" src="images/Fo_equation.gif" width="230" height="73"></p>
 		<p align="left">
 		This generates the third parameter defining a cycle, which is the 
-		predicted target quantity expressed in fluorescence units and referred 
+		predicted target quantity expressed in fluorescence units, which is referred 
 		to as the &quot;cycle F<sub>0</sub>&quot;. Target quantity is then derived by 
 		averaging the F<sub>0</sub> values from all of the cycles within the LRE 
 		window, which is visual displayed in what is called the &quot;F<sub>0</sub> 
@@ -113,7 +120,7 @@ and open the template in the editor.
 		<img border="0" src="images/LRE_model.gif" width="244" height="81"></p>
 		<p align="left">
 		When displayed in the F<sub>C</sub> plot as circles, this allows 
-		assessment of the general conformity of the profile to the LRE model:</p>
+		assessment of the general conformity of a profile to the LRE model:</p>
 		<p align="center"><b>Adding predicted F<sub>C</sub><br>
 		</b><img border="0" src="images/fc_plot3.gif" width="355" height="108"></p>
 		<p align="left">Among other attributes, this can reveal aberrant 
@@ -136,7 +143,7 @@ and open the template in the editor.
 		amplicon size (A<sub>S</sub>):</p>
 		<p align="center">
 		<img border="0" src="images/fo_conversion.gif" width="325" height="59"></p>
-		<p align="left">To summarize, LRE introduces a new paradigm for qPCR 
+		<p align="left">In summarize, LRE introduces a new paradigm for qPCR 
 		based on deriving the target quantity directly from the&nbsp; fluorescence 
 		readings within the central region of an amplification profile, in 
 		addition to expanding the definition of a cycle beyond its fluorescence 
