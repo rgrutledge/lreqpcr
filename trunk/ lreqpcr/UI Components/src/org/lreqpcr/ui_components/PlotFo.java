@@ -16,12 +16,12 @@
  */
 package org.lreqpcr.ui_components;
 
-import org.lreqpcr.core.data_objects.Profile;
-import org.lreqpcr.core.data_processing.Cycle;
-import org.lreqpcr.core.data_processing.ProfileSummary;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.text.DecimalFormat;
+import org.lreqpcr.core.data_objects.Profile;
+import org.lreqpcr.core.data_processing.Cycle;
+import org.lreqpcr.core.data_processing.ProfileSummary;
 
 /**
  *
@@ -84,7 +84,7 @@ public class PlotFo extends javax.swing.JPanel {
         winAvFoCV = profile.getAvFoCV();
         lreWinSize = profile.getLreWinSize();
         avFoLabel.setVisible(true);
-        avFoDisplay.setText(dfE.format(winAvFo) + "+/-" + df.format(winAvFoCV * 100) + "%");
+        avFoDisplay.setText(dfE.format(winAvFo) + " +/-" + df.format(winAvFoCV * 100) + "%");
 //        avFoDisplay.setText("+/-" + df.format(winAvFoCV * 100) + "%");
         df.applyPattern("0.00");
 
