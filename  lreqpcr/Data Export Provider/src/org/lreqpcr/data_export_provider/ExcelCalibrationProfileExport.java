@@ -109,7 +109,12 @@ public class ExcelCalibrationProfileExport {
         //Construct the sheet
         WritableSheet sheet = workbook.createSheet("Average Calbn Profile Export", 0);
         //Column labels
-        Label label = new Label(1, 1, "Average OCF:", boldRight);
+        Label label;
+        if (profileList.get(0).isOcfNormalizedToFmax()) {
+            label = new Label(1, 0, "*OCF is normalized to the run's average Fmax", boldLeft);
+            sheet.addCell(label);
+        }
+        label = new Label(1, 1, "Average OCF:", boldRight);
         sheet.addCell(label);
         Number number = new Number(2, 1, averageOCF, floatFormat);
         sheet.addCell(number);
@@ -154,7 +159,7 @@ public class ExcelCalibrationProfileExport {
                 //All replicate profiles have been excluded
                 label = new Label(2, row, "nd", center);
                 sheet.addCell(label);
-                String s = "";
+                String s;
                 if (profile.getLongDescription() != null) {
                     s = "EXCLUDED... " + profile.getLongDescription();
                 } else {
@@ -168,11 +173,11 @@ public class ExcelCalibrationProfileExport {
                 number = new Number(2, row, profile.getOCF(), floatFormat);
                 sheet.addCell(number);
                 if (profile.isEmaxFixedTo100()) {
-                    number = new Number(3, row, 1.0, percentFormat);
-                    sheet.addCell(number);
+                    label = new Label(3, row, "Fixed to 100%", center);
+                    sheet.addCell(label);
                 } else {
-                    number = new Number(3, row, profile.getEmax(), percentFormat);
-                    sheet.addCell(number);
+                    label = new Label(3, row, "LRE-derived", center);
+                    sheet.addCell(label);
                 }
                 number = new Number(4, row, profile.getEmax(), percentFormat);
                 sheet.addCell(number);
@@ -188,33 +193,23 @@ public class ExcelCalibrationProfileExport {
                 double numberOfGenomes = profile.getLambdaMass() * 1000000d * 18.762;
                 number = new Number(9, row, numberOfGenomes, integerFormat);
                 sheet.addCell(number);
-                String notes = "";
+                String notes;
                 String note = "";
-                if (profile.isEmaxFixedTo100()) {
-                    notes = "Emax is fixed to 100%" + "% " + note;
-                } else {
-                    notes = note;
-                }
-                    label = new Label(10, row, notes);
-                
+                notes = note;
+                label = new Label(10, row, notes);
+
                 sheet.addCell(label);
                 row++;
             }
         }
 
         //Add formulas
-        label = new Label(2, row + 1, "Average:", boldRight);
+        label = new Label(3, row + 1, "Average:", boldRight);
         sheet.addCell(label);
-        label = new Label(2, row + 2, "SD:", boldRight);
+        label = new Label(3, row + 2, "SD:", boldRight);
         sheet.addCell(label);
-        String equation = "AVERAGE(D5:D" + String.valueOf(row) + ")";
-        Formula formula = new Formula(3, row + 1, equation, percentFormat);
-        sheet.addCell(formula);
-        equation = "STDEV(D5:D" + String.valueOf(row) + ")";
-        formula = new Formula(3, row + 2, equation, percentFormat);
-        sheet.addCell(formula);
-        equation = "AVERAGE(E5:E" + String.valueOf(row) + ")";
-        formula = new Formula(4, row + 1, equation, percentFormat);
+        String equation = "AVERAGE(E5:E" + String.valueOf(row) + ")";
+        Formula formula = new Formula(4, row + 1, equation, percentFormat);
         sheet.addCell(formula);
         equation = "STDEV(E5:E" + String.valueOf(row) + ")";
         formula = new Formula(4, row + 2, equation, percentFormat);

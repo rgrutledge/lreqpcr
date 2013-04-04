@@ -64,6 +64,7 @@ public class PlotFc extends javax.swing.JPanel {
 
     public void clearPlot() {
         fbDisplay.setText("");
+        tipTextForAvFmaxLine.setToolTipText("");
         fbLabel.setVisible(false);
         fmaxNrmzd.setVisible(false);
         graphTitle.setText("Fc Plot (Fc vs. Cycle)");
@@ -87,7 +88,7 @@ public class PlotFc extends javax.swing.JPanel {
         fbLabel = new javax.swing.JLabel();
         fbDisplay = new javax.swing.JLabel();
         fmaxNrmzd = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
+        tipTextForAvFmaxLine = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(244, 245, 247));
         setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -112,8 +113,8 @@ public class PlotFc extends javax.swing.JPanel {
         fmaxNrmzd.setText("Fmax Normalized");
         fmaxNrmzd.setToolTipText("Tartget or OCF normalized to the average Run Fmax");
 
-        jLabel1.setText("                                                            ");
-        jLabel1.setToolTipText("Av Fmax");
+        tipTextForAvFmaxLine.setText("                                                            ");
+        tipTextForAvFmaxLine.setToolTipText("Av Fmax");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -121,7 +122,7 @@ public class PlotFc extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(0, 126, Short.MAX_VALUE)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(tipTextForAvFmaxLine, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(fmaxNrmzd)
@@ -141,7 +142,7 @@ public class PlotFc extends javax.swing.JPanel {
                 .addGap(5, 5, 5)
                 .addComponent(graphTitle)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1)
+                .addComponent(tipTextForAvFmaxLine)
                 .addGap(8, 8, 8)
                 .addComponent(fmaxNrmzd)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -199,6 +200,8 @@ public class PlotFc extends javax.swing.JPanel {
         } else {
             avFmax = profile.getRun().getAverageFmax();
         }
+        df.applyPattern(FormatingUtilities.decimalFormatPattern(avFmax));
+        tipTextForAvFmaxLine.setToolTipText("Av Fmax = " + df.format(avFmax));
         maxFc = avFmax * 1.8;//Provides 50% spacing for the top of the profile
         //Determine if Fmax normalization of Fc values must be applied
         if (profile instanceof SampleProfile) {
@@ -315,6 +318,6 @@ public class PlotFc extends javax.swing.JPanel {
     private javax.swing.JLabel fbLabel;
     private javax.swing.JLabel fmaxNrmzd;
     private javax.swing.JLabel graphTitle;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel tipTextForAvFmaxLine;
     // End of variables declaration//GEN-END:variables
 }

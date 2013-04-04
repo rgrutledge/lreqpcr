@@ -45,7 +45,7 @@ import org.openide.windows.WindowManager;
  *
  * @author Bob Rutledge
  */
-public class ExcelWellFmaxExport {
+public class ExcelWellFmaxExport {//For testing only
 
     /**
      * Exports the AverageSampleProfiles from a list of Runs. Each 
