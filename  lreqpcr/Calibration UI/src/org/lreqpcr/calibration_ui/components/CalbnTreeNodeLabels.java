@@ -109,11 +109,11 @@ public class CalbnTreeNodeLabels implements LabelFactory {
         df.applyPattern(FormatingUtilities.decimalFormatPattern(calbrnProfile.getOCF()));
         //Determine if Fmax normalization has been set
         if (calbrnProfile.isOcfNormalizedToFmax()) {
-            ocf = "OCF= " + df.format(calbrnProfile.getOCF()) + "*";
+            ocf = " OCF= " + df.format(calbrnProfile.getOCF()) + "*";
         } else {
-            ocf = "OCF= " + df.format(calbrnProfile.getOCF());
+            ocf = " OCF= " + df.format(calbrnProfile.getOCF());
         }
-        return rundate + ": " + profileName + emax + " " + ocf;
+        return profileName + emax + ocf;
 
     }
 }

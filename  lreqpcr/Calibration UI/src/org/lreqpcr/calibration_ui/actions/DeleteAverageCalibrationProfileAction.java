@@ -16,29 +16,27 @@
  */
 package org.lreqpcr.calibration_ui.actions;
 
-import org.lreqpcr.analysis_services.LreAnalysisService;
-import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
-import org.lreqpcr.core.data_objects.CalibrationProfile;
-import org.lreqpcr.core.data_objects.Profile;
-import org.lreqpcr.core.ui_elements.LreNode;
-import org.lreqpcr.core.ui_elements.LreObjectChildren;
-import org.lreqpcr.core.utilities.ProfileUtilities;
 import java.awt.event.ActionEvent;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
+import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
+import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
+import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.database_services.DatabaseServices;
+import org.lreqpcr.core.ui_elements.LreNode;
+import org.lreqpcr.core.ui_elements.LreObjectChildren;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.ui_components.PanelMessages;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
-import org.openide.util.Lookup;
 import org.openide.windows.WindowManager;
 
 /**
  * Deletes the selection AverageCalibrationProfiles
+ *
  * @author Bob Rutledge
  */
 public class DeleteAverageCalibrationProfileAction extends AbstractAction {
@@ -65,7 +63,7 @@ public class DeleteAverageCalibrationProfileAction extends AbstractAction {
             }
         }
         if (nodes.length == 1) {
-            Profile profile = nodes[0].getLookup().lookup(Profile.class);
+            AverageCalibrationProfile profile = nodes[0].getLookup().lookup(AverageCalibrationProfile.class);
             String msg = "Are you sure you want to delete '" + profile.getName()
                     + "'?\n" + "This will permenantly remove this Calibration Profile. ";
             int n = JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(),
@@ -85,7 +83,7 @@ public class DeleteAverageCalibrationProfileAction extends AbstractAction {
                     JOptionPane.WARNING_MESSAGE);
             if (n == JOptionPane.YES_OPTION) {
                 for (Node node : nodes) {
-                    Profile profile = node.getLookup().lookup(Profile.class);
+                    AverageCalibrationProfile profile = node.getLookup().lookup(AverageCalibrationProfile.class);
                     deleteProfile(profile);
                 }
             }
@@ -95,53 +93,21 @@ public class DeleteAverageCalibrationProfileAction extends AbstractAction {
         parentNode.refreshNodeLabel();
         LreObjectChildren parentChildren = (LreObjectChildren) parentNode.getChildren();
         LreObject parentLreObject = parentNode.getLookup().lookup(LreObject.class);
-        if (parentLreObject != null) {
-            parentChildren.setLreObjectList((List<? extends LreObject>) db.getChildren(parentLreObject, parentLreObject.getChildClass()));
-        }
+        parentChildren.setLreObjectList((List<? extends LreObject>) db.getChildren(parentLreObject, parentLreObject.getChildClass()));
         parentChildren.addNotify();
         //Trigger Calibration panel update
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_CALIBRATION_PANELS);
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_DELETED);
     }
 
-    private void deleteProfile(Profile profile) {
-
-        if (profile instanceof AverageCalibrationProfile) {
-            AverageCalibrationProfile prf = (AverageCalibrationProfile) profile;
-            List<CalibrationProfile> lambdaProfileList = prf.getReplicateProfileList();
-            //Delete all of the replicate profiles
-            for (CalibrationProfile cp : lambdaProfileList) {
-                db.deleteObject(cp);
-            }
-            //likely not needed
-            db.deleteObject(lambdaProfileList);
-            //Remove the average profile
-            db.deleteObject(prf);
-            db.commitChanges();
-            return;
-        }
-        if (profile instanceof CalibrationProfile) {
-//Need to remove the Profile from the AverageCalibrationProfile profile list
-            CalibrationProfile calibrationProfile = (CalibrationProfile) profile;
-            AverageCalibrationProfile avProfile =
-                    (AverageCalibrationProfile) calibrationProfile.getParent();
-            List<CalibrationProfile> calibrationPrfList = avProfile.getReplicateProfileList();
-            //Test to sure that at least one Sample Profile will remain
-// TODO present an error dialog to indicate that the last calibration profile cannot be deleted
-            if (calibrationPrfList.size() < 2) {
-                return;
-            }
-            calibrationPrfList.remove(calibrationProfile);
-            db.saveObject(calibrationPrfList);
-            //Need to recalculate the average Fc dataset in the AverageSample Profile
-            avProfile.setFcReadings(null);//Fb will need to be recalculated
-            avProfile.setRawFcReadings(ProfileUtilities.generateAverageFcDataset(calibrationPrfList));
-            //Reinitialize the Average Profile
-            LreAnalysisService profileIntialization =
-                    Lookup.getDefault().lookup(LreAnalysisService.class);
-            profileIntialization.initializeProfileSummary(avProfile, selectionParameters);
-            db.deleteObject(profile);
-            db.commitChanges();
-        }
+    private void deleteProfile(AverageCalibrationProfile avCalPrf) {
+        //Need to remove the AverageProfile from the Run Profile list
+        Run run = avCalPrf.getRun();
+        List<AverageProfile> avCalPrfList = run.getAverageProfileList();
+        avCalPrfList.remove(avCalPrf);
+        db.saveObject(avCalPrfList);
+        db.deleteObject(avCalPrf);
+        db.saveObject(run);
+        db.commitChanges();
     }
 }
