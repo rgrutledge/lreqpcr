@@ -140,6 +140,9 @@ public final class ExperimentTopComponent extends TopComponent
         exportReplicateProfilesButton = new javax.swing.JButton();
         experimentDbTree = new org.lreqpcr.experiment_ui.components.ExperimentDbTree();
 
+        setMinimumSize(new java.awt.Dimension(470, 600));
+        setPreferredSize(new java.awt.Dimension(470, 600));
+
         openDBbutton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/lreqpcr/experiment_ui/Open24.gif"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(openDBbutton, org.openide.util.NbBundle.getMessage(ExperimentTopComponent.class, "ExperimentTopComponent.openDBbutton.text")); // NOI18N
         openDBbutton.setToolTipText(org.openide.util.NbBundle.getMessage(ExperimentTopComponent.class, "ExperimentTopComponent.openDBbutton.toolTipText")); // NOI18N
@@ -218,7 +221,7 @@ public final class ExperimentTopComponent extends TopComponent
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(experimentDbTree, javax.swing.GroupLayout.PREFERRED_SIZE, 377, Short.MAX_VALUE)
+                    .addComponent(experimentDbTree, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(openLastDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
