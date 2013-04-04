@@ -251,6 +251,8 @@ public class ProfileEditor extends JPanel implements
             }
             clearPanels();
             lreObjectInfo.displayMember(selectedNode);
+        }else{
+            clearPanels();
         }
     }
 

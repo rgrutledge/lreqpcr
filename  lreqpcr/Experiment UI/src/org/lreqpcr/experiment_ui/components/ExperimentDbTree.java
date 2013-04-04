@@ -285,11 +285,13 @@ public class ExperimentDbTree extends JPanel {
         fmaxNormalizeChkBox = new javax.swing.JCheckBox();
         fixEmaxBox = new javax.swing.JCheckBox();
 
-        setMinimumSize(new java.awt.Dimension(300, 400));
-        setPreferredSize(new java.awt.Dimension(425, 600));
+        setMinimumSize(new java.awt.Dimension(430, 570));
+        setPreferredSize(new java.awt.Dimension(430, 570));
 
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(400, 100));
+        jScrollPane1.setMinimumSize(new java.awt.Dimension(430, 570));
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(430, 570));
 
+        beanTree.setMinimumSize(new java.awt.Dimension(350, 500));
         beanTree.setPreferredSize(new java.awt.Dimension(350, 500));
         jScrollPane1.setViewportView(beanTree);
 
@@ -338,7 +340,7 @@ public class ExperimentDbTree extends JPanel {
                 .addComponent(fixEmaxBox)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(fmaxNormalizeChkBox)
-                .addContainerGap(9, Short.MAX_VALUE))
+                .addContainerGap())
             .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
@@ -351,8 +353,7 @@ public class ExperimentDbTree extends JPanel {
                     .addComponent(fmaxNormalizeChkBox)
                     .addComponent(fixEmaxBox))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 573, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 576, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
