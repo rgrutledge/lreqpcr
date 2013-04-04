@@ -68,7 +68,7 @@ public class CalbnTree extends JPanel {
     private DecimalFormat df = new DecimalFormat();
     private DecimalFormat dfCV = new DecimalFormat();
     private CalibrationDbInfo calDbInfo;
-    private StatusDisplayer.Message statusLineMessage;
+//    private StatusDisplayer.Message statusLineMessage;
 
     /**
      * Creates new form RunTree
@@ -96,9 +96,9 @@ public class CalbnTree extends JPanel {
             avProfileOCFdisplay.setText("");
             fixEmaxBox.setSelected(false);
             fmaxNrmzBox.setSelected(false);
-            if (statusLineMessage != null) {
-                statusLineMessage.clear(1);
-            }
+//            if (statusLineMessage != null) {
+//                statusLineMessage.clear(1);
+//            }
             return;
         }
         analysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
@@ -163,7 +163,7 @@ public class CalbnTree extends JPanel {
         } else {
             root.setDisplayName(displayName);
         }
-        statusLineMessage = StatusDisplayer.getDefault().setStatusText(dbFile.getAbsolutePath(), 1);
+//        statusLineMessage = StatusDisplayer.getDefault().setStatusText(dbFile.getAbsolutePath(), 1);
         mgr.setRootContext(root);
         calcAverageOCF();
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.CLEAR_PROFILE_EDITOR);
@@ -252,13 +252,13 @@ public class CalbnTree extends JPanel {
         fixEmaxBox = new javax.swing.JCheckBox();
         fmaxNrmzBox = new javax.swing.JCheckBox();
 
-        setMinimumSize(new java.awt.Dimension(300, 500));
-        setPreferredSize(new java.awt.Dimension(450, 500));
+        setMinimumSize(new java.awt.Dimension(300, 570));
+        setPreferredSize(new java.awt.Dimension(420, 570));
         setRequestFocusEnabled(false);
 
         jScrollPane1.setPreferredSize(new java.awt.Dimension(400, 100));
 
-        beanTree.setPreferredSize(new java.awt.Dimension(425, 500));
+        beanTree.setPreferredSize(new java.awt.Dimension(400, 500));
         jScrollPane1.setViewportView(beanTree);
 
         runViewButton.setText("View All");
@@ -295,19 +295,23 @@ public class CalbnTree extends JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(runViewButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(avProfileOCFdisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(fixEmaxBox)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(fmaxNrmzBox)
-                .addContainerGap())
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(runViewButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(avProfileOCFdisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(fixEmaxBox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(fmaxNrmzBox)
+                        .addGap(0, 2, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -320,7 +324,7 @@ public class CalbnTree extends JPanel {
                     .addComponent(fixEmaxBox)
                     .addComponent(fmaxNrmzBox))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 519, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 531, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 

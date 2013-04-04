@@ -39,7 +39,7 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace min="0" pref="126" max="32767" attributes="0"/>
-              <Component id="jLabel1" min="-2" pref="270" max="-2" attributes="0"/>
+              <Component id="tipTextForAvFmaxLine" min="-2" pref="270" max="-2" attributes="0"/>
           </Group>
           <Group type="102" attributes="0">
               <Group type="103" groupAlignment="0" attributes="0">
@@ -65,7 +65,7 @@
               <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
               <Component id="graphTitle" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+              <Component id="tipTextForAvFmaxLine" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
               <Component id="fmaxNrmzd" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
@@ -116,7 +116,7 @@
         <Property name="toolTipText" type="java.lang.String" value="Tartget or OCF normalized to the average Run Fmax"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="jLabel1">
+    <Component class="javax.swing.JLabel" name="tipTextForAvFmaxLine">
       <Properties>
         <Property name="text" type="java.lang.String" value="                                                            "/>
         <Property name="toolTipText" type="java.lang.String" value="Av Fmax"/>

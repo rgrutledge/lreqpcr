@@ -68,7 +68,7 @@ public class ExperimentDbTree extends JPanel {
     private DecimalFormat df = new DecimalFormat();
     private double avRunFmax = 0;
     private double avRunFmaxCV = 0;
-    private Message statusLineMessage;
+//    private Message statusLineMessage;
 
     /**
      * Creates new form ExperimentDbTree
@@ -136,9 +136,9 @@ public class ExperimentDbTree extends JPanel {
             ocfDisplay.setText("");
             fmaxNormalizeChkBox.setSelected(false);
             fixEmaxBox.setSelected(false);
-            if (statusLineMessage != null) {
-                statusLineMessage.clear(1);
-            }
+//            if (statusLineMessage != null) {
+//                statusLineMessage.clear(1);
+//            }
             return;
         }
         //Check if ExperimentDbInfo requires conversion to the new ExptDbInfo which extends DatabaseInfo
@@ -181,7 +181,7 @@ public class ExperimentDbTree extends JPanel {
             root.setShortDescription("Av Run Fmax: " + df.format(avRunFmax) + " ±" + cv + "%]");
         }
         root.setDisplayName(displayName);
-        statusLineMessage = StatusDisplayer.getDefault().setStatusText(dbFile.getAbsolutePath(), 1);
+//        statusLineMessage = StatusDisplayer.getDefault().setStatusText(dbFile.getAbsolutePath(), 1);
         mgr.setRootContext(root);
     }//End of create tree
 
