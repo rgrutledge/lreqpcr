@@ -20,6 +20,8 @@ package org.lreqpcr.amplicon_ui.amplicon_io;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import jxl.Workbook;
 import jxl.format.Alignment;
@@ -73,7 +75,9 @@ public class AmpliconExcelExport {
             label = new Label(7, 0, "Notes", centerUnderline);
             sheet.addCell(label);
             int row = 1;//Starting row
-            List<Amplicon> ampList = ampliconDB.getAllObjects(Amplicon.class);
+            //This is necessary because DB4O lists cannot be sorted via Collections.sort
+            List<Amplicon> ampList = new ArrayList<Amplicon>(ampliconDB.getAllObjects(Amplicon.class));
+            Collections.sort(ampList);
             for (Amplicon amp : ampList){
                 label = new Label(0, row, amp.getName(), centerArial);
                 sheet.addCell(label);

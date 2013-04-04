@@ -389,7 +389,7 @@ public class ExperimentDbTree extends JPanel {
             createTree();
             UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_EXPERIMENT_PANELS);
     }//GEN-LAST:event_fmaxNormalizeChkBoxActionPerformed
-
+@SuppressWarnings("unchecked")
     private void fixEmaxBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fixEmaxBoxActionPerformed
         if (!exptDB.isDatabaseOpen()) {
                 fixEmaxBox.setSelected(false);

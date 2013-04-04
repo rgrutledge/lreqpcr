@@ -366,7 +366,7 @@ public class CalbnTree extends JPanel {
         calbnDB.commitChanges();
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_CALIBRATION_PANELS);
     }//GEN-LAST:event_fixEmaxBoxActionPerformed
-
+@SuppressWarnings("unchecked")
     private void fmaxNrmzBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fmaxNrmzBoxActionPerformed
         boolean arg = fmaxNrmzBox.isSelected();
         if (!calbnDB.isDatabaseOpen()) {

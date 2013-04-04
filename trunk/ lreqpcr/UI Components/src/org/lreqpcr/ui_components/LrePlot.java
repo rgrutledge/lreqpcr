@@ -36,6 +36,7 @@ import org.openide.util.Lookup;
  * 
  * @author  Bob Rutledge
  */
+@SuppressWarnings("unchecked")
 public class LrePlot extends javax.swing.JPanel {
 
     private ProfileSummary prfSum; //Holds the Profile to be displayed

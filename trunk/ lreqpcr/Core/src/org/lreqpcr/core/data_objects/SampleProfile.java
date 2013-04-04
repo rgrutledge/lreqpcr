@@ -182,30 +182,21 @@ public class SampleProfile extends Profile {
     }
 
     /**
-     * Sort Profile --> NoLreWindow --> Excluded profiles respectively
+     * Sort By Amplicon Name, then Sample name
      *
-     * @param o the Profile to compare to
-     * @return the comparator integer
+     * @param o
+     * @return
      */
     @Override
     public int compareTo(Object o) {
-        Profile profile = (Profile) o;
-        if (profile.isExcluded()) {
-            if (!isExcluded()) {
-                return -1;
-            }
-        } else {
-            if (isExcluded()) {
-                return 1;
-            }
-            if (!profile.hasAnLreWindowBeenFound()) {
-                if (hasAnLreWindowBeenFound()) {
-                    return -1;
-                }
-            } else {
-                return 1;
-            }
+        SampleProfile profile = (SampleProfile) o;
+        //Sort by name
+        if (getAmpliconName().compareTo(profile.getAmpliconName()) == 0) {
+            //They have the same Sample name
+            //Sort by Amplicon name
+            return getSampleName().compareTo(profile.getSampleName());
         }
-        return 0;
+        //They have different Sample names, to use Sample name to sort
+        return getAmpliconName().compareTo(profile.getAmpliconName());
     }
 }
