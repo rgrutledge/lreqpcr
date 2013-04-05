@@ -41,7 +41,7 @@ import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.core.utilities.UniversalLookupListener;
 import org.lreqpcr.ui_components.PanelMessages;
 import org.netbeans.api.settings.ConvertAsProperties;
-import org.openide.awt.StatusDisplayer;
+//import org.openide.awt.StatusDisplayer;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
 import org.openide.explorer.view.BeanTreeView;
@@ -74,7 +74,7 @@ public final class AmpliconTopComponent extends TopComponent
     private LreNode root;
     private LreActionFactory nodeActionFactory = new AmpliconTreeNodeActions(mgr);
     private LabelFactory nodeLabelFactory = new AmpliconTreeNodeLabels();
-    private StatusDisplayer.Message statusLineMessage;
+//    private StatusDisplayer.Message statusLineMessage;
 
     @SuppressWarnings(value = "unchecked")
     public AmpliconTopComponent() {
@@ -106,9 +106,9 @@ public final class AmpliconTopComponent extends TopComponent
             AbstractNode emptyRoot = new AbstractNode(Children.LEAF);
             emptyRoot.setName("No Amplicon database is open");
             mgr.setRootContext(emptyRoot);
-            if (statusLineMessage != null){
-                statusLineMessage.clear(1);
-            }
+//            if (statusLineMessage != null){
+//                statusLineMessage.clear(1);
+//            }
             return;
         }
         // The AmpliconDbInfo allows Editing of Name and Notes for the database
@@ -134,7 +134,7 @@ public final class AmpliconTopComponent extends TopComponent
                 + " (" + String.valueOf(childList.size()) + ")";
         root.setName(displayName);
         root.setShortDescription(dbFile.getAbsolutePath());
-        statusLineMessage = StatusDisplayer.getDefault().setStatusText(dbFile.getAbsolutePath(), 1);
+//        statusLineMessage = StatusDisplayer.getDefault().setStatusText(dbFile.getAbsolutePath(), 1);
         mgr.setRootContext(root);
     }
 
