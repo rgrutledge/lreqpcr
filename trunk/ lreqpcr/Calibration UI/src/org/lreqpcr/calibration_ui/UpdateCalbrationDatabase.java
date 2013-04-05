@@ -49,12 +49,17 @@ public class UpdateCalbrationDatabase {
     @SuppressWarnings("unchecked")
     public static void updateCalibrationProfiles(DatabaseServices calbnDB) {
         List<Run> runList1 = (List<Run>) calbnDB.getAllObjects(Run.class);
+        //Some of these runs lack an average calibration profile array but also 
+        //include runs that have average sample profile array and must be deleted
         for(Run run : runList1){
             if (run.getAverageProfileList() != null && run.getAverageProfileList().get(0) instanceof AverageSampleProfile){
                 calbnDB.deleteObject(run);
             }
         }
-        List<AverageCalibrationProfile> avCalPrfList = (List<AverageCalibrationProfile>) calbnDB.getAllObjects(AverageCalibrationProfile.class);
+        //Now need to transfer the raverage calibration profiles into new CalibrationRuns 
+        //initialized from the ImplRun held within the average profiles
+        List<AverageCalibrationProfile> avCalPrfList = (List<AverageCalibrationProfile>) 
+                calbnDB.getAllObjects(AverageCalibrationProfile.class);
         //Set the AverageProfile list in each Run and have Run calculate average Fmax
         //Need to sort out all the avProfiles associated with each Run, e.g. CAL1 + CAL2 = 2 avProfiles in one run
         //This is required in order to put the avProfiles into the the correct Run
@@ -70,27 +75,33 @@ public class UpdateCalbrationDatabase {
                 retrievedRun.add(avCalPrf);
             }
         }//End of avPrf loop
+        //Now, go through each run and intialize a Calibration run for each
         for (Run run : runMap.keySet()) {
-            //Move the AverageCalibrationProfiles into new CalibrationRuns and delete the now outdated Runs
-            calbnDB.saveObject(runMap.get(run));
-            CalibrationRun calRun = new CalibrationRun();
-            calRun.setRunDate(run.getRunDate());
+            //Move the AverageCalibrationProfiles into corresponding old Runs 
+            //in order to calculate the average Fmax
+            run.setAverageProfileList(runMap.get(run));
             run.calculateAverageFmax();
-            //This is obvious incomplete but should suffice
+            //Intialize a Calibration run
+            CalibrationRun calRun = new CalibrationRun();
+            calRun.setName(" ");//BMC cal databases had no run and thus the run name is the import file name
+            calRun.setRunDate(run.getRunDate());
+            calRun.setAverageProfileList(run.getAverageProfileList());
             calRun.setCompleteRunAvFmax(run.getAverageFmax());
             calRun.setAverageProfileList(runMap.get(run));
             calRun.calculateAverageOCF();
             calbnDB.saveObject(calRun);
+            //Delete the outdated run but first remove the average profile array
             run.setAverageProfileList(null);
             calbnDB.deleteObject(run);
         }
-        //Testing indicates that duplicate runs with no average profile list are generated, so delete them
+        //Testing indicates that ImplRun remain, so delete them
         List<Run> runList = (List<Run>) calbnDB.getAllObjects(Run.class);
         for (Run run : runList){
             if (run instanceof RunImpl){
                 calbnDB.deleteObject(run);
             }
         }
+        List<Run> runFinalList = (List<Run>) calbnDB.getAllObjects(Run.class);
         calbnDB.commitChanges();
     }
 }

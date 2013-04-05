@@ -41,7 +41,7 @@ public class PlotFo extends javax.swing.JPanel {
     private boolean clearPlot;
 
     /** 
-     * Generates a plot of reaction fluorescenc and predicted fluorescence
+     * Generates a plot of cycle fluorescence and predicted fluorescence
      * versus cycle number
      */
     public PlotFo() {
@@ -85,7 +85,6 @@ public class PlotFo extends javax.swing.JPanel {
         lreWinSize = profile.getLreWinSize();
         avFoLabel.setVisible(true);
         avFoDisplay.setText(dfE.format(winAvFo) + " +/-" + df.format(winAvFoCV * 100) + "%");
-//        avFoDisplay.setText("+/-" + df.format(winAvFoCV * 100) + "%");
         df.applyPattern("0.00");
 
         /*Determine the maximum X&Y values: Dataset specific*/

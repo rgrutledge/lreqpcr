@@ -188,7 +188,7 @@ public class LreObjectChildren extends Children.Keys<LreObject> {
             }
         }
         //Test if this parent has children
-        LreNode node = null;
+        LreNode node;
         if (lreObject.getChildClass() == null) {//No children
             //This eliminates +Nodes which do not have children
             node = new LreNode(Children.LEAF, Lookups.singleton(lreObject), actions);

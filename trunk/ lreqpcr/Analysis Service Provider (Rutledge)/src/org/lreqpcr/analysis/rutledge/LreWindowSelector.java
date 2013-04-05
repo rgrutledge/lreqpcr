@@ -133,13 +133,26 @@ public class LreWindowSelector {
         optimizeLreWin(prfSum, foThreshold);
         double halfFmax = (profile.getEmax()/-profile.getDeltaE())/2;
         runner = prfSum.getZeroCycle();
-        //Move to the cycle with an Fc just > 1/2 Fmax
-        while (halfFmax > runner.getFc()){
-            runner = runner.getNextCycle();
-        }
-        //This should never happen but one unrepeatable example was experienced
         if (runner == null) {
             //Must have reached the end of the profile
+            profile.setHasAnLreWindowBeenFound(false);
+            return;
+        }
+        if (runner == null) {
+            //Likely a flat profile
+            profile.setHasAnLreWindowBeenFound(false);
+            return;
+        }
+        //Move to the cycle with an Fc just > 1/2 Fmax
+        try {
+           while (halfFmax > runner.getFc() && runner.getNextCycle() != null){
+            runner = runner.getNextCycle();
+        } 
+        } catch (Exception e) {
+            int i = 0;
+        }
+        if (runner == null) {
+            //Have reached the end of the profile and thus most certainly is a flat profile
             profile.setHasAnLreWindowBeenFound(false);
             return;
         }
