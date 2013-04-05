@@ -25,54 +25,53 @@ and open the template in the editor.
 		<p>Linear regression of efficiency (LRE) originated from recognition 
 		that real-time qPCR could be greatly simplified through the application 
 		of sigmoidal mathematics, which if automated, would allow absolute qPCR 
-		to be conducted with little or no user intervention. </p>
-		<p>Derived from on the ability to determine target quantity directly 
-		from individual fluorescence readings within the central region of an 
-		amplification profile, LRE provides an alternative to the relative 
-		quantification upon which most current qPCR methodologies are based. A 
-		key component was to adopt lambda gDNA as a universal quantitative 
-		standard, which, among other capabilities, allows absolute quantification 
-		to be conducted without the need to construction of target-specific standard curves. 
-		The following provides a step by step overview of how LRE functions, 
-		most of which is described in <a href="lre_literature.html">Rutledge and 
+		to be conducted with little or no user intervention. A key component was 
+		to adopt lambda gDNA as a universal quantitative standard, which 
+		eliminates the need to construction of target-specific standard curves 
+		in order to conduct absolute quantification. 
+		The following provides an overview of how LRE was developed, based on 
+		the concepts described by <a href="lre_literature.html">Rutledge and 
 		Stewart (2008a)</a>.</p>
-		<p>Real-time PCR was developed from the ability to monitor the increase in 
-		amplicon DNA quantity using some form of 
-		fluorescence chemistry. This in turn generates an&nbsp; &quot;amplification 
-		profile&quot; (or profile for short) in which&nbsp; reaction fluorescence is 
+		<p>Real-time PCR was developed from the ability to monitor amplicon DNA quantity using some form of 
+		fluorescence chemistry. This in turn generates an &quot;amplification 
+		profile&quot; in which&nbsp;reaction fluorescence is 
 		plotted against cycle number:</p>
 		<p align="center"><b>The Amplification Profile</b><br>
 		<img border="0" src="images/fc_plot1.gif" width="358" height="108"></p>
-		<p>Each cycle is thus defined by the &quot;cycle fluorescence&quot; (F<sub>C</sub>), 
-		which when using the fluorescent dye SYBR Green I, is proportional to 
-		the amount amplicon DNA mass present at the end of each cycle. 
+		<p>Each cycle is thus defined by the fluorescence signal it generates (F<sub>c</sub>), 
+		which when using the fluorescent dye SYBR Green I, is directly proportional to 
+		the amount amplicon DNA present at the end of each cycle. 
 		Conventional qPCR methods determine target quantity based on the 
 		relative position of the profile. A major limitation of this approach 
 		(among many others) is that absolute quantification requires 
-		construction of target-specific standard curves. </p>
+		construction of target-specific standard curves
+		<a href="lre_literature.html">(Rutledge and Côté 2003)</a>. </p>
 		<p>LRE expands the capabilities of qPCR by extending data analysis 
-		beyond simple determination of profile position. This was accomplished by 
+		beyond determination of profile position. This was accomplished by 
 		first determining the amplification efficiency produced during each 
-		cycle, based on the increase in amplicon DNA mass relative to the amount 
-		of amplicon DNA present at the beginning of the cycle. This of course is 
-		the amount of amplicon present at the end of the previous cycle, which 
-		is referred to as F<sub>C-1</sub>:</p>
+		cycle, based on the increase in amplicon DNA relative to the amount 
+		present at the beginning of the cycle. This of course is 
+		the amount of amplicon present at the end of the previous cycle, referred to as F<sub>C-1</sub>:</p>
 		<p align="center">
 		<img border="0" src="images/lre_fa1.gif" width="187" height="58"></p>
-		<p>The definition of a cycle can thus expanded to include its 
-		amplification efficiency, referred to as &quot;cycle efficiency&quot; or E<sub>C</sub>. 
-		</p>
-		<p>The core functionality of LRE was derived from the ability to view PCR 
+		<p>The definition of a cycle can thus be expanded to include the 
+		amplification efficiency it generated, which is defined as &quot;cycle efficiency&quot; or E<sub>C</sub>. 
+		Importantly, this approach revealed that contrary to the historical held 
+		belief that PCR amplification is an exponential process, amplification 
+		efficiency progressively decreases as amplicon DNA increases and that 
+		this decrease is linearly coupled to amplicon DNA mass
+		<a href="lre_literature.html">(Rutledge and Stewart 2008b)</a>.</p>
+		<p>The core functionality of LRE was thus derived from the ability to view PCR 
 		amplification not as the increase in amplicon DNA, but rather as the 
 		loss in amplification efficiency. This is done by plotting the E<sub>C</sub> 
 		of each cycle against its F<sub>C</sub>, generating what is referred to 
 		as the &quot;LRE Plot&quot;:</p>
 		<p align="center"><b>The LRE Plot<br>
 		</b><img border="0" src="images/lre_plot1.gif" width="356" height="207"></p>
-		<p>This reveals a linear relationship between amplification efficiency and the 
-		amount of amplicon DNA present at the end of a cycle. Although the 
-		mechanism of this linear coupling is unknown, this provides the ability 
-		to linearize an amplification profile, which among other attributes, 
+		<p>Although the 
+		mechanism of this linear coupling is unknown, this provided the ability 
+		to </p>
+		<p>linearize an amplification profile, which among other attributes, 
 		allows the kinetics of amplification to be quantified, using linear 
 		regression analysis based on the equation:</p>
 		<p align="center">
@@ -88,7 +87,7 @@ and open the template in the editor.
 		region. This central region is referred as the &quot;LRE 
 		window&quot;, which is denoted by black and red circles within the LRE 
 		and F<sub>C</sub> plots, respectively:</p>
-		<p align="center"><b><a name="LRE Analysis"></a>LRE Analysis<br>
+		<p align="center"><b>LRE Analysis<br>
 		</b><img border="0" src="images/lre_plot.gif" width="357" height="206"></p>
 		<p align="center"><b>The LRE Window<br>
 		</b><img border="0" src="images/fc_plot2.gif" width="355" height="107"></p>

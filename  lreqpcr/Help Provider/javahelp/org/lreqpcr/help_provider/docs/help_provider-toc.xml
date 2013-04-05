@@ -20,9 +20,9 @@ and open the template in the editor.
     <tocitem text="LRE Analyzer" target="About LRE Analyzer">
 
         <tocitem text="Getting Started" target="getting-started">
-            <tocitem text="Introduction to LRE" target="lre-introduction"/>
             <tocitem text="LRE Analyzer Introduction" target="program-intro"/>
             <tocitem text="Demo Databases" target="demo-databases"/>
+            <tocitem text="Introduction to LRE" target="lre-introduction"/>
             <tocitem text="Implementing LRE-based Assays" target="implementing-lre"/>
         </tocitem>
         
@@ -51,7 +51,7 @@ and open the template in the editor.
             <tocitem text="Manual Window Selection" target="manual-window-selection"/>
         </tocitem>
         
-        <tocitem text="LRE Normalization Options" target="lre-adjust-overview">
+        <tocitem text="Normalization Options" target="lre-adjust-overview">
             <tocitem text="Fixing Emax to 100%" target="emax-normalization"/>
             <tocitem text="Fmax Normalization" target="fmax-normalization"/>
         </tocitem>

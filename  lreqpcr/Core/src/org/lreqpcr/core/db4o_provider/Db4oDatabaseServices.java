@@ -73,6 +73,8 @@ public abstract class Db4oDatabaseServices implements DatabaseServices {
         closeDatabase();
         final String path = db4oDatabaseFile.getAbsolutePath();
         final String fileName = db4oDatabaseFile.getName();
+        //This is a failed attempt to put database loading into a background thread
+        //Will try to return to implementing this when time allows
 //        Runnable run = new Runnable() {
 //            public void run() {
 //                ProgressHandle p = ProgressHandleFactory.createHandle("Database is loading");
@@ -184,6 +186,7 @@ public abstract class Db4oDatabaseServices implements DatabaseServices {
         } else {
             db4o.delete(object);
         }
+        db4o.commit();
     }
 
     private void deleteAverageProfile(AverageProfile averageProfile) {

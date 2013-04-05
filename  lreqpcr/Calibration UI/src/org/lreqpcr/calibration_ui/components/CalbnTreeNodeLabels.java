@@ -53,24 +53,24 @@ public class CalbnTreeNodeLabels implements LabelFactory {
                 String avOCFstring = df.format(avOCF);
                 df.applyPattern("#0");
                 String ocfCV = df.format(run.getAvOcfCV() * 100);
+                //Determine if Fmax normalization has been applied
+                CalibrationProfile calPrf = (CalibrationProfile) run.getAverageProfileList().get(0);
+                String fmaxNormld = "";
+                if (calPrf.isOcfNormalizedToFmax()) {
+                    fmaxNormld = "*";
+                }
                 if (run.getAvOcfCV() != 0) {
-                    //Determine if Fmax normalization has been applied
-                    CalibrationProfile calPrf = (CalibrationProfile) run.getAverageProfileList().get(0);
-                    if (calPrf.isOcfNormalizedToFmax()) {
-                        return sdf.format(run.getRunDate()) + "-" + member.getName() + ":  Av OCF= "
-                            + avOCFstring + " ±" + ocfCV + "%*";
-                    }else {
                     return sdf.format(run.getRunDate()) + "-" + member.getName() + ":  Av OCF= "
-                            + avOCFstring + " ±" + ocfCV + "%";
-                    }
-                } else {//No CV to display
+                            + avOCFstring + " ±" + ocfCV + "%" + fmaxNormld;
+                } else {
                     return sdf.format(run.getRunDate()) + "-" + member.getName() + ":  Av OCF= "
-                            + avOCFstring;
+                            + avOCFstring + fmaxNormld;
                 }
             } else {
                 return sdf.format(run.getRunDate()) + " Run Av OCF not available";
             }
         }
+
         CalibrationProfile calbrnProfile = (CalibrationProfile) member;
         calbrnProfile.setShortDescription("");
         //Label madeup of four components: run date, name, Emax and OCF
