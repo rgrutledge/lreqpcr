@@ -285,14 +285,14 @@ public class ExperimentDbTree extends JPanel {
         fmaxNormalizeChkBox = new javax.swing.JCheckBox();
         fixEmaxBox = new javax.swing.JCheckBox();
 
-        setMinimumSize(new java.awt.Dimension(430, 570));
-        setPreferredSize(new java.awt.Dimension(430, 570));
+        setMinimumSize(new java.awt.Dimension(300, 170));
+        setPreferredSize(new java.awt.Dimension(300, 170));
 
-        jScrollPane1.setMinimumSize(new java.awt.Dimension(430, 570));
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(430, 570));
+        jScrollPane1.setMinimumSize(new java.awt.Dimension(295, 170));
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(295, 170));
 
-        beanTree.setMinimumSize(new java.awt.Dimension(350, 500));
-        beanTree.setPreferredSize(new java.awt.Dimension(350, 500));
+        beanTree.setMinimumSize(new java.awt.Dimension(285, 100));
+        beanTree.setPreferredSize(new java.awt.Dimension(295, 100));
         jScrollPane1.setViewportView(beanTree);
 
         jLabel1.setText("OCF (FU/ng):");
@@ -353,7 +353,7 @@ public class ExperimentDbTree extends JPanel {
                     .addComponent(fmaxNormalizeChkBox)
                     .addComponent(fixEmaxBox))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 576, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 145, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
