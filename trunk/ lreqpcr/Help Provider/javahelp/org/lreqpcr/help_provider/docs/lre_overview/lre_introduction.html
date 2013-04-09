@@ -24,12 +24,10 @@ and open the template in the editor.
         <h1 align="center">An Introduction to LRE</h1>
 		<p>Linear regression of efficiency (LRE) originated from recognition 
 		that real-time qPCR could be greatly simplified through the application 
-		of sigmoidal mathematics, which could allow absolute qPCR 
-		to be conducted with little or no user intervention. A key component was 
-		to adopt lambda gDNA as a universal quantitative standard, which 
-		eliminated the need to construct target-specific standard curves. 
-		The following provides an overview of how LRE was developed, based on 
-		the concepts described by <a href="lre_literature.html">Rutledge and 
+		of sigmoidal mathematics, that in turn allows absolute qPCR to be 
+		conducted without the need to construct standard curves. The following 
+		provides an overview of how LRE was developed based on the concepts 
+		introduced by <a href="lre_literature.html">Rutledge and 
 		Stewart (2008a)</a>.</p>
 		<p>Real-time PCR was developed from the ability to monitor amplicon DNA quantity using some form of 
 		fluorescence chemistry. This in turn generates an &quot;amplification 
@@ -90,8 +88,8 @@ and open the template in the editor.
 		linear regression analysis are taken from the central region of a profile, which avoids 
 		distortions caused by low reaction fluorescence in the earliest cycles, and aberrations associated with cycles within the upper 
 		region. This central region is referred as the &quot;LRE 
-		window&quot;, which is denoted by black and red circles within the LRE 
-		and F<sub>C</sub> plots, respectively:</p>
+		window&quot;, which is denoted by red circles within the LRE 
+		and F<sub>C</sub> plots:</p>
 		<p align="center"><b>LRE Analysis<br>
 		</b><img border="0" src="images/lre_plot.gif" width="357" height="206"></p>
 		<p align="center"><b>The LRE Window<br>
@@ -117,7 +115,7 @@ and open the template in the editor.
 		<p align="left">
 		Target quantity is then derived by averaging the LRE window F<sub>0</sub> 
 		values, which as described below, can be converted into the number of 
-		target molecules by correlating fluorescence intensity to DNA mass. </p>
+		target molecules by correlating fluorescence to DNA mass. </p>
 		<p align="left">
 		The fourth cycle parameter is the predicted F<sub>C</sub>, calculated using a second sigmoidal derivative:</p>
 		<p align="center">
@@ -139,7 +137,7 @@ and open the template in the editor.
 		<a href="../optical_calibration/optical_calibration_overview.html">
 		Optical Calibration</a> overview, the final step is to convert the average F<sub>0</sub> 
 		into the number of target molecules, by first correlating DNA mass to 
-		fluorescence intensity. This is accomplished by amplifying a known 
+		fluorescence units (FU). This is accomplished by amplifying a known 
 		quantity of lambda gDNA from which an optical calibration factor 
 		(OCF = FU / ng dsDNA) is determined. 
 		Similar to a conventional fluorescence assay for quantifying DNA, 
@@ -157,8 +155,8 @@ and open the template in the editor.
 		absolute quantification with few resources beyond that needed for target 
 		amplification. </p>
 		<p align="left">See also:<br>
-		<a href="../getting_started/lre_analyzer_intro.html">Introduction to the 
-		LRE Analyzer</a><br>
+		<a href="../lre_window_selection/lre_window_selection_overview.html">LRE 
+		window selection</a><br>
 		<a href="../getting_started/implementing_lre_assays.html">Implementing 
 		LRE-based assays</a></p>
     </body>

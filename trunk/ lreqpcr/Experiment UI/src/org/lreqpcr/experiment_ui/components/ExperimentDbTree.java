@@ -178,9 +178,12 @@ public class ExperimentDbTree extends JPanel {
             df.applyPattern("#0.0");
             String cv = df.format(avRunFmaxCV * 100);
             df.applyPattern(FormatingUtilities.decimalFormatPattern(avRunFmax));
-            root.setShortDescription("Av Run Fmax: " + df.format(avRunFmax) + " ±" + cv + "%]");
+            root.setDisplayName(displayName + " [Av Run Fmax: " + df.format(avRunFmax) + " ±" + cv + "%]");
+//            root.setShortDescription("Av Run Fmax: " + df.format(avRunFmax) + " ±" + cv + "%]");
+        }else {
+            root.setDisplayName(displayName);
         }
-        root.setDisplayName(displayName);
+        root.setShortDescription(dbFile.getAbsolutePath());
 //        statusLineMessage = StatusDisplayer.getDefault().setStatusText(dbFile.getAbsolutePath(), 1);
         mgr.setRootContext(root);
     }//End of create tree
