@@ -648,6 +648,7 @@ private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
                 x = xMin + (runner.getFc() * xScalingFactor);
                 y = yMax - (runner.getEc() * yScalingFactor);
                 Ellipse2D.Double pt1 = new Ellipse2D.Double(x - (ptSize * 0.25), y - (ptSize * 0.25), ptSize, ptSize); //XY offset = 25% of ptSize
+                g2.setColor(Color.RED);
                 g2.draw(pt1);//Circle designating this point is within the LRE window
                 runner = runner.getNextCycle();
                 if (runner == null) {

@@ -19,20 +19,9 @@ and open the template in the editor.
 <toc version="2.0">
     <tocitem text="LRE Analyzer" target="About LRE Analyzer">
 
-        <tocitem text="Getting Started" target="getting-started">
-            <tocitem text="LRE Analyzer Introduction" target="program-intro"/>
-            <tocitem text="Demo Databases" target="demo-databases"/>
-            <tocitem text="Introduction to LRE" target="lre-introduction"/>
-            <tocitem text="Implementing LRE-based Assays" target="implementing-lre"/>
-        </tocitem>
-        
-        <tocitem text="LRE Databases" target="database-overview">
-            <tocitem text="Experiment Database" target="experiment-database"/>
-            <tocitem text="Calibration Database" target="calibration-database"/>
-            <tocitem text="Amplicon Database" target="amplicon-database"/>
-        </tocitem>
-        
-        <tocitem text="User Interface" target="user-interface-overview">
+        <tocitem text="Demo Databases" target="demo-databases"/>
+ 
+        <tocitem text="Program Overview" target="user-interface-overview">
             <tocitem text="Explorer Panel" target="explorer-panel-overview">
                 <tocitem text="Experiment Database Window" target="experiment-database-window"/>
                 <tocitem text="Calibration Database Window" target="calibration-database-window"/>
@@ -41,24 +30,29 @@ and open the template in the editor.
             <tocitem text="Editor Panel" target="editor-panel-overview">
                 <tocitem text="Profile Editor Window" target="profile-editor-window"/>
                 <tocitem text="Amplicon Editor Window" target="amplicon-editor-window"/>
-                <tocitem text="Sorting Panel" target="sorting-panel-overview"/>
+            </tocitem>
+            <tocitem text="Sorting Panels" target="sorting-panel-overview"/>
+            <tocitem text="LRE Databases" target="database-overview">
+                <tocitem text="Experiment Database" target="experiment-database"/>
+                <tocitem text="Calibration Database" target="calibration-database"/>
+                <tocitem text="Amplicon Database" target="amplicon-database"/>
             </tocitem>
         </tocitem>
-            
-        <tocitem text="LRE Window Selection" target="lre-window-selection-overview">
-            <tocitem text="What is the LRE Window?" target="lre-window-definition"/>
-            <tocitem text="Automated Window Selection" target="automated-window-selection"/>
-            <tocitem text="Manual Window Selection" target="manual-window-selection"/>
-        </tocitem>
-        
-        <tocitem text="Normalization Options" target="lre-adjust-overview">
-            <tocitem text="Fixing Emax to 100%" target="emax-normalization"/>
-            <tocitem text="Fmax Normalization" target="fmax-normalization"/>
-        </tocitem>
-        
-        <tocitem text="Optical Calibration" target="optical-calibration-overview">
-            <tocitem text="Generating an OCF" target="generating-an-ocf"/>
-            <!--<tocitem text="Applying a Run-specific OCR" target="run-specific-ocf"/>-->
+          
+        <tocitem  text="LRE Overview" target="lre-introduction">
+            <tocitem text="LRE Window Selection" target="lre-window-selection-overview">
+                <tocitem text="What is the LRE Window?" target="lre-window-definition"/>
+                <tocitem text="Automated Window Selection" target="automated-window-selection"/>
+                <tocitem text="Manual Window Selection" target="manual-window-selection"/>
+           </tocitem>
+           <tocitem text="Optical Calibration" target="optical-calibration-overview">
+                <tocitem text="Generating an OCF" target="generating-an-ocf"/>
+           </tocitem>
+           <tocitem text="Adjusting LRE Analysis" target="lre-adjust-overview">
+                <tocitem text="Fixing Emax to 100%" target="emax-normalization"/>
+                <tocitem text="Fmax Normalization" target="fmax-normalization"/>
+           </tocitem>
+           <tocitem text="Implementing LRE-based Assays" target="implementing-lre"/>
         </tocitem>
         
         <tocitem text="Data Import" target="data-import-overview">
@@ -88,21 +82,21 @@ and open the template in the editor.
             <tocitem text="Optical Precision" target="optical-precision-overview"/>
             <tocitem text="Monitoring Assay Performance" target="monitoring-assay-performance"/>
             <tocitem text="<10 Molecule Problem" target="less-than-10molecules"/>
-                <tocitem text="LDA Overview" target="lda-overview"/>
-                <tocitem text="Assessing Quantitative Accuracy" target="assessing-accuracy"/>
-                <tocitem text="Developing Performance Benchmarks" target="developing-performance-benchmarks"/>
-            </tocitem>
-            <tocitem text="Trouble Shooting" target="known-issues">
-                <tocitem text="Profile Arcing" target="profile-arcing"/>
-                <tocitem text="Kinetic Anomalies" target="profile-anomalies"/>
-                <tocitem text="Baseline Drifting" target="baseline-drifting"/>
-                <tocitem text="Rox Normalization" target="rox-normalization"/>
-                <tocitem text="AB7500 Fast Ramping" target="ab7500-fast-ramping"/>
-            </tocitem>
-        
-            <tocitem text="Uninstalling the Program" target="uninstalling"/>
-            <!--        <tocitem text="Revision Overview" target="revision-overview"/>-->
-            <tocitem text="Literature" target="lre-literature"/>
-            <tocitem text="Glossary" target="glossary"/>
+            <tocitem text="LDA Overview" target="lda-overview"/>
+            <tocitem text="Assessing Quantitative Accuracy" target="assessing-accuracy"/>
+            <tocitem text="Developing Performance Benchmarks" target="developing-performance-benchmarks"/>
         </tocitem>
+        <tocitem text="Trouble Shooting" target="known-issues">
+            <tocitem text="Profile Arcing" target="profile-arcing"/>
+            <tocitem text="Kinetic Anomalies" target="profile-anomalies"/>
+            <tocitem text="Baseline Drifting" target="baseline-drifting"/>
+            <tocitem text="Rox Normalization" target="rox-normalization"/>
+            <tocitem text="AB7500 Fast Ramping" target="ab7500-fast-ramping"/>
+        </tocitem>
+        
+        <tocitem text="Uninstalling the Program" target="uninstalling"/>
+        <!--        <tocitem text="Revision Overview" target="revision-overview"/>-->
+        <tocitem text="Literature" target="lre-literature"/>
+        <tocitem text="Glossary" target="glossary"/>
+    </tocitem>
 </toc>
