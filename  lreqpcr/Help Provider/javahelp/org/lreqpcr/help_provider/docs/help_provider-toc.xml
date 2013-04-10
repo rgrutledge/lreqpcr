@@ -52,7 +52,6 @@ and open the template in the editor.
                 <tocitem text="Fixing Emax to 100%" target="emax-normalization"/>
                 <tocitem text="Fmax Normalization" target="fmax-normalization"/>
            </tocitem>
-           <tocitem text="Implementing LRE-based Assays" target="implementing-lre"/>
         </tocitem>
         
         <tocitem text="Data Import" target="data-import-overview">
@@ -65,9 +64,9 @@ and open the template in the editor.
             <tocitem text="Amplicon Import" target="amplicon-import"/>
         </tocitem>
         
-        <tocitem text="Data Export" target="data-export-overview">
-
-        </tocitem>
+        <tocitem text="Data Export" target="data-export-overview"/>
+        
+        <tocitem text="Implementing LRE-based Assays" target="implementing-lre"/>
 <!--        <tocitem text="Advanced Topics" target="advanced-topics-overview">
             <tocitem text="Assay Design" target="assay-design-overview">
                 <tocitem text="Primer Design" target="primer-design"/>
