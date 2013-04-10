@@ -160,6 +160,12 @@ public final class ProfileEditorTopComponent extends TopComponent
     protected String preferredID() {
         return PREFERRED_ID;
     }
+    
+    //this is necessary to override the mode menu acess which allows the user to close the window
+@Override
+    public boolean canClose(){
+        return false;
+    }
 
     @Override
     public void universalLookupChangeEvent(Object key) {

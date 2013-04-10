@@ -326,6 +326,7 @@ public final class CalibrationTopComponent extends TopComponent
     @Override
     protected void componentActivated() {
         super.componentActivated();
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.CALBN_TC_SELECTED);
     }
 
     void writeProperties(java.util.Properties p) {

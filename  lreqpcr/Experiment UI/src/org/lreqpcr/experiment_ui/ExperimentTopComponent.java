@@ -375,6 +375,7 @@ public final class ExperimentTopComponent extends TopComponent
     @Override
     protected void componentActivated() {
         super.componentActivated();
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.EXPT_TC_SELECTED);
     }
 
     void writeProperties(java.util.Properties p) {

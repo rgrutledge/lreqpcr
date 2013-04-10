@@ -41,7 +41,6 @@ import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.core.utilities.UniversalLookupListener;
 import org.lreqpcr.ui_components.PanelMessages;
 import org.netbeans.api.settings.ConvertAsProperties;
-//import org.openide.awt.StatusDisplayer;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
 import org.openide.explorer.view.BeanTreeView;
@@ -394,6 +393,12 @@ public final class AmpliconTopComponent extends TopComponent
 
     public ExplorerManager getExplorerManager() {
         return mgr;
+    }
+    
+    //this is necessary to override the mode menu acess which allows the user to close the window
+@Override
+    public boolean canClose(){
+        return false;
     }
 
     public DatabaseServices getDatabaseServices() {

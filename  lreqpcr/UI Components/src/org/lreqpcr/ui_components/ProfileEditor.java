@@ -73,6 +73,8 @@ public class ProfileEditor extends JPanel implements
         universalLookup.addListner(PanelMessages.PROFILE_EXCLUDED, this);
         universalLookup.addListner(PanelMessages.PROFILE_INCLUDED, this);
         universalLookup.addListner(PanelMessages.PROFILE_CHANGED, this);
+        universalLookup.addListner(PanelMessages.CALBN_TC_SELECTED, this);
+        universalLookup.addListner(PanelMessages.EXPT_TC_SELECTED, this);
         nodeResult = Utilities.actionsGlobalContext().lookupResult(LreNode.class);
         nodeResult.allItems();
         nodeResult.addLookupListener(this);
@@ -265,6 +267,22 @@ public class ProfileEditor extends JPanel implements
     public void universalLookupChangeEvent(Object key) {
         if (key == PanelMessages.CLEAR_PROFILE_EDITOR) {
             clearPanels();
+        }
+        if (key == PanelMessages.CALBN_TC_SELECTED) {
+            //The calibration explorer window has be selected
+            //If the selected node is not a calibration node, clear the panels
+            if (selectedNode != null &&
+                    selectedNode.getDatabaseServices().getDatabaseType() != DatabaseType.CALIBRATION){
+                clearPanels();
+            }
+        }
+        if (key == PanelMessages.EXPT_TC_SELECTED) {
+            //The experiment explorer window has be selected
+            //If the selected node is not an experiment node, clear the panels
+            if (selectedNode != null &&
+                    selectedNode.getDatabaseServices().getDatabaseType() != DatabaseType.EXPERIMENT){
+                clearPanels();
+            }
         }
         if (key == PanelMessages.PROFILE_EXCLUDED
                 || key == PanelMessages.PROFILE_INCLUDED) {
