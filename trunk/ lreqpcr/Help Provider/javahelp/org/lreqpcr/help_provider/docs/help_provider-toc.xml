@@ -22,6 +22,11 @@ and open the template in the editor.
         <tocitem text="Demo Databases" target="demo-databases"/>
  
         <tocitem text="Program Overview" target="user-interface-overview">
+            <tocitem text="LRE Databases" target="database-overview">
+                <tocitem text="Experiment Database" target="experiment-database"/>
+                <tocitem text="Calibration Database" target="calibration-database"/>
+                <tocitem text="Amplicon Database" target="amplicon-database"/>
+            </tocitem>
             <tocitem text="Explorer Panel" target="explorer-panel-overview">
                 <tocitem text="Experiment Database Window" target="experiment-database-window"/>
                 <tocitem text="Calibration Database Window" target="calibration-database-window"/>
@@ -32,11 +37,6 @@ and open the template in the editor.
                 <tocitem text="Amplicon Editor Window" target="amplicon-editor-window"/>
             </tocitem>
             <tocitem text="Sorting Panels" target="sorting-panel-overview"/>
-            <tocitem text="LRE Databases" target="database-overview">
-                <tocitem text="Experiment Database" target="experiment-database"/>
-                <tocitem text="Calibration Database" target="calibration-database"/>
-                <tocitem text="Amplicon Database" target="amplicon-database"/>
-            </tocitem>
         </tocitem>
           
         <tocitem  text="LRE Overview" target="lre-introduction">
@@ -94,7 +94,7 @@ and open the template in the editor.
             <tocitem text="AB7500 Fast Ramping" target="ab7500-fast-ramping"/>
         </tocitem>
         
-        <tocitem text="Uninstalling the Program" target="uninstalling"/>
+        <!--<tocitem text="Uninstalling the Program" target="uninstalling"/>-->
         <!--        <tocitem text="Revision Overview" target="revision-overview"/>-->
         <tocitem text="Literature" target="lre-literature"/>
         <tocitem text="Glossary" target="glossary"/>

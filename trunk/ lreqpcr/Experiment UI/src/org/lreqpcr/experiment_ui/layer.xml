@@ -24,7 +24,7 @@
             <folder name="View">
             <file name="org-netbeans-core-actions-HTMLViewAction.shadow_hidden"/>
         </folder>
-        <file name="Window_hidden"/>
+        <!--<file name="Window_hidden"/>-->
     </folder>
     <folder name="Toolbars"/>
     <folder name="Windows2">
