@@ -156,6 +156,8 @@ public final class AmpliconTopComponent extends TopComponent
         jScrollPane1 = new BeanTreeView();
         loadLastDatabaseButton = new javax.swing.JButton();
 
+        setMinimumSize(new java.awt.Dimension(430, 0));
+
         openDBbutton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/lreqpcr/amplicon_ui/Open24.gif"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(openDBbutton, null);
         openDBbutton.setToolTipText("Open an Amplicon database");
@@ -183,7 +185,7 @@ public final class AmpliconTopComponent extends TopComponent
             }
         });
 
-        newAmpliconButton.setFont(new java.awt.Font("Tahoma", 1, 11));
+        newAmpliconButton.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(newAmpliconButton, "New Amplicon");
         newAmpliconButton.setToolTipText("Create a new Amplicon");
         newAmpliconButton.addActionListener(new java.awt.event.ActionListener() {
@@ -217,8 +219,8 @@ public final class AmpliconTopComponent extends TopComponent
                         .addComponent(closeDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(newAmpliconButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 89, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 357, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 142, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 410, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
