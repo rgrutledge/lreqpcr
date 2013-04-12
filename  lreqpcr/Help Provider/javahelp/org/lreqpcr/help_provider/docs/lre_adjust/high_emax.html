@@ -35,24 +35,26 @@ and open the template in the editor.
 		to 100% for all profiles within the database. In addition, the LRE derived Emax displayed in the profile node label is replaced by "&lt;100%&gt;&quot; 
 		to signify that Emax has been fixed to 100%. Deselecting the checkbox 
 		will return to the LRE-derived Emax. </p>
+		<p align="center">
+		<img border="0" src="images/emax_checkbox.gif" width="443" height="129"></p>
 		<p>This option was introduced in an attempt to correct for biases in 
 		Emax determination produced by Qiagen&#39;s QuantiTect enzyme formulation, 
 		which consistently generates Emax values &gt;100%. Depending on the amplicon and 
 		batch of enzyme, 
 		LRE-derived Emax estimates can be &gt;110%, although Emax values in the 
-		100-104% range are most typical. Empirical testing has shown 
+		100-104% range are by far the most typical. Empirical testing has shown 
 		that a 1% overestimation roughly generates a 10% underestimation 
 		of target quantity, although this relationship is not linear so that the 
 		overestimation become larger with Emax values above 105%. </p>
-		<p>Extensive testing has subsequently shown that fixing Emax to 100% is 
+		<p>Extensive testing subsequently showed that fixing Emax to 100% is 
 		effective in reducing, or in many cases eliminating, the quantitative 
 		errors caused by this systematic bias. A key component of this testing was to use &quot;limiting dilution assay&quot; 
 		(LDA) to provide an independent determination of target quantity, which 
 		has shown that fixing to Emax to 100% produces target quantities within 
 		15-30% of the actual quantity, even for amplicons that generate Emax values of 107-110%. As discussed in the
 		<a href="../quantitative_accuracy/assessing_accuracy.html">verification 
-		of quantitative accuracy</a> section, LDA is simple to conduct and does 
-		not require a quantitative standard, thus providing a compelling 
+		of quantitative accuracy</a> section, LDA is simple to conduct, does 
+		not require a quantitative standard, and thus provides a compelling 
 		methodology for confirmation of the quantitative accuracy of any qPCR 
 		assay, irrespective of how it is implemented.</p>
 		<p>Note that fixing Emax to 100% does not 
@@ -61,7 +63,7 @@ and open the template in the editor.
 		<a href="../lre_overview/lre_introduction.html#Fo determination">calculation of target 
 		quantity</a> (F<sub>0</sub>), and does not impact Fmax, which is derived 
 		from <a href="../lre_overview/lre_introduction.html#LRE Analysis">LRE 
-		analysis</a>. </p>
+		analysis</a>: </p>
 		<p class="auto-style1">&nbsp;
 		<a href="../lre_overview/lre_introduction.html">
 		<img alt="" class="auto-style2" height="73" src="../lre_overview/images/Fo_equation.gif" width="230"></a></p>
