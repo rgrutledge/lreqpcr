@@ -280,23 +280,30 @@ public class ExperimentDbTree extends JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
         beanTree = new BeanTreeView();
+        jPanel1 = new javax.swing.JPanel();
+        runViewButton = new javax.swing.JRadioButton();
         jLabel1 = new javax.swing.JLabel();
         ocfDisplay = new javax.swing.JTextField();
-        runViewButton = new javax.swing.JRadioButton();
-        fmaxNormalizeChkBox = new javax.swing.JCheckBox();
         fixEmaxBox = new javax.swing.JCheckBox();
+        fmaxNormalizeChkBox = new javax.swing.JCheckBox();
 
-        setMinimumSize(new java.awt.Dimension(300, 170));
-        setPreferredSize(new java.awt.Dimension(300, 170));
+        setMinimumSize(new java.awt.Dimension(425, 170));
+        setPreferredSize(new java.awt.Dimension(425, 170));
+        setRequestFocusEnabled(false);
 
-        jScrollPane1.setMinimumSize(new java.awt.Dimension(295, 170));
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(295, 170));
+        beanTree.setMinimumSize(new java.awt.Dimension(250, 100));
+        beanTree.setPreferredSize(new java.awt.Dimension(250, 100));
 
-        beanTree.setMinimumSize(new java.awt.Dimension(285, 100));
-        beanTree.setPreferredSize(new java.awt.Dimension(295, 100));
-        jScrollPane1.setViewportView(beanTree);
+        jPanel1.setPreferredSize(new java.awt.Dimension(420, 24));
+
+        runViewButton.setText("Run View");
+        runViewButton.setToolTipText("Return to viewing Runs");
+        runViewButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                runViewButtonActionPerformed(evt);
+            }
+        });
 
         jLabel1.setText("OCF (FU/ng):");
         jLabel1.setToolTipText("Converts fluorescence target quantities to the number of molecules");
@@ -304,11 +311,11 @@ public class ExperimentDbTree extends JPanel {
         ocfDisplay.setColumns(8);
         ocfDisplay.setToolTipText("Manually enter an OCF value that will be applied to all profiles");
 
-        runViewButton.setText("Run View");
-        runViewButton.setToolTipText("Return to viewing Runs");
-        runViewButton.addActionListener(new java.awt.event.ActionListener() {
+        fixEmaxBox.setText("<100%> Emax");
+        fixEmaxBox.setToolTipText("Fix Emax to 100%");
+        fixEmaxBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                runViewButtonActionPerformed(evt);
+                fixEmaxBoxActionPerformed(evt);
             }
         });
 
@@ -320,43 +327,50 @@ public class ExperimentDbTree extends JPanel {
             }
         });
 
-        fixEmaxBox.setText("<100%> Emax");
-        fixEmaxBox.setToolTipText("Fix Emax to 100%");
-        fixEmaxBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fixEmaxBoxActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(runViewButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(ocfDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(fixEmaxBox)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(fmaxNormalizeChkBox)
                 .addContainerGap())
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(runViewButton)
+                    .addComponent(jLabel1)
+                    .addComponent(ocfDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(fixEmaxBox)
+                    .addComponent(fmaxNormalizeChkBox))
+                .addGap(1, 1, 1))
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(beanTree, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(runViewButton)
-                    .addComponent(jLabel1)
-                    .addComponent(ocfDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(fmaxNormalizeChkBox)
-                    .addComponent(fixEmaxBox))
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 145, Short.MAX_VALUE))
+                .addComponent(beanTree, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -439,12 +453,13 @@ public class ExperimentDbTree extends JPanel {
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_CHANGED);
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_EXPERIMENT_PANELS);
     }//GEN-LAST:event_fixEmaxBoxActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane beanTree;
     private javax.swing.JCheckBox fixEmaxBox;
     private javax.swing.JCheckBox fmaxNormalizeChkBox;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JTextField ocfDisplay;
     private javax.swing.JRadioButton runViewButton;
     // End of variables declaration//GEN-END:variables

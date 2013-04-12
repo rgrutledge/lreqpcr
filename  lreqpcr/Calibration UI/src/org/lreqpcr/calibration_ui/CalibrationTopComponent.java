@@ -117,8 +117,11 @@ public final class CalibrationTopComponent extends TopComponent
         closeDBbutton = new javax.swing.JButton();
         exportProfilesButton = new javax.swing.JButton();
 
-        setMinimumSize(new java.awt.Dimension(440, 770));
-        setPreferredSize(new java.awt.Dimension(440, 770));
+        setMinimumSize(new java.awt.Dimension(430, 770));
+        setPreferredSize(new java.awt.Dimension(430, 770));
+
+        calbnTree.setMinimumSize(new java.awt.Dimension(445, 250));
+        calbnTree.setPreferredSize(new java.awt.Dimension(445, 250));
 
         openDBbutton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/lreqpcr/calibration_ui/Open24.gif"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(openDBbutton, org.openide.util.NbBundle.getMessage(CalibrationTopComponent.class, "CalibrationTopComponent.openDBbutton.text")); // NOI18N
@@ -177,10 +180,10 @@ public final class CalibrationTopComponent extends TopComponent
                 .addComponent(newDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(closeDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(142, 142, 142)
                 .addComponent(exportProfilesButton)
                 .addContainerGap())
-            .addComponent(calbnTree, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
+            .addComponent(calbnTree, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {closeDBbutton, newDBbutton, openDBbutton, openLastDBbutton});
