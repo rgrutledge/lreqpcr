@@ -12,20 +12,20 @@
 moving average function is turned off:</span></font></h2>
 <p align="center">
 <img border="0" src="images/mx_moving_average.gif" width="236" height="156"></p>
-<h2><font face="Arial">Set up the well names and designate the calibration 
-reactions</font></h2>
-<p><font face="Arial">The first step is to use the well labels to provide the 
-amplicon and sample name, with a comma to separate them:</font></p>
+<p><b><font face="Arial">Set up the well names and designate the calibration 
+reactions</font></b><font face="Arial"><br>
+The first step is to use the well labels to provide the 
+amplicon and sample name, using a comma to separate them:</font></p>
 <p align="center"><img border="0" src="images/mxpVer55.jpg"></p>
 <p><font face="Arial">The amplicon name must be first and the amplicon name must 
-be identical to that entered in to the amplicon database, in order for the 
+be identical to that entered in to the amplicon database in order for the 
 amplicon size to be retrieved. </font><span style="font-family: Arial">If a 
 comma is not present, the program sets the amplicon name to “none” and the 
 amplicon size to zero.</span></p>
 <p><font face="Arial">The next step is to identify which wells are calibrations 
 reactions. This is done on the Plate Setup page by selecting the corresponding 
-replicate/well and on the right hand side of the page change the &quot;Well type&quot; to 
-&quot;Standard&quot;, type in the quantity of the lambda gDNA in picograms in the 
+replicate/well and on the right hand side of the page, change the &quot;Well type&quot; to 
+&quot;Standard&quot;, type in the quantity of the lambda gDNA in <b>picograms</b> in the 
 &quot;Standard quantity&quot;, and finally setting the &quot;Standard units&quot; to &quot;copies&quot;. In 
 the example below, replicate 8 contained 100 pg of lambda genomic DNA. Ignore 
 the &quot;Standard units:&quot; box. </font>&nbsp;
@@ -33,9 +33,8 @@ the &quot;Standard units:&quot; box. </font>&nbsp;
 <p align="center"><img border="0" src="images/mxpVer2.gif"></p>
 <p align="left"><font face="Arial">Calibration profiles are stored in the 
 Calibration database. </font></p>
-<h2 align="left"><font face="Arial">Export w</font><font face="Arial">ell 
-information</font></h2>
-<p align="left"><font face="Arial">Move to the Analysis-Results window and 
+<p align="left"><b><font face="Arial">Export well information</font></b><font face="Arial"><br>
+Move to the Analysis-Results window and 
 select the wells you want to export. If you want access to the replicate 
 profiles, be sure that the replicate averaging is turned off.</font></p>
 <p align="left"><font face="Arial">Switch to the &quot;Text report&quot; view and select 
@@ -54,18 +53,18 @@ the File menu.</font></p>
 <p align="left"><font face="Arial">Open the File menu, select &quot;Save As&quot; and 
 select &quot;xls&quot; as the file type. Name the file similar to the run name and save 
 the file. The file name will be used to name the Run during data import.</font></p>
-<p align="left"><font face="Arial">Finally an empty worksheet must be inserted 
+<p align="left"><font face="Arial">Finally, an empty worksheet must be inserted 
 by selecting Insert-Worksheet on the menu. This worksheet will be used to import 
 the Fc datasets. Note the this empty worksheet must be the first worksheet in 
 the workbook and that the Report data must by the second worksheet. </font></p>
-<h2 align="left"><font face="Arial">Import the F<sub>C</sub> datasets</font></h2>
-<p align="left"><font face="Arial">Move back to the Amplification Plots view in 
+<p align="left"><b><font face="Arial">Import the F<sub>C</sub> datasets</font></b><font face="Arial"><br>
+Move back to the Amplification Plots view in 
 the MXP program. On the right hand side change the &quot;Fluorescence:&quot; selection to 
 &quot;R (Multicomponent view)&quot;:</font></p>
 <p align="center"><img border="0" src="images/mxpVer4.gif"></p>
 <p><font face="Arial">This removes the auto baseline subtraction, which is 
 important because the MXP software will try to correct for baseline drift that 
-can led to aberrancies. The LRE program will conduct its own baseline 
+can led to aberrancies. The LRE Analyzer will conduct its own baseline 
 subtraction. </font> </p>
 <p><font face="Arial">Export the chart data to Excel-format1:</font></p>
 <p align="center">
@@ -73,15 +72,15 @@ subtraction. </font> </p>
 <p align="left"><font face="Arial">Copy all of the cells (Ctrl A, Ctrl C), move 
 back to the first workbook, select cell A1 in the empty worksheet and paste in 
 the copied cells (Ctrl V). </font></p>
-<h2 align="left"><font face="Arial">Enter the Run date</font></h2>
-<p align="left"><font face="Arial">Go to cell A1 and enter the run date. This 
-can be done by typing in a short form, e.g. &quot;5sep10&quot; and pressing enter. This 
+<p align="left"><b><font face="Arial">Enter the Run date</font></b><font face="Arial"><br>
+Go to cell A1 and enter the run date. This 
+can be done by typing in a short form, e.g. &quot;5sep13&quot; and pressing enter. This 
 must be done, as Run date is used to sort data, and an error will occur if it is 
 absent.</font></p>
 <p align="left"><font face="Arial">Finish by saving the file.</font></p>
 <p align="left"><font face="Arial">To initiate Run import, go to the Import menu 
-and select &quot;MXP500op Ver 3.4&quot;, which will open the file selection dialog. Select 
-the Excel workbook file and press &quot;Open&quot;. </font></p>
+and select &quot;MXP3000P Version 3.4&quot;, which will open the file selection dialog. Select 
+the completed template Excel workbook file and press &quot;Open&quot;. </font></p>
 
 </body>
 

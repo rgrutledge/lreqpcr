@@ -224,13 +224,8 @@ public abstract class Run extends LreObject {
     @Override
     public int compareTo(Object o) {
         Run run = (Run)o;
-        if(runDate.compareTo(run.getRunDate()) == 0){
-            try {
+        if(runDate.compareTo(run.getRunDate()) == 0){ 
                 return getName().compareTo(run.getName());
-            } catch (Exception e) {
-                int i = 0;
-            }
-            return getName().compareTo(run.getName());
         }else{
             return run.getRunDate().compareTo(getRunDate());
         }

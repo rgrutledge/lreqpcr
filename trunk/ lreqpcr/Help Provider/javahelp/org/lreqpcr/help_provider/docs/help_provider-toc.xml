@@ -48,10 +48,11 @@ and open the template in the editor.
            <tocitem text="Optical Calibration" target="optical-calibration-overview">
                 <tocitem text="Generating an OCF" target="generating-an-ocf"/>
            </tocitem>
-           <tocitem text="Adjusting LRE Analysis" target="lre-adjust-overview">
-                <tocitem text="Fixing Emax to 100%" target="emax-normalization"/>
-                <tocitem text="Fmax Normalization" target="fmax-normalization"/>
-           </tocitem>
+        </tocitem>
+        
+        <tocitem text="Adjusting LRE Analysis" target="lre-adjust-overview">
+            <tocitem text="Fixing Emax to 100%" target="emax-normalization"/>
+            <tocitem text="Fmax Normalization" target="fmax-normalization"/>
         </tocitem>
         
         <tocitem text="Data Import" target="data-import-overview">
@@ -78,12 +79,13 @@ and open the template in the editor.
         <!--        <tocitem text="LRE FAQS" target="lre-faqs"/>-->
 
         <tocitem text="Quality Control" target="quality-control">
-            <tocitem text="Optical Precision" target="optical-precision-overview"/>
-            <tocitem text="Monitoring Assay Performance" target="monitoring-assay-performance"/>
-            <tocitem text="<10 Molecule Problem" target="less-than-10molecules"/>
-            <tocitem text="LDA Overview" target="lda-overview"/>
-            <tocitem text="Assessing Quantitative Accuracy" target="assessing-accuracy"/>
             <tocitem text="Developing Performance Benchmarks" target="developing-performance-benchmarks"/>
+            <tocitem text="Monitoring Assay Performance" target="monitoring-assay-performance"/>
+            <tocitem text="Optical Precision" target="optical-precision-overview"/>
+            <tocitem text="<10 Molecule Problem" target="less-than-10molecules"/>
+            <tocitem text="Assessing Quantitative Accuracy" target="assessing-accuracy"/>
+            <tocitem text="LDA Overview" target="lda-overview"/>
+            
         </tocitem>
         <tocitem text="Trouble Shooting" target="known-issues">
             <tocitem text="Profile Arcing" target="profile-arcing"/>
