@@ -125,7 +125,7 @@ public class CalbnTree extends JPanel {
         //Check if CalibrationDbInfo is present in the database
         //If not this must be an unconverted database
         if (l.isEmpty()) {
-            //Assumes no Emax or Fmax normalization has not been applied, 
+            //Assumes no Emax or Fmax normalization has been applied, 
             //but this most certainly does not mattter
             calDbInfo = new CalibrationDbInfo();
             calbnDB.saveObject(calDbInfo);

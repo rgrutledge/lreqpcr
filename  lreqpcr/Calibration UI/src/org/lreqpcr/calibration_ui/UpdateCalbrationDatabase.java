@@ -23,6 +23,7 @@ import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.CalibrationRun;
+import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.data_objects.RunImpl;
 import org.lreqpcr.core.database_services.DatabaseServices;
@@ -101,7 +102,19 @@ public class UpdateCalbrationDatabase {
                 calbnDB.deleteObject(run);
             }
         }
+        //Set the CalbrationRun in all profiles 
         List<Run> runFinalList = (List<Run>) calbnDB.getAllObjects(Run.class);
+        for (Run run : runFinalList){
+            for (AverageProfile avPrf : run.getAverageProfileList()){
+                AverageCalibrationProfile avCalPrf = (AverageCalibrationProfile) avPrf;
+                for (Profile profile : avCalPrf.getReplicateProfileList()){
+                    profile.setRun(run);
+                    calbnDB.saveObject(profile);
+                }
+                avCalPrf.setRun(run);
+                calbnDB.saveObject(avCalPrf);
+            }
+        }
         calbnDB.commitChanges();
     }
 }

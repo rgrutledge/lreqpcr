@@ -207,6 +207,9 @@ public final class CalibrationTopComponent extends TopComponent
     private void openDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openDBbuttonActionPerformed
         if (calibrationDB.openUserSelectDatabaseFile()) {
             calbnTree.createTree();
+            if(!calibrationDB.isDatabaseOpen()){//Arises from failed db conversion
+                return;
+            }
             UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, calibrationDB);
             UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_DATABASE);
             String dbFileName = calibrationDB.getDatabaseFile().getName();
