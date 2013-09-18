@@ -34,6 +34,7 @@ public class CalibrationProfile extends Profile {
     private double mo;//Mo calculated from the lambdaMass
     private double ocf;//OCF calculated using the LRE-derived Emax
     private double ocfEmax100;//OCF calculated using Emax fixed to 100%
+    private double ocfCF = 0;//OCF calculated using the curve fitting Fo
     private boolean isOcfNormalizedToFmax;//Normalize the OCF to the Run's average Fmax
 
     /**
@@ -92,8 +93,9 @@ public class CalibrationProfile extends Profile {
      * based on the nanograms of lambda gDNA (Mo) and the average Fo. 
      */
     private void updateCalibrationProfile() {
-        ocf = (getAvFo() / mo);
+        ocf = getAvFo() / mo;
         ocfEmax100 = getAvFoEmax100() / mo;
+        ocfCF = getCfFo() / mo;
     }
 
     /**
@@ -126,6 +128,10 @@ public class CalibrationProfile extends Profile {
         } else {
             return ocf * correctionFactor;
         }
+    }
+
+    public double getOcfCF() {
+        return ocfCF;
     }
     
     public boolean isOcfNormalizedToFmax() {

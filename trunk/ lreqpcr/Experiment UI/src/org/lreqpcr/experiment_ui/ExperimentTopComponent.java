@@ -35,6 +35,7 @@ import org.lreqpcr.core.ui_elements.SampleNode;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.core.utilities.UniversalLookupListener;
 import org.lreqpcr.data_export_services.DataExportServices;
+import org.lreqpcr.scf.CurveFitter;
 import org.lreqpcr.ui_components.PanelMessages;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.explorer.ExplorerManager;
@@ -52,13 +53,13 @@ import org.openide.windows.WindowManager;
  * Explorer window that displays sample profiles within an experiment database.
  */
 @ConvertAsProperties(dtd = "-//org.lreqpcr.experiment_ui//Experiment//EN",
-autostore = false)
+        autostore = false)
 public final class ExperimentTopComponent extends TopComponent
         implements ExplorerManager.Provider, DatabaseProvider, LookupListener, UniversalLookupListener {
 
     private static ExperimentTopComponent instance;
     /**
-     * path to the icon used by the component and its open action  
+     * path to the icon used by the component and its open action
      */
 //    static final String ICON_PATH = "SET/PATH/TO/ICON/HERE";
     private static final String PREFERRED_ID = "ExperimentTopComponent";
@@ -67,6 +68,7 @@ public final class ExperimentTopComponent extends TopComponent
     private DatabaseServices experimentDB;
     private final Result<SampleNode> sampleNodeResult;
     private final Result<AmpliconNode> ampliconNodeResult;
+    private CurveFitter scf;//For testing curve fitting
 
     public ExperimentTopComponent() {
         initComponents();
@@ -83,6 +85,8 @@ public final class ExperimentTopComponent extends TopComponent
         setToolTipText("Experiment DB Explorer");
         associateLookup(ExplorerUtils.createLookup(mgr, this.getActionMap()));
         initServices();
+        //This is for testing curve fitting
+        scf = new CurveFitter();
         ampliconNodeResult = Utilities.actionsGlobalContext().lookupResult(AmpliconNode.class);
         ampliconNodeResult.allItems();
         ampliconNodeResult.addLookupListener(this);
@@ -93,6 +97,7 @@ public final class ExperimentTopComponent extends TopComponent
         UniversalLookup.getDefault().addListner(PanelMessages.NEW_RUN_IMPORTED, this);
         UniversalLookup.getDefault().addListner(PanelMessages.UPDATE_EXPERIMENT_PANELS, this);
         UniversalLookup.getDefault().addListner(PanelMessages.PROFILE_DELETED, this);
+
     }
 
     @SuppressWarnings(value = "unchecked")

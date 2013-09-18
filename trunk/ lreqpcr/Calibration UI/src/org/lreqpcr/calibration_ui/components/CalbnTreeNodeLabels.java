@@ -101,7 +101,8 @@ public class CalbnTreeNodeLabels implements LabelFactory {
                         + " or that the Min Fc is set too high");
             } else {
                 df.applyPattern("#0.0");
-                emax = "(" + df.format(calbrnProfile.getEmax() * 100) + "%) ";
+                //Display the curve fitting derived Emax
+                emax = "(" + df.format(calbrnProfile.getCfEmax() * 100) + "%) ";
             }
         }
         //Determine what to display for the OCF
@@ -111,7 +112,8 @@ public class CalbnTreeNodeLabels implements LabelFactory {
         if (calbrnProfile.isOcfNormalizedToFmax()) {
             ocf = " OCF= " + df.format(calbrnProfile.getOCF()) + "*";
         } else {
-            ocf = " OCF= " + df.format(calbrnProfile.getOCF());
+            //Display the curve fitting derived OCF
+            ocf = " OCF= " + df.format(calbrnProfile.getOcfCF());
         }
         return profileName + emax + ocf;
 

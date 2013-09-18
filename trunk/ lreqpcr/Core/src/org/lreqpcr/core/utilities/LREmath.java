@@ -57,10 +57,10 @@ public class LREmath {
      * @param overriddenEmaxValue the Emax value to use for Fo calculation
      * @return     the predicted target quantity in fluorescence units (Fo) using the specified Emax
      */
-    public static double calcFo(int c, double cF, double dE, double mE, double overridentEmaxValue) {
+    public static double calcFo(int c, double cF, double dE, double mE, double overridenEmaxValue) {
         double maxF = (mE)/-dE;
         //Note that lack of deltaE is the primary basis for the presumed validation of overriding Emax
-        double trgFo = maxF/(1+(((maxF/cF)-1)*Math.pow(overridentEmaxValue + 1, c)));
+        double trgFo = maxF/(1+(((maxF/cF)-1)*Math.pow(overridenEmaxValue + 1, c)));
         return trgFo;
     }
     
@@ -124,9 +124,9 @@ public class LREmath {
      */
     public static double calcNonLinearR2(double[][] fcpFc) {
         int listLength = fcpFc[0].length;
-        double nr2 = 0; //R2
+        double nr2; //R2
         double sumFc = 0; //Sum of the Fc readings across the LRE window
-        double avFc = 0; //Average Fc across the LRE window
+        double avFc; //Average Fc across the LRE window
         double numSum = 0; //Numerator sum
         double demSum = 0; //Denominator sum
         for(int i=0; i<listLength; i++) {
@@ -136,6 +136,37 @@ public class LREmath {
         for(int i=0; i<listLength; i++) {
             numSum += Math.pow((fcpFc[0][i])-fcpFc[1][i], 2);
             demSum += Math.pow(fcpFc[0][i] - avFc, 2);
+        }
+        nr2 = 1-(numSum/demSum);
+        return nr2;
+    }
+    
+    /**
+     * Determines non-linear correlation coefficent (R2) for
+     * the predicted Fc vs. the actual Fc
+     *
+     * @param fc the observed fluorescence readings (Fc)
+     * @param pFc the predicted fluorescence readings (pFc)
+     * @return the nonlinear correlation coefficient (R2)
+     */
+    public static double calcNonLinearR2(double[] fc, double[]pFc) {
+        if (fc.length != pFc.length){
+            //Should 
+            throw new IllegalArgumentException("Number of readings must be equal");
+        }
+        int listLength = fc.length;
+        double nr2; //R2
+        double sumFc = 0; //Sum of the Fc readings across the LRE window
+        double avFc; //Average Fc across the LRE window
+        double numSum = 0; //Numerator sum
+        double demSum = 0; //Denominator sum
+        for(int i=0; i<listLength; i++) {
+            sumFc += fc[i];
+        }
+        avFc = sumFc/listLength;
+        for(int i=0; i<listLength; i++) {
+            numSum += Math.pow((fc[i])-pFc[i], 2);
+            demSum += Math.pow(pFc[i] - avFc, 2);
         }
         nr2 = 1-(numSum/demSum);
         return nr2;

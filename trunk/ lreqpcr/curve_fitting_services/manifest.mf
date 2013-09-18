@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+OpenIDE-Module: org.lrepcr.curve_fitting_services
+OpenIDE-Module-Localizing-Bundle: org/lrepcr/curve_fitting_services/Bundle.properties
+OpenIDE-Module-Specification-Version: 1.0
+
