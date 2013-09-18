@@ -21,6 +21,7 @@ import java.awt.geom.*;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import org.lrepcr.curve_fitting_services.CurveFittingServices;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.*;
 import org.lreqpcr.core.data_processing.*;
@@ -50,6 +51,7 @@ public class LrePlot extends javax.swing.JPanel {
     private SimpleDateFormat sdf = new SimpleDateFormat("dMMMyy");
     private UniversalLookup universalLookup = UniversalLookup.getDefault();
     private DatabaseServices db;//The database in which the Profile is stored
+    private CurveFittingServices cfServices = Lookup.getDefault().lookup(CurveFittingServices.class);
 
     /** 
      * Generates a plot of reaction fluorescence and predicted fluorescence
@@ -165,6 +167,7 @@ public class LrePlot extends javax.swing.JPanel {
 //which should be true if the profile is being displayed so that the user can modify it
         //Update ProfileSummary using the new LRE parameters
         ProfileInitializer.calcLreParameters(prfSum);
+        cfServices.curveFit(profile);
 //Note that of 9Aug12 the profile updates itself following changes to the avFo
         db.saveObject(profile);
         //The AverageSampleProfile may need to be updated if this is a SampleProfile

@@ -39,12 +39,13 @@
                   <Component id="plotLREs" alignment="0" max="32767" attributes="1"/>
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
                   <Component id="plotFo" alignment="0" min="-2" pref="250" max="-2" attributes="2"/>
-                  <Component id="numericalTable" alignment="0" min="-2" max="-2" attributes="1"/>
-                  <Component id="lreWindowParametersPanel" min="-2" max="-2" attributes="1"/>
+                  <Component id="lreWindowParametersPanel" max="32767" attributes="1"/>
+                  <Component id="numericalTable" alignment="0" max="32767" attributes="1"/>
+                  <Component id="curveFittingParam1" alignment="0" max="32767" attributes="0"/>
               </Group>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <EmptySpace pref="23" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -66,6 +67,8 @@
                       <Component id="numericalTable" min="-2" max="-2" attributes="1"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="plotFo" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="curveFittingParam1" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
@@ -125,6 +128,8 @@
           <Dimension value="[250, 100]"/>
         </Property>
       </Properties>
+    </Component>
+    <Component class="org.lreqpcr.ui_components.CurveFittingParam" name="curveFittingParam1">
     </Component>
   </SubComponents>
 </Form>

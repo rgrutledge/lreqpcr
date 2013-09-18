@@ -79,6 +79,7 @@ public class ProfileEditor extends JPanel implements
         nodeResult.allItems();
         nodeResult.addLookupListener(this);
         plotLREs.clearPlot();
+        curveFittingParam1.clearPanel();
         if (currentDB != null) {
             if (currentDB.isDatabaseOpen()) {
                 List<LreWindowSelectionParameters> l = currentDB.getAllObjects(LreWindowSelectionParameters.class);
@@ -104,6 +105,7 @@ public class ProfileEditor extends JPanel implements
             plotLREs.clearPlot();
             plotFc.iniPlot(prfSum);
             lreObjectInfo.displayMember(selectedNode);
+            curveFittingParam1.clearPanel();
         }
 
     }
@@ -119,6 +121,7 @@ public class ProfileEditor extends JPanel implements
                 plotFc.iniPlot(prfSum);
                 plotFo.iniPlot(prfSum);
                 lreObjectInfo.displayMember(selectedNode);
+                curveFittingParam1.updateDisplay(prfSum);
                 return;
             }
         }
@@ -127,6 +130,7 @@ public class ProfileEditor extends JPanel implements
         plotFc.iniPlot(prfSum);
         plotFo.iniPlot(prfSum);
         lreObjectInfo.displayMember(selectedNode);
+        curveFittingParam1.updateDisplay(prfSum);
     }
 
     private void clearPanels() {
@@ -137,6 +141,7 @@ public class ProfileEditor extends JPanel implements
         plotLREs.clearPlot();
         numericalTable.clearTable();
         lreObjectInfo.clearPanel();
+        curveFittingParam1.clearPanel();
     }
 
     @SuppressWarnings("unchecked")
@@ -149,6 +154,7 @@ public class ProfileEditor extends JPanel implements
         lreObjectInfo = new org.lreqpcr.ui_components.LreObjectInfo();
         plotFo = new org.lreqpcr.ui_components.PlotFo();
         lreWindowParametersPanel = new org.lreqpcr.ui_components.LreWindowParametersPanel();
+        curveFittingParam1 = new org.lreqpcr.ui_components.CurveFittingParam();
 
         setBackground(new java.awt.Color(51, 153, 255));
         setMaximumSize(new java.awt.Dimension(630, 594));
@@ -181,11 +187,12 @@ public class ProfileEditor extends JPanel implements
                     .addComponent(plotFc, 0, 0, Short.MAX_VALUE)
                     .addComponent(plotLREs, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(plotFo, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(numericalTable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lreWindowParametersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                    .addComponent(lreWindowParametersPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(numericalTable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(curveFittingParam1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(23, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -203,11 +210,14 @@ public class ProfileEditor extends JPanel implements
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(numericalTable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(plotFo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(18, Short.MAX_VALUE))
+                        .addComponent(plotFo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(curveFittingParam1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private org.lreqpcr.ui_components.CurveFittingParam curveFittingParam1;
     private org.lreqpcr.ui_components.LreObjectInfo lreObjectInfo;
     private org.lreqpcr.ui_components.LreWindowParametersPanel lreWindowParametersPanel;
     private org.lreqpcr.ui_components.NumericalTable numericalTable;

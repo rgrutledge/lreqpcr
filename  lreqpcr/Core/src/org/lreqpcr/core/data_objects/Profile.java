@@ -47,7 +47,7 @@ public abstract class Profile extends LreObject {
     private int fbStart, fbWindow;//Start and size of the Fb window for determining background fluorescence
     // TODO fcReadings should be stored in a HashMap in order to preserve cycle number
     private double[] fcReadings; //Fluorescence dataset (Background subtracted)
-    private double fb;//Average fluorescence backgroung used for background substraction
+    private double fb;//Average fluorescence background used for background substraction
     private boolean hasAnLreWindowBeenFound;//Is this a flat profile or has any abberrancy that dissallows an LRE window to be located
     private int strCycleInt; //LRE window start cycle
     private int lreWinSize; //LRE window size
@@ -57,9 +57,15 @@ public abstract class Profile extends LreObject {
     private double avFoEmax100;//Fo values and CV calculated with Emax fixed to 100%
     private double nonR2;//Nonlinear r2 of predicted Fc to actual Fc within the LRE window... not very useful
     private double midC;//C1/2
-    private double fbSlope, fbIntercept, fbR2;//Baseline linear regression used to test for baseline drift... under development
     private boolean excluded;//Allows profiles to be excluded from the analysis
     private String whyExcluded;//Text describing why the profile was excluded
+    
+    //Curve fit derived parameters 
+    private double cfFb = 0;//Curve Fit derived Fb
+    private double cfFbSlope = 0;//Curve Fit derived Fb slope
+    private double cfEmax = 0;//Curve Fit derived Emax
+    private double cfFmax = 0;//Curve Fit derived Fmax
+    private double cfFo = 0;//Curve Fit derived Fo
 
     /**
      * 
@@ -377,50 +383,6 @@ public abstract class Profile extends LreObject {
         this.runDate = runDate;
     }
 
-    public double getFbIntercept() {
-        return fbIntercept;
-    }
-
-    public void setFbIntercept(double fbIntercept) {
-        this.fbIntercept = fbIntercept;
-    }
-
-    /**
-     * Linear correlation coefficient of the region used to determine background fluorescence. 
-     * Provided as a crude indicator of baseline drifting.
-     * @return linear correlation coefficient of the baseline region used to calculate background fluorescence
-     */
-    public double getFbR2() {
-        return fbR2;
-    }
-
-    /**
-     * Linear correlation coefficient of the region used to determine background fluorescence.
-     * Provided as a crude indicator of baseline drifting.
-     * @param fbR2 linear correlation coefficient of the baseline region used to calculate background fluorescence
-     */
-    public void setFbR2(double fbR2) {
-        this.fbR2 = fbR2;
-    }
-
-    /**
-     * This is part of an unimplemented function to determine the level of baseline 
-     * drifting and thus has no current relevance.
-     * @return the slope of the baseline
-     */
-    public double getFbSlope() {
-        return fbSlope;
-    }
-
-    /**
-     * This is part of an unimplemented function to determine the level of baseline 
-     * drifting and thus has no current relevance.
-     * @param fbSlope 
-     */
-    public void setFbSlope(double fbSlope) {
-        this.fbSlope = fbSlope;
-    }
-
     /**
      * Flag indicating whether a profile has been excluded, primarily due to 
      * failed amplification or anomalous amplification kinetics. 
@@ -488,6 +450,46 @@ public abstract class Profile extends LreObject {
      */
     public void setHasAnLreWindowBeenFound(boolean hasAnLreWindowFound) {
         this.hasAnLreWindowBeenFound = hasAnLreWindowFound;
+    }
+
+    public double getCfFb() {
+        return cfFb;
+    }
+
+    public void setCfFb(double cfFb) {
+        this.cfFb = cfFb;
+    }
+
+    public double getCfFbSlope() {
+        return cfFbSlope;
+    }
+
+    public void setCfFbSlope(double cfFbSlope) {
+        this.cfFbSlope = cfFbSlope;
+    }
+
+    public double getCfEmax() {
+        return cfEmax;
+    }
+
+    public void setCfEmax(double cfEmax) {
+        this.cfEmax = cfEmax;
+    }
+
+    public double getCfFmax() {
+        return cfFmax;
+    }
+
+    public void setCfFmax(double cfFmax) {
+        this.cfFmax = cfFmax;
+    }
+
+    public double getCfFo() {
+        return cfFo;
+    }
+
+    public void setCfFo(double cfFo) {
+        this.cfFo = cfFo;
     }
 
     @Override

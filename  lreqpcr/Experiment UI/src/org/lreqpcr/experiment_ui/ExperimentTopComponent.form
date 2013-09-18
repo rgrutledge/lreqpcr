@@ -35,7 +35,7 @@
               <Component id="closeDBbutton" linkSize="2" min="-2" pref="33" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="122" max="32767" attributes="0"/>
+              <EmptySpace pref="106" max="32767" attributes="0"/>
           </Group>
           <Component id="experimentDbTree" alignment="0" max="32767" attributes="0"/>
       </Group>
@@ -56,7 +56,7 @@
                   <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="experimentDbTree" pref="530" max="32767" attributes="0"/>
+              <Component id="experimentDbTree" pref="177" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
