@@ -37,38 +37,40 @@ public class CalbnTreeNodeLabels implements LabelFactory {
     public String getNodeLabel(LreObject member) {
         if (member instanceof CalibrationRun) {
             CalibrationRun run = (CalibrationRun) member;
-            //Place the Run average Fmax into the short description
+            //Place the Run average Fmax into the node label
             double avFmax = run.getAverageFmax();
             df.applyPattern(FormatingUtilities.decimalFormatPattern(avFmax));
             String avFmaxString = df.format(avFmax);
             df.applyPattern("#0");
-            String cv = df.format(run.getAvFmaxCV() * 100);
-            run.setShortDescription(" [Av Fmax: " + avFmaxString + " ±" + cv + "%]");
+            String fmaxCV = df.format(run.getAvFmaxCV() * 100);
+            return sdf.format(run.getRunDate()) + ": Av Fmax= "
+                    + avFmaxString + " ±" + fmaxCV + "%";
+            
+//            run.setShortDescription(" [Av Fmax: " + avFmaxString + " ±" + fmaxCV + "%]");
             //Recalculate the Run avOCF
             //This is not expected to impact performance
             //Display Run's average OCF
-            if (run.getAvOCF() != 0) {
-                double avOCF = run.getAvOCF();
-                df.applyPattern(FormatingUtilities.decimalFormatPattern(avOCF));
-                String avOCFstring = df.format(avOCF);
-                df.applyPattern("#0");
-                String ocfCV = df.format(run.getAvOcfCV() * 100);
-                //Determine if Fmax normalization has been applied
-                CalibrationProfile calPrf = (CalibrationProfile) run.getAverageProfileList().get(0);
-                String fmaxNormld = "";
-                if (calPrf.isOcfNormalizedToFmax()) {
-                    fmaxNormld = "*";
-                }
-                if (run.getAvOcfCV() != 0) {
-                    return sdf.format(run.getRunDate()) + "-" + member.getName() + ":  Av OCF= "
-                            + avOCFstring + " ±" + ocfCV + "%" + fmaxNormld;
-                } else {
-                    return sdf.format(run.getRunDate()) + "-" + member.getName() + ":  Av OCF= "
-                            + avOCFstring + fmaxNormld;
-                }
-            } else {
-                return sdf.format(run.getRunDate()) + " Run Av OCF not available";
-            }
+//            if (run.getAvOCF() != 0) {
+//                double avOCF = run.getAvOCF();
+//                df.applyPattern(FormatingUtilities.decimalFormatPattern(avOCF));
+//                String avOCFstring = df.format(avOCF);
+//                df.applyPattern("#0");
+//                String ocfCV = df.format(run.getAvOcfCV() * 100);
+            //Determine if Fmax normalization has been applied
+//                CalibrationProfile calPrf = (CalibrationProfile) run.getAverageProfileList().get(0);
+//                String fmaxNormld = "";
+//                if (calPrf.isOcfNormalizedToFmax()) {
+//                    fmaxNormld = "*";
+//                }
+//                if (run.getAvOcfCV() != 0) {
+
+//                } else {
+//                    return sdf.format(run.getRunDate()) + "-" + member.getName() + ":  Av OCF= "
+//                            + avOCFstring + fmaxNormld;
+//                }
+//            } else {
+//                return sdf.format(run.getRunDate()) + " Run Av OCF not available";
+//            }
         }
 
         CalibrationProfile calbrnProfile = (CalibrationProfile) member;
@@ -101,8 +103,7 @@ public class CalbnTreeNodeLabels implements LabelFactory {
                         + " or that the Min Fc is set too high");
             } else {
                 df.applyPattern("#0.0");
-                //Display the curve fitting derived Emax
-                emax = "(" + df.format(calbrnProfile.getCfEmax() * 100) + "%) ";
+                emax = "(" + df.format(calbrnProfile.getEmax() * 100) + "%) ";
             }
         }
         //Determine what to display for the OCF
@@ -112,8 +113,7 @@ public class CalbnTreeNodeLabels implements LabelFactory {
         if (calbrnProfile.isOcfNormalizedToFmax()) {
             ocf = " OCF= " + df.format(calbrnProfile.getOCF()) + "*";
         } else {
-            //Display the curve fitting derived OCF
-            ocf = " OCF= " + df.format(calbrnProfile.getOcfCF());
+            ocf = " OCF= " + df.format(calbrnProfile.getOCF());
         }
         return profileName + emax + ocf;
 

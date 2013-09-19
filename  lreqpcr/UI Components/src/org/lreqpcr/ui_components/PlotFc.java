@@ -59,13 +59,16 @@ public class PlotFc extends javax.swing.JPanel {
     public PlotFc() {
         initComponents();
         fbLabel.setVisible(false);
+        fbSlopeLabel.setVisible(false);
         fmaxNrmzd.setVisible(false);
     }
 
     public void clearPlot() {
         fbDisplay.setText("");
+        fbSlopeDisplay.setText("");
         tipTextForAvFmaxLine.setToolTipText("");
         fbLabel.setVisible(false);
+        fbSlopeLabel.setVisible(false);
         fmaxNrmzd.setVisible(false);
         graphTitle.setText("Fc Plot (Fc vs. Cycle)");
         Dimension size = this.getSize();
@@ -89,6 +92,8 @@ public class PlotFc extends javax.swing.JPanel {
         fbDisplay = new javax.swing.JLabel();
         fmaxNrmzd = new javax.swing.JLabel();
         tipTextForAvFmaxLine = new javax.swing.JLabel();
+        fbSlopeLabel = new javax.swing.JLabel();
+        fbSlopeDisplay = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(244, 245, 247));
         setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -106,6 +111,7 @@ public class PlotFc extends javax.swing.JPanel {
         fbLabel.setText("Fb:");
         fbLabel.setToolTipText("Calculated from the average of the Fo values within the LRE window");
 
+        fbDisplay.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         fbDisplay.setText("     ");
 
         fmaxNrmzd.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -116,13 +122,26 @@ public class PlotFc extends javax.swing.JPanel {
         tipTextForAvFmaxLine.setText("                                                            ");
         tipTextForAvFmaxLine.setToolTipText("Av Fmax");
 
+        fbSlopeLabel.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        fbSlopeLabel.setText("Fb Slope:");
+
+        fbSlopeDisplay.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        fbSlopeDisplay.setText("jLabel2");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 126, Short.MAX_VALUE)
+                .addComponent(fbSlopeLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(fbSlopeDisplay)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
                 .addComponent(tipTextForAvFmaxLine, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(27, 27, 27)
+                .addComponent(graphTitle)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(fmaxNrmzd)
@@ -131,10 +150,6 @@ public class PlotFc extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(fbDisplay)))
                 .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addComponent(graphTitle)
-                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -142,14 +157,18 @@ public class PlotFc extends javax.swing.JPanel {
                 .addGap(5, 5, 5)
                 .addComponent(graphTitle)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tipTextForAvFmaxLine)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(fbSlopeLabel)
+                        .addComponent(fbSlopeDisplay))
+                    .addComponent(tipTextForAvFmaxLine))
                 .addGap(8, 8, 8)
                 .addComponent(fmaxNrmzd)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(fbLabel)
                     .addComponent(fbDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(13, Short.MAX_VALUE))
+                .addGap(32, 32, 32))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -172,13 +191,16 @@ public class PlotFc extends javax.swing.JPanel {
         prfFmax = profile.getEmax() / -profile.getDeltaE();
         lreWinSize = profile.getLreWinSize();
         DecimalFormat df = new DecimalFormat();
-        df.applyPattern(FormatingUtilities.decimalFormatPattern(profile.getFb()));
-        fbDisplay.setText(df.format(profile.getFb()));
+        df.applyPattern(FormatingUtilities.decimalFormatPattern(profile.getCfFb()));
+        fbDisplay.setText(df.format(profile.getCfFb()));
         fbLabel.setVisible(true);
+        df.applyPattern(FormatingUtilities.decimalFormatPattern(profile.getCfFbSlope()));
+        fbSlopeDisplay.setText(df.format(profile.getCfFbSlope()));
+        fbSlopeLabel.setVisible(true);
         df.applyLocalizedPattern("0.00");
-        if (profile.getMidC() > 0){
-        graphTitle.setText("C1/2 = " + df.format(profile.getMidC()));
-        } else{
+        if (profile.getMidC() > 0) {
+            graphTitle.setText("C1/2 = " + df.format(profile.getMidC()));
+        } else {
             graphTitle.setText("C1/2 = n.d.");
         }
         df.applyPattern("0.0000");
@@ -207,6 +229,7 @@ public class PlotFc extends javax.swing.JPanel {
         df.applyPattern(FormatingUtilities.decimalFormatPattern(avFmax));
         tipTextForAvFmaxLine.setToolTipText("Av Fmax = " + df.format(avFmax));
         maxFc = avFmax * 1.8;//Provides 50% spacing for the top of the profile
+//        fmaxScalingFactor = avFmax / prfFmax;
         //Determine if Fmax normalization of Fc values must be applied
         if (profile instanceof SampleProfile) {
             SampleProfile samPrf = (SampleProfile) profile;
@@ -320,6 +343,8 @@ public class PlotFc extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel fbDisplay;
     private javax.swing.JLabel fbLabel;
+    private javax.swing.JLabel fbSlopeDisplay;
+    private javax.swing.JLabel fbSlopeLabel;
     private javax.swing.JLabel fmaxNrmzd;
     private javax.swing.JLabel graphTitle;
     private javax.swing.JLabel tipTextForAvFmaxLine;

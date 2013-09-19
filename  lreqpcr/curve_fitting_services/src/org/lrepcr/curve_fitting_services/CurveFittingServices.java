@@ -34,5 +34,13 @@ public interface CurveFittingServices {
      *
      * @param profile the profile to be processed
      */
+    // TODO this should return a boolean indicating whether the CF was successful
     public void curveFit(Profile profile);
+    
+    /**
+     * Generate a new Fc dataset using the CF-derived Fb and adjust for Fb slope. 
+     * 
+     * @param profile 
+     */
+    public void conductBaselineCorrection(Profile profile);
 }

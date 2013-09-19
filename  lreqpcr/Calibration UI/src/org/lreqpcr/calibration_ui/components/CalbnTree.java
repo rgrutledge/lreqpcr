@@ -62,7 +62,7 @@ public class CalbnTree extends JPanel {
     private ExplorerManager mgr;
     private DatabaseServices calbnDB;
     private LreAnalysisService analysisService;
-    LreWindowSelectionParameters selectionParameters;
+    private LreWindowSelectionParameters selectionParameters;
     private LreActionFactory nodeActionFactory;
     private LabelFactory nodeLabelFactory;
     private DecimalFormat df = new DecimalFormat();
@@ -96,6 +96,7 @@ public class CalbnTree extends JPanel {
             avProfileOCFdisplay.setText("");
             fixEmaxBox.setSelected(false);
             fmaxNrmzBox.setSelected(false);
+            //An attempt to display something during optening of a database file 
 //            if (statusLineMessage != null) {
 //                statusLineMessage.clear(1);
 //            }
@@ -137,6 +138,7 @@ public class CalbnTree extends JPanel {
         }
         fixEmaxBox.setSelected(calDbInfo.isEmaxFixTo100Percent());
         fmaxNrmzBox.setSelected(calDbInfo.isOcfNormalizedToFmax());
+        //TO DO clean this up
         //This is only for testing
         List<AverageSampleProfile> avSamPrfList = calbnDB.getAllObjects(AverageSampleProfile.class);
         System.out.println("The number of average Calibration profiles = " + avCalPrfList.size());
@@ -219,6 +221,7 @@ public class CalbnTree extends JPanel {
         ArrayList ocfArray = Lists.newArrayList();
         dfCV.applyPattern("0.0");
         for (AverageCalibrationProfile avProfile : avCalProfileList) {
+            //Display the curve fitting derived OCF..OFF
             if (!avProfile.isExcluded()) {
                 ocfSum += avProfile.getOCF();
                 ocfArray.add(avProfile.getOCF());

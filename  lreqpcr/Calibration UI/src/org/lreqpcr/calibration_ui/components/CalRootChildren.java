@@ -42,7 +42,7 @@ import org.openide.util.lookup.Lookups;
  */
 public class CalRootChildren extends LreObjectChildren {
 
-    private LreAnalysisService analysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
+//    private LreAnalysisService analysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
 
     /**
      * Generates AverageProfile nodes for a Run.

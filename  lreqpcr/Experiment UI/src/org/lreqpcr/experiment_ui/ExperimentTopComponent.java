@@ -35,7 +35,6 @@ import org.lreqpcr.core.ui_elements.SampleNode;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.core.utilities.UniversalLookupListener;
 import org.lreqpcr.data_export_services.DataExportServices;
-import org.lreqpcr.scf.CurveFitter;
 import org.lreqpcr.ui_components.PanelMessages;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.explorer.ExplorerManager;
@@ -68,7 +67,6 @@ public final class ExperimentTopComponent extends TopComponent
     private DatabaseServices experimentDB;
     private final Result<SampleNode> sampleNodeResult;
     private final Result<AmpliconNode> ampliconNodeResult;
-    private CurveFitter scf;//For testing curve fitting
 
     public ExperimentTopComponent() {
         initComponents();
@@ -85,8 +83,6 @@ public final class ExperimentTopComponent extends TopComponent
         setToolTipText("Experiment DB Explorer");
         associateLookup(ExplorerUtils.createLookup(mgr, this.getActionMap()));
         initServices();
-        //This is for testing curve fitting
-        scf = new CurveFitter();
         ampliconNodeResult = Utilities.actionsGlobalContext().lookupResult(AmpliconNode.class);
         ampliconNodeResult.allItems();
         ampliconNodeResult.addLookupListener(this);
