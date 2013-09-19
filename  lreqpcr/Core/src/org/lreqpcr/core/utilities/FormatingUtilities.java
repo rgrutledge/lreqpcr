@@ -30,23 +30,24 @@ public class FormatingUtilities {
      * @return string pattern based on decimal format
      */
     public static String decimalFormatPattern(double number) {
-        if (number >= 1000.0) {
+        double absNumber = Math.abs(number);
+        if (absNumber >= 1000.0) {
             return "###,###";
         }
-        if (number >= 100.0 && number <= 1000.0) {
+        if (absNumber >= 100.0 && absNumber <= 1000.0) {
             return "###";
         }
-        if (number >= 10.0 && number <= 100.0) {
+        if (absNumber >= 10.0 && absNumber <= 100.0) {
             return "##.0";
         }
-        if (number <= 10.0 && number >= 1.0) {
+        if (absNumber <= 10.0 && absNumber >= 1.0) {
             return "##.00";
         } 
-        if (number <=1.0 && number >= 0.1 ){
+        if (absNumber <=1.0 && absNumber >= 0.1 ){
             return "0.000";
-        }if (number <=0.1 && number >= 0.01){
+        }if (absNumber <=0.1 && absNumber >= 0.01){
             return "0.0000";
-        }if (number <= 0.01 && number >= 0.001){
+        }if (absNumber <= 0.01 && absNumber >= 0.001){
             return "0.00000";
         }else{//Number must be <1.0
             return "0.0000000";

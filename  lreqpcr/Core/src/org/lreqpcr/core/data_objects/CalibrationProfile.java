@@ -124,9 +124,9 @@ public class CalibrationProfile extends Profile {
         }
         double correctionFactor = avFmax / fmax;
         if (isEmaxFixedTo100()) {
-            return ocfEmax100 * correctionFactor;
+            return ocfEmax100 / correctionFactor;
         } else {
-            return ocf * correctionFactor;
+            return ocf / correctionFactor;
         }
     }
 

@@ -156,7 +156,6 @@ public final class SampleOverviewTopComponent extends TopComponent
             List sampleNameAverageProfileList = currentDB.retrieveUsingFieldValue(AverageProfile.class, "sampleName", sampleName);
             ArrayList<Double> emaxArrayList = new ArrayList<Double>();
             double emaxTotal = 0;
-            int counter = 0;
             for (int i = 0; i < sampleNameAverageProfileList.size(); i++) {
                 Profile profile = (Profile) sampleNameAverageProfileList.get(i);
                 //Check if a profile is present i.e. not flat
@@ -169,17 +168,15 @@ public final class SampleOverviewTopComponent extends TopComponent
                         if (!sampleProfile.isTheReplicateAverageNoLessThan10Molecules()) {
                             emaxArrayList.add(profile.getEmax());
                             emaxTotal = emaxTotal + profile.getEmax();
-                            counter++;
                         }
                     } else {//Must be a CalibrationProfile
                         emaxArrayList.add(profile.getEmax());
                         emaxTotal = emaxTotal + profile.getEmax();
-                        counter++;
                     }
                 }
             }
-            facadeSample.setEmaxAverage(emaxTotal / counter);
-            if (counter > 1) {
+            facadeSample.setEmaxAverage(emaxTotal / emaxArrayList.size());
+            if (emaxArrayList.size() > 1) {
                 facadeSample.setEmaxCV(MathFunctions.calcStDev(emaxArrayList) / facadeSample.getEmaxAverage());
             } else {
                 facadeSample.setEmaxCV(0);
