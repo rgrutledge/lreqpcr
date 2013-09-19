@@ -57,15 +57,15 @@ public abstract class LreAnalysisService {
      */
     public abstract ProfileSummary initializeProfileSummary(Profile profile, LreWindowSelectionParameters parameters);
 
-    /**
-     * Provides the necessary functions to update the ProfileSummary when the user
-     * manually changes the LRE window.
-     * The boolean denotes whether the update was successful.
-     *
-     * @param profileSummary the ProfileSummary to update
-     * @param parameters LRE window parameters
-     * @return returns true if the ProfileSummary has been updated, false if not
-     */
-    public abstract boolean updateLreWindow(ProfileSummary profileSummary);
+//    /**
+//     * Provides the necessary functions to update the ProfileSummary when the user
+//     * manually changes the LRE window.
+//     * The boolean denotes whether the update was successful.
+//     *
+//     * @param profileSummary the ProfileSummary to update
+//     * @param parameters LRE window parameters
+//     * @return returns true if the ProfileSummary has been updated, false if not
+//     */
+//    public abstract boolean updateLreWindow(ProfileSummary profileSummary);
 
 }

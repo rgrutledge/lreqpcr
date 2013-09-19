@@ -31,7 +31,6 @@ import org.lreqpcr.core.data_objects.AmpliconImpl;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
-import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.database_services.DatabaseProvider;
@@ -157,7 +156,6 @@ public final class AmpliconOverviewTopComponent extends TopComponent
             ArrayList<Double> emaxArrayList = new ArrayList<Double>();
             //Generate an average and CV for this Emax values in this list
             double emaxTotal = 0;
-            int counter = 0;
             for (int i = 0; i < ampliconNameAverageProfileList.size(); i++) {
                 //Ignore the replicate profiles, i.e. this is based only on AverageSampleProfiles
                 Profile profile = (Profile) ampliconNameAverageProfileList.get(i);
@@ -171,17 +169,15 @@ public final class AmpliconOverviewTopComponent extends TopComponent
                         if (!sampleProfile.isTheReplicateAverageNoLessThan10Molecules()) {
                             emaxArrayList.add(profile.getEmax());
                             emaxTotal = emaxTotal + profile.getEmax();
-                            counter++;
                         }
                     } else {//Must be a CalibrationProfile
                         emaxArrayList.add(profile.getEmax());
                         emaxTotal = emaxTotal + profile.getEmax();
-                        counter++;
                     }
                 }
             }
-            facadeAmplicon.setEmaxAverage(emaxTotal / counter);
-            if (counter > 1) {
+            facadeAmplicon.setEmaxAverage(emaxTotal / emaxArrayList.size());
+            if (emaxArrayList.size() > 1) {
                 facadeAmplicon.setEmaxCV(MathFunctions.calcStDev(emaxArrayList) / facadeAmplicon.getEmaxAverage());
             } else {
                 facadeAmplicon.setEmaxCV(0);

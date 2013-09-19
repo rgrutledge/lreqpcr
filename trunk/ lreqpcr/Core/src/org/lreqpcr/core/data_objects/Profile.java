@@ -46,8 +46,9 @@ public abstract class Profile extends LreObject {
     private double ct, ft;//Threshold cycle and fluorescence threshold
     private int fbStart, fbWindow;//Start and size of the Fb window for determining background fluorescence
     // TODO fcReadings should be stored in a HashMap in order to preserve cycle number
-    private double[] fcReadings; //Fluorescence dataset (Background subtracted)
-    private double fb;//Average fluorescence background used for background substraction
+    private double[] fcReadings; //Fb substracted fluorescence readings
+    private double[] adjustedFcReadings;//Normalized to the Run average Fmax
+    private double fb;//Average fluorescence background derived directly from the raw Fc readings
     private boolean hasAnLreWindowBeenFound;//Is this a flat profile or has any abberrancy that dissallows an LRE window to be located
     private int strCycleInt; //LRE window start cycle
     private int lreWinSize; //LRE window size
@@ -250,12 +251,20 @@ public abstract class Profile extends LreObject {
         this.fbWindow = fbWindow;
     }
 
+    /**
+     * Returns the processed Fc dataset
+     * @return the processed Fc dataset
+     */
     public double[] getFcReadings() {
         return fcReadings;
     }
 
-    public void setFcReadings(double[] fcReadings) {
-        this.fcReadings = fcReadings;
+    /**
+     * Sets the processed Fc dataset
+     * @param processedFcReadings 
+     */
+    public void setFcReadings(double[] processedFcReadings) {
+        this.fcReadings = processedFcReadings;
     }
 
     public int getLreWinSize() {
@@ -303,9 +312,8 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * Retrieves the raw fluorescence readings (no background subtraction) in an ordered array 
-     * that starts with Cycle 1 and is continuous to the last cycle. Cycle number 
-     * is based on the array index.
+     * Retrieves the raw fluorescence readings (i.e. with no background subtraction) in an ordered array 
+     * that starts with Cycle 1 and is continuous to the last cycle. 
      * @return the array containing the raw fluorescence readings for each cycle
      */
     public double[] getRawFcReadings() {
@@ -316,7 +324,9 @@ public abstract class Profile extends LreObject {
      * Sets the raw fluorescence readings (no background subtraction) in an ordered array 
      * that must start with Cycle 1 and must be continuous to the last cycle. 
      * Cycle number is derived from the array index and thus must contain 
-     * fluorescence readings from every cycle. 
+     * fluorescence readings from every cycle. Note also that Cycle number 
+     * is based on the array index and thus index[0] MUST BE CYCLE 1.
+     * 
      * @param rawFcReadings raw fluorescence readings starting with Cycle 1
      */
     public void setRawFcReadings(double[] rawFcReadings) {
