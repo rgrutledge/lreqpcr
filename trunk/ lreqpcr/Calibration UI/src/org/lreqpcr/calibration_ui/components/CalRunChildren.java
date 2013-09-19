@@ -31,7 +31,7 @@ import org.openide.nodes.Node;
 import org.openide.util.lookup.Lookups;
 
 /**
- * Generates AverageSampleProvides nodes for the supplied list
+ * Generates AverageSample nodes for the supplied list
  * of AverageSampleProfiles
  *
  * @author Bob Rutledge

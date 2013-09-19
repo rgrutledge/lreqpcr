@@ -52,6 +52,7 @@ public class LrePlot extends javax.swing.JPanel {
     private UniversalLookup universalLookup = UniversalLookup.getDefault();
     private DatabaseServices db;//The database in which the Profile is stored
     private CurveFittingServices cfServices = Lookup.getDefault().lookup(CurveFittingServices.class);
+    private LreAnalysisService lreAnalService = Lookup.getDefault().lookup(LreAnalysisService.class);
 
     /** 
      * Generates a plot of reaction fluorescence and predicted fluorescence
@@ -167,8 +168,15 @@ public class LrePlot extends javax.swing.JPanel {
 //which should be true if the profile is being displayed so that the user can modify it
         //Update ProfileSummary using the new LRE parameters
         ProfileInitializer.calcLreParameters(prfSum);
-        cfServices.curveFit(profile);
 //Note that of 9Aug12 the profile updates itself following changes to the avFo
+//Unfortunately, ProfileInitializer is held in core, and cannot call CurveFittingServices due to cross dependencies
+        //So this must be conducted here
+        cfServices.curveFit(profile);
+        //Must repeat Profile initialization as the Fc dataset has been modified
+        //This requires generation of a new Profile Summary, which should be done by the parent panel
+        //This is therefore only for testing
+        prfSum = lreAnalService.initializeProfileSummary(profile, null);
+        ProfileInitializer.calcLreParameters(prfSum);
         db.saveObject(profile);
         //The AverageSampleProfile may need to be updated if this is a SampleProfile
         if (profile instanceof SampleProfile && !(profile instanceof AverageProfile)) {

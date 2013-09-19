@@ -320,6 +320,8 @@ public class ProfileEditor extends JPanel implements
                     parentNode.refreshNodeLabel();
                 }
             }
+            //With curve fitting, a new Profile Summary is needed, as the Fc dataset has been modified
+            prfSum = analysisService.initializeProfileSummary(profile, selectionParameters);
             updatePanels();
         }
         if (key == PanelMessages.NEW_DATABASE) {
