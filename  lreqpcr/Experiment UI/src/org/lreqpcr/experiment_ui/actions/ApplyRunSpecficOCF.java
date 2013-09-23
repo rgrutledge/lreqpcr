@@ -27,6 +27,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.ExperimentDbInfo;
+import org.lreqpcr.core.data_objects.ExptDbInfo;
 import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.utilities.UniversalLookup;
@@ -81,7 +82,7 @@ class ApplyRunSpecficOCF extends AbstractAction {
         }
         selectedRun.setRunSpecificOCF(runOCF);
         db.saveObject(selectedRun);
-        ExperimentDbInfo dbInfo = (ExperimentDbInfo) db.getAllObjects(ExperimentDbInfo.class).get(0);
+        ExptDbInfo dbInfo = (ExptDbInfo) db.getAllObjects(ExptDbInfo.class).get(0);
         double avOCF = dbInfo.getOcf();
         for (AverageProfile avProfile : averageProfileList) {
             AverageSampleProfile avSamplePrf = (AverageSampleProfile) avProfile;

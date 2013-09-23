@@ -34,7 +34,6 @@ import org.lreqpcr.core.data_objects.CalibrationDbInfo;
 import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.CalibrationRun;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
-import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LabelFactory;
 import org.lreqpcr.core.ui_elements.LreActionFactory;
@@ -94,7 +93,6 @@ public class CalbnTree extends JPanel {
             root.setName("No CalbnDB is open");
             mgr.setRootContext(root);
             avProfileOCFdisplay.setText("");
-            fixEmaxBox.setSelected(false);
             fmaxNrmzBox.setSelected(false);
             //An attempt to display something during optening of a database file 
 //            if (statusLineMessage != null) {
@@ -136,7 +134,6 @@ public class CalbnTree extends JPanel {
         } else {
             calDbInfo = l.get(0);
         }
-        fixEmaxBox.setSelected(calDbInfo.isEmaxFixTo100Percent());
         fmaxNrmzBox.setSelected(calDbInfo.isOcfNormalizedToFmax());
         //TO DO clean this up
         //This is only for testing
@@ -252,7 +249,6 @@ public class CalbnTree extends JPanel {
         runViewButton = new javax.swing.JRadioButton();
         jLabel2 = new javax.swing.JLabel();
         avProfileOCFdisplay = new javax.swing.JTextField();
-        fixEmaxBox = new javax.swing.JCheckBox();
         fmaxNrmzBox = new javax.swing.JCheckBox();
 
         setMinimumSize(new java.awt.Dimension(425, 250));
@@ -279,14 +275,6 @@ public class CalbnTree extends JPanel {
         avProfileOCFdisplay.setColumns(8);
         avProfileOCFdisplay.setToolTipText("The average OCF +/-CV");
 
-        fixEmaxBox.setText("<100%> Emax");
-        fixEmaxBox.setToolTipText("Fix Emax to 100%");
-        fixEmaxBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fixEmaxBoxActionPerformed(evt);
-            }
-        });
-
         fmaxNrmzBox.setText("Fmax Normalize");
         fmaxNrmzBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -300,14 +288,13 @@ public class CalbnTree extends JPanel {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(runViewButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(avProfileOCFdisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(fixEmaxBox)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(fmaxNrmzBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(fmaxNrmzBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(65, 65, 65))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -317,7 +304,6 @@ public class CalbnTree extends JPanel {
                     .addComponent(runViewButton)
                     .addComponent(jLabel2)
                     .addComponent(avProfileOCFdisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(fixEmaxBox)
                     .addComponent(fmaxNrmzBox)))
         );
 
@@ -336,7 +322,7 @@ public class CalbnTree extends JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(beanTree, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE))
+                .addComponent(beanTree, javax.swing.GroupLayout.DEFAULT_SIZE, 221, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -345,39 +331,6 @@ public class CalbnTree extends JPanel {
         runViewButton.setSelected(true);
         UniversalLookup.getDefault().add(PanelMessages.RUN_VIEW_SELECTED, null);
     }//GEN-LAST:event_runViewButtonActionPerformed
-
-    private void fixEmaxBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fixEmaxBoxActionPerformed
-        if (!calbnDB.isDatabaseOpen()) {
-            fixEmaxBox.setSelected(false);
-            return;
-        }
-        boolean arg = fixEmaxBox.isSelected();
-        List<CalibrationRun> runList = calbnDB.getAllObjects(CalibrationRun.class);
-        for (CalibrationRun run : runList) {
-            for (AverageProfile avPrf : run.getAverageProfileList()) {
-                if (run.getAverageProfileList() != null) {
-                    AverageCalibrationProfile avCalPrf = (AverageCalibrationProfile) avPrf;
-                    avCalPrf.setIsEmaxFixedTo100(arg);
-                    analysisService.conductAutomatedLreWindowSelection(avCalPrf, selectionParameters);
-                    calbnDB.saveObject(avCalPrf);
-                    run.calculateAverageOCF();
-                    calbnDB.saveObject(run);
-                    for (Profile repProfile : avPrf.getReplicateProfileList()) {
-                        //Ignore profiles that do not have an LRE window
-                        if (repProfile.hasAnLreWindowBeenFound()) {
-                            repProfile.setIsEmaxFixedTo100(arg);
-                            analysisService.initializeProfileSummary(repProfile, selectionParameters);
-                            calbnDB.saveObject(repProfile);
-                        }
-                    }
-                }
-            }
-        }//End of Run loop
-        calDbInfo.setIsEmaxFixTo100Percent(arg);
-        calbnDB.saveObject(calDbInfo);
-        calbnDB.commitChanges();
-        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_CALIBRATION_PANELS);
-    }//GEN-LAST:event_fixEmaxBoxActionPerformed
 @SuppressWarnings("unchecked")
     private void fmaxNrmzBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fmaxNrmzBoxActionPerformed
         boolean arg = fmaxNrmzBox.isSelected();
@@ -412,7 +365,6 @@ public class CalbnTree extends JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField avProfileOCFdisplay;
     private javax.swing.JScrollPane beanTree;
-    private javax.swing.JCheckBox fixEmaxBox;
     private javax.swing.JCheckBox fmaxNrmzBox;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;

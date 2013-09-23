@@ -41,7 +41,7 @@ public class SampleTreeNodeLabels implements LabelFactory {
         if (member instanceof Run) {
             Run run = (Run) member;
 
-//            double runOCF = run.getRunSpecificOCF();
+            double runOCF = run.getRunSpecificOCF();//Finding it difficult to display this value
             //Place the Run average Fmax into the short description
             df.applyPattern("#0");
             double avFmax = run.getAverageFmax();
@@ -49,12 +49,16 @@ public class SampleTreeNodeLabels implements LabelFactory {
             String avFmaxString = df.format(avFmax);
             
 //            run.setShortDescription();
-            //Display a Run-specific OCF if one has been applied to this Run
+            //Indicate if a Run-specific OCF if one has been applied to this Run 
+            String RSO = "";
+            if (run.getRunSpecificOCF() != 0){
+                RSO = "*";
+            }
             if (run.getAvFmaxCV() != 0) {
                 String cv = df.format(run.getAvFmaxCV() * 100);
-                return sdf.format(run.getRunDate()) + "-" + member.getName() + "  [Av Fmax: " + avFmaxString + " ±" + cv + "%]";
+                return RSO + sdf.format(run.getRunDate()) + "-" + member.getName() + "  [Av Fmax: " + avFmaxString + " ±" + cv + "%]";
             } else {
-                return sdf.format(run.getRunDate()) + "-" + member.getName() + "  [Av Fmax: " + avFmaxString;
+                return RSO + sdf.format(run.getRunDate()) + "-" + member.getName() + "  [Av Fmax: " + avFmaxString;
             }
         }
 
