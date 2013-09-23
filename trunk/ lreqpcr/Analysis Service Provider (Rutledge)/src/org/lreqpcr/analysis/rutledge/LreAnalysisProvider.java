@@ -75,7 +75,7 @@ public class LreAnalysisProvider extends LreAnalysisService {
         //Note that this also includes reprocessing the Fc dataset
         //Note also that imperical testing has shown repeating the process is required
         //for convergence. 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 7; i++) {//Not sure how much time this consumes but likely only slightly better than 5 times
             cfServices.curveFit(profile);
             //Need to repeat the Profile initialization using the new Fc dataset
             //Reinitialize the prfSum

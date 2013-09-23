@@ -21,6 +21,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.text.DecimalFormat;
+import java.util.Collection;
 import java.util.List;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
@@ -28,6 +29,7 @@ import javax.swing.JPanel;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.*;
 import org.lreqpcr.core.database_services.DatabaseServices;
+import org.lreqpcr.core.database_services.DatabaseType;
 import org.lreqpcr.core.ui_elements.LabelFactory;
 import org.lreqpcr.core.ui_elements.LreActionFactory;
 import org.lreqpcr.core.ui_elements.LreNode;
@@ -43,6 +45,10 @@ import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
+import org.openide.util.Utilities;
+import org.openide.util.Lookup.Result;
 import org.openide.util.lookup.Lookups;
 import org.openide.windows.WindowManager;
 
@@ -55,7 +61,7 @@ import org.openide.windows.WindowManager;
  *
  * @author Bob Rutledge
  */
-public class ExperimentDbTree extends JPanel {
+public class ExperimentDbTree extends JPanel implements LookupListener {
 
     private ExplorerManager mgr;
     private DatabaseServices exptDB;
@@ -68,6 +74,8 @@ public class ExperimentDbTree extends JPanel {
     private DecimalFormat df = new DecimalFormat();
     private double avRunFmax = 0;
     private double avRunFmaxCV = 0;
+    private Lookup.Result nodeResult;
+    protected LreNode selectedNode;
 //    private Message statusLineMessage;
 
     /**
@@ -110,6 +118,9 @@ public class ExperimentDbTree extends JPanel {
                 }
             }
         });
+        nodeResult = Utilities.actionsGlobalContext().lookupResult(LreNode.class);
+        nodeResult.allItems();
+        nodeResult.addLookupListener(this);
     }
 
     public void initTreeView(ExplorerManager mgr, DatabaseServices db) {
@@ -135,7 +146,6 @@ public class ExperimentDbTree extends JPanel {
             mgr.setRootContext(root);
             ocfDisplay.setText("");
             fmaxNormalizeChkBox.setSelected(false);
-            fixEmaxBox.setSelected(false);
 //            if (statusLineMessage != null) {
 //                statusLineMessage.clear(1);
 //            }
@@ -152,7 +162,6 @@ public class ExperimentDbTree extends JPanel {
         analysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
         selectionParameters = (LreWindowSelectionParameters) exptDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
         fmaxNormalizeChkBox.setSelected(exptDbInfo.isTargetQuantityNormalizedToFmax());
-        fixEmaxBox.setSelected(exptDbInfo.isEmaxFixTo100Percent());
         File dbFile = exptDB.getDatabaseFile();
         String dbFileName = dbFile.getName();
         int length = dbFileName.length();
@@ -180,7 +189,7 @@ public class ExperimentDbTree extends JPanel {
             df.applyPattern(FormatingUtilities.decimalFormatPattern(avRunFmax));
             root.setDisplayName(displayName + " [Av Run Fmax: " + df.format(avRunFmax) + " ±" + cv + "%]");
 //            root.setShortDescription("Av Run Fmax: " + df.format(avRunFmax) + " ±" + cv + "%]");
-        }else {
+        } else {
             root.setDisplayName(displayName);
         }
         root.setShortDescription(dbFile.getAbsolutePath());
@@ -283,9 +292,8 @@ public class ExperimentDbTree extends JPanel {
         beanTree = new BeanTreeView();
         jPanel1 = new javax.swing.JPanel();
         runViewButton = new javax.swing.JRadioButton();
-        jLabel1 = new javax.swing.JLabel();
+        ocfLabel = new javax.swing.JLabel();
         ocfDisplay = new javax.swing.JTextField();
-        fixEmaxBox = new javax.swing.JCheckBox();
         fmaxNormalizeChkBox = new javax.swing.JCheckBox();
 
         setMinimumSize(new java.awt.Dimension(425, 170));
@@ -305,19 +313,11 @@ public class ExperimentDbTree extends JPanel {
             }
         });
 
-        jLabel1.setText("OCF (FU/ng):");
-        jLabel1.setToolTipText("Converts fluorescence target quantities to the number of molecules");
+        ocfLabel.setText("OCF=");
+        ocfLabel.setToolTipText("Converts fluorescence target quantities to the number of molecules");
 
         ocfDisplay.setColumns(8);
         ocfDisplay.setToolTipText("Manually enter an OCF value that will be applied to all profiles");
-
-        fixEmaxBox.setText("<100%> Emax");
-        fixEmaxBox.setToolTipText("Fix Emax to 100%");
-        fixEmaxBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fixEmaxBoxActionPerformed(evt);
-            }
-        });
 
         fmaxNormalizeChkBox.setText("Fmax Normalize");
         fmaxNormalizeChkBox.setToolTipText("Normalize target quantity to the average Fmax");
@@ -333,24 +333,21 @@ public class ExperimentDbTree extends JPanel {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(runViewButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1)
+                .addGap(24, 24, 24)
+                .addComponent(ocfLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(ocfDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(fixEmaxBox)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(fmaxNormalizeChkBox)
-                .addContainerGap())
+                .addContainerGap(112, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(runViewButton)
-                    .addComponent(jLabel1)
+                    .addComponent(ocfLabel)
                     .addComponent(ocfDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(fixEmaxBox)
                     .addComponent(fmaxNormalizeChkBox))
                 .addGap(1, 1, 1))
         );
@@ -362,7 +359,7 @@ public class ExperimentDbTree extends JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(beanTree, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 415, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -382,86 +379,104 @@ public class ExperimentDbTree extends JPanel {
     @SuppressWarnings(value = "unchecked")
     private void fmaxNormalizeChkBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fmaxNormalizeChkBoxActionPerformed
         boolean arg = fmaxNormalizeChkBox.isSelected();
-            if (!exptDB.isDatabaseOpen()) {
-                fmaxNormalizeChkBox.setSelected(false);
-                return;
-            }
-            //Note that this is applied to all profiles in the database
-            List<Run> runList =  exptDB.getAllObjects(Run.class);
-            for (Run run : runList){
+        if (!exptDB.isDatabaseOpen()) {
+            fmaxNormalizeChkBox.setSelected(false);
+            return;
+        }
+        //Note that this is applied to all profiles in the database
+        List<Run> runList = exptDB.getAllObjects(Run.class);
+        for (Run run : runList) {
             for (AverageProfile avPrf : run.getAverageProfileList()) {
                 AverageSampleProfile avSamPrf = (AverageSampleProfile) avPrf;
                 avSamPrf.setIsTargetQuantityNormalizedToFmax(arg);
                 exptDB.saveObject(avSamPrf);
-                for (SampleProfile prf : avSamPrf.getReplicateProfileList()){
+                for (SampleProfile prf : avSamPrf.getReplicateProfileList()) {
                     prf.setIsTargetQuantityNormalizedToFmax(arg);
                     //There is no need to reinitiaze the profiles because 
                     //normalization DOES NOT CHANGE Fo
                     exptDB.saveObject(prf);
                 }
             }
-            }//End of Run for loop
-            exptDbInfo.setIsTargetQuantityNormalizedToFmax(arg);
-            exptDB.saveObject(exptDbInfo);
-            exptDB.commitChanges();
-            createTree();
-            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_EXPERIMENT_PANELS);
-    }//GEN-LAST:event_fmaxNormalizeChkBoxActionPerformed
-@SuppressWarnings("unchecked")
-    private void fixEmaxBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fixEmaxBoxActionPerformed
-        if (!exptDB.isDatabaseOpen()) {
-                fixEmaxBox.setSelected(false);
-                return;
-            }
-        boolean arg = fixEmaxBox.isSelected();
-        List<Run> runList = exptDB.getAllObjects(Run.class);
-        for (Run run : runList) {
-            for (AverageProfile avPrf : run.getAverageProfileList()) {
-                AverageSampleProfile avSamplePrf = (AverageSampleProfile) avPrf;
-                avSamplePrf.setIsEmaxFixedTo100(arg);
-                exptDB.saveObject(avSamplePrf);
-                //Delay reinitialization of avSamplePrf until the replicate profiles have been processed
-                //Process the replicate profiles
-                for (Profile repProfile : avPrf.getReplicateProfileList()) {
-                    //Ignore profiles that do not have an LRE window
-                    if (repProfile.hasAnLreWindowBeenFound()) {
-                        repProfile.setIsEmaxFixedTo100(arg);
-                        analysisService.initializeProfileSummary(repProfile, selectionParameters);
-                        exptDB.saveObject(repProfile);
-                    }
-                }
-                //Now process the avSamplePrf
-                //Must test to see if replicate profile modifications brings
-                //the average replicate No >10 as indicated by lacking an LRE
-                //window. If so then an automated LRE window
-                //selection must be conducted on the average profile.
-                if (!avPrf.isTheReplicateAverageNoLessThan10Molecules() && !avSamplePrf.hasAnLreWindowBeenFound()) {
-                    //Must conduct an automated LRE window selection
-                    analysisService.conductAutomatedLreWindowSelection(avSamplePrf, selectionParameters);
-                    exptDB.saveObject(avSamplePrf);
-                }
-                //Ignore average sample profiles that do not have an LRE window
-                if (!avPrf.isTheReplicateAverageNoLessThan10Molecules()) {
-                    //Need to update avFo and avNo
-                    analysisService.initializeProfileSummary(avSamplePrf, selectionParameters);
-                    exptDB.saveObject(avSamplePrf);
-                }//When <10N the averageProfile inherits the average replicate profile No so no need to update
-            }
         }//End of Run for loop
-        exptDbInfo.setIsEmaxFixTo100Percent(fixEmaxBox.isSelected());
+        exptDbInfo.setIsTargetQuantityNormalizedToFmax(arg);
         exptDB.saveObject(exptDbInfo);
         exptDB.commitChanges();
-        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_CHANGED);
+        createTree();
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_EXPERIMENT_PANELS);
-    }//GEN-LAST:event_fixEmaxBoxActionPerformed
+    }//GEN-LAST:event_fmaxNormalizeChkBoxActionPerformed
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+    @SuppressWarnings("unchecked")    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane beanTree;
-    private javax.swing.JCheckBox fixEmaxBox;
     private javax.swing.JCheckBox fmaxNormalizeChkBox;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JTextField ocfDisplay;
+    private javax.swing.JLabel ocfLabel;
     private javax.swing.JRadioButton runViewButton;
     // End of variables declaration//GEN-END:variables
+
+    /**
+     * Retrieve and display a selected LRE Node.
+     *
+     * @param ev the lookup event
+     */
+    @SuppressWarnings(value = "unchecked")
+    public void resultChanged(LookupEvent ev) {
+        //A new node has been selected
+        Lookup.Result r = (Result) ev.getSource();
+        Collection<LreNode> c = r.allInstances();
+        if (!c.isEmpty()) {
+            selectedNode = c.iterator().next();
+            //Reject if this is not an Sample node, that is derived from an Experiment database
+            DatabaseType type = selectedNode.getDatabaseServices().getDatabaseType();
+            if (type != DatabaseType.EXPERIMENT) {
+                return;
+            }
+//            if (selectedNode.getDatabaseServices() != currentDB) {
+//                //A new database has been opened
+//                clearPanels();
+//                currentDB = selectedNode.getDatabaseServices();
+//                List<LreWindowSelectionParameters> l = currentDB.getAllObjects(LreWindowSelectionParameters.class);
+//                if (l.isEmpty()) {
+////This occurs with databases created before implementation of the LRE window parameters
+//                    displayVersionIncompatiblityMessage();
+//                    return;
+//                }
+//                selectionParameters = l.get(0);
+//            }
+            LreObject member = selectedNode.getLookup().lookup(LreObject.class);
+            if (member instanceof Profile) {
+                Profile profile = (Profile) member;
+                if (profile.getRun().getRunSpecificOCF() != 0) {
+                    double rsOCF = profile.getRun().getRunSpecificOCF();
+                    ocfLabel.setText("RS-OCF=");
+                    ocfDisplay.setEditable(false);
+                    df.applyPattern(FormatingUtilities.decimalFormatPattern(rsOCF));
+                    ocfDisplay.setText(df.format(rsOCF));
+                }else{
+                    ocfLabel.setText("OCF=");
+                    ocfDisplay.setEditable(true);
+                    df.applyPattern(FormatingUtilities.decimalFormatPattern(ocf));
+                    ocfDisplay.setText(df.format(ocf));
+                }
+            }
+            if (member instanceof Run) {
+                Run run = (Run) member;
+                if (run.getRunSpecificOCF() != 0) {
+                    double rsOCF = run.getRunSpecificOCF();
+                    ocfLabel.setText("RS-OCF=");
+                    ocfDisplay.setEditable(false);
+                    df.applyPattern(FormatingUtilities.decimalFormatPattern(rsOCF));
+                    ocfDisplay.setText(df.format(rsOCF));
+                }else{
+                    ocfLabel.setText("OCF=");
+                    ocfDisplay.setEditable(true);
+                    df.applyPattern(FormatingUtilities.decimalFormatPattern(ocf));
+                    ocfDisplay.setText(df.format(ocf));
+                }
+            }
+        }
+    }
+//    public void resultChanged(LookupEvent le) {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
 }

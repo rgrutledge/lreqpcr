@@ -199,7 +199,12 @@ public class PlotFc extends javax.swing.JPanel {
         fbSlopeLabel.setVisible(true);
         df.applyLocalizedPattern("0.00");
         if (profile.getMidC() > 0) {
-            graphTitle.setText("C1/2 = " + df.format(profile.getMidC()));
+            //Calculate No based on C1/2...abandoned due to complexity of the calculation
+//            double fo = (profile.getFmax()/2)/(Math.pow(profile.getMidC(), (profile.getEmax()+1)));
+//            double mo = fo/profile.run.get
+//            DecimalFormat df2 = new DecimalFormat();
+//            df2.applyPattern(FormatingUtilities.decimalFormatPattern(no));
+            graphTitle.setText("C1/2= " + df.format(profile.getMidC()));
         } else {
             graphTitle.setText("C1/2 = n.d.");
         }
@@ -229,6 +234,7 @@ public class PlotFc extends javax.swing.JPanel {
         df.applyPattern(FormatingUtilities.decimalFormatPattern(avFmax));
         tipTextForAvFmaxLine.setToolTipText("Av Fmax = " + df.format(avFmax));
         maxFc = avFmax * 1.8;//Provides 50% spacing for the top of the profile
+        //This has been disabed as it suggests that the Fc dataset has been modified
 //        fmaxScalingFactor = avFmax / prfFmax;
         //Determine if Fmax normalization of Fc values must be applied
         if (profile instanceof SampleProfile) {
@@ -324,20 +330,21 @@ public class PlotFc extends javax.swing.JPanel {
                     return;
                 }
             }
+            //This has been disabled because Fb is now derived via curve fitting
             //Megenta circles denote the flourescence background window
-            runner = zeroCycle;
-            //Run to the beginning of the Fb window
-            for (int i = 0; i < profile.getFbStart(); i++) {
-                runner = runner.getNextCycle();
-            }
-            g2.setColor(Color.MAGENTA);
-            for (int i = 0; i < profile.getFbWindow(); i++) {
-                double x = (runner.getCycNum() * scalingFactorX) - offsetX;
-                double yPrd = height - (runner.getPredFc() * scalingFactorY * fmaxScalingFactor) - offsetY;
-                Ellipse2D.Double pt1 = new Ellipse2D.Double(x - ptSize * 0.25, yPrd - ptSize * 0.25, ptSize, ptSize); //XY offset = 25% of ptSize
-                g2.draw(pt1);
-                runner = runner.getNextCycle();
-            }
+//            runner = zeroCycle;
+//            //Run to the beginning of the Fb window
+//            for (int i = 0; i < profile.getFbStart(); i++) {
+//                runner = runner.getNextCycle();
+//            }
+//            g2.setColor(Color.MAGENTA);
+//            for (int i = 0; i < profile.getFbWindow(); i++) {
+//                double x = (runner.getCycNum() * scalingFactorX) - offsetX;
+//                double yPrd = height - (runner.getPredFc() * scalingFactorY * fmaxScalingFactor) - offsetY;
+//                Ellipse2D.Double pt1 = new Ellipse2D.Double(x - ptSize * 0.25, yPrd - ptSize * 0.25, ptSize, ptSize); //XY offset = 25% of ptSize
+//                g2.draw(pt1);
+//                runner = runner.getNextCycle();
+//            }
         }
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
