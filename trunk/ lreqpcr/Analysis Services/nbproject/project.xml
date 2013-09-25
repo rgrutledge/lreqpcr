@@ -44,5 +44,12 @@
                 <package>org.lreqpcr.analysis_services</package>
             </public-packages>
         </data>
+        <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
+            <word>Emax</word>
+            <word>Fb</word>
+            <word>Fc</word>
+            <word>Fmax</word>
+            <word>Fo</word>
+        </spellchecker-wordlist>
     </configuration>
 </project>

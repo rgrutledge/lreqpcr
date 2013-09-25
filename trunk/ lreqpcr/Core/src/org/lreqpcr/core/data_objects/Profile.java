@@ -44,24 +44,19 @@ public abstract class Profile extends LreObject {
     //Profile processing parameters
     private double ampTm;//The amplicon Tm
     private double ct, ft;//Threshold cycle and fluorescence threshold
-    private int fbStart, fbWindow;//Start and size of the Fb window for determining background fluorescence
     // TODO fcReadings should be stored in a HashMap in order to preserve cycle number
-    private double[] fcReadings; //Fb substracted fluorescence readings
-    private double[] adjustedFcReadings;//Normalized to the Run average Fmax
+    private double[] fcReadings; //Processed Fc readings corrected for fluorescence background and baseline slope
     private double fb;//Average fluorescence background derived directly from the raw Fc readings
     private boolean hasAnLreWindowBeenFound;//Is this a flat profile or has any abberrancy that dissallows an LRE window to be located
     private int strCycleInt; //LRE window start cycle
     private int lreWinSize; //LRE window size
     private double eMax, deltaE, r2;//Linear regression values for the LRE window
-    private boolean isEmaxFixedTo100;//Overides LRE analysis-derived Emax by setting it to 100%
     private double avFo, avFoCV;//Fo values and CV calculated from the LRE window Fo values
-    private double avFoEmax100;//Fo values and CV calculated with Emax fixed to 100%
-    private double nonR2;//Nonlinear r2 of predicted Fc to actual Fc within the LRE window... not very useful
     private double midC;//C1/2
     private boolean excluded;//Allows profiles to be excluded from the analysis
-    private String whyExcluded;//Text describing why the profile was excluded
+    private String whyExcluded;//Text describing the reason why the profile was excluded
     
-    //Curve fit derived parameters 
+    //Curve fit derived parameters based on a 5 parameter LRE model
     private double cfFb = 0;//Curve Fit derived Fb
     private double cfFbSlope = 0;//Curve Fit derived Fb slope
     private double cfEmax = 0;//Curve Fit derived Emax
@@ -175,17 +170,8 @@ public abstract class Profile extends LreObject {
      * @param averageFo the average of the Fo values calculated using the LRE derived Emax 
      * @param averageFoEmax100 the average of the Fo values calculated using Emax fixed to 100%
      */
-    public void setAvFoValues(double averageFo, double averageFoEmax100) {
+    public void setAvFo(double averageFo) {
         this.avFo = averageFo;
-        this.avFoEmax100 = averageFoEmax100;
-    }
-
-    /**
-     * The average Fo calculated using Emax fixed to 100%
-     * @return the average Fo calculated using Emax fixed to 100%
-     */
-    public double getAvFoEmax100() {
-        return avFoEmax100;
     }
 
     /**
@@ -235,22 +221,6 @@ public abstract class Profile extends LreObject {
         this.fb = fb;
     }
 
-    public int getFbStart() {
-        return fbStart;
-    }
-
-    public void setFbStart(int fbStart) {
-        this.fbStart = fbStart;
-    }
-
-    public int getFbWindow() {
-        return fbWindow;
-    }
-
-    public void setFbWindow(int fbWindow) {
-        this.fbWindow = fbWindow;
-    }
-
     /**
      * Returns the processed Fc dataset
      * @return the processed Fc dataset
@@ -292,26 +262,6 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * nonR2 is the nonlinear correlation coefficient based on correlation
-     * of the predicted Fc and actual Fc within the LRE window
-     *
-     * @return the nonlinear R2 derived the LRE window
-     */
-    public double getNonR2() {
-        return nonR2;
-    }
-
-    /**
-     * nonR2 is the nonlinear correlation coefficient based on correlation
-     * of the predicted Fc and actual Fc within the LRE window
-     *
-     * @param nonR2 the nonlinear R2 derived the LRE window
-     */
-    public void setNonR2(double nonR2) {
-        this.nonR2 = nonR2;
-    }
-
-    /**
      * Retrieves the raw fluorescence readings (i.e. with no background subtraction) in an ordered array 
      * that starts with Cycle 1 and is continuous to the last cycle. 
      * @return the array containing the raw fluorescence readings for each cycle
@@ -322,7 +272,7 @@ public abstract class Profile extends LreObject {
 
     /**
      * Sets the raw fluorescence readings (no background subtraction) in an ordered array 
-     * that must start with Cycle 1 and must be continuous to the last cycle. 
+     * that must start with Cycle 1 and must be continuous upto the last cycle. 
      * Cycle number is derived from the array index and thus must contain 
      * fluorescence readings from every cycle. Note also that Cycle number 
      * is based on the array index and thus index[0] MUST BE CYCLE 1.
@@ -418,29 +368,6 @@ public abstract class Profile extends LreObject {
 
     public void setWhyExcluded(String whyExcluded) {
         this.whyExcluded = whyExcluded;
-    }
-
-    /**
-     * Indicates whether the  Emax has been fixed to 100% 
-     * @return whether Emax is fixed to 100%
-     */
-    public boolean isEmaxFixedTo100() {
-        return isEmaxFixedTo100;
-    }
-
-    /**
-     * Allows the Emax to be fixed/unfixed to 100% but only impacts downstream data processing. 
-     * Fixing Emax to 100% is only applied during conversion of Fo 
-     * to No or OCF, within Sample and Calibration profiles, respectively.
-     * Thus this does not impact LRE analysis used to generate Fo values, 
-     * as this would generate aberrant biases. This was placed into Profile solely 
-     * for reasons of convenience, and does not impact how  
-     * a Profile generates Fo values.
-     * 
-     * @param isEmaxFixedTo100
-     */
-    public void setIsEmaxFixedTo100(boolean isEmaxFixedTo100) {
-        this.isEmaxFixedTo100 = isEmaxFixedTo100;
     }
 
     /**

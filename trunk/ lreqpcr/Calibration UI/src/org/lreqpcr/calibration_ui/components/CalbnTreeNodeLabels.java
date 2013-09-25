@@ -39,13 +39,16 @@ public class CalbnTreeNodeLabels implements LabelFactory {
             CalibrationRun run = (CalibrationRun) member;
             //Place the Run average Fmax into the node label
             double avFmax = run.getAverageFmax();
+            if (avFmax == 0) {
+                return sdf.format(run.getRunDate()) + ": Excluded";
+            }
             df.applyPattern(FormatingUtilities.decimalFormatPattern(avFmax));
             String avFmaxString = df.format(avFmax);
             df.applyPattern("#0");
             String fmaxCV = df.format(run.getAvFmaxCV() * 100);
             return sdf.format(run.getRunDate()) + ": Av Fmax= "
                     + avFmaxString + " ±" + fmaxCV + "%";
-            
+
 //            run.setShortDescription(" [Av Fmax: " + avFmaxString + " ±" + fmaxCV + "%]");
             //Recalculate the Run avOCF
             //This is not expected to impact performance
@@ -92,19 +95,13 @@ public class CalbnTreeNodeLabels implements LabelFactory {
         }
         //Determine what to display for Emax
         String emax;
-        if (calbrnProfile.isEmaxFixedTo100() && calbrnProfile.hasAnLreWindowBeenFound()) {
-            df.applyPattern("#0.0");
-            calbrnProfile.setShortDescription("Emax fixed to 100%");
-            emax = "<100%>";
+        if (!calbrnProfile.hasAnLreWindowBeenFound()) {
+            emax = "<LRE window not found>";
+            calbrnProfile.setShortDescription("An LRE window could not be found, likely due to being a flat profile"
+                    + " or that the Min Fc is set too high");
         } else {
-            if (!calbrnProfile.hasAnLreWindowBeenFound()) {
-                emax = "<LRE window not found>";
-                calbrnProfile.setShortDescription("An LRE window could not be found, likely due to being a flat profile"
-                        + " or that the Min Fc is set too high");
-            } else {
-                df.applyPattern("#0.0");
-                emax = "(" + df.format(calbrnProfile.getEmax() * 100) + "%) ";
-            }
+            df.applyPattern("#0.0");
+            emax = "(" + df.format(calbrnProfile.getEmax() * 100) + "%) ";
         }
         //Determine what to display for the OCF
         String ocf;

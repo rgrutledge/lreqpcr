@@ -101,13 +101,8 @@ public class SampleTreeNodeLabels implements LabelFactory {
                 return profileName + "<LRE window not found>";
             }
             //Profile is OK
-            if (profile.isEmaxFixedTo100() && profile.hasAnLreWindowBeenFound()) {
-                profile.setShortDescription("Emax fixed to 100%");
-                emax = "<100%>";
-            } else {
                 df.applyPattern("#0.0");
                 emax = "(" + df.format(profile.getEmax() * 100) + "%) ";
-            }
             //Determine what to display for No
             if (profile.getAmpliconSize() == 0) {
                 profile.setShortDescription("Target quantity could not be determined because an amplicon size has not been provided");

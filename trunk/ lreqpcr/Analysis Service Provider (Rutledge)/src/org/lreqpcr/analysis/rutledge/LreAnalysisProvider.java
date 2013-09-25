@@ -16,110 +16,142 @@
  */
 package org.lreqpcr.analysis.rutledge;
 
-import org.lrepcr.curve_fitting_services.CurveFittingServices;
+import org.ejml.data.DenseMatrix64F;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
-import org.lreqpcr.core.data_processing.Cycle;
 import org.lreqpcr.core.data_processing.ProfileInitializer;
 import org.lreqpcr.core.data_processing.ProfileSummary;
-import org.lreqpcr.core.data_processing.ProfileSummaryImp;
-import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
- *
+ * Rutledge implementation of LRE window selection and optimization. As of
+ * Sept13 This includes implementation of nonlinear regression using Peter
+ * Abeles’s EJML API
+ * (http://code.google.com/p/efficient-java-matrix-library/wiki/LevenbergMarquardtExample)
+ * that provides both fluorescence background and baseline slope determination
+ * that are used to optimize LRE analysis
  *
  * @author Bob Rutledge
  */
 @ServiceProvider(service = LreAnalysisService.class)
-public class LreAnalysisProvider extends LreAnalysisService {
-
-    private CurveFittingServices cfServices = Lookup.getDefault().lookup(CurveFittingServices.class);
+public class LreAnalysisProvider implements LreAnalysisService {
 
     public LreAnalysisProvider() {
     }
 
     /**
-     * Note that curve fitting analysis is also conducted based on the initial 
-     * LRE parameters, which generates a new 
-     * processed Fc dataset that includes both Fb and Fb slope correction.
+     * Note that this includes nonlinear regression analysis using the LRE
+     * parameters as starting values, in addition to using the top of the LRE
+     * window as the upper cut off. This is used to generate a Fc dataset based
+     * on both Fb and Fb-slope correction.
      *
      * @param profile
-     * @param parameters
+     * @param parameters LRE window selection parameters
      * @return whether a LRE window was found
      */
-    @Override
     public boolean conductAutomatedLreWindowSelection(Profile profile, LreWindowSelectionParameters parameters) {
-        //This will force a new LRE window to be found so that complete reinitialized will be conducted
+//This will force a new LRE window to be found so that complete reinitialized will be conducted
         profile.setHasAnLreWindowBeenFound(false);
-        //Construct a ProfileSummary which is used for automated LRE window selection 
+        //Construct a ProfileSummary which is needed for automated LRE window selection 
         //Subtract background fluorescence if needed
-        if (profile.getFcReadings() == null) {
-            //This also signifies that the Fc dataset has been modified and needs a new Fb determination
-            //Note also that this is solely based on the average of cycles 4-6 and NOT curve fitting
+        if (profile.getFcReadings() == null) {//First time this Profile has been analyzed so need a Fb
+//Note  that this is based on the average of cycles 4-9 and thus is as crude estimate
             substractBackground(profile);
         }
-        //Need to instantiate a ProfileSummary in order to search for an LRE window
-        ProfileSummary prfSum = new ProfileSummaryImp(profile);
-        prfSum.setZeroCycle(ProfileInitializer.makeCycleList(profile.getFcReadings()));
+        //Need to instantiate a ProfileSummary in order to conduct the LRE window search
+        ProfileSummary prfSum = ProfileInitializer.constructProfileSummary(profile);
         //Try to find an LRE window
         LreWindowSelector.selectLreWindowUsingMinFc(prfSum, parameters);
         if (!profile.hasAnLreWindowBeenFound()) {
 //Failed to find a window, thus return as updating the LRE parameters is irrelevant
             return false;
         }
-        //This also includes recalculating the cycle Fo, avFo and pFc
-        ProfileInitializer.calcLreParameters(prfSum);
-        //Conduct nonlinear curve fitting analysis based on the current LRE parameters
-        //Note that this also includes reprocessing the Fc dataset
-        //Note also that imperical testing has shown repeating the process is required
-        //for convergence. 
-        for (int i = 0; i < 7; i++) {//Not sure how much time this consumes but likely only slightly better than 5 times
-            cfServices.curveFit(profile);
-            //Need to repeat the Profile initialization using the new Fc dataset
-            //Reinitialize the prfSum
-            prfSum = initializeProfileSummary(profile, null);
-            //Update the LRE parametersx
-            ProfileInitializer.calcLreParameters(prfSum);
-        }
+        //Conduct curve fitting which generates a new corrected Fc dataset
+        conductNonlinearRegressionAnalysis(profile);
         return true;
     }
 
     /**
-     * Generates a ProfileSummary for display purposes using the supplied
-     * Profile. Note that this does not include any updating.      *
-     * @param profile the profile to be processed
-     * @param parameters LRE window selection parameters
-     * @return the initialized ProfileSummary
+     * Nonlinear regression analysis based on Peter Abeles’s EJML API
+     * (http://code.google.com/p/efficient-java-matrix-library/wiki/LevenbergMarquardtExample)
+     *
+     * @param profile
+     * @return whether the regression analysis was successful
      */
-    public ProfileSummary initializeProfileSummary(Profile profile, LreWindowSelectionParameters parameters) {
-        ProfileSummaryImp prfSum = new ProfileSummaryImp(profile);
-        //Initialize the linked Cycle list
-        prfSum.setZeroCycle(ProfileInitializer.makeCycleList(profile.getFcReadings()));
-        //Set the start cycle within the linked Cycle list
-        Cycle runner = prfSum.getZeroCycle();
-        //Without an LRE window, nothing can be calculated
-        if (profile.hasAnLreWindowBeenFound()) {
-            //Run to the start cycle
-            for (int i = 0; i < profile.getStrCycleInt(); i++) {
-                runner = runner.getNextCycle();
-            }
-            prfSum.setStrCycle(runner);
-            //Calculate the cycle parameters for Cycle list
-            ProfileInitializer.calcAllFo(prfSum);
-            //Both LRE-derived Emax and Emax =100% Fo values are calculated
-            ProfileInitializer.calcAverageFo(prfSum);
-            ProfileInitializer.calcAllpFc(prfSum);
+    public boolean conductNonlinearRegressionAnalysis(Profile profile) {
+        //Need to trim the profile in order to avoid aberrancies within early cycles and within the plateau phase
+        //Exclude the first three cycles
+        int startIndex = 3;//Cycle 4        
+        //This uses the top of the LRE window as a reference point
+        //Cut off = endIndex, set to the top of the LRE window (+1)
+        int endIndex = profile.getStrCycleInt() + profile.getLreWinSize() - startIndex + 1;
+        int numberOfCycles = endIndex - startIndex + 1;
+        double[] fcArray = profile.getRawFcReadings();
+        //Construct the trimmed Fc dataset
+        double[] trimmedFcArray = new double[numberOfCycles];
+        double[] cycleArray = new double[numberOfCycles];
+        for (int i = 0; i < numberOfCycles; i++) {
+            cycleArray[i] = i + 4;
+            trimmedFcArray[i] = fcArray[i + 3];
         }
-        return prfSum;
+        DenseMatrix64F y = new DenseMatrix64F(numberOfCycles, 1);
+        y.setData(trimmedFcArray);
+        DenseMatrix64F x = new DenseMatrix64F(numberOfCycles, 1);
+        x.setData(cycleArray);
+        double[] paramArray = new double[5];
+        paramArray[0] = profile.getEmax();//LRE-derived Emax
+        paramArray[1] = profile.getFb();//Fb derived from Fc average (e.g. cycles 4-9)
+        paramArray[2] = profile.getAvFo();//LRE-derived Fo
+        paramArray[3] = profile.getEmax() / (-1 * profile.getDeltaE());//LRE-derived Fmax
+        paramArray[4] = 0.0;//Baseline slope assumed to be zero as a starting parameter
+        DenseMatrix64F initialParam = new DenseMatrix64F(5, 1);
+        initialParam.setData(paramArray);
+        //Initiate nonlinear regression
+        //Create the function
+        Lre5Param func = new Lre5Param();
+        //Instantiate the LM nonlinear regression function
+        LevenbergMarquardt fitter = new LevenbergMarquardt(func);
+        boolean successful = fitter.optimize(initialParam, x, y);
+        //Retrieve the optimized parameters
+        double[] optParam = fitter.getOptimizedParameters().getData();
+        profile.setCfEmax(optParam[0]);
+        profile.setCfFb(optParam[1]);
+        profile.setCfFo(optParam[2]);
+        profile.setCfFmax(optParam[3]);
+        profile.setCfFbSlope(optParam[4]);
+        conductBaselineCorrection(profile);
+        //Need to update the Profiles LRE parameters, which requires a ProfileSummary
+        //Creating a ProfileSummary includes updating the LRE parameters within the Profile
+        ProfileInitializer.constructProfileSummary(profile);
+        return successful;
+    }
+
+    /**
+     * This conducts both CF-derived Fb subtraction and baseline slope
+     * correction. Note that the caller is responsible for conducting LRE
+     * analysis on the updated Fc dataset and for saving the modified Profile.
+     *
+     * @param profile
+     */
+    private void conductBaselineCorrection(Profile profile) {
+        //Start with correcting for the NR-derived Fb slope
+        double[] rawFcReadings = profile.getRawFcReadings();
+        double[] processedFcDataset = new double[rawFcReadings.length];//The new optimized Fc dataset
+        //This assumes that nonlinear regression has been conducted AND it was successfully completed
+        double cfFb = profile.getCfFb();//The regression derived Fb
+        double cfFbSlope = profile.getCfFbSlope();//The regression-derived Fb slope
+        for (int i = 0; i < processedFcDataset.length; i++) {
+            processedFcDataset[i] = rawFcReadings[i] - cfFb - (cfFbSlope * (i + 1));
+        }
+        profile.setFcReadings(processedFcDataset);
     }
 
     /**
      * This is a very crude method based on cycles 4-9. Starting at cycle 4
      * avoids changes in background fluorescence that is commonly observed for
-     * cycles 1-3. This is should only used when a curve fitting Fb is not
-     * available.
+     * cycles 1-3. This is should only used for new Profiles or when a curve
+     * fitting Fb is not available.
      * <p>
      *
      * @param profile the Profile to be processed
@@ -135,9 +167,6 @@ public class LreAnalysisProvider extends LreAnalysisService {
             fb = fb + rawFc[i - 1];//List starts at 0
         }
         fb = fb / fbWindow;
-        // TODO this is redundant when a CF Fb is determined, so this will need to be eliminated once CF is fully implemented
-        profile.setFbStart(start);
-        profile.setFbWindow(end - start + 1);
         profile.setFb(fb);
         //Subtract this initial Fb from the raw Fc readings
         double[] fc = new double[rawFc.length];//The background subtracted Fc dataset

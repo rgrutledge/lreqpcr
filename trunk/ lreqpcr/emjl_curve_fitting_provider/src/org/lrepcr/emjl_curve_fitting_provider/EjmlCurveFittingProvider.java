@@ -22,16 +22,23 @@ import org.lreqpcr.core.data_objects.Profile;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
- * Curve Fitting Provider based on EJML 
+ * Curve Fitting Provider based on EJML that conducts nonlinear regression analysis 
+ * of a trimmed raw Fc dataset, starting at cycle 4 and the top of the LRE window. 
+ * This is necessary in order to exclude cycles within the upper region of the 
+ * profile that may be aberrant due to kinetic anomalies. 
  * <br>
  * Note that a new Fc dataset is generated that includes both CF-derived Fb
- * subtraction and baseline slope correction. Note also that the caller is
+ * and baseline slope correctionNote also that the caller is
  * responsible for conducting a new LRE analysis in that Fc dataset will be modified.
  *
  * @author Bob Rutledge
  */
 @ServiceProvider(service = CurveFittingServices.class)
 public class EjmlCurveFittingProvider implements CurveFittingServices {
+    
+    private void convergeWithLreAnalysis (){
+    
+}
 
     @Override
     public void curveFit(Profile profile) {
@@ -55,20 +62,20 @@ public class EjmlCurveFittingProvider implements CurveFittingServices {
         DenseMatrix64F x = new DenseMatrix64F(numberOfCycles, 1);
         x.setData(cycleArray);
         double[] paramArray = new double[5];
-        paramArray[0] = profile.getEmax();
-        paramArray[1] = profile.getFb();//Fb
-        paramArray[2] = profile.getAvFo();
-        paramArray[3] = profile.getEmax() / (-1 * profile.getDeltaE());//Fmax
-        paramArray[4] = 0.0;//Baseline slope
+        paramArray[0] = profile.getEmax();//LRE-derived Emax
+        paramArray[1] = profile.getFb();//Fb derived from Fc average (e.g. cycles 4-9)
+        paramArray[2] = profile.getAvFo();//LRE-derived Fo
+        paramArray[3] = profile.getEmax() / (-1 * profile.getDeltaE());//LRE-derived Fmax
+        paramArray[4] = 0.0;//Baseline slope assumed to be zero as a starting parameter
         DenseMatrix64F initialParam = new DenseMatrix64F(5, 1);
         initialParam.setData(paramArray);
-        //Initiate curve fitting
+        //Initiate nonlinear regression
         //Create the function
         Lre5Param func = new Lre5Param();
-        //Instantiate the LM curver fitter
+        //Instantiate the LM nonlinear regression function
         LevenbergMarquardt fitter = new LevenbergMarquardt(func);
-        // TODO this should include determining if curve fitting was successful 
-        // and if not, determine what to do...
+        // TODO this should include determining if nonlinear regression was successful************************************
+        // and if not, determine what to do...**************************************
         boolean successful = fitter.optimize(initialParam, x, y);
         //Retrieve the optimized parameters
         double[] optParam = fitter.getOptimizedParameters().getData();
@@ -98,17 +105,17 @@ public class EjmlCurveFittingProvider implements CurveFittingServices {
      */
     @Override
     public void conductBaselineCorrection(Profile profile) {
-        //Start with correcting for the CF-derived Fb slope
+        //Start with correcting for the NR-derived Fb slope
         double[] rawFcReadings = profile.getRawFcReadings();
-        double[] fc = new double[rawFcReadings.length];//The new Fc dataset
-        //This assumes that curve fitting has been conducted AND it was successfully completed
-        double cfFb = profile.getCfFb();//The curve fitting derived Fb
-        double cfFbSlope = profile.getCfFbSlope();//The curve fitting-derived Fb slope
+        double[] fc = new double[rawFcReadings.length];//The new optimized Fc dataset
+        //This assumes that nonlinear regression has been conducted AND it was successfully completed
+        double cfFb = profile.getCfFb();//The regression derived Fb
+        double cfFbSlope = profile.getCfFbSlope();//The regression-derived Fb slope
         for (int i = 0; i < fc.length; i++) {
             fc[i] = rawFcReadings[i] - cfFb - (cfFbSlope * (i + 1));
         }
         profile.setFcReadings(fc);
-        //Should this include repeating LRE analysis...YES but by the caller!!
+        //It is now necessary to repeat LRE analysis...YES but by the caller!!
     }
 
     //Does not function correctly

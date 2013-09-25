@@ -25,10 +25,10 @@ import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.SampleProfile;
+import org.lreqpcr.core.data_processing.ProfileInitializer;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
-import org.lreqpcr.core.utilities.ProfileUtilities;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.ui_components.PanelMessages;
 import org.openide.explorer.ExplorerManager;
@@ -38,6 +38,7 @@ import org.openide.windows.WindowManager;
 
 /**
  * Deletes the selected SampleProfiles
+ *
  * @author Bob Rutledge
  */
 public class DeleteSampleProfileAction extends AbstractAction {
@@ -62,12 +63,14 @@ public class DeleteSampleProfileAction extends AbstractAction {
 //This list should never be empty, as a LreWindowSelectionParameters object is created during DB creation
                 selectionParameters = l.get(0);
             }
+        } else {
+            return;
         }
         if (nodes.length == 1) {
             SampleProfile profile = nodes[0].getLookup().lookup(SampleProfile.class);
-            String msg = "Are you sure you want to delete '" + profile.getName() +
-                    "'?\nThis will permenantly remove this profile.";
-             int n = JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(),
+            String msg = "Are you sure you want to delete '" + profile.getName()
+                    + "'?\nThis will permenantly remove this profile.";
+            int n = JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(),
                     msg, "Delete a Replicate Sample Profile: " + profile.getName(),
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.WARNING_MESSAGE);
@@ -75,9 +78,9 @@ public class DeleteSampleProfileAction extends AbstractAction {
                 deleteProfile(profile);
             }
         } else {
-            String msg = "Are you sure you want to delete " + String.valueOf(nodes.length) +
-                    " Replicate Sample Profiles?\n This will permantly remove these profiles.";
-             int n = JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(),
+            String msg = "Are you sure you want to delete " + String.valueOf(nodes.length)
+                    + " Replicate Sample Profiles?\n This will permantly remove these profiles.";
+            int n = JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(),
                     msg, "Delete Replicate Sample Profiles",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.WARNING_MESSAGE);
@@ -93,8 +96,7 @@ public class DeleteSampleProfileAction extends AbstractAction {
         parentNode.refreshNodeLabel();
         LreObjectChildren parentChildren = (LreObjectChildren) parentNode.getChildren();
         LreObject parentLreObject = parentNode.getLookup().lookup(LreObject.class);
-        parentChildren.setLreObjectList((List<? extends LreObject>)
-                db.getChildren(parentLreObject, parentLreObject.getChildClass()));
+        parentChildren.setLreObjectList((List<? extends LreObject>) db.getChildren(parentLreObject, parentLreObject.getChildClass()));
         parentChildren.addNotify();
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_DELETED);
     }
@@ -103,37 +105,36 @@ public class DeleteSampleProfileAction extends AbstractAction {
     private void deleteProfile(SampleProfile sampleProfile) {
 
 //Need to remove the Profile from the AverageProfile replicate profile list
-            AverageSampleProfile avProfile =
-                    (AverageSampleProfile) sampleProfile.getParent();
-            List<SampleProfile> samplePrfList = avProfile.getReplicateProfileList();
-            //Test to sure that at least one Sample Profile will remain
-            if (samplePrfList.size() < 2) {
-                String msg = "There appears to be only one remaining replicate Profile, " +
-                        "which cannot be deleted.\nDelete the corresponding average " +
-                        "Profile instead.";
-                JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
-                        msg,
-                        "Cannot delete the last remaining replicate Profile",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            samplePrfList.remove(sampleProfile);
-            db.saveObject(samplePrfList);
-            //Recalculate the average Fmax which should not be time consuming
-            sampleProfile.getRun().calculateAverageFmax();
-            //Need to recalculate the average Fc dataset in the AverageSample Profile
-            avProfile.setFcReadings(null);//Fb will need to be recalculated
-            avProfile.setRawFcReadings(ProfileUtilities.generateAverageFcDataset(samplePrfList));
-            //Reinitialize the Average Profile
-            LreAnalysisService profileIntialization =
-                    Lookup.getDefault().lookup(LreAnalysisService.class);
-            profileIntialization.initializeProfileSummary(avProfile, selectionParameters);
-             //The average Tm must be updated in the parent AverageSampleProfile
-            avProfile.calculateAvAmpTm();
-            db.saveObject(avProfile);
-            //Need to also save the SampeProfile's Run
-            db.saveObject(sampleProfile.getRun());
-            db.deleteObject(sampleProfile);
-            db.commitChanges();
+        AverageSampleProfile avProfile =
+                (AverageSampleProfile) sampleProfile.getParent();
+        List<SampleProfile> samplePrfList = avProfile.getReplicateProfileList();
+        //Test to sure that at least one Sample Profile will remain
+        if (samplePrfList.size() < 2) {
+            String msg = "There appears to be only one remaining replicate Profile, "
+                    + "which cannot be deleted.\nDelete the corresponding average "
+                    + "Profile instead.";
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                    msg,
+                    "Cannot delete the last remaining replicate Profile",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        samplePrfList.remove(sampleProfile);
+        db.saveObject(samplePrfList);
+        //Recalculate the average Fmax which should not be time consuming
+        sampleProfile.getRun().calculateAverageFmax();
+        //Need to recalculate the average Fc dataset in the AverageSample Profile
+        avProfile.setFcReadings(null);////This will trigger a new Fc dataset to be generated from the raw Fc dataset
+        //Reinitialize the Average Profile
+        LreAnalysisService profileIntialization =
+                Lookup.getDefault().lookup(LreAnalysisService.class);
+        //Conduct automated LRE window selection
+        profileIntialization.conductAutomatedLreWindowSelection(avProfile, selectionParameters);
+        avProfile.calculateAvAmpTm();
+        db.saveObject(avProfile);
+        //Need to also save the SampeProfile's Run
+        db.saveObject(sampleProfile.getRun());
+        db.deleteObject(sampleProfile);
+        db.commitChanges();
     }
 }

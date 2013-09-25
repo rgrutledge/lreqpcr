@@ -25,6 +25,7 @@ import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.data_objects.SampleProfile;
+import org.lreqpcr.core.data_processing.ProfileInitializer;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
@@ -89,7 +90,7 @@ class ExcludeSampleProfileAction extends AbstractAction {
             parentAvProfile.calculateAvAmpTm();
             sampleProfileLreNode.refreshNodeLabel();
             db.saveObject(sampleProfile);
-            
+
             //Update the parent Average Sample Profile
             LreNode avSampleProfileLreNode = (LreNode) sampleProfileNodes[0].getParentNode();
             parentAvProfile.setRawFcReadings(ProfileUtilities.generateAverageFcDataset(repProfileList));
@@ -104,7 +105,7 @@ class ExcludeSampleProfileAction extends AbstractAction {
             //Update the tree
             avSampleProfileLreNode.refreshNodeLabel();
             //See if the AverageSample parent node is a Run node
-            if (avSampleProfileLreNode.getParentNode().getLookup().lookup(Run.class) != null){
+            if (avSampleProfileLreNode.getParentNode().getLookup().lookup(Run.class) != null) {
                 LreNode runLreNode = (LreNode) avSampleProfileLreNode.getParentNode();
                 runLreNode.refreshNodeLabel();
             }
