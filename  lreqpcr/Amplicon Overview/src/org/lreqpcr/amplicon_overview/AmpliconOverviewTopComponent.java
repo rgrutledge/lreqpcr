@@ -57,7 +57,7 @@ import org.openide.windows.WindowManager;
  * Top component which displays something.
  */
 @ConvertAsProperties(dtd = "-//org.lreqpcr.amplicon_overview//AmpliconOverview//EN",
-autostore = false)
+        autostore = false)
 public final class AmpliconOverviewTopComponent extends TopComponent
         implements ExplorerManager.Provider, PropertyChangeListener, UniversalLookupListener {
 
@@ -69,7 +69,6 @@ public final class AmpliconOverviewTopComponent extends TopComponent
     private static final String PREFERRED_ID = "AmpliconOverviewTopComponent";
     private ExplorerManager mgr = new ExplorerManager();
     private DatabaseServices currentDB;
-    private boolean hasTreeBeenCreated;//To prevent reconstruction upon repeated window activation
     private DatabaseType dbType;
 
     public AmpliconOverviewTopComponent() {
@@ -82,9 +81,12 @@ public final class AmpliconOverviewTopComponent extends TopComponent
         putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.FALSE);
-
         setName("Sorted by Amplicon");
         associateLookup(ExplorerUtils.createLookup(mgr, this.getActionMap()));
+        iniServices();
+    }
+
+    private void iniServices() {
         WindowManager.getDefault().getRegistry().addPropertyChangeListener(this);
         UniversalLookup.getDefault().addListner(PanelMessages.RUN_VIEW_SELECTED, this);
         UniversalLookup.getDefault().addListner(PanelMessages.NEW_DATABASE, this);
@@ -105,24 +107,23 @@ public final class AmpliconOverviewTopComponent extends TopComponent
             AbstractNode root = new AbstractNode(Children.LEAF);
             root.setName("No database is open");
             mgr.setRootContext(root);
-            if (dbType == DatabaseType.CALIBRATION) {
-                exportProfilePanel.setVisible(false);
-            } else {
-                exportProfilePanel.setVisible(true);
-            }
+//            if (dbType == DatabaseType.CALIBRATION) {
+//                exportProfilePanel.setVisible(true);
+//            } else {
+//                exportProfilePanel.setVisible(true);
+//            }
             return;
         }
-        if (dbType == DatabaseType.CALIBRATION) {
-            exportProfilePanel.setVisible(false);
-        } else {
-            exportProfilePanel.setVisible(true);
-        }
+//        if (dbType == DatabaseType.CALIBRATION) {
+//            exportProfilePanel.setVisible(true);
+//        } else {
+//            exportProfilePanel.setVisible(true);
+//        }
         List<Amplicon> ampList = getAmpliconList();
         Collections.sort(ampList);
         AbstractNode root = new AbstractNode(new AmpliconChildren(currentDB, ampList));
         root.setName("Amplicon Overview (" + String.valueOf(ampList.size()) + ")");
         mgr.setRootContext(root);
-        hasTreeBeenCreated = true;
     }
 
     private List<Amplicon> getAmpliconList() {
@@ -202,8 +203,8 @@ public final class AmpliconOverviewTopComponent extends TopComponent
         for (Node node : nodes) {
             AmpliconImpl amplicon = node.getLookup().lookup(AmpliconImpl.class);
             if (amplicon != null) {
-                    List profileList = currentDB.retrieveUsingFieldValue(AverageSampleProfile.class, "ampliconName", amplicon.getName());
-                    groupList.put(amplicon.getName(), new ArrayList<AverageSampleProfile>(profileList));
+                List profileList = currentDB.retrieveUsingFieldValue(AverageSampleProfile.class, "ampliconName", amplicon.getName());
+                groupList.put(amplicon.getName(), new ArrayList<AverageSampleProfile>(profileList));
             }
         }
         return groupList;
@@ -223,25 +224,25 @@ public final class AmpliconOverviewTopComponent extends TopComponent
 //        }
 //        return groupList;
 //    }
-    
-    private HashMap<String, List<SampleProfile>> getSamplePrfsForSelectedAmplicons(){
+
+    private HashMap<String, List<SampleProfile>> getSamplePrfsForSelectedAmplicons() {
         Node[] nodes = mgr.getSelectedNodes();
         HashMap<String, List<SampleProfile>> groupList = new HashMap<String, List<SampleProfile>>();
         for (Node node : nodes) {
             AmpliconImpl amplicon = node.getLookup().lookup(AmpliconImpl.class);
             if (amplicon != null) {
-                    List<SampleProfile> allProfileList = currentDB.retrieveUsingFieldValue(SampleProfile.class, "ampliconName", amplicon.getName());
-                    //This will also retrieve average profiles, so they must be removed
-                    //But the db4o list causes an error to revert to creating an ArrayList
-                    List<SampleProfile> samplePrfList = new ArrayList<SampleProfile>();
-                    for (SampleProfile samplePrf : allProfileList){
-                        if (samplePrf instanceof AverageProfile){
-                            //Do nothing
-                        }else{
-                            samplePrfList.add(samplePrf);
-                        }
+                List<SampleProfile> allProfileList = currentDB.retrieveUsingFieldValue(SampleProfile.class, "ampliconName", amplicon.getName());
+                //This will also retrieve average profiles, so they must be removed
+                //But the db4o list causes an error to revert to creating an ArrayList
+                List<SampleProfile> samplePrfList = new ArrayList<SampleProfile>();
+                for (SampleProfile samplePrf : allProfileList) {
+                    if (samplePrf instanceof AverageProfile) {
+                        //Do nothing
+                    } else {
+                        samplePrfList.add(samplePrf);
                     }
-                    groupList.put(amplicon.getName(), samplePrfList);
+                }
+                groupList.put(amplicon.getName(), samplePrfList);
             }
         }
         return groupList;
@@ -278,6 +279,7 @@ public final class AmpliconOverviewTopComponent extends TopComponent
         exportProfilePanel = new javax.swing.JPanel();
         exportAvProfileButton = new javax.swing.JButton();
         exportRepPrfsButton = new javax.swing.JButton();
+        resetTreeButton = new javax.swing.JButton();
 
         exportProfilePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(AmpliconOverviewTopComponent.class, "AmpliconOverviewTopComponent.exportProfilePanel.border.title"))); // NOI18N
 
@@ -316,6 +318,13 @@ public final class AmpliconOverviewTopComponent extends TopComponent
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        org.openide.awt.Mnemonics.setLocalizedText(resetTreeButton, org.openide.util.NbBundle.getMessage(AmpliconOverviewTopComponent.class, "AmpliconOverviewTopComponent.resetTreeButton.text")); // NOI18N
+        resetTreeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetTreeButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -324,13 +333,20 @@ public final class AmpliconOverviewTopComponent extends TopComponent
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(ampliconTree, javax.swing.GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE)
-                    .addComponent(exportProfilePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(resetTreeButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(exportProfilePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(exportProfilePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(exportProfilePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(resetTreeButton)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(ampliconTree, javax.swing.GroupLayout.DEFAULT_SIZE, 789, Short.MAX_VALUE)
                 .addContainerGap())
@@ -343,10 +359,10 @@ public final class AmpliconOverviewTopComponent extends TopComponent
             HashMap<String, List<AverageSampleProfile>> groupList = getAvSamplePrfForSelectedAmplicons();
             if (!groupList.isEmpty()) {
                 Lookup.getDefault().lookup(DataExportServices.class).exportAverageSampleProfiles(groupList);
-            }else {
+            } else {
                 noNodesSelectedError();
             }
-        } 
+        }
 //        else if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION) {
 //            HashMap<String, List<AverageCalibrationProfile>> groupList = getAvCalibrationPrfForSelectedAmplicons();
 //            if (!groupList.isEmpty()) {
@@ -363,10 +379,10 @@ public final class AmpliconOverviewTopComponent extends TopComponent
             HashMap<String, List<SampleProfile>> groupList = getSamplePrfsForSelectedAmplicons();
             if (!groupList.isEmpty()) {
                 Lookup.getDefault().lookup(DataExportServices.class).exportReplicateSampleProfiles(groupList);
-            }else {
+            } else {
                 noNodesSelectedError();
             }
-        } 
+        }
 //        else if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION) {
 //            HashMap<String, List<CalibrationProfile>> groupList = getCalPrfsForSelectedAmplicons();
 //            if (!groupList.isEmpty()) {
@@ -376,11 +392,16 @@ public final class AmpliconOverviewTopComponent extends TopComponent
 //            }
 //        }
     }//GEN-LAST:event_exportRepPrfsButtonActionPerformed
+
+    private void resetTreeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetTreeButtonActionPerformed
+        createTree();
+    }//GEN-LAST:event_resetTreeButtonActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane ampliconTree;
     private javax.swing.JButton exportAvProfileButton;
     private javax.swing.JPanel exportProfilePanel;
     private javax.swing.JButton exportRepPrfsButton;
+    private javax.swing.JButton resetTreeButton;
     // End of variables declaration//GEN-END:variables
 
     /**

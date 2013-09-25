@@ -38,7 +38,6 @@ public class ExptDbUpdate {
         ExptDbInfo newDbInfo = new ExptDbInfo();
         //Copy all values into the newDbInfo
         newDbInfo.setOcf(oldDbInfo.getOcf());
-        newDbInfo.setIsEmaxFixTo100Percent(oldDbInfo.isEmaxFixTo100Percent());
         newDbInfo.setIsTargetQuantityNormalizedToFmax(oldDbInfo.isTargetQuantityNormalizedToFax());
         exptDB.saveObject(newDbInfo);
         exptDB.deleteObject(oldDbInfo);

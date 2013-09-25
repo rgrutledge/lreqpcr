@@ -18,9 +18,9 @@
 package org.lreqpcr.core.data_processing;
 
 /**
- * Abstract class representing a thermocycle that allows an amplification
- * profile to be constructed as a linked list. This in turn allows data retrieval
- * by transversing the profile linked list.
+ * Abstract class representing the cycles within a Profile via a linked-list that 
+ * allows analysis and display of the Profile. This in turn allows data retrieval
+ * by transversing the Cycle linked-list.
  * 
  * @author Bob Rutledge
  */
@@ -32,7 +32,6 @@ public abstract class Cycle {
     private double fc; //The fluorescence reading for this Cycle
     private double ec; //Cycle efficiency derived by dividing the Fc by the previous cycle Fc
     private double fo; //Fc to Fo conversion based on the current LRE window settings
-    private double foEmax100;//Fo calculated with Emax fixed to 100%
     private double pFc; //Predicted Fc based on the current LRE window settings
     private double oFfracFoAv;//The fractional difference between Fo and the average Fo
     private double[] cycLREparam;//Linear regression values [slope, intercept, r2]
@@ -127,10 +126,6 @@ public abstract class Cycle {
         return fo;
     }
 
-    public double getFoEmax100() {
-        return foEmax100;
-    }
-
     /**
      * Target quantity in fluorescence units (Fo) is calculated using 
      * the deltaE, Emax and average Fo.
@@ -139,10 +134,6 @@ public abstract class Cycle {
      */
     public void setFo(double fo) {
         this.fo = fo;
-    }
-
-    public void setFoEmax100(double foEmax100) {
-        this.foEmax100 = foEmax100;
     }
 
     /**

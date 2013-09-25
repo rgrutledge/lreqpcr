@@ -82,8 +82,6 @@ class IncludeSampleProfileAction extends AbstractAction {
             parentAvProfile.setFcReadings(null);//This will trigger a new Fc dataset to be generated from the raw Fc dataset
             //Reinitialize the Average Profile
             LreAnalysisService profileIntialization = Lookup.getDefault().lookup(LreAnalysisService.class);
-            //This will trigger an auto selection of the LRE window
-            parentAvProfile.setHasAnLreWindowBeenFound(false);
             profileIntialization.conductAutomatedLreWindowSelection(parentAvProfile, selectionParameters);
             db.saveObject(parentAvProfile);
             db.saveObject(parentAvProfile.getRun());

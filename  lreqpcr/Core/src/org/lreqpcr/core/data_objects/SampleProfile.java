@@ -27,7 +27,6 @@ public class SampleProfile extends Profile {
 
     private double ocf;//The optical calibration factor used to calculate the number of target molecules
     protected double no = -1;//Number of targets molecules; -1 signifies that a value is not avialable
-    private double noEmax100;//Number of target molecules when Emax is fixed to 100%
     private boolean isTragetQuantityNormalizedToFmax;//Normalize the target quantity to the Run's average Fmax
 
     public SampleProfile() {
@@ -55,8 +54,8 @@ public class SampleProfile extends Profile {
     }
 
     @Override
-    public void setAvFoValues(double averageFo, double averageFoEmax100) {
-        super.setAvFoValues(averageFo, averageFoEmax100);
+    public void setAvFo(double averageFo) {
+        super.setAvFo(averageFo);
         updateSampleProfile();
     }
 
@@ -68,14 +67,11 @@ public class SampleProfile extends Profile {
         if (ocf > 0) {
             if (getTargetStrandedness() == TargetStrandedness.SINGLESTRANDED) {
                 no = (2 * ((getAvFo() / ocf) * 910000000000d) / getAmpliconSize());
-                noEmax100 = (2 * ((getAvFoEmax100() / ocf) * 910000000000d) / getAmpliconSize());
             } else {
                 no = (((getAvFo() / ocf) * 910000000000d) / getAmpliconSize());
-                noEmax100 = (((getAvFoEmax100() / ocf) * 910000000000d) / getAmpliconSize());
             }
         } else {
-            no = 0;
-            noEmax100 = 0;
+            no = 0;//No OCF available
         }
     }
 
@@ -152,11 +148,7 @@ public class SampleProfile extends Profile {
         if (isTragetQuantityNormalizedToFmax){
             return getNoAdjustedToFmax();
         }
-        if (isEmaxFixedTo100()) {
-            return noEmax100;//No is calculated using Emax = 100%
-        } else {
-            return no;
-        }
+        return no;
     }
 
     /**
@@ -173,12 +165,8 @@ public class SampleProfile extends Profile {
         if (fmax <= 0 || avFmax <= 0) {
             return 0;
         }
-        double correctionFactor = avFmax / fmax;
-        if (isEmaxFixedTo100()) {
-            return noEmax100 * correctionFactor;
-        } else {
-            return no * correctionFactor;
-        }
+        double correctionFactor = fmax / avFmax;
+        return no / correctionFactor;
     }
 
     /**

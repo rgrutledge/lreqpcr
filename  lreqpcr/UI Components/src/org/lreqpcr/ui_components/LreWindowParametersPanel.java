@@ -81,15 +81,19 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
      */
     public LreWindowParametersPanel() {
         initComponents();
+        initPanel();
         createKeyAdapter();
         minFcDisplay.addKeyListener(keyAdapter);
         foThresholdDisplay.addKeyListener(keyAdapter);
         WindowManager.getDefault().getRegistry().addPropertyChangeListener(this);
+        updateDisplay();
+        avReplCvDisplay.setText("");
+    }
+
+    private void initPanel() {
         universalLookup.addListner(PanelMessages.NEW_DATABASE, this);
         universalLookup.addListner(PanelMessages.UPDATE_CALIBRATION_PANELS, this);
         universalLookup.addListner(PanelMessages.UPDATE_EXPERIMENT_PANELS, this);
-        updateDisplay();
-        avReplCvDisplay.setText("");
     }
 
     private void createKeyAdapter() {
@@ -282,6 +286,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                 //The AverageProfile is valid thus reinitialize it
                 Profile profile = (Profile) avProfile;
                 lreAnalysisService.conductAutomatedLreWindowSelection(profile, selectionParameters);
+                lreAnalysisService.conductNonlinearRegressionAnalysis(profile);
                 currentDB.saveObject(avProfile);
             }
         }

@@ -21,7 +21,6 @@ import java.awt.geom.*;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import org.lrepcr.curve_fitting_services.CurveFittingServices;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.*;
 import org.lreqpcr.core.data_processing.*;
@@ -51,7 +50,6 @@ public class LrePlot extends javax.swing.JPanel {
     private SimpleDateFormat sdf = new SimpleDateFormat("dMMMyy");
     private UniversalLookup universalLookup = UniversalLookup.getDefault();
     private DatabaseServices db;//The database in which the Profile is stored
-    private CurveFittingServices cfServices = Lookup.getDefault().lookup(CurveFittingServices.class);
     private LreAnalysisService lreAnalService = Lookup.getDefault().lookup(LreAnalysisService.class);
 
     /** 
@@ -164,21 +162,20 @@ public class LrePlot extends javax.swing.JPanel {
     }
 
     private void processModifiedLreWindow() {
+//Note that this is the only function that allows the user to modified the LRE analysis 
+//which is accomplished only by modifying the LRE window
+//However, this in turn requires conducting NR using the new LRE window to determine the upper cut off
+//        profile = prfSum.getProfile();
 //This function relies on the assumption that this profile has a valid LRE window
-//which should be true if the profile is being displayed so that the user can modify it
-        //Update ProfileSummary using the new LRE parameters
-        ProfileInitializer.calcLreParameters(prfSum);
-//Note that of 9Aug12 the profile updates itself following changes to the avFo
-//Unfortunately, ProfileInitializer is held in core, and cannot call CurveFittingServices due to cross dependencies
-        //So this must be conducted here
-        cfServices.curveFit(profile);
-        //Must repeat Profile initialization as the Fc dataset has been modified
-        //This requires generation of a new Profile Summary, which should be done by the parent panel
-        //This is therefore only for testing
-        prfSum = lreAnalService.initializeProfileSummary(profile, null);
-        ProfileInitializer.calcLreParameters(prfSum);
+//which must be true as the profile needs to be displayed in order to allow the user to modify it
+//Update ProfileSummary using the new LRE window. which also updates all of the LRE parameters within the Profile
+        ProfileInitializer.updateProfileSummary(prfSum);
+        lreAnalService.conductNonlinearRegressionAnalysis(profile); 
+//Curve fitting generated a new working Fc dataset so the ProfileSummary needs updating
+        ProfileInitializer.updateProfileSummary(prfSum);
+//        prfSum = ProfileInitializer.constructProfileSummary(profile, null);
         db.saveObject(profile);
-        //The AverageSampleProfile may need to be updated if this is a SampleProfile
+        //The AverageSampleProfile needs to be updated if <10N
         if (profile instanceof SampleProfile && !(profile instanceof AverageProfile)) {
             AverageSampleProfile avProfile = (AverageSampleProfile) profile.getParent();
             //This function will update the AverageSampleProfile if it is <10N

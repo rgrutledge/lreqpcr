@@ -21,12 +21,12 @@ import java.util.Collection;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
+import org.lreqpcr.core.data_processing.ProfileInitializer;
 import org.lreqpcr.core.data_processing.ProfileSummary;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
@@ -50,8 +50,7 @@ public class ProfileEditor extends JPanel implements
     private ProfileSummary prfSum;
     protected LreNode selectedNode;
     protected Profile profile;
-    private LreAnalysisService analysisService;
-    private LreWindowSelectionParameters selectionParameters;
+    private LreWindowSelectionParameters lreWindowSelectionParameters;
     private DatabaseServices currentDB;
     private Lookup.Result nodeResult;
     private UniversalLookup universalLookup;
@@ -66,7 +65,6 @@ public class ProfileEditor extends JPanel implements
 
     @SuppressWarnings(value = "unchecked")
     private void initProfileView() {
-        analysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
         universalLookup = UniversalLookup.getDefault();
         universalLookup.addListner(PanelMessages.NEW_DATABASE, this);
         universalLookup.addListner(PanelMessages.CLEAR_PROFILE_EDITOR, this);
@@ -88,7 +86,7 @@ public class ProfileEditor extends JPanel implements
                     displayVersionIncompatiblityMessage();
                     return;
             }
-                selectionParameters = l.get(0);
+                lreWindowSelectionParameters = l.get(0);
             }
         }
     }
@@ -97,7 +95,7 @@ public class ProfileEditor extends JPanel implements
         clearPanels();
         this.profile = profile;
 //Display and editing of a profile is conducted through the ProfileSummary interface
-        prfSum = analysisService.initializeProfileSummary(profile, selectionParameters);
+        prfSum = ProfileInitializer.constructProfileSummary(profile);
         if (profile.hasAnLreWindowBeenFound()) {
             updatePanels();
         } else {//LRE window not found
@@ -107,7 +105,6 @@ public class ProfileEditor extends JPanel implements
             lreObjectInfo.displayMember(selectedNode);
             curveFittingParam1.clearPanel();
         }
-
     }
 
     private void updatePanels() {
@@ -192,7 +189,7 @@ public class ProfileEditor extends JPanel implements
                     .addComponent(lreWindowParametersPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(numericalTable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(curveFittingParam1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(23, Short.MAX_VALUE))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -253,7 +250,7 @@ public class ProfileEditor extends JPanel implements
                     displayVersionIncompatiblityMessage();
                     return;
                 }
-                selectionParameters = l.get(0);
+                lreWindowSelectionParameters = l.get(0);
             }
             LreObject member = selectedNode.getLookup().lookup(LreObject.class);
             if (member instanceof Profile) {
@@ -320,14 +317,14 @@ public class ProfileEditor extends JPanel implements
                     parentNode.refreshNodeLabel();
                 }
             }
-            //With curve fitting, a new Profile Summary is needed, as the Fc dataset has been modified
-            prfSum = analysisService.initializeProfileSummary(profile, selectionParameters);
+            //Following curve fitting, the Profile Summary must be updated
+            ProfileInitializer.constructProfileSummary(profile);
             updatePanels();
         }
         if (key == PanelMessages.NEW_DATABASE) {
             currentDB = (DatabaseServices) universalLookup.getAll(PanelMessages.NEW_DATABASE).get(0);
             if (currentDB == null) {
-                selectionParameters = null;
+                lreWindowSelectionParameters = null;
                 clearPanels();
             } else {
                 if (currentDB.isDatabaseOpen()) {
@@ -337,7 +334,7 @@ public class ProfileEditor extends JPanel implements
                     displayVersionIncompatiblityMessage();
                     return;
                 }
-                    selectionParameters = l.get(0);
+                    lreWindowSelectionParameters = l.get(0);
                 }
                 clearPanels();
             }

@@ -22,50 +22,42 @@ import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_processing.ProfileSummary;
 
 /**
- * Initialize all fields within the provided Profile, along with the
+ * Conducts LRE analysis on a supplied Profile
  * ProfileSummary that encapsulates it.
  *
  * @author Bob Rutledge
  */
-public abstract class LreAnalysisService {
+public abstract interface LreAnalysisService {
 
     /**
-     * Provides all the functions necessary for automated LRE window selection,
-     * including the ability to initialize new Profiles.
+     * Provides all the functions necessary for automated LRE window selection.
      * This involves baseline subtraction for new Profiles and
-     * LRE window selection using the LreWindowSelectionParameters. Note that
-     * the caller must take responsibility for saving the changes to the Profile.
+     * LRE window selection using the LreWindowSelectionParameters, along with 
+     * setting values for all of the parameters associated with LRE analysis. Note that
+     * the caller must take responsibility for saving changes to the Profile.
      *
      * @param profile the Profile to initialize
      * @param parameters the LRE window parameters which cannot be null
      * @return returns true if an LRE window was found or false if automated LRE window selection failed
      */
     public abstract boolean conductAutomatedLreWindowSelection(Profile profile, LreWindowSelectionParameters parameters);
-    
-    /**
-     * Constructs a ProfileSummary for the supplied Profile. This will also update 
-     * all of the quantitative parameters such as the average Fo, so this function 
-     * can be used to update the profile, such as after fixing Emax to 100%. Note 
-     * that ProfileSummary is also used to view and edit a Profile.
-     *
-     * Note also that the average Fo is recalculated and that it is upto the calling
-     * function to save the changes to the corresponding database.
-     * 
-     * @param profile the profile to be viewed
-     * @param parameters LRE window selection parameters
-     * @return the initialized ProfileSummary
-     */
-    public abstract ProfileSummary initializeProfileSummary(Profile profile, LreWindowSelectionParameters parameters);
 
-//    /**
-//     * Provides the necessary functions to update the ProfileSummary when the user
-//     * manually changes the LRE window.
-//     * The boolean denotes whether the update was successful.
-//     *
-//     * @param profileSummary the ProfileSummary to update
-//     * @param parameters LRE window parameters
-//     * @return returns true if the ProfileSummary has been updated, false if not
-//     */
-//    public abstract boolean updateLreWindow(ProfileSummary profileSummary);
+    /**
+     * Conducts nonlinear regression (AKA curve fitting) on the raw Fc dataset to determine values 
+     * for 5 parameters: Fb (fluorescence background), Fb-slope 
+     * (baseline slope), Emax, Fmax and Fo. The primary objective is to derive 
+     * values for Fb and Fb-slope that are then used to generate an optimized 
+     * working Fc dataset for LRE analysis. Note that to maintain accurate 
+     * curving fitting, the raw Fc dataset must be trimmed to exclude aberrant 
+     * early cycles (generally cycles 1-3) and cycles within the plateau phase 
+     * in order to minimize the impact of aberrant amplification kinetics. 
+     * As such, the regression-derived Emax, Fmax and Fo are only used to determine 
+     * the level of convergence with LRE analysis. 
+     * 
+     * @param profile
+     * @return indicates whether the curve fitting was successful
+     */
+    public abstract boolean conductNonlinearRegressionAnalysis(Profile profile);
+
 
 }

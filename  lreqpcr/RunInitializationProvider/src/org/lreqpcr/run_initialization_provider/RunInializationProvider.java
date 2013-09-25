@@ -135,7 +135,6 @@ public class RunInializationProvider implements RunInitializationService {
                             (LreWindowSelectionParameters) experimentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
                     ExptDbInfo dbInfo = (ExptDbInfo) experimentDB.getAllObjects(ExptDbInfo.class).get(0);
                     double ocf = dbInfo.getOcf();
-                    boolean isEmaxFixed = dbInfo.isEmaxFixTo100Percent();
                     for (SampleProfile sampleProfile : sampleProfileList) {
                         if (ampliconDB != null) {
                             if (ampliconDB.isDatabaseOpen()
@@ -171,18 +170,6 @@ public class RunInializationProvider implements RunInitializationService {
                             experimentDB.saveObject(avProfile);
                             for (SampleProfile sampleProfile : avProfile.getReplicateProfileList()) {
                                 sampleProfile.setIsTargetQuantityNormalizedToFmax(true);
-                                experimentDB.saveObject(sampleProfile);
-                            }
-                        }
-                    }
-                    //Determin if Emax must be fixed to 100%
-                    if (dbInfo.isEmaxFixTo100Percent()) {
-                        for (AverageProfile profile : averageSampleProfileList) {
-                            AverageSampleProfile avProfile = (AverageSampleProfile) profile;
-                            avProfile.setIsEmaxFixedTo100(true);
-                            experimentDB.saveObject(avProfile);
-                            for (SampleProfile sampleProfile : avProfile.getReplicateProfileList()) {
-                                sampleProfile.setIsEmaxFixedTo100(true);
                                 experimentDB.saveObject(sampleProfile);
                             }
                         }
@@ -227,7 +214,7 @@ public class RunInializationProvider implements RunInitializationService {
                     calbnDB.saveObject(averageCalbnProfileList);
                     calRun.setAverageProfileList((ArrayList<AverageProfile>) averageCalbnProfileList);
                     calRun.calculateAverageOCF();
-                    //This is needed for imports that donot contain  SampleProfiles
+                    //This is needed for imports that do not contain SampleProfiles
                     if (sampleRun != null){
                         calculateTotalAvFmax();
                     }else {
@@ -243,18 +230,6 @@ public class RunInializationProvider implements RunInitializationService {
                             calbnDB.saveObject(avProfile);
                             for (CalibrationProfile calibrationProfile : avProfile.getReplicateProfileList()) {
                                 calibrationProfile.setIsOcfNormalizedToFmax(true);
-                                calbnDB.saveObject(calibrationProfile);
-                            }
-                        }
-                    }
-                    //Determine if Emax must be fixed to 100%
-                    if (calDbinfo.isEmaxFixTo100Percent()) {
-                        for (AverageProfile profile : averageCalbnProfileList) {
-                            AverageCalibrationProfile avProfile = (AverageCalibrationProfile) profile;
-                            avProfile.setIsEmaxFixedTo100(true);
-                            calbnDB.saveObject(avProfile);
-                            for (CalibrationProfile calibrationProfile : avProfile.getReplicateProfileList()) {
-                                calibrationProfile.setIsEmaxFixedTo100(true);
                                 calbnDB.saveObject(calibrationProfile);
                             }
                         }
