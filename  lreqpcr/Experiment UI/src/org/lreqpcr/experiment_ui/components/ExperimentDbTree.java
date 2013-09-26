@@ -152,7 +152,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
             return;
         }
         //Check if ExperimentDbInfo requires conversion to the new ExptDbInfo which extends DatabaseInfo
-        //This is necessary because DatabaseInfo handles Fmax and Emax normalization
+        //This is necessary because DatabaseInfo handles Fmax normalization
         //for databases containing Profiles as of 0.8.6
         List l = exptDB.getAllObjects(ExptDbInfo.class);
         if (l.isEmpty()) {
@@ -178,20 +178,19 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
                 runNodeLabelFactory), Lookups.singleton(exptDbInfo), new Action[]{});
         root.setDatabaseService(exptDB);
         //Determine if the average Run Fmax should be displayed, i.e. when >1 Run is present
-        if (runList.size() > 1) {
-            //Calculate and display the average Run Fmax along with correlation of coefficient
-            //This could be intensive but currently deemed acceptable as it avoids complex situtations with new exp databases
-            ProfileUtilities.calcAvFmaxForAllRuns(exptDB);
-            avRunFmax = exptDbInfo.getAvRunFmax();
-            avRunFmaxCV = exptDbInfo.getAvRunFmaxCV();
-            df.applyPattern("#0.0");
-            String cv = df.format(avRunFmaxCV * 100);
-            df.applyPattern(FormatingUtilities.decimalFormatPattern(avRunFmax));
-            root.setDisplayName(displayName + " [Av Run Fmax: " + df.format(avRunFmax) + " ±" + cv + "%]");
-//            root.setShortDescription("Av Run Fmax: " + df.format(avRunFmax) + " ±" + cv + "%]");
-        } else {
+        //This could be intensive but currently deemed acceptable as it avoids complex situtations with new exp databases
+//        if (runList.size() > 1) {
+//            //Calculate and display the average Run Fmax along with correlation of coefficient
+//            ProfileUtilities.calcAvFmaxForAllRuns(exptDB);
+//            avRunFmax = exptDbInfo.getAvRunFmax();
+//            avRunFmaxCV = exptDbInfo.getAvRunFmaxCV();
+//            df.applyPattern("#0.0");
+//            String cv = df.format(avRunFmaxCV * 100);
+//            df.applyPattern(FormatingUtilities.decimalFormatPattern(avRunFmax));
+//            root.setDisplayName(displayName + " [Av Run Fmax: " + df.format(avRunFmax) + " ±" + cv + "%]");
+//        } else {
             root.setDisplayName(displayName);
-        }
+//        }
         root.setShortDescription(dbFile.getAbsolutePath());
 //        statusLineMessage = StatusDisplayer.getDefault().setStatusText(dbFile.getAbsolutePath(), 1);
         mgr.setRootContext(root);

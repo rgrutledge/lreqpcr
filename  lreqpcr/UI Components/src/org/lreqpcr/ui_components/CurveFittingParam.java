@@ -28,9 +28,13 @@ public class CurveFittingParam extends javax.swing.JPanel {
 
     public void updateDisplay(ProfileSummary prfSum) {
         profile = prfSum.getProfile();
-        cfFoDisplay.setText(dfE.format(profile.getCfFo()));
+        df.applyPattern("#0.00%");
+        String foCV = df.format(profile.getCfFoSD() / profile.getCfFo() * 100);
+        cfFoDisplay.setText(dfE.format(profile.getCfFo()) + " ±" + foCV);
+        df.applyPattern("#0.00%");
+        String emaxCV = df.format(profile.getCfEmaxSD() / profile.getCfEmax() * 100);
         df.applyPattern("#.0%");
-        emaxDisplay.setText(df.format(profile.getCfEmax()));
+        emaxDisplay.setText(df.format(profile.getCfEmax()) + " ±" + emaxCV);
         double fmax = profile.getCfFmax();
         df.applyPattern(FormatingUtilities.decimalFormatPattern(fmax));
         fmaxDisplay.setText(df.format(fmax));
@@ -101,7 +105,7 @@ public class CurveFittingParam extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cfFoDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(cfFoDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel3)
@@ -109,7 +113,7 @@ public class CurveFittingParam extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(fmaxDisplay)
-                            .addComponent(emaxDisplay)))
+                            .addComponent(emaxDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -141,8 +145,7 @@ public class CurveFittingParam extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(fbSlopeDisplay))
-                .addGap(0, 25, Short.MAX_VALUE))
+                    .addComponent(fbSlopeDisplay)))
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
