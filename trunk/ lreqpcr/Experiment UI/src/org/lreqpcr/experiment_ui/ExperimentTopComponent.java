@@ -90,10 +90,6 @@ public final class ExperimentTopComponent extends TopComponent
         sampleNodeResult.allItems();
         sampleNodeResult.addLookupListener(this);
         experimentDbTree.initTreeView(mgr, experimentDB);
-        UniversalLookup.getDefault().addListner(PanelMessages.NEW_RUN_IMPORTED, this);
-        UniversalLookup.getDefault().addListner(PanelMessages.UPDATE_EXPERIMENT_PANELS, this);
-        UniversalLookup.getDefault().addListner(PanelMessages.PROFILE_DELETED, this);
-
     }
 
     @SuppressWarnings(value = "unchecked")
@@ -102,6 +98,9 @@ public final class ExperimentTopComponent extends TopComponent
         if (experimentDB != null) {
             UniversalLookup.getDefault().add(DatabaseType.EXPERIMENT, experimentDB);
         }
+        UniversalLookup.getDefault().addListner(PanelMessages.NEW_RUN_IMPORTED, this);
+        UniversalLookup.getDefault().addListner(PanelMessages.UPDATE_EXPERIMENT_PANELS, this);
+        UniversalLookup.getDefault().addListner(PanelMessages.PROFILE_DELETED, this);
     }
 
     private ArrayList<Run> getSelectedRuns() {

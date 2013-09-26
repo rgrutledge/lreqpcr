@@ -85,12 +85,12 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         createKeyAdapter();
         minFcDisplay.addKeyListener(keyAdapter);
         foThresholdDisplay.addKeyListener(keyAdapter);
-        WindowManager.getDefault().getRegistry().addPropertyChangeListener(this);
         updateDisplay();
         avReplCvDisplay.setText("");
     }
 
     private void initPanel() {
+        WindowManager.getDefault().getRegistry().addPropertyChangeListener(this);
         universalLookup.addListner(PanelMessages.NEW_DATABASE, this);
         universalLookup.addListner(PanelMessages.UPDATE_CALIBRATION_PANELS, this);
         universalLookup.addListner(PanelMessages.UPDATE_EXPERIMENT_PANELS, this);
@@ -279,13 +279,14 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         for (AverageProfile avProfile : profileList) {
             //Need to update the replicate profiles first in order to test if <10N
             for (Profile profile : avProfile.getReplicateProfileList()) {
-                lreAnalysisService.conductAutomatedLreWindowSelection(profile, selectionParameters);
+                //This will preserve any user modifications to the LRE window
+                lreAnalysisService.conductNonlinearRegressionAnalysis(profile);
                 currentDB.saveObject(profile);
             }
             if (!avProfile.isTheReplicateAverageNoLessThan10Molecules()) {
                 //The AverageProfile is valid thus reinitialize it
                 Profile profile = (Profile) avProfile;
-                lreAnalysisService.conductAutomatedLreWindowSelection(profile, selectionParameters);
+                //This will preserve any user modifications to the LRE window
                 lreAnalysisService.conductNonlinearRegressionAnalysis(profile);
                 currentDB.saveObject(avProfile);
             }

@@ -20,12 +20,14 @@ import java.awt.*;
 import java.awt.geom.*;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.*;
 import org.lreqpcr.core.data_processing.*;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.utilities.FormatingUtilities;
+import org.lreqpcr.core.utilities.MathFunctions;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.openide.util.Lookup;
 
@@ -172,8 +174,7 @@ public class LrePlot extends javax.swing.JPanel {
         ProfileInitializer.updateProfileSummary(prfSum);
         lreAnalService.conductNonlinearRegressionAnalysis(profile); 
 //Curve fitting generated a new working Fc dataset so the ProfileSummary needs updating
-        ProfileInitializer.updateProfileSummary(prfSum);
-//        prfSum = ProfileInitializer.constructProfileSummary(profile, null);
+//        ProfileInitializer.updateProfileSummary(prfSum);//This is now conducted during NR analysis 
         db.saveObject(profile);
         //The AverageSampleProfile needs to be updated if <10N
         if (profile instanceof SampleProfile && !(profile instanceof AverageProfile)) {
@@ -184,6 +185,21 @@ public class LrePlot extends javax.swing.JPanel {
             }
         }
         universalLookup.fireChangeEvent(PanelMessages.PROFILE_CHANGED);
+    }
+    
+    /**
+     * A test to see how effective NR errors can be determined...worked well 
+     * @param profile 
+     */
+    private void determineNrErrors(Profile profile){
+        //Start with Emax only
+        ArrayList<Double> emaxArray = new ArrayList<Double>();
+        for (int i=0; i<10; i++){
+            lreAnalService.conductNonlinearRegressionAnalysis(profile);
+            emaxArray.add(profile.getCfEmax());
+        }
+        double sd = MathFunctions.calcStDev(emaxArray);
+        int j =0;
     }
 
     /** This method is called from within the constructor to
@@ -572,7 +588,9 @@ private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
     LreWindowSelectionParameters selectionParameters = l.get(0);
     LreAnalysisService analysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
+    //This includes nonlinear regression analysis
     analysisService.conductAutomatedLreWindowSelection(profile, selectionParameters);
+    //This will repeat the nonlinear regression analysis, but determined not to be a significant problem
     processModifiedLreWindow();
 }//GEN-LAST:event_resetButtonActionPerformed
 

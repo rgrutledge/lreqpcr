@@ -14,12 +14,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * and open the template in the editor.
  */
-
 package org.lreqpcr.experiment_ui.components;
 
+import java.util.List;
+import org.lreqpcr.analysis_services.LreAnalysisService;
+import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.ExperimentDbInfo;
 import org.lreqpcr.core.data_objects.ExptDbInfo;
+import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.database_services.DatabaseServices;
+import org.openide.util.Lookup;
 
 /**
  *
@@ -28,11 +32,13 @@ import org.lreqpcr.core.database_services.DatabaseServices;
 public class ExptDbUpdate {
 
     /**
-     * Converts ExperimentDbInfo to the new ExptDbInfo first implemented in 
-     * version 0.8.6 that extends Fmax and Emax normalization to Calibration profiles.
-     * @param exptDB 
+     * Converts ExperimentDbInfo to the new ExptDbInfo first implemented in
+     * version 0.8.6 that extends Fmax and Emax normalization to Calibration
+     * profiles.
+     *
+     * @param exptDB
      */
-    public static void exptDbConversion086(DatabaseServices exptDB){
+    public static void exptDbConversion086(DatabaseServices exptDB) {
         //Retrieve the old DB info file
         ExperimentDbInfo oldDbInfo = (ExperimentDbInfo) exptDB.getAllObjects(ExperimentDbInfo.class).get(0);
         ExptDbInfo newDbInfo = new ExptDbInfo();
@@ -41,5 +47,37 @@ public class ExptDbUpdate {
         newDbInfo.setIsTargetQuantityNormalizedToFmax(oldDbInfo.isTargetQuantityNormalizedToFax());
         exptDB.saveObject(newDbInfo);
         exptDB.deleteObject(oldDbInfo);
+    }
+
+    /**
+     * Applies nonlinear regression analysis to pre Version 0.9 database files 
+     *
+     * @param exptDB the Experiment database service maintaining the database file to be processed
+     */
+    public static void nonlinearRegressionUpdate(DatabaseServices dbs) {
+        LreAnalysisService lreAnalysisService =
+                Lookup.getDefault().lookup(LreAnalysisService.class);
+        if (!dbs.isDatabaseOpen()) {
+            return;
+        }
+        List<AverageProfile> profileList;
+        profileList = dbs.getAllObjects(AverageProfile.class);
+        if (profileList.isEmpty()) {
+            return;
+        }
+        for (AverageProfile avProfile : profileList) {
+            //Need to update the replicate profiles first in order to test if <10N
+            for (Profile profile : avProfile.getReplicateProfileList()) {
+                lreAnalysisService.conductNonlinearRegressionAnalysis(profile);
+                dbs.saveObject(profile);
+            }
+            if (!avProfile.isTheReplicateAverageNoLessThan10Molecules()) {
+                //The AverageProfile is valid thus reinitialize it
+                Profile profile = (Profile) avProfile;
+                lreAnalysisService.conductNonlinearRegressionAnalysis(profile);
+                dbs.saveObject(avProfile);
+            }
+        }
+        dbs.commitChanges();
     }
 }

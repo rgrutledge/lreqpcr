@@ -19,6 +19,7 @@ package org.lreqpcr.calibration_ui;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
@@ -27,6 +28,7 @@ import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.data_objects.RunImpl;
 import org.lreqpcr.core.database_services.DatabaseServices;
+import org.openide.util.Lookup;
 
 /**
  * Static methods for assessing version compatability.
@@ -36,14 +38,14 @@ import org.lreqpcr.core.database_services.DatabaseServices;
 public class UpdateCalbrationDatabase {
 
     /**
-     *  
+     *
      *
      * @param avProfileList
      */
-    
     /**
-     * Updates calibration databases from 085 and deletes any AverageSampleProfiles found in the 
-     * database.
+     * Updates calibration databases from 085 and deletes any
+     * AverageSampleProfiles found in the database.
+     *
      * @param db the calibration database
      * @param avProfileList list of the average profiles to be processed
      */
@@ -52,15 +54,14 @@ public class UpdateCalbrationDatabase {
         List<Run> runList1 = (List<Run>) calbnDB.getAllObjects(Run.class);
         //Some of these runs lack an average calibration profile array but also 
         //include runs that have average sample profile array and must be deleted
-        for(Run run : runList1){
-            if (run.getAverageProfileList() != null && run.getAverageProfileList().get(0) instanceof AverageSampleProfile){
+        for (Run run : runList1) {
+            if (run.getAverageProfileList() != null && run.getAverageProfileList().get(0) instanceof AverageSampleProfile) {
                 calbnDB.deleteObject(run);
             }
         }
         //Now need to transfer the raverage calibration profiles into new CalibrationRuns 
         //initialized from the ImplRun held within the average profiles
-        List<AverageCalibrationProfile> avCalPrfList = (List<AverageCalibrationProfile>) 
-                calbnDB.getAllObjects(AverageCalibrationProfile.class);
+        List<AverageCalibrationProfile> avCalPrfList = (List<AverageCalibrationProfile>) calbnDB.getAllObjects(AverageCalibrationProfile.class);
         //Set the AverageProfile list in each Run and have Run calculate average Fmax
         //Need to sort out all the avProfiles associated with each Run, e.g. CAL1 + CAL2 = 2 avProfiles in one run
         //This is required in order to put the avProfiles into the the correct Run
@@ -97,17 +98,17 @@ public class UpdateCalbrationDatabase {
         }
         //Testing indicates that ImplRun remain, so delete them
         List<Run> runList = (List<Run>) calbnDB.getAllObjects(Run.class);
-        for (Run run : runList){
-            if (run instanceof RunImpl){
+        for (Run run : runList) {
+            if (run instanceof RunImpl) {
                 calbnDB.deleteObject(run);
             }
         }
         //Set the CalbrationRun in all profiles 
         List<Run> runFinalList = (List<Run>) calbnDB.getAllObjects(Run.class);
-        for (Run run : runFinalList){
-            for (AverageProfile avPrf : run.getAverageProfileList()){
+        for (Run run : runFinalList) {
+            for (AverageProfile avPrf : run.getAverageProfileList()) {
                 AverageCalibrationProfile avCalPrf = (AverageCalibrationProfile) avPrf;
-                for (Profile profile : avCalPrf.getReplicateProfileList()){
+                for (Profile profile : avCalPrf.getReplicateProfileList()) {
                     profile.setRun(run);
                     calbnDB.saveObject(profile);
                 }
@@ -116,5 +117,37 @@ public class UpdateCalbrationDatabase {
             }
         }
         calbnDB.commitChanges();
+    }
+
+    /**
+     * Applies nonlinear regression analysis
+     *
+     * @param exptDB
+     */
+    public static void nonlinearRegressionUpdate(DatabaseServices dbs) {
+        LreAnalysisService lreAnalysisService =
+                Lookup.getDefault().lookup(LreAnalysisService.class);
+        if (!dbs.isDatabaseOpen()) {
+            return;
+        }
+        List<AverageProfile> profileList;
+//This is necessary becuase for unknown reasons retrieving AverageProfiles 
+//objects fail for calibration profiles
+        profileList = dbs.getAllObjects(AverageCalibrationProfile.class);
+        if (profileList.isEmpty()) {
+            return;
+        }
+        for (AverageProfile avProfile : profileList) {
+            //Need to update the replicate profiles first in order to test if <10N
+            for (Profile profile : avProfile.getReplicateProfileList()) {
+                lreAnalysisService.conductNonlinearRegressionAnalysis(profile);
+                dbs.saveObject(profile);
+
+            }
+            Profile prf = (Profile) avProfile;
+            lreAnalysisService.conductNonlinearRegressionAnalysis(prf);
+            dbs.saveObject(prf);
+        }
+        dbs.commitChanges();
     }
 }

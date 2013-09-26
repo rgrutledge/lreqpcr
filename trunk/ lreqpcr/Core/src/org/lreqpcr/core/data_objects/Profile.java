@@ -62,6 +62,8 @@ public abstract class Profile extends LreObject {
     private double cfEmax = 0;//Curve Fit derived Emax
     private double cfFmax = 0;//Curve Fit derived Fmax
     private double cfFo = 0;//Curve Fit derived Fo
+    //Standard deviations derived from repeatative nonlinear regression analysis
+    private double cfFbSD, cfFbSlopeSD, cfEmaxSD, cfFmaxSD, cfFoSD;
 
     /**
      * 
@@ -427,6 +429,46 @@ public abstract class Profile extends LreObject {
 
     public void setCfFo(double cfFo) {
         this.cfFo = cfFo;
+    }
+
+    public double getCfFbSD() {
+        return cfFbSD;
+    }
+
+    public void setCfFbSD(double cfFbSD) {
+        this.cfFbSD = cfFbSD;
+    }
+
+    public double getCfFbSlopeSD() {
+        return cfFbSlopeSD;
+    }
+
+    public void setCfFbSlopeSD(double cfFbSlopeSD) {
+        this.cfFbSlopeSD = cfFbSlopeSD;
+    }
+
+    public double getCfEmaxSD() {
+        return cfEmaxSD;
+    }
+
+    public void setCfEmaxSD(double cfEmaxSD) {
+        this.cfEmaxSD = cfEmaxSD;
+    }
+
+    public double getCfFmaxSD() {
+        return cfFmaxSD;
+    }
+
+    public void setCfFmaxSD(double cfFmaxSD) {
+        this.cfFmaxSD = cfFmaxSD;
+    }
+
+    public double getCfFoSD() {
+        return cfFoSD;
+    }
+
+    public void setCfFoSD(double cfFoSD) {
+        this.cfFoSD = cfFoSD;
     }
 
     @Override
