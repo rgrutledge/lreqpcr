@@ -41,17 +41,17 @@ public class DataExportProvider implements DataExportServices {
 
     public void exportAverageSampleProfilesFromRuns(List<Run> runList) {
 //Defer to HashMap exportation of average profiles in which only the run name is used from the Run
-        HashMap<String, List<AverageSampleProfile>> map = Maps.newHashMap();
+        HashMap<String, List<SampleProfile>> map = Maps.newHashMap();
         for(Run run : runList){
            //Must cast the Run AverageProfileList to AverageSampleProfiles
-            List<AverageSampleProfile> avSampleList = Lists.newArrayList();
+            List<SampleProfile> avSampleList = Lists.newArrayList();
             for (AverageProfile avProfile : run.getAverageProfileList()){
                 AverageSampleProfile avSampleProfile = (AverageSampleProfile) avProfile;
                 avSampleList.add(avSampleProfile);
             }
             map.put(run.getName(), avSampleList);
         }
-        exportAverageSampleProfiles(map);
+        exportSampleProfiles(map);
     }
 
     public void exportReplicateSampleProfilesFromRuns(List<Run> runList) {
@@ -68,11 +68,19 @@ public class DataExportProvider implements DataExportServices {
             }
             map.put(run.getName(),samplePrfList);
         }
-        exportReplicateSampleProfiles(map);
+        exportSampleProfiles(map);
+    }
+    
+    private void exportSampleProfiles(HashMap<String, List<SampleProfile>> groupList){
+         try {
+            SampleProfileDataExcelDataExport.exportProfiles(groupList);
+        } catch (Exception ex) {
+            Exceptions.printStackTrace(ex);
+        }
     }
 
     public void exportAverageCalibrationProfiles(HashMap<String, List<AverageCalibrationProfile>> groupList) {
-        
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     public void exportAverageSampleProfiles(HashMap<String, List<AverageSampleProfile>> groupList) {

@@ -19,11 +19,9 @@ package org.lreqpcr.analysis_services;
 
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
-import org.lreqpcr.core.data_processing.ProfileSummary;
 
 /**
- * Conducts LRE analysis on a supplied Profile
- * ProfileSummary that encapsulates it.
+ * Conducts LRE analysis on a supplied Profile.
  *
  * @author Bob Rutledge
  */
@@ -33,7 +31,9 @@ public abstract interface LreAnalysisService {
      * Provides all the functions necessary for automated LRE window selection.
      * This involves baseline subtraction for new Profiles and
      * LRE window selection using the LreWindowSelectionParameters, along with 
-     * setting values for all of the parameters associated with LRE analysis. Note that
+     * setting values for all of the parameters associated with LRE analysis within the Profile. 
+     * This should include regression analysis if this function if available.
+     * ,<p>Note that
      * the caller must take responsibility for saving changes to the Profile.
      *
      * @param profile the Profile to initialize
@@ -45,14 +45,22 @@ public abstract interface LreAnalysisService {
     /**
      * Conducts nonlinear regression (AKA curve fitting) on the raw Fc dataset to determine values 
      * for 5 parameters: Fb (fluorescence background), Fb-slope 
-     * (baseline slope), Emax, Fmax and Fo. The primary objective is to derive 
+     * (baseline slope), Emax, Fmax and Fo. 
+     * <p>
+     * The primary objective is to derive 
      * values for Fb and Fb-slope that are then used to generate an optimized 
      * working Fc dataset for LRE analysis. Note that to maintain accurate 
      * curving fitting, the raw Fc dataset must be trimmed to exclude aberrant 
      * early cycles (generally cycles 1-3) and cycles within the plateau phase 
      * in order to minimize the impact of aberrant amplification kinetics. 
+     * <p>
      * As such, the regression-derived Emax, Fmax and Fo are only used to determine 
-     * the level of convergence with LRE analysis. 
+     * the level of convergence with LRE analysis, which is based on linear regression 
+     * analysis of an Ec vs Fc plot followed by average the cycle Fo values \
+     * within the LRE window.
+     * <p>
+     * For high quality profiles the convergence of nonlinear regression and 
+     * LRE analysis have been found to be high. 
      * 
      * @param profile
      * @return indicates whether the curve fitting was successful
