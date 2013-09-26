@@ -45,7 +45,6 @@ public class ExcelAverageSampleProfileDataExport {
     /**
      *
      */
-    // TODO JavaDoc text
     @SuppressWarnings("unchecked")
     public static void exportProfiles(HashMap<String, List<AverageSampleProfile>> groupList) throws IOException, WriteException {
         //Setup the the workbook based on the file choosen by the user
@@ -181,13 +180,8 @@ public class ExcelAverageSampleProfileDataExport {
                         number = new Number(3, row, avProfile.getNo(), integerFormat);
                         sheet.addCell(number);
 //Leave all other values empty but put a statement in the notes denoting that the No <10
-                        if (avProfile.isEmaxFixedTo100()) {
-                            label = new Label(4, row, "Fixed to 100%");
-                            sheet.addCell(label);
-                        } else {
-                            label = new Label(4, row, "LRE-derived");
-                            sheet.addCell(label);
-                        }
+                        label = new Label(4, row, "LRE-derived");
+                        sheet.addCell(label);
                         label = new Label(5, row, "na <10N");
                         sheet.addCell(label);
                         if (avProfile.calculateAvAmpTm() != -1) {
@@ -209,13 +203,8 @@ public class ExcelAverageSampleProfileDataExport {
                         number = new Number(3, row, avProfile.getNo(), integerFormat);
                         sheet.addCell(number);
                     }
-                    if (avProfile.isEmaxFixedTo100()) {
-                        label = new Label(4, row, "Fixed to 100%");
-                        sheet.addCell(label);
-                    } else {
                         label = new Label(4, row, "LRE-derived");
                         sheet.addCell(label);
-                    }
                     if (avProfile.getEmax() != 0) {
                         number = new Number(5, row, avProfile.getEmax(), percentFormat);
                         sheet.addCell(number);

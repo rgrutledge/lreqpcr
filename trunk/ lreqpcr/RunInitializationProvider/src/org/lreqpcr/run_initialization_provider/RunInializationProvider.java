@@ -38,7 +38,7 @@ import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.WindowManager;
 
 /**
- * Processes RunImportData objects, storing the resulting Run and its profiles
+ * Processes RunImportData objects, storing the resulting Run and its Profiles
  * into the appropriate database files.
  *
  * @author Bob Rutledge

@@ -172,13 +172,8 @@ public class ExcelCalibrationProfileExport {
             } else {
                 number = new Number(2, row, profile.getOCF(), floatFormat);
                 sheet.addCell(number);
-                if (profile.isEmaxFixedTo100()) {
-                    label = new Label(3, row, "Fixed to 100%", center);
-                    sheet.addCell(label);
-                } else {
-                    label = new Label(3, row, "LRE-derived", center);
-                    sheet.addCell(label);
-                }
+                label = new Label(3, row, "LRE-derived", center);
+                sheet.addCell(label);
                 number = new Number(4, row, profile.getEmax(), percentFormat);
                 sheet.addCell(number);
                 number = new Number(5, row, profile.getMidC(), floatFormat);

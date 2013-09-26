@@ -25,8 +25,8 @@ package org.lreqpcr.core.database_services;
 public interface DatabaseProvider {
 
     /**
-     * Returns that associated database service.
-     * @return the associated database service
+     * 
+     * @return the database service for this object
      */
     public DatabaseServices getDatabaseServices();
 

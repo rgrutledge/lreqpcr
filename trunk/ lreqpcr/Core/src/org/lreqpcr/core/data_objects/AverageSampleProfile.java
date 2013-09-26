@@ -95,6 +95,11 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
         return avTm;
     }
 
+    @Override
+    public double getAmpTm() {
+        return calculateAvAmpTm();
+    }
+
     /**
      * Recalculates No depending on the state of this AverageProfile. 
      * If ReplicateSampleProfile average No is less than 10 molecules, the
@@ -112,7 +117,7 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
         if (!isTheAverageReplicateNoLessThan10Molecules) {
             super.updateSampleProfile();
         }
-        //Nothing else is needed as the determine If... function updates the No values
+        //Updates the No values
     }
 
     /**
@@ -138,11 +143,11 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
      * Determines if the AverageProfile is valid, based on whether the 
      * number of target molecules in the sample is greater than 10. If the number 
      * of target molecules is less than 10, the resulting average profile becomes 
-     * distorted due to by Poison Distribution generating extensive profile scattering. 
+     * distorted due to by Poison Distribution, generating extensive profile scattering. 
+     * <p>
      * In this case, the AverageProfile inherits the target quantities determined by 
      * the replicate profiles, that is the average from the replicate profiles. 
-     * Calling this function will also update the
-     * profile.
+     * Calling this function will also update the profile.
      *
      * @return whether the average No is less than 10 molecules
      */
@@ -201,10 +206,6 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
     }
 
     public int getTheNumberOfActiveReplicateProfiles() {
-//        if (sampleProfileList == null){
-//            //Occurs during data import
-//            return
-//        }
         int numberOfActiveReplicateProfiles = 0;
         for (Profile profile : sampleProfileList) {
             if (!profile.isExcluded()) {
