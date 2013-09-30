@@ -151,7 +151,7 @@ public class ProfileEditor extends JPanel implements
         lreObjectInfo = new org.lreqpcr.ui_components.LreObjectInfo();
         plotFo = new org.lreqpcr.ui_components.PlotFo();
         lreWindowParametersPanel = new org.lreqpcr.ui_components.LreWindowParametersPanel();
-        curveFittingParam1 = new org.lreqpcr.ui_components.CurveFittingParam();
+        curveFittingParam1 = new org.lreqpcr.ui_components.NonlinearRegressionParam();
 
         setBackground(new java.awt.Color(51, 153, 255));
         setMaximumSize(new java.awt.Dimension(630, 594));
@@ -214,7 +214,7 @@ public class ProfileEditor extends JPanel implements
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private org.lreqpcr.ui_components.CurveFittingParam curveFittingParam1;
+    private org.lreqpcr.ui_components.NonlinearRegressionParam curveFittingParam1;
     private org.lreqpcr.ui_components.LreObjectInfo lreObjectInfo;
     private org.lreqpcr.ui_components.LreWindowParametersPanel lreWindowParametersPanel;
     private org.lreqpcr.ui_components.NumericalTable numericalTable;

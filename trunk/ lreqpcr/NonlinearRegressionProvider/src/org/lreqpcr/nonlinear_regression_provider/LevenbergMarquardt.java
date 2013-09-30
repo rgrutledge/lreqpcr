@@ -16,8 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with EJML.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package org.lreqpcr.analysis.rutledge;
+package org.lreqpcr.nonlinear_regression_provider;
 
 import org.ejml.data.DenseMatrix64F;
 
@@ -26,8 +25,8 @@ import static org.ejml.ops.SpecializedOps.diffNormF;
 
 /**
  * <p>
- * This is a straight forward implementation of the Levenberg-Marquardt (LM) algorithm. LM is used to minimize
- * non-linear cost functions:<br>
+ * This is a straight forward implementation of the Levenberg-Marquardt (LM)
+ * algorithm. LM is used to minimize non-linear cost functions:<br>
  * <br>
  * S(P) = Sum{ i=1:m , [y<sub>i</sub> - f(x<sub>i</sub>,P)]<sup>2</sup>}<br>
  * <br>
@@ -35,47 +34,45 @@ import static org.ejml.ops.SpecializedOps.diffNormF;
  * </p>
  *
  * <p>
- * In each iteration the parameters are updated using the following equations:<br>
+ * In each iteration the parameters are updated using the following
+ * equations:<br>
  * <br>
  * P<sub>i+1</sub> = (H + &lambda; I)<sup>-1</sup> d <br>
- * d =  (1/N) Sum{ i=1..N , (f(x<sub>i</sub>;P<sub>i</sub>) - y<sub>i</sub>) * jacobian(:,i) } <br>
- * H =  (1/N) Sum{ i=1..N , jacobian(:,i) * jacobian(:,i)<sup>T</sup> }
+ * d = (1/N) Sum{ i=1..N , (f(x<sub>i</sub>;P<sub>i</sub>) - y<sub>i</sub>) *
+ * jacobian(:,i) } <br>
+ * H = (1/N) Sum{ i=1..N , jacobian(:,i) * jacobian(:,i)<sup>T</sup> }
  * </p>
  * <p>
- * Whenever possible the allocation of new memory is avoided.  This is accomplished by reshaping matrices.
- * A matrix that is reshaped won't grow unless the new shape requires more memory than it has available.
+ * Whenever possible the allocation of new memory is avoided. This is
+ * accomplished by reshaping matrices. A matrix that is reshaped won't grow
+ * unless the new shape requires more memory than it has available.
  * </p>
+ *
  * @author Peter Abeles
  */
 public class LevenbergMarquardt {
     // how much the numerical jacobian calculation perturbs the parameters by.
     // In better implementation there are better ways to compute this delta.  See Numerical Recipes.
-//    private final static double DELTA = 1e-8;//The original value
-     private final static double DELTA = 1e-8;
 
+    private final static double DELTA = 1e-8;
     private double initialLambda;
-
     // the function that is optimized
     private Function func;
-
     // the optimized parameters and associated costs
     private DenseMatrix64F optmzParam;
     private double initialCost;
     private double finalCost;
-
     // used by matrix operations
     private DenseMatrix64F d;
     private DenseMatrix64F H;
     private DenseMatrix64F negDelta;
     private DenseMatrix64F tempParam;
     private DenseMatrix64F A;
-
     // variables used by the numerical jacobian algorithm
     private DenseMatrix64F temp0;
     private DenseMatrix64F temp1;
     // used when computing d and H variables
     private DenseMatrix64F tempDH;
-
     // Where the numerical Jacobian is stored.
     private DenseMatrix64F jacobian;
 
@@ -84,29 +81,27 @@ public class LevenbergMarquardt {
      *
      * @param funcCost Cost function that is being optimized.
      */
-    public LevenbergMarquardt( Function funcCost )
-    {
+    public LevenbergMarquardt(Function funcCost) {
         this.initialLambda = 1;
 
         // declare data to some initial small size. It will grow later on as needed.
         int maxElements = 1;
         int numParam = 1;
 
-        this.temp0 = new DenseMatrix64F(maxElements,1);
-        this.temp1 = new DenseMatrix64F(maxElements,1);
-        this.tempDH = new DenseMatrix64F(maxElements,1);
-        this.jacobian = new DenseMatrix64F(numParam,maxElements);
+        this.temp0 = new DenseMatrix64F(maxElements, 1);
+        this.temp1 = new DenseMatrix64F(maxElements, 1);
+        this.tempDH = new DenseMatrix64F(maxElements, 1);
+        this.jacobian = new DenseMatrix64F(numParam, maxElements);
 
         this.func = funcCost;
 
-        this.optmzParam = new DenseMatrix64F(numParam,1);
-        this.d = new DenseMatrix64F(numParam,1);
-        this.H = new DenseMatrix64F(numParam,numParam);
-        this.negDelta = new DenseMatrix64F(numParam,1);
-        this.tempParam = new DenseMatrix64F(numParam,1);
-        this.A = new DenseMatrix64F(numParam,numParam);
+        this.optmzParam = new DenseMatrix64F(numParam, 1);
+        this.d = new DenseMatrix64F(numParam, 1);
+        this.H = new DenseMatrix64F(numParam, numParam);
+        this.negDelta = new DenseMatrix64F(numParam, 1);
+        this.tempParam = new DenseMatrix64F(numParam, 1);
+        this.A = new DenseMatrix64F(numParam, numParam);
     }
-
 
     public double getInitialCost() {
         return initialCost;
@@ -124,22 +119,22 @@ public class LevenbergMarquardt {
      * Finds the best fit parameters.
      *
      * @param initParam The initial set of parameters for the function.
-     * @param X The inputs to the function: cycle numbers, which allows trimming of the Fc dataset
+     * @param X The inputs to the function: cycle numbers, which allows trimming
+     * of the Fc dataset
      * @param Y The output of the function: the "observed" Fc readings
      * @return true if it succeeded and false if it did not.
      */
-    public boolean optimize( DenseMatrix64F initParam ,
-                             DenseMatrix64F X ,
-                             DenseMatrix64F Y )
-    {
-        configure(initParam,X,Y);
+    public boolean optimize(DenseMatrix64F initParam,
+            DenseMatrix64F X,
+            DenseMatrix64F Y) {
+        configure(initParam, X, Y);
 
         // save the cost of the initial parameters so that it knows if it improves or not
-        initialCost = cost(optmzParam,X,Y);
+        initialCost = cost(optmzParam, X, Y);
 
         // iterate until the difference between the costs is insignificant
         // or it iterates too many times
-        if( !adjustParam(X, Y, initialCost) ) {
+        if (!adjustParam(X, Y, initialCost)) {
             finalCost = Double.NaN;
             return false;
         }
@@ -148,34 +143,34 @@ public class LevenbergMarquardt {
     }
 
     /**
-     * Iterate until the difference between the costs is insignificant
-     * or it iterates too many times
+     * Iterate until the difference between the costs is insignificant or it
+     * iterates too many times
      */
     private boolean adjustParam(DenseMatrix64F X, DenseMatrix64F Y,
-                                double prevCost) {
+            double prevCost) {
         // lambda adjusts how big of a step it takes
         double lambda = initialLambda;
         // the difference between the current and previous cost
         double difference = 1000;
 
-        for( int iter = 0; iter < 20 || difference < 1e-6 ; iter++ ) {
+        for (int iter = 0; iter < 20 || difference < 1e-6; iter++) {
             // compute some variables based on the gradient
-            computeDandH(optmzParam,X,Y);
+            computeDandH(optmzParam, X, Y);
 
             // try various step sizes and see if any of them improve the
             // results over what has already been done
             boolean foundBetter = false;
-            for( int i = 0; i < 5; i++ ) {
-                computeA(A,H,lambda);
+            for (int i = 0; i < 5; i++) {
+                computeA(A, H, lambda);
 
-                if( !solve(A,d,negDelta) ) {
+                if (!solve(A, d, negDelta)) {
                     return false;
                 }
                 // compute the candidate parameters
-                sub(optmzParam,negDelta,tempParam);
+                sub(optmzParam, negDelta, tempParam);
 
-                double cost = cost(tempParam,X,Y);
-                if( cost < prevCost ) {
+                double cost = cost(tempParam, X, Y);
+                if (cost < prevCost) {
                     // the candidate parameters produced better results so use it
                     foundBetter = true;
                     optmzParam.set(tempParam);
@@ -188,78 +183,77 @@ public class LevenbergMarquardt {
             }
 
             // it reached a point where it can't improve so exit
-            if( !foundBetter )
+            if (!foundBetter) {
                 break;
+            }
         }
         finalCost = prevCost;
         return true;
     }
 
     /**
-     * Performs sanity checks on the input data and reshapes internal matrices.  By reshaping
-     * a matrix it will only declare new memory when needed.
-     * 
+     * Performs sanity checks on the input data and reshapes internal matrices.
+     * By reshaping a matrix it will only declare new memory when needed.
+     *
      * X is the cycle numbers and Y is the observed Fc readings
-     * 
+     *
      */
-    protected void configure( DenseMatrix64F initParam , DenseMatrix64F X , DenseMatrix64F Y )
-    {
-        if( Y.getNumRows() != X.getNumRows() ) {
+    protected void configure(DenseMatrix64F initParam, DenseMatrix64F X, DenseMatrix64F Y) {
+        if (Y.getNumRows() != X.getNumRows()) {
             throw new IllegalArgumentException("Different vector lengths");
-        } else if( Y.getNumCols() != 1 || X.getNumCols() != 1 ) {
+        } else if (Y.getNumCols() != 1 || X.getNumCols() != 1) {
             throw new IllegalArgumentException("Inputs must be a column vector");
         }
 
         int numParam = initParam.getNumElements();
         int numPoints = Y.getNumRows();
 
-        if( optmzParam.getNumElements() != initParam.getNumElements() ) {
+        if (optmzParam.getNumElements() != initParam.getNumElements()) {
             // reshaping a matrix means that new memory is only declared when needed
-            this.optmzParam.reshape(numParam,1, false);
-            this.d.reshape(numParam,1, false);
-            this.H.reshape(numParam,numParam, false);
-            this.negDelta.reshape(numParam,1, false);
-            this.tempParam.reshape(numParam,1, false);
-            this.A.reshape(numParam,numParam, false);
+            this.optmzParam.reshape(numParam, 1, false);
+            this.d.reshape(numParam, 1, false);
+            this.H.reshape(numParam, numParam, false);
+            this.negDelta.reshape(numParam, 1, false);
+            this.tempParam.reshape(numParam, 1, false);
+            this.A.reshape(numParam, numParam, false);
         }
 
         optmzParam.set(initParam);
 
         // reshaping a matrix means that new memory is only declared when needed
-        temp0.reshape(numPoints,1, false);
-        temp1.reshape(numPoints,1, false);
-        tempDH.reshape(numPoints,1, false);
-        jacobian.reshape(numParam,numPoints, false);
+        temp0.reshape(numPoints, 1, false);
+        temp1.reshape(numPoints, 1, false);
+        tempDH.reshape(numPoints, 1, false);
+        jacobian.reshape(numParam, numPoints, false);
 
 
     }
 
     /**
-     * Computes the d and H parameters.  Where d is the average error gradient and
-     * H is an approximation of the hessian.
+     * Computes the d and H parameters. Where d is the average error gradient
+     * and H is an approximation of the hessian.
      */
-    private void computeDandH( DenseMatrix64F param , DenseMatrix64F x , DenseMatrix64F y )
-    {
-        func.compute(param,x, tempDH);
-        subEquals(tempDH,y);
+    private void computeDandH(DenseMatrix64F param, DenseMatrix64F x, DenseMatrix64F y) {
+        func.compute(param, x, tempDH);
+        subEquals(tempDH, y);
 
-        computeNumericalJacobian(param,x,jacobian);
+        computeNumericalJacobian(param, x, jacobian);
 
         int numParam = param.getNumElements();
         int length = x.getNumElements();
 
         // d = average{ (f(x_i;p) - y_i) * jacobian(:,i) }
-        for( int i = 0; i < numParam; i++ ) {
+        for (int i = 0; i < numParam; i++) {
             double total = 0;
-            for( int j = 0; j < length; j++ ) {
-                total += tempDH.get(j,0)*jacobian.get(i,j);
+            for (int j = 0; j < length; j++) {
+                total += tempDH.get(j, 0) * jacobian.get(i, j);
             }
-            d.set(i,0,total/length);
+            d.set(i, 0, total / length);
         }
 
         // compute the approximation of the hessian
-        multTransB(jacobian,jacobian,H);
-        scale(1.0/length,H);
+        multTransB(jacobian, jacobian, H);
+        scale(1.0 / length, H);
     }
 
     /**
@@ -267,56 +261,53 @@ public class LevenbergMarquardt {
      * <br>
      * where I is an identity matrix.
      */
-    private void computeA( DenseMatrix64F A , DenseMatrix64F H , double lambda )
-    {
+    private void computeA(DenseMatrix64F A, DenseMatrix64F H, double lambda) {
         final int numParam = optmzParam.getNumElements();
 
         A.set(H);
-        for( int i = 0; i < numParam; i++ ) {
-            A.set(i,i, A.get(i,i) + lambda);
+        for (int i = 0; i < numParam; i++) {
+            A.set(i, i, A.get(i, i) + lambda);
         }
     }
 
     /**
-     * Computes the "cost" for the parameters given.
-     * Y is the observed Fc readings
-     * X is the cycle numbers
+     * Computes the "cost" for the parameters given. Y is the observed Fc
+     * readings X is the cycle numbers
      *
-     * cost = (1/N) Sum (f(x;p) - y)^2 
+     * cost = (1/N) Sum (f(x;p) - y)^2
      */
-    private double cost( DenseMatrix64F param , DenseMatrix64F X , DenseMatrix64F Y)
-    {
-        func.compute(param,X, temp0);//Bob: Compute the predicted Fc (temp0) using the current parameters (param)
+    private double cost(DenseMatrix64F param, DenseMatrix64F X, DenseMatrix64F Y) {
+        func.compute(param, X, temp0);//Bob: Compute the predicted Fc (temp0) using the current parameters (param)
 
-        double error = diffNormF(temp0,Y);//Bob: Y are the actual Fc readings
+        double error = diffNormF(temp0, Y);//Bob: Y are the actual Fc readings
 
-        return error*error / (double)X.numRows;
+        return error * error / (double) X.numRows;
     }
 
     /**
      * Computes a simple numerical Jacobian.
      *
-     * @param param The set of parameters that the Jacobian is to be computed at.
+     * @param param The set of parameters that the Jacobian is to be computed
+     * at.
      * @param pt The point around which the Jacobian is to be computed.
      * @param deriv Where the jacobian will be stored
      */
-    protected void computeNumericalJacobian( DenseMatrix64F param ,
-                                             DenseMatrix64F pt ,
-                                             DenseMatrix64F deriv )
-    {
-        double invDelta = 1.0/DELTA;
+    protected void computeNumericalJacobian(DenseMatrix64F param,
+            DenseMatrix64F pt,
+            DenseMatrix64F deriv) {
+        double invDelta = 1.0 / DELTA;
 
         func.compute(param, pt, temp0);
 
         // compute the jacobian by perturbing the parameters slightly
         // then seeing how it effects the results.
-        for( int i = 0; i < param.numRows; i++ ) {
+        for (int i = 0; i < param.numRows; i++) {
             param.data[i] += DELTA;
             func.compute(param, pt, temp1);
             // compute the difference between the two parameters and divide by the delta
-            add(invDelta,temp1,-invDelta,temp0,temp1);
+            add(invDelta, temp1, -invDelta, temp0, temp1);
             // copy the results into the jacobian matrix
-            System.arraycopy(temp1.data,0,deriv.data,i*pt.numRows,pt.numRows);
+            System.arraycopy(temp1.data, 0, deriv.data, i * pt.numRows, pt.numRows);
 
             param.data[i] -= DELTA;
         }
@@ -326,15 +317,15 @@ public class LevenbergMarquardt {
      * The function that is being optimized.
      */
     public interface Function {
+
         /**
-         * Computes the output for each value in matrix x given the set of parameters.
+         * Computes the output for each value in matrix x given the set of
+         * parameters.
          *
          * @param param The parameter for the function.
          * @param x the input points.
          * @param y the resulting output.
          */
-        public void compute( DenseMatrix64F param , DenseMatrix64F x , DenseMatrix64F y );
+        public void compute(DenseMatrix64F param, DenseMatrix64F x, DenseMatrix64F y);
     }
 }
-
-

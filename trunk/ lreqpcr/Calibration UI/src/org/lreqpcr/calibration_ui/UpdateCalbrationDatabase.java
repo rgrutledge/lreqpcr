@@ -140,12 +140,12 @@ public class UpdateCalbrationDatabase {
         for (AverageProfile avProfile : profileList) {
             //Need to update the replicate profiles first in order to test if <10N
             for (Profile profile : avProfile.getReplicateProfileList()) {
-                lreAnalysisService.conductNonlinearRegressionAnalysis(profile);
+                lreAnalysisService.updateProfile(profile);
                 dbs.saveObject(profile);
 
             }
             Profile prf = (Profile) avProfile;
-            lreAnalysisService.conductNonlinearRegressionAnalysis(prf);
+            lreAnalysisService.updateProfile(prf);
             dbs.saveObject(prf);
         }
         dbs.commitChanges();

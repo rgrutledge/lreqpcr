@@ -98,7 +98,7 @@ public class CalibrationProfile extends Profile {
      */
     private void updateCalibrationProfile() {
         ocf = getAvFo() / mo;
-        ocfCF = getCfFo() / mo;
+        ocfCF = getNrFo() / mo;
     }
 
     /**

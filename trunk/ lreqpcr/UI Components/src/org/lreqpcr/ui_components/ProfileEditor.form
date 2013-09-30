@@ -129,7 +129,7 @@
         </Property>
       </Properties>
     </Component>
-    <Component class="org.lreqpcr.ui_components.CurveFittingParam" name="curveFittingParam1">
+    <Component class="org.lreqpcr.ui_components.NonlinearRegressionParam" name="curveFittingParam1">
     </Component>
   </SubComponents>
 </Form>

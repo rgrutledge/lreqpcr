@@ -68,13 +68,13 @@ public class ExptDbUpdate {
         for (AverageProfile avProfile : profileList) {
             //Need to update the replicate profiles first in order to test if <10N
             for (Profile profile : avProfile.getReplicateProfileList()) {
-                lreAnalysisService.conductNonlinearRegressionAnalysis(profile);
+                lreAnalysisService.updateProfile(profile);
                 dbs.saveObject(profile);
             }
             if (!avProfile.isTheReplicateAverageNoLessThan10Molecules()) {
                 //The AverageProfile is valid thus reinitialize it
                 Profile profile = (Profile) avProfile;
-                lreAnalysisService.conductNonlinearRegressionAnalysis(profile);
+                lreAnalysisService.updateProfile(profile);
                 dbs.saveObject(avProfile);
             }
         }
