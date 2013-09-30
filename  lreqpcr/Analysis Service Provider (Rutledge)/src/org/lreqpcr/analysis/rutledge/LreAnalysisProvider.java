@@ -16,26 +16,36 @@
  */
 package org.lreqpcr.analysis.rutledge;
 
-import org.ejml.data.DenseMatrix64F;
+import java.util.ArrayList;
+import java.util.TreeMap;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_processing.ProfileInitializer;
 import org.lreqpcr.core.data_processing.ProfileSummary;
+import org.lreqpcr.core.utilities.MathFunctions;
+import org.lreqpcr.nonlinear_regression_services.LreParameters;
+import org.lreqpcr.nonlinear_regression_services.NonlinearRegressionServices;
+import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
- * Rutledge implementation of LRE window selection and optimization. As of
- * Sept13 This includes implementation of nonlinear regression using Peter
- * Abeles’s EJML API
- * (http://code.google.com/p/efficient-java-matrix-library/wiki/LevenbergMarquardtExample)
- * that provides both fluorescence background and baseline slope determination
- * that are used to optimize LRE analysis
+ * Rutledge implementation of LRE window selection and optimization. 
+ * <p>
+ * As of Sept13 this includes using nonlinear regression to generate an estimation of 
+ * baseline fluorescence that replaces the average Fc of cycles 4-9, in addition 
+ * to an estimation of baseline slope, both of which are used to generate an 
+ * optimized Fc dataset for LRE analysis. 
  *
  * @author Bob Rutledge
  */
 @ServiceProvider(service = LreAnalysisService.class)
 public class LreAnalysisProvider implements LreAnalysisService {
+
+    private NonlinearRegressionServices nrService = Lookup.getDefault().lookup(NonlinearRegressionServices.class);
+    private LreWindowSelectionParameters parameters;
+    private ProfileSummary prfSum;
+    private Profile profile;
 
     public LreAnalysisProvider() {
     }
@@ -51,86 +61,140 @@ public class LreAnalysisProvider implements LreAnalysisService {
      * @return whether a LRE window was found
      */
     public boolean conductAutomatedLreWindowSelection(Profile profile, LreWindowSelectionParameters parameters) {
-//This will force a new LRE window to be found so that complete reinitialized will be conducted
+        this.parameters = parameters;
+        this.profile = profile;
+        prfSum = ProfileInitializer.constructProfileSummary(profile);
+//This will force a new LRE window to be selected so that complete reinitialized will be conducted
         profile.setHasAnLreWindowBeenFound(false);
-        //Construct a ProfileSummary which is needed for automated LRE window selection 
         //Subtract background fluorescence if needed
-        if (profile.getFcReadings() == null) {//First time this Profile has been analyzed so need a Fb
-//Note  that this is based on the average of cycles 4-9 and thus is as crude estimate
+        if (profile.getFcReadings() == null) {
+//Construct a new working Fc dataset using a Fb derived from the average of cycles 4-9 
             substractBackground(profile);
-        }
-        //Need to instantiate a ProfileSummary in order to conduct the LRE window search
-        ProfileSummary prfSum = ProfileInitializer.constructProfileSummary(profile);
+        }    
         //Try to find an LRE window
         LreWindowSelector.selectLreWindowUsingMinFc(prfSum, parameters);
         if (!profile.hasAnLreWindowBeenFound()) {
 //Failed to find a window, thus return as updating the LRE parameters is irrelevant
             return false;
         }
-        //Conduct curve fitting which generates a new corrected Fc dataset
-        conductNonlinearRegressionAnalysis(profile);
+//Conduct nonlinear regression analysis for deriving estimates of Fb and Fb slope
+//from which an optimized working Fc dataset is generated, followed by
+//updating the LRE parameters within the Profile
+        conductNonlinearRegressionAnalysis();
         return true;
+    }
+    
+    public void updateProfile(Profile profile){
+        this.profile = profile;
+//Initialize the ProfileSummary which updates that LRE parameters within the Profile
+        prfSum = ProfileInitializer.constructProfileSummary(profile); 
+        //Apply nonlinear regression analysis to optimize the LRE analysis based on the new LRE window
+        conductNonlinearRegressionAnalysis();
     }
 
     /**
      * Nonlinear regression analysis based on Peter Abeles’s EJML API
      * (http://code.google.com/p/efficient-java-matrix-library/wiki/LevenbergMarquardtExample)
+     * <p>
+     * Note that this requires that an LRE window has previously been
+     * identified and that the LRE window will not be modified by this function. 
+     * Note also that the LRE parameters are updated within the Profile. 
      *
-     * @param profile
      * @return whether the regression analysis was successful
      */
-    public boolean conductNonlinearRegressionAnalysis(Profile profile) {
+    private void conductNonlinearRegressionAnalysis() {
         //Need to trim the profile in order to avoid aberrancies within early cycles and within the plateau phase
         //Exclude the first three cycles
-        int startIndex = 3;//Cycle 4        
-        //This uses the top of the LRE window as a reference point
-        //Cut off = endIndex, set to the top of the LRE window (+1)
-        int endIndex = profile.getStrCycleInt() + profile.getLreWinSize() - startIndex + 1;
-        int numberOfCycles = endIndex - startIndex + 1;
+        int firstCycle = 4;//Start at cycle 4        
+        //This top of the LRE window is the last cycle used in the regression analysis
+        int lastCycle = profile.getStrCycleInt() + profile.getLreWinSize() - 1;
+        int numberOfCycles = lastCycle - firstCycle + 1;
         double[] fcArray = profile.getRawFcReadings();
-        //Construct the trimmed Fc dataset
-        double[] trimmedFcArray = new double[numberOfCycles];
-        double[] cycleArray = new double[numberOfCycles];
+        //Construct the trimmed Fc dataset TreeMap<cycle number, Fc reading>
+        TreeMap<Integer, Double> profileMap = new TreeMap<Integer, Double>();
         for (int i = 0; i < numberOfCycles; i++) {
-            cycleArray[i] = i + 4;
-            trimmedFcArray[i] = fcArray[i + 3];
+            profileMap.put(firstCycle + i, fcArray[firstCycle - 1 + i]);
         }
-        DenseMatrix64F y = new DenseMatrix64F(numberOfCycles, 1);
-        y.setData(trimmedFcArray);
-        DenseMatrix64F x = new DenseMatrix64F(numberOfCycles, 1);
-        x.setData(cycleArray);
-        double[] paramArray = new double[5];
-        paramArray[0] = profile.getEmax();//LRE-derived Emax
-        paramArray[1] = profile.getFb();//Fb derived from Fc average (e.g. cycles 4-9)
-        paramArray[2] = profile.getAvFo();//LRE-derived Fo
-        paramArray[3] = profile.getEmax() / (-1 * profile.getDeltaE());//LRE-derived Fmax
-        paramArray[4] = 0.0;//Baseline slope assumed to be zero as a starting parameter
-        DenseMatrix64F initialParam = new DenseMatrix64F(5, 1);
-        initialParam.setData(paramArray);
-        //Initiate nonlinear regression
-        //Create the function
-        Lre5Param func = new Lre5Param();
-        //Instantiate the LM nonlinear regression function
-        LevenbergMarquardt fitter = new LevenbergMarquardt(func);
-        boolean successful = fitter.optimize(initialParam, x, y);
-        //Retrieve the optimized parameters
-        double[] optParam = fitter.getOptimizedParameters().getData();
-        profile.setCfEmax(optParam[0]);
-        profile.setCfFb(optParam[1]);
-        profile.setCfFo(optParam[2]);
-        profile.setCfFmax(optParam[3]);
-        profile.setCfFbSlope(optParam[4]);
+        LreParameters lreDerivedParam = getLreParameters();
+        //Run the analysis 10 times to determine the average and SD
+        int numberOfIterations = 10;
+        ArrayList<Double> emaxArray = new ArrayList<Double>();
+        ArrayList<Double> fbArray = new ArrayList<Double>();
+        ArrayList<Double> foArray = new ArrayList<Double>();
+        ArrayList<Double> fmaxArray = new ArrayList<Double>();
+        ArrayList<Double> fbSlopeArray = new ArrayList<Double>();
+        double emaxSum = 0;
+        double fbSum = 0;
+        double foSum = 0;
+        double fmaxSum = 0;
+        double fbSlopeSum = 0;
+        for (int i = 0; i < numberOfIterations; i++) {
+            //This assumes that the regression analysis will be successfull*******************************************
+            LreParameters optParam = nrService.conductLreNRAnalysis(lreDerivedParam, profileMap);
+            emaxArray.add(optParam.getEmax());
+            emaxSum += optParam.getEmax();
+            fbArray.add(optParam.getFb());
+            fbSum += optParam.getFb();
+            foArray.add(optParam.getFo());
+            foSum += optParam.getFo();
+            fmaxArray.add(optParam.getFmax());
+            fmaxSum += optParam.getFmax();
+            fbSlopeArray.add(optParam.getFbSlope());
+            fbSlopeSum += optParam.getFbSlope();
+            //Reinitialize the LRE-derived parameters
+            //First Reset nonlinear regression-derived Fb and Fb-slope within the profile
+            profile.setNrFb(optParam.getFb());
+            profile.setNrFbSlope(optParam.getFbSlope());
+            //Generate a new optimized Fc dataset
+            conductBaselineCorrection(profile);
+            //Updating the ProfileSummary updates the LRE-derived parameters within the Profile
+            ProfileInitializer.updateProfileSummary(prfSum);
+            //Retrieve the new LRE-derived parameters
+            lreDerivedParam = getLreParameters();
+        }
+        //Set the average for each parameter into the Profile
+        profile.setNrEmax(emaxSum / numberOfIterations);
+        profile.setNrFb(fbSum / numberOfIterations);
+        profile.setNrFo(foSum / numberOfIterations);
+        profile.setNrFmax(fmaxSum / numberOfIterations);
+        profile.setNrFbSlope(fbSlopeSum / numberOfIterations);
+        //Determine and set the parameter SD
+        profile.setNrEmaxSD(MathFunctions.calcStDev(emaxArray));
+        profile.setNrFbSD(MathFunctions.calcStDev(fbArray));
+        profile.setNrFoSD(MathFunctions.calcStDev(foArray));
+        profile.setNrFmaxSD(MathFunctions.calcStDev(fmaxArray));
+        profile.setNrFbSlopeSD(MathFunctions.calcStDev(fbSlopeArray));
+        //Recaculate the optimized Fc dataset using the average nonlinear regression values
         conductBaselineCorrection(profile);
-        //Need to update the Profiles LRE parameters, which requires a ProfileSummary
-        //Creating a ProfileSummary includes updating the LRE parameters within the Profile
-        ProfileInitializer.constructProfileSummary(profile);
-        return successful;
+        //Update the LRE parameters
+        ProfileInitializer.updateProfileSummary(prfSum);
+    }
+    
+    /**
+     * Retrieves the current LRE parameters from the Profile
+     * @param profile
+     * @return 
+     */
+    private LreParameters getLreParameters(){
+        //Setup the initial parameters 
+        LreParameters lreDerivedParam = new LreParameters();
+        if(profile.getNrFb() == 0){
+            //NR has not yet been conducted so use the average Fc from cycles 4-9 BUT not sure if this necessary
+            lreDerivedParam.setFb(profile.getFb());
+        }else{
+            //Use the current NR-derived Fb
+            lreDerivedParam.setFb(profile.getNrFb());
+        }
+        lreDerivedParam.setEmax(profile.getEmax());//Current LRE-derived Emax
+        lreDerivedParam.setFmax(profile.getFmax());//Current LRE-derived Fmax
+        lreDerivedParam.setFo(profile.getAvFo());//Current LRE-derived average Fo
+        lreDerivedParam.setFbSlope(profile.getNrFbSlope());//Current Fb slope
+        return lreDerivedParam;
     }
 
     /**
      * This conducts both CF-derived Fb subtraction and baseline slope
-     * correction. Note that the caller is responsible for conducting LRE
-     * analysis on the updated Fc dataset and for saving the modified Profile.
+     * correction. 
      *
      * @param profile
      */
@@ -139,8 +203,8 @@ public class LreAnalysisProvider implements LreAnalysisService {
         double[] rawFcReadings = profile.getRawFcReadings();
         double[] processedFcDataset = new double[rawFcReadings.length];//The new optimized Fc dataset
         //This assumes that nonlinear regression has been conducted AND it was successfully completed
-        double cfFb = profile.getCfFb();//The regression derived Fb
-        double cfFbSlope = profile.getCfFbSlope();//The regression-derived Fb slope
+        double cfFb = profile.getNrFb();//The regression derived Fb
+        double cfFbSlope = profile.getNrFbSlope();//The regression-derived Fb slope
         for (int i = 0; i < processedFcDataset.length; i++) {
             processedFcDataset[i] = rawFcReadings[i] - cfFb - (cfFbSlope * (i + 1));
         }

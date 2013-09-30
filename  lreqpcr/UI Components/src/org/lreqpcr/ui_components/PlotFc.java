@@ -191,11 +191,11 @@ public class PlotFc extends javax.swing.JPanel {
         prfFmax = profile.getEmax() / -profile.getDeltaE();
         lreWinSize = profile.getLreWinSize();
         DecimalFormat df = new DecimalFormat();
-        df.applyPattern(FormatingUtilities.decimalFormatPattern(profile.getCfFb()));
-        fbDisplay.setText(df.format(profile.getCfFb()));
+        df.applyPattern(FormatingUtilities.decimalFormatPattern(profile.getNrFb()));
+        fbDisplay.setText(df.format(profile.getNrFb()));
         fbLabel.setVisible(true);
-        df.applyPattern(FormatingUtilities.decimalFormatPattern(profile.getCfFbSlope()));
-        fbSlopeDisplay.setText(df.format(profile.getCfFbSlope()));
+        df.applyPattern(FormatingUtilities.decimalFormatPattern(profile.getNrFbSlope()));
+        fbSlopeDisplay.setText(df.format(profile.getNrFbSlope()));
         fbSlopeLabel.setVisible(true);
         df.applyLocalizedPattern("0.00");
         if (profile.getMidC() > 0) {

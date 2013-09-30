@@ -59,7 +59,9 @@ public class ProfileInitializer {
 
     /**
      * Updates the supplied ProfileSummary, which is necessary whenever the
-     * encapsulated Profile is modified.
+     * encapsulated Profile is modified. This primarily involves either changes 
+     * to the LRE window or changes to the Fb and/or Fb-slope that in turn modifies
+     * the working Fc dataset
      *
      * @param prfSum
      */

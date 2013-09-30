@@ -20,14 +20,12 @@ import java.awt.*;
 import java.awt.geom.*;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.*;
 import org.lreqpcr.core.data_processing.*;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.utilities.FormatingUtilities;
-import org.lreqpcr.core.utilities.MathFunctions;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.openide.util.Lookup;
 
@@ -172,9 +170,7 @@ public class LrePlot extends javax.swing.JPanel {
 //which must be true as the profile needs to be displayed in order to allow the user to modify it
 //Update ProfileSummary using the new LRE window. which also updates all of the LRE parameters within the Profile
         ProfileInitializer.updateProfileSummary(prfSum);
-        lreAnalService.conductNonlinearRegressionAnalysis(profile); 
-//Curve fitting generated a new working Fc dataset so the ProfileSummary needs updating
-//        ProfileInitializer.updateProfileSummary(prfSum);//This is now conducted during NR analysis 
+        lreAnalService.updateProfile(profile); 
         db.saveObject(profile);
         //The AverageSampleProfile needs to be updated if <10N
         if (profile instanceof SampleProfile && !(profile instanceof AverageProfile)) {
@@ -185,21 +181,6 @@ public class LrePlot extends javax.swing.JPanel {
             }
         }
         universalLookup.fireChangeEvent(PanelMessages.PROFILE_CHANGED);
-    }
-    
-    /**
-     * A test to see how effective NR errors can be determined...worked well 
-     * @param profile 
-     */
-    private void determineNrErrors(Profile profile){
-        //Start with Emax only
-        ArrayList<Double> emaxArray = new ArrayList<Double>();
-        for (int i=0; i<10; i++){
-            lreAnalService.conductNonlinearRegressionAnalysis(profile);
-            emaxArray.add(profile.getCfEmax());
-        }
-        double sd = MathFunctions.calcStDev(emaxArray);
-        int j =0;
     }
 
     /** This method is called from within the constructor to

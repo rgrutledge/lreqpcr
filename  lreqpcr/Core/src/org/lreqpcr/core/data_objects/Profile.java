@@ -14,17 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * and open the template in the editor.
  */
-
 package org.lreqpcr.core.data_objects;
 
 import java.util.Date;
 
 /**
- * Abstract class representing an amplification profile. 
- * Stores all basic parameters of a Profile 
- * in which target quantity is expressed in fluorescence units. 
- * Note that this is designed to primarily be a data storage 
- * object containing only setter and getter methods. 
+ * Abstract class representing an amplification profile. Stores all basic
+ * parameters of a Profile in which target quantity is expressed in fluorescence
+ * units. Note that this is designed to primarily be a data storage object
+ * containing only setter and getter methods.
  *
  * @author Bob Rutledge
  */
@@ -40,7 +38,6 @@ public abstract class Profile extends LreObject {
     private String ampliconName;//Used to recover amplicon size from the amplicon database
     private int ampliconSize = 0;
     private TargetStrandedness targetStrandedness = TargetStrandedness.DOUBLESTRANDED;
-        
     //Profile processing parameters
     private double ampTm;//The amplicon Tm
     private double ct, ft;//Threshold cycle and fluorescence threshold
@@ -55,40 +52,41 @@ public abstract class Profile extends LreObject {
     private double midC;//C1/2
     private boolean excluded;//Allows profiles to be excluded from the analysis
     private String whyExcluded;//Text describing the reason why the profile was excluded
-    
-    //Curve fit derived parameters based on a 5 parameter LRE model
-    private double cfFb = 0;//Curve Fit derived Fb
-    private double cfFbSlope = 0;//Curve Fit derived Fb slope
-    private double cfEmax = 0;//Curve Fit derived Emax
-    private double cfFmax = 0;//Curve Fit derived Fmax
-    private double cfFo = 0;//Curve Fit derived Fo
+    //Nonlinear regression-derived LRE parameters
+    private double nrFb = 0;
+    private double nrFbSlope = 0;
+    private double nrEmax=  0;
+    private double nrFmax = 0;
+    private double nrFo = 0;
     //Standard deviations derived from repeatative nonlinear regression analysis
-    private double cfFbSD, cfFbSlopeSD, cfEmaxSD, cfFmaxSD, cfFoSD;
+    private double nrFbSD, nrFbSlopeSD, nrEmaxSD, nrFmaxSD, nrFoSD;
 
     /**
-     * 
-     * @param run the Run from which the Profile was generated. Note that Run date is retrieved from the provided Run.
+     *
+     * @param run the Run from which the Profile was generated. Note that Run
+     * date is retrieved from the provided Run.
      */
     public Profile() {
     }
 
     /**
-     * Also sets the parent to the Run and the run date retrieved from the Run. 
-     * 
-     * @param run 
+     * Also sets the parent to the Run and the run date retrieved from the Run.
+     *
+     * @param run
      */
-    public void setRun(Run run){
+    public void setRun(Run run) {
         this.run = run;
         runDate = run.getRunDate();
         setParent(run);
     }
-    
+
     public Run getRun() {
         return run;
     }
 
     /**
-     * For defining well position using a numbering system. 
+     * For defining well position using a numbering system.
+     *
      * @return well position expressed as a number.
      */
     public int getWellNumber() {
@@ -96,15 +94,16 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * Sets the well position for this profile using a numbering system. 
-     * @param wellNumber 
+     * Sets the well position for this profile using a numbering system.
+     *
+     * @param wellNumber
      */
     public void setWellNumber(int wellNumber) {
         this.wellNumber = wellNumber;
     }
 
     /**
-     * 
+     *
      * @return the observed amplicon melting temperature (Tm)
      */
     public double getAmpTm() {
@@ -119,10 +118,10 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * This was included for legacy issues. 
-     * It must be noted however, that dependent on the fluorescence
-     * threshold introduce vagaries that make Ct highly unreliable.
-     * 
+     * This was included for legacy issues. It must be noted however, that
+     * dependent on the fluorescence threshold introduce vagaries that make Ct
+     * highly unreliable.
+     *
      * @return the observed threshold cycle
      */
     public double getCt() {
@@ -130,10 +129,10 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * This was included for legacy issues. 
-     * It must be noted however, that dependent on the fluorescence
-     * threshold introduce vagaries that make Ct highly unreliable.
-     * 
+     * This was included for legacy issues. It must be noted however, that
+     * dependent on the fluorescence threshold introduce vagaries that make Ct
+     * highly unreliable.
+     *
      * @param ct
      */
     public void setCt(double ct) {
@@ -141,18 +140,16 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * 
-     * @return the fluorescence threshold used to
-     * generate the profile Ct
+     *
+     * @return the fluorescence threshold used to generate the profile Ct
      */
     public double getFt() {
         return ft;
     }
 
     /**
-     * 
-     * @param ftthe fluorescence threshold used to
-     * generate the profile Ct
+     *
+     * @param ftthe fluorescence threshold used to generate the profile Ct
      */
     public void setFt(double ft) {
         this.ft = ft;
@@ -160,24 +157,29 @@ public abstract class Profile extends LreObject {
 
     /**
      * The average Fo is calculated using the LRE-derived Emax
-     * @return the average of the Fo values generated 
-     * by the Fc readings within the LRE window.
+     *
+     * @return the average of the Fo values generated by the Fc readings within
+     * the LRE window.
      */
     public double getAvFo() {
         return avFo;
     }
 
     /**
-     * The average Fo is by the Fc readings within the LRE window the primary quantitative unit for a profile. 
-     * @param averageFo the average of the Fo values calculated using the LRE derived Emax 
-     * @param averageFoEmax100 the average of the Fo values calculated using Emax fixed to 100%
+     * The average Fo is by the Fc readings within the LRE window the primary
+     * quantitative unit for a profile.
+     *
+     * @param averageFo the average of the Fo values calculated using the LRE
+     * derived Emax
+     * @param averageFoEmax100 the average of the Fo values calculated using
+     * Emax fixed to 100%
      */
     public void setAvFo(double averageFo) {
         this.avFo = averageFo;
     }
 
     /**
-     * 
+     *
      * @return the coefficient of variation for the average Fo
      */
     public double getAvFoCV() {
@@ -185,7 +187,7 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * 
+     *
      * @param foCV the coefficient of variation for the average Fo
      */
     public void setAvFoCV(double foCV) {
@@ -207,10 +209,10 @@ public abstract class Profile extends LreObject {
     public void setEmax(double eMax) {
         this.eMax = eMax;
     }
-    
-    public double getFmax(){
-        if(!isExcluded() && hasAnLreWindowBeenFound){
-            return eMax/-(deltaE);
+
+    public double getFmax() {
+        if (!isExcluded() && hasAnLreWindowBeenFound) {
+            return eMax / -(deltaE);
         }
         return 0;
     }
@@ -225,6 +227,7 @@ public abstract class Profile extends LreObject {
 
     /**
      * Returns the processed Fc dataset
+     *
      * @return the processed Fc dataset
      */
     public double[] getFcReadings() {
@@ -233,7 +236,8 @@ public abstract class Profile extends LreObject {
 
     /**
      * Sets the processed Fc dataset
-     * @param processedFcReadings 
+     *
+     * @param processedFcReadings
      */
     public void setFcReadings(double[] processedFcReadings) {
         this.fcReadings = processedFcReadings;
@@ -264,8 +268,10 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * Retrieves the raw fluorescence readings (i.e. with no background subtraction) in an ordered array 
-     * that starts with Cycle 1 and is continuous to the last cycle. 
+     * Retrieves the raw fluorescence readings (i.e. with no background
+     * subtraction) in an ordered array that starts with Cycle 1 and is
+     * continuous to the last cycle.
+     *
      * @return the array containing the raw fluorescence readings for each cycle
      */
     public double[] getRawFcReadings() {
@@ -273,12 +279,12 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * Sets the raw fluorescence readings (no background subtraction) in an ordered array 
-     * that must start with Cycle 1 and must be continuous upto the last cycle. 
-     * Cycle number is derived from the array index and thus must contain 
-     * fluorescence readings from every cycle. Note also that Cycle number 
-     * is based on the array index and thus index[0] MUST BE CYCLE 1.
-     * 
+     * Sets the raw fluorescence readings (no background subtraction) in an
+     * ordered array that must start with Cycle 1 and must be continuous upto
+     * the last cycle. Cycle number is derived from the array index and thus
+     * must contain fluorescence readings from every cycle. Note also that Cycle
+     * number is based on the array index and thus index[0] MUST BE CYCLE 1.
+     *
      * @param rawFcReadings raw fluorescence readings starting with Cycle 1
      */
     public void setRawFcReadings(double[] rawFcReadings) {
@@ -313,7 +319,6 @@ public abstract class Profile extends LreObject {
         return ampliconSize;
     }
 
-
     public void setAmpliconSize(int ampliconSize) {
         this.ampliconSize = ampliconSize;
     }
@@ -346,9 +351,9 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * Flag indicating whether a profile has been excluded, primarily due to 
-     * failed amplification or anomalous amplification kinetics. 
-     * 
+     * Flag indicating whether a profile has been excluded, primarily due to
+     * failed amplification or anomalous amplification kinetics.
+     *
      * @return whether the profile been excluded from analysis
      */
     public boolean isExcluded() {
@@ -356,7 +361,9 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * Exclude/include this profile. Note that this also updates the Run average Fmax.
+     * Exclude/include this profile. Note that this also updates the Run average
+     * Fmax.
+     *
      * @param excluded whether this profile is excluded
      */
     public void setExcluded(boolean excluded) {
@@ -373,9 +380,9 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * Indicates whether an LRE window has been found for this Profile. Lack of 
+     * Indicates whether an LRE window has been found for this Profile. Lack of
      * a LRE window is primarily indicative of a flat profile.
-     * 
+     *
      * @return whether an LRE window has been found
      */
     public boolean hasAnLreWindowBeenFound() {
@@ -383,92 +390,132 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * Indicates whether a this is a valid Profile.  
-     * 
+     * Indicates whether a this is a valid Profile.
+     *
      * @param hasAnLreWindowFound indicates whether an LRE window has been found
      */
     public void setHasAnLreWindowBeenFound(boolean hasAnLreWindowFound) {
         this.hasAnLreWindowBeenFound = hasAnLreWindowFound;
     }
 
-    public double getCfFb() {
-        return cfFb;
+    /**
+     * 
+     * @return nonlinear regression-derived baseline fluorescence
+     */
+    public double getNrFb() {
+        return nrFb;
     }
 
-    public void setCfFb(double cfFb) {
-        this.cfFb = cfFb;
+    /**
+     *
+     * @param nrFb nonlinear regression-derived baseline fluorescence
+     */
+    public void setNrFb(double nrFb) {
+        this.nrFb = nrFb;
     }
 
-    public double getCfFbSlope() {
-        return cfFbSlope;
+    /**
+     * 
+     * @return nonlinear regression-derived baseline slope
+     */
+    public double getNrFbSlope() {
+        return nrFbSlope;
     }
 
-    public void setCfFbSlope(double cfFbSlope) {
-        this.cfFbSlope = cfFbSlope;
+    /**
+     * 
+     * @param nrFbSlope nonlinear regression-derived baseline slope
+     */
+    public void setNrFbSlope(double nrFbSlope) {
+        this.nrFbSlope = nrFbSlope;
     }
 
-    public double getCfEmax() {
-        return cfEmax;
+    /**
+     * 
+     * @return nonlinear regression-derived Emax
+     */
+    public double getNrEmax() {
+        return nrEmax;
     }
 
-    public void setCfEmax(double cfEmax) {
-        this.cfEmax = cfEmax;
+    /**
+     * 
+     * @param nrEmax nonlinear regression-derived Emax
+     */
+    public void setNrEmax(double nrEmax) {
+        this.nrEmax = nrEmax;
     }
 
-    public double getCfFmax() {
-        return cfFmax;
+    /**
+     * 
+     * @return nonlinear regression-derived Fmax
+     */
+    public double getNrFmax() {
+        return nrFmax;
     }
 
-    public void setCfFmax(double cfFmax) {
-        this.cfFmax = cfFmax;
+    /**
+     * 
+     * @param nrFmax nonlinear regression-derived Fmax
+     */
+    public void setNrFmax(double nrFmax) {
+        this.nrFmax = nrFmax;
     }
 
-    public double getCfFo() {
-        return cfFo;
+    /**
+     * 
+     * @return nonlinear regression-derived Fo
+     */
+    public double getNrFo() {
+        return nrFo;
     }
 
-    public void setCfFo(double cfFo) {
-        this.cfFo = cfFo;
+    /**
+     * 
+     * @param nrFo nonlinear regression-derived Fo
+     */
+    public void setNrFo(double nrFo) {
+        this.nrFo = nrFo;
     }
 
-    public double getCfFbSD() {
-        return cfFbSD;
+    public double getNrFbSD() {
+        return nrFbSD;
     }
 
-    public void setCfFbSD(double cfFbSD) {
-        this.cfFbSD = cfFbSD;
+    public void setNrFbSD(double nrFbSD) {
+        this.nrFbSD = nrFbSD;
     }
 
-    public double getCfFbSlopeSD() {
-        return cfFbSlopeSD;
+    public double getNrFbSlopeSD() {
+        return nrFbSlopeSD;
     }
 
-    public void setCfFbSlopeSD(double cfFbSlopeSD) {
-        this.cfFbSlopeSD = cfFbSlopeSD;
+    public void setNrFbSlopeSD(double nrFbSlopeSD) {
+        this.nrFbSlopeSD = nrFbSlopeSD;
     }
 
-    public double getCfEmaxSD() {
-        return cfEmaxSD;
+    public double getNrEmaxSD() {
+        return nrEmaxSD;
     }
 
-    public void setCfEmaxSD(double cfEmaxSD) {
-        this.cfEmaxSD = cfEmaxSD;
+    public void setNrEmaxSD(double nrEmaxSD) {
+        this.nrEmaxSD = nrEmaxSD;
     }
 
-    public double getCfFmaxSD() {
-        return cfFmaxSD;
+    public double getNrFmaxSD() {
+        return nrFmaxSD;
     }
 
-    public void setCfFmaxSD(double cfFmaxSD) {
-        this.cfFmaxSD = cfFmaxSD;
+    public void setNrFmaxSD(double nrFmaxSD) {
+        this.nrFmaxSD = nrFmaxSD;
     }
 
-    public double getCfFoSD() {
-        return cfFoSD;
+    public double getNrFoSD() {
+        return nrFoSD;
     }
 
-    public void setCfFoSD(double cfFoSD) {
-        this.cfFoSD = cfFoSD;
+    public void setNrFoSD(double nrFoSD) {
+        this.nrFoSD = nrFoSD;
     }
 
     @Override
