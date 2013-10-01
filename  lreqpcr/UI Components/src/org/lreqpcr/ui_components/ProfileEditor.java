@@ -154,9 +154,10 @@ public class ProfileEditor extends JPanel implements
         curveFittingParam1 = new org.lreqpcr.ui_components.NonlinearRegressionParam();
 
         setBackground(new java.awt.Color(51, 153, 255));
-        setMaximumSize(new java.awt.Dimension(630, 639));
-        setMinimumSize(new java.awt.Dimension(630, 639));
-        setPreferredSize(new java.awt.Dimension(630, 639));
+        setFocusCycleRoot(true);
+        setMaximumSize(new java.awt.Dimension(630, 640));
+        setMinimumSize(new java.awt.Dimension(630, 640));
+        setPreferredSize(new java.awt.Dimension(640, 640));
         setRequestFocusEnabled(false);
 
         numericalTable.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -210,7 +211,7 @@ public class ProfileEditor extends JPanel implements
                         .addComponent(plotFo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(curveFittingParam1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(12, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables

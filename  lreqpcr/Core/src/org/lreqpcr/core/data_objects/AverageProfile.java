@@ -66,8 +66,14 @@ public interface AverageProfile {
      * @return whether the average replicate profile No is less than 10 molecules
      */
     public boolean isTheReplicateAverageNoLessThan10Molecules();
-    
-    // TODO review AverageProfile should be eliminated: still struggling with duplicate code Sample vs. Calibration profiles
-    //public double calcAvAmpliconTm();//However this introduces a new class variable that cannot be added via an Interface
 
+    /**
+     * Closely related to the less than 10 molecule problem, if the replicate 
+     * profiles are not sufficiently clustered, the resulting average profile 
+     * becomes distorted, which in turn generates an unreliable reliable target 
+     * quantity. 
+     * 
+     * @return whether the replicate profiles can be used to generate an average Profile
+     */
+    public boolean areTheRepProfilesSufficientlyClustered();
 }

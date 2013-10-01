@@ -279,15 +279,13 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         for (AverageProfile avProfile : profileList) {
             //Need to update the replicate profiles first in order to test if <10N
             for (Profile profile : avProfile.getReplicateProfileList()) {
-                //This will preserve any user modifications to the LRE window
-                lreAnalysisService.updateProfile(profile);
+                lreAnalysisService.conductAutomatedLreWindowSelection(profile, selectionParameters);
                 currentDB.saveObject(profile);
             }
             if (!avProfile.isTheReplicateAverageNoLessThan10Molecules()) {
                 //The AverageProfile is valid thus reinitialize it
                 Profile profile = (Profile) avProfile;
-                //This will preserve any user modifications to the LRE window
-                lreAnalysisService.updateProfile(profile);
+                lreAnalysisService.conductAutomatedLreWindowSelection(profile, selectionParameters);
                 currentDB.saveObject(avProfile);
             }
         }

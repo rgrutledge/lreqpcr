@@ -517,6 +517,19 @@ public abstract class Profile extends LreObject {
     public void setNrFoSD(double nrFoSD) {
         this.nrFoSD = nrFoSD;
     }
+    
+    public void setNrVariablesToZero(){
+        nrEmax = 0;
+        nrEmaxSD = 0;
+        nrFb = 0;
+        nrFbSD = 0;
+        nrFbSlope = 0;
+        nrFbSlopeSD = 0;
+        nrFmax = 0;
+        nrFmaxSD = 0;
+        nrFo = 0;
+        nrFoSD = 0;
+    }
 
     @Override
     public String toString() {
