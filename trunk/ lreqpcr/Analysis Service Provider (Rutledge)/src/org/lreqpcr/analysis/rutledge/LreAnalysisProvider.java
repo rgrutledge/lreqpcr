@@ -63,15 +63,15 @@ public class LreAnalysisProvider implements LreAnalysisService {
     public boolean conductAutomatedLreWindowSelection(Profile profile, LreWindowSelectionParameters parameters) {
         this.parameters = parameters;
         this.profile = profile;
-        prfSum = ProfileInitializer.constructProfileSummary(profile);
-//This will force a new LRE window to be selected so that complete reinitialized will be conducted
+//This will force a new LRE window to be selected so that a complete reinitialized will be conducted
         profile.setHasAnLreWindowBeenFound(false);
         //Subtract background fluorescence if needed
         if (profile.getFcReadings() == null) {
 //Construct a new working Fc dataset using a Fb derived from the average of cycles 4-9 
             substractBackground(profile);
-        }    
-        //Try to find an LRE window
+        }
+    //Try to find an LRE window
+        prfSum = ProfileInitializer.constructProfileSummary(profile);
         LreWindowSelector.selectLreWindowUsingMinFc(prfSum, parameters);
         if (!profile.hasAnLreWindowBeenFound()) {
 //Failed to find a window, thus return as updating the LRE parameters is irrelevant
@@ -100,7 +100,6 @@ public class LreAnalysisProvider implements LreAnalysisService {
      * identified and that the LRE window will not be modified by this function. 
      * Note also that the LRE parameters are updated within the Profile. 
      *
-     * @return whether the regression analysis was successful
      */
     private void conductNonlinearRegressionAnalysis() {
         //Need to trim the profile in order to avoid aberrancies within early cycles and within the plateau phase

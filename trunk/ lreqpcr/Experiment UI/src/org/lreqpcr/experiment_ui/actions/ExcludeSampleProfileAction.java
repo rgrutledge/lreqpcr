@@ -25,7 +25,6 @@ import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.data_objects.SampleProfile;
-import org.lreqpcr.core.data_processing.ProfileInitializer;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
@@ -91,15 +90,15 @@ class ExcludeSampleProfileAction extends AbstractAction {
             sampleProfileLreNode.refreshNodeLabel();
             db.saveObject(sampleProfile);
 
-            //Update the parent Average Sample Profile
+      //Update the parent Average Sample Profile
             LreNode avSampleProfileLreNode = (LreNode) sampleProfileNodes[0].getParentNode();
             parentAvProfile.setRawFcReadings(ProfileUtilities.generateAverageFcDataset(repProfileList));
-            //This will force a new Fc dataset to be generated from the new raw Fc dataset using cycles 4-9 for Fb determination
+     //This will force a new Fc dataset to be generated from the new raw Fc dataset using cycles 4-9 for Fb determination
             parentAvProfile.setFcReadings(null);
-            //Reinitialize the Average Profile
+     //Reinitialize the Average Profile
             LreAnalysisService profileIntialization =
                     Lookup.getDefault().lookup(LreAnalysisService.class);
-            //Now need to identify a new LRE window, which also conducts nonlinear regression analysis
+    //Now need to identify a new LRE window, which also conducts nonlinear regression analysis
             profileIntialization.conductAutomatedLreWindowSelection(parentAvProfile, selectionParameters);
             db.saveObject(parentAvProfile);
             db.saveObject(sampleProfile.getRun());
