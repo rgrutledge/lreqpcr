@@ -93,7 +93,7 @@ public class NonlinearRegressionParam extends javax.swing.JPanel {
         jLabel5 = new javax.swing.JLabel();
         nrFbSlopeDisplay = new javax.swing.JLabel();
 
-        setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.border.title"))); // NOI18N
+        setBorder(javax.swing.BorderFactory.createTitledBorder(null, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.border.title"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new java.awt.Color(255, 51, 51))); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.jLabel1.text")); // NOI18N
 

@@ -199,11 +199,6 @@ public class PlotFc extends javax.swing.JPanel {
         fbSlopeLabel.setVisible(true);
         df.applyLocalizedPattern("0.00");
         if (profile.getMidC() > 0) {
-            //Calculate No based on C1/2...abandoned due to complexity of the calculation
-//            double fo = (profile.getFmax()/2)/(Math.pow(profile.getMidC(), (profile.getEmax()+1)));
-//            double mo = fo/profile.run.get
-//            DecimalFormat df2 = new DecimalFormat();
-//            df2.applyPattern(FormatingUtilities.decimalFormatPattern(no));
             graphTitle.setText("C1/2= " + df.format(profile.getMidC()));
         } else {
             graphTitle.setText("C1/2 = n.d.");
@@ -234,8 +229,6 @@ public class PlotFc extends javax.swing.JPanel {
         df.applyPattern(FormatingUtilities.decimalFormatPattern(avFmax));
         tipTextForAvFmaxLine.setToolTipText("Av Fmax = " + df.format(avFmax));
         maxFc = avFmax * 1.8;//Provides 50% spacing for the top of the profile
-        //This has been disabed as it suggests that the Fc dataset has been modified
-//        fmaxScalingFactor = avFmax / prfFmax;
         //Determine if Fmax normalization of Fc values must be applied
         if (profile instanceof SampleProfile) {
             SampleProfile samPrf = (SampleProfile) profile;
