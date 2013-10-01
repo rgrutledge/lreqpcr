@@ -154,8 +154,8 @@ public class ProfileEditor extends JPanel implements
         curveFittingParam1 = new org.lreqpcr.ui_components.NonlinearRegressionParam();
 
         setBackground(new java.awt.Color(51, 153, 255));
-        setMaximumSize(new java.awt.Dimension(630, 594));
-        setMinimumSize(new java.awt.Dimension(630, 594));
+        setMaximumSize(new java.awt.Dimension(630, 639));
+        setMinimumSize(new java.awt.Dimension(630, 639));
         setPreferredSize(new java.awt.Dimension(630, 639));
         setRequestFocusEnabled(false);
 

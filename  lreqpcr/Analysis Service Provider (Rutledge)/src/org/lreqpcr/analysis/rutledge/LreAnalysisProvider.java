@@ -32,10 +32,10 @@ import org.openide.util.lookup.ServiceProvider;
 /**
  * Rutledge implementation of LRE window selection and optimization. 
  * <p>
- * As of Sept13 this includes using nonlinear regression to generate an estimation of 
+ * As of Sept13 this includes nonlinear regression to generate an estimation of 
  * baseline fluorescence that replaces the average Fc of cycles 4-9, in addition 
  * to an estimation of baseline slope, both of which are used to generate an 
- * optimized Fc dataset for LRE analysis. 
+ * optimized Fc dataset, which is followed by LRE analysis. 
  *
  * @author Bob Rutledge
  */
@@ -130,7 +130,7 @@ public class LreAnalysisProvider implements LreAnalysisService {
         double fbSlopeSum = 0;
         for (int i = 0; i < numberOfIterations; i++) {
             //This assumes that the regression analysis will be successfull*******************************************
-            LreParameters optParam = nrService.conductLreNRAnalysis(lreDerivedParam, profileMap);
+            LreParameters optParam = nrService.conductNonlinearRegression(lreDerivedParam, profileMap);
             emaxArray.add(optParam.getEmax());
             emaxSum += optParam.getEmax();
             fbArray.add(optParam.getFb());
@@ -193,7 +193,7 @@ public class LreAnalysisProvider implements LreAnalysisService {
     }
 
     /**
-     * This conducts both CF-derived Fb subtraction and baseline slope
+     * This conducts both nonlinear regression-derived Fb subtraction and baseline slope
      * correction. 
      *
      * @param profile
@@ -203,10 +203,10 @@ public class LreAnalysisProvider implements LreAnalysisService {
         double[] rawFcReadings = profile.getRawFcReadings();
         double[] processedFcDataset = new double[rawFcReadings.length];//The new optimized Fc dataset
         //This assumes that nonlinear regression has been conducted AND it was successfully completed
-        double cfFb = profile.getNrFb();//The regression derived Fb
-        double cfFbSlope = profile.getNrFbSlope();//The regression-derived Fb slope
+        double nrFb = profile.getNrFb();//The regression -erived Fb
+        double nrFbSlope = profile.getNrFbSlope();//The regression-derived Fb slope
         for (int i = 0; i < processedFcDataset.length; i++) {
-            processedFcDataset[i] = rawFcReadings[i] - cfFb - (cfFbSlope * (i + 1));
+            processedFcDataset[i] = rawFcReadings[i] - nrFb - (nrFbSlope * (i + 1));
         }
         profile.setFcReadings(processedFcDataset);
     }

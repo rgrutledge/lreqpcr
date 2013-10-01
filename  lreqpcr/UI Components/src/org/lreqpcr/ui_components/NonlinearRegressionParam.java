@@ -28,23 +28,25 @@ public class NonlinearRegressionParam extends javax.swing.JPanel {
 
     public void updateDisplay(ProfileSummary prfSum) {
         profile = prfSum.getProfile();
+        String CV;
         df.applyPattern("#0.0%");
-        String foCV = df.format(profile.getNrFoSD() / profile.getNrFo() * 100);
-        nrFoDisplay.setText(dfE.format(profile.getNrFo()) + " ±" + foCV);
-//        nrFoDisplay.setf
-//        df.applyPattern("#0.0%");
-        String emaxCV = df.format(profile.getNrEmaxSD() / profile.getNrEmax() * 100);
-//        df.applyPattern("#.0%");
-        nrEmaxDisplay.setText(df.format(profile.getNrEmax()) + " ±" + emaxCV);
-        double fmax = profile.getNrFmax();
-        df.applyPattern(FormatingUtilities.decimalFormatPattern(fmax));
-        nrFmaxDisplay.setText(df.format(fmax));
+        CV = df.format(profile.getNrFoSD() / profile.getNrFo() * 100);
+        nrFoDisplay.setText(dfE.format(profile.getNrFo()) + " ±" + CV);
+        CV = df.format(profile.getNrEmaxSD() / profile.getNrEmax() * 100);
+        nrEmaxDisplay.setText(df.format(profile.getNrEmax()) + " ±" + CV);
+        df.applyPattern("#0.0%");
+        CV = df.format(profile.getNrFmaxSD() / profile.getNrFmax() * 100);
+        df.applyPattern(FormatingUtilities.decimalFormatPattern(profile.getNrFmax())); 
+        nrFmaxDisplay.setText(df.format(profile.getNrFmax()) + " ±" + CV);
+        df.applyPattern("#0.0%");
+        CV = df.format(profile.getNrFbSD() / profile.getNrFb() * 100);
         double fb = profile.getNrFb();
         df.applyPattern(FormatingUtilities.decimalFormatPattern(fb));
-        nrFbDisplay.setText(df.format(fb));
-        double fbSlope = profile.getNrFbSlope();
-        df.applyPattern(FormatingUtilities.decimalFormatPattern(fbSlope));
-        nrFbSlopeDisplay.setText(df.format(fbSlope));
+        nrFbDisplay.setText((df.format(profile.getNrFb()) + " ±" + CV));
+        df.applyPattern("#0.0%");
+        CV = df.format(profile.getNrFbSlopeSD() / profile.getNrFbSlope()* 100);
+        df.applyPattern(FormatingUtilities.decimalFormatPattern(profile.getNrFbSlope()));
+        nrFbSlopeDisplay.setText(df.format(profile.getNrFbSlope()) + " ±" + CV);
     }
 
     void clearPanel() {
@@ -83,7 +85,6 @@ public class NonlinearRegressionParam extends javax.swing.JPanel {
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.jLabel2.text")); // NOI18N
 
-        nrEmaxDisplay.setForeground(new java.awt.Color(204, 0, 51));
         org.openide.awt.Mnemonics.setLocalizedText(nrEmaxDisplay, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.nrEmaxDisplay.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.jLabel3.text")); // NOI18N
@@ -111,7 +112,7 @@ public class NonlinearRegressionParam extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel3)
-                            .addComponent(jLabel2))
+                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(nrFmaxDisplay)
@@ -130,12 +131,12 @@ public class NonlinearRegressionParam extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(nrFoDisplay))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(nrEmaxDisplay))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(nrFoDisplay))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
@@ -147,7 +148,8 @@ public class NonlinearRegressionParam extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(nrFbSlopeDisplay)))
+                    .addComponent(nrFbSlopeDisplay))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables

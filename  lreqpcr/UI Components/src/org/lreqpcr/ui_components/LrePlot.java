@@ -161,15 +161,19 @@ public class LrePlot extends javax.swing.JPanel {
         }
     }
 
+    /**
+     * Note that this is the only function that allows the user to modified the LRE analysis, 
+     * and only by modifying the LRE window. Note that modifying he LRE window requires 
+     * that nonlinear regression be conducted using the new LRE window, in that 
+     * the top of the LRE window to determine the upper cut off for the nonlinear 
+     * regression analysis. 
+     * 
+     * This function also assumes that this profile has a valid LRE window. 
+     */
     private void processModifiedLreWindow() {
-//Note that this is the only function that allows the user to modified the LRE analysis 
-//which is accomplished only by modifying the LRE window
-//However, this in turn requires conducting NR using the new LRE window to determine the upper cut off
-//        profile = prfSum.getProfile();
-//This function relies on the assumption that this profile has a valid LRE window
-//which must be true as the profile needs to be displayed in order to allow the user to modify it
-//Update ProfileSummary using the new LRE window. which also updates all of the LRE parameters within the Profile
+//Update ProfileSummary using the new LRE window. which also updates the LRE parameters within the Profile
         ProfileInitializer.updateProfileSummary(prfSum);
+//This update also includes nonlinear regression analysis to determine Fb and Fb-slope followed by LRE analysis
         lreAnalService.updateProfile(profile); 
         db.saveObject(profile);
         //The AverageSampleProfile needs to be updated if <10N
