@@ -16,7 +16,7 @@
 package org.lreqpcr.nonlinear_regression_services;
 
 /**
- * Holds parameter values for the 5 parameteric LRE sigmoidal model: 
+ * Holds values for the 5 parameters used by the LRE sigmoidal model: 
  * Emax, Fmax, Fo, Fb and Fb-slope.
  * 
  * @author Bob Rutledge

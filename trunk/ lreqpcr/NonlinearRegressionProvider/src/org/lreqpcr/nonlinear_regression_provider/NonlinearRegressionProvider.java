@@ -28,8 +28,9 @@ import org.openide.util.lookup.ServiceProvider;
  * Nonlinear regression analysis utilizing Peter Abeles’s EJML API
  * (http://code.google.com/p/efficient-java-matrix-library/wiki/LevenbergMarquardtExample). 
  * <p>
- * The analysis uses a 5 parametric LRE model that include baseline fluorescence 
- * and baseline slope, as defined in the LreParameters class.
+ * The analysis uses the 5 parametric LRE model that include baseline fluorescence 
+ * and baseline slope correction, as declared within the LreParameters class. 
+ * 
  * @author Bob Rutledge
  */
 @ServiceProvider(service = NonlinearRegressionServices.class)
@@ -40,7 +41,7 @@ public class NonlinearRegressionProvider extends NonlinearRegressionServices {
     private DenseMatrix64F initialParam = new DenseMatrix64F(5, 1);
 
     @Override
-    public LreParameters conductLreNRAnalysis(LreParameters iniParam, TreeMap<Integer, Double> cycleFc) {
+    public LreParameters conductNonlinearRegression(LreParameters iniParam, TreeMap<Integer, Double> cycleFc) {
         List<Integer> cycleArray = new ArrayList<Integer>(cycleFc.keySet());
         double[] cycles = new double[cycleArray.size()];
         double[] fcReadings = new double[cycleArray.size()];

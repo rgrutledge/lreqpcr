@@ -30,22 +30,22 @@ public abstract class NonlinearRegressionServices {
      * sigmoidal model as defined by the parameters declared in the 
      * LreParameters class. 
      * <p>
-     * The primary objective is to derive 
-     * values for baseline fluourescence (Fb) and baseline slope (Fb-slope)
-     * that are then used to generate an optimized 
-     * working Fc dataset required for LRE analysis. 
+     * The primary objective is to derive values for baseline fluourescence (Fb) 
+     * and baseline slope (Fb-slope) that are then used to generate the working 
+     * Fc dataset used for LRE analysis (based on linear regression analysis). 
      * <p>
      * As such, the regression-derived Emax, Fmax and Fo should only used to determine 
      * the level of convergence with LRE analysis (based on linear regression 
      * analysis of an Ec vs Fc plot), followed by averaging the cycle Fo values 
-     * within the LRE window for determining target quantity (average Fo). 
+     * within the LRE window to determine target quantity (average Fo). 
      * For high quality profiles the convergence of nonlinear regression and 
      * LRE analysis have been found to be high. 
      * <p>
      * Note also that the profile to be analyzed should be trimmed to remove early 
      * cycles (typically cycles 1-3) that often generate aberrant fluorescence 
-     * readings, and plateau cycles (typically cycles above the LRE window) that 
-     * are often distorted due to aberrant amplification kinetics. Indeed, fixing the upper limit  
+     * readings. Of even greater importance is to exclude plateau cycles 
+     * (typically cycles above the LRE window) that are often distorted due to 
+     * aberrant amplification kinetics. Indeed, fixing the upper limit  
      * to the top of the LRE window has been found to be broadly effective for 
      * analysis of a variety of profiles found to generate aberrant amplification 
      * kinetics. 
@@ -54,6 +54,6 @@ public abstract class NonlinearRegressionServices {
      * @param cycleFc the observed cycle-fluorescence readings of the profile to be analyzed that must be ordered by cycle number
      * @return the optimized parameters derived from the nonlinear regression analysis
      */
-    public abstract LreParameters conductLreNRAnalysis(LreParameters iniParam, TreeMap<Integer, Double> cycleFc);
+    public abstract LreParameters conductNonlinearRegression(LreParameters iniParam, TreeMap<Integer, Double> cycleFc);
     
 }
