@@ -122,8 +122,8 @@ public class SampleTreeNodeLabels implements LabelFactory {
                 no = "";
             }
             if (profile.isTargetQuantityNormalizedToFmax()){
-                no = "  N= " + df.format(profile.getNo()) + "*";
-                profile.setShortDescription("Target quantity has be normalized to the average Fmax");
+                no = "  *N= " + df.format(profile.getNo());
+                profile.setShortDescription("Target quantity has be normalized to the Run's average Fmax");
             }else {
                 no = "  N= " + df.format(profile.getNo());
             }
