@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2013   Bob Rutledge
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -16,9 +16,13 @@
  */
 package org.lreqpcr.experiment_ui.components;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Action;
+import org.lreqpcr.core.data_objects.AverageProfile;
+import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreObject;
+import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LabelFactory;
@@ -31,27 +35,36 @@ import org.openide.nodes.Node;
 import org.openide.util.lookup.Lookups;
 
 /**
- * Generates child nodes for an AverageSampleProfile based on the supplied list
- * of SampleProfiles
+ * Displays Run nodes for the supplied list of Runs
+ *
  * @author Bob Rutledge
  */
-public class AvSampleProfileChildren extends LreObjectChildren {
+public class RunsWithSampleProfileChildren extends LreObjectChildren {
 
-    public AvSampleProfileChildren(ExplorerManager mgr, DatabaseServices db, List<? extends SampleProfile>
-            sampleProfileList, LreActionFactory actionFactory, LabelFactory labelFactory) {
-        super(mgr, db, sampleProfileList, actionFactory, labelFactory);
+    /**
+     * Generates AverageProfile nodes for a Run.
+     * 
+     * @param mgr the manager of the view
+     * @param db the experiment database that is being viewed
+     * @param runList list of Runs to be displayed
+     * @param actionFactory the node action factory
+     * @param labelFactory the node label factory
+     */
+    public RunsWithSampleProfileChildren(ExplorerManager mgr, DatabaseServices db, List<? extends Run> runList,
+            LreActionFactory actionFactory, LabelFactory labelFactory) {
+        super(mgr, db, runList, actionFactory, labelFactory);
     }
 
     /**
-     * Creates SampleProfile nodes from the member list of SampleProfiles.
-     *
+     * Displays a list of Runs with AverageProfile as their children.
+     * 
      * @param lreObject
-     * @return
+     * @return the new node
      */
     @SuppressWarnings(value = "unchecked")
     @Override
     protected Node[] createNodes(LreObject lreObject) {
-        SampleProfile sampleProfile = (SampleProfile) lreObject;
+        Run run = (Run) lreObject;
         if (nodeActionFactory == null) {
             actions = new Action[]{};//i.e. no Actions have been set
         } else {
@@ -60,7 +73,19 @@ public class AvSampleProfileChildren extends LreObjectChildren {
                 actions = new Action[]{};//i.e. there are no Actions for this Node
             }
         }
-        LreNode node = new LreNode(Children.LEAF, Lookups.singleton(sampleProfile), actions);
+        List<AverageProfile> avProfileList = run.getAverageProfileList();
+        List<SampleProfile> samplePrfList = new ArrayList<SampleProfile>();
+        //Must cast to AverageSampleProfile
+        for (AverageProfile avPrf : avProfileList){
+            AverageSampleProfile avSamplePrf = (AverageSampleProfile) avPrf;
+            for (SampleProfile prf : avSamplePrf.getReplicateProfileList()){
+            samplePrfList.add(prf);
+            }
+        }
+         LreNode node = new LreNode(new SampleProfiles(mgr, db, 
+                samplePrfList,
+                nodeActionFactory, nodeLabelFactory),
+                    Lookups.singleton(run), actions);
         node.setExplorerManager(mgr);
         node.setDatabaseService(db);
         node.setName(lreObject.getName());
