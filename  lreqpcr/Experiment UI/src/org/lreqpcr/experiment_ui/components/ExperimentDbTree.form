@@ -79,7 +79,9 @@
                   <Component id="ocfDisplay" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="fmaxNormalizeChkBox" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="112" max="32767" attributes="0"/>
+                  <EmptySpace pref="37" max="32767" attributes="0"/>
+                  <Component id="repViewButton" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -91,6 +93,7 @@
                       <Component id="ocfLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="ocfDisplay" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="fmaxNormalizeChkBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="repViewButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
               </Group>
@@ -129,6 +132,14 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="fmaxNormalizeChkBoxActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="repViewButton">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Rep View"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="repViewButtonActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>
