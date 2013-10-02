@@ -64,11 +64,8 @@ public class PlotFc extends javax.swing.JPanel {
     }
 
     public void clearPlot() {
-        fbDisplay.setText("");
-        fbSlopeDisplay.setText("");
+        clearFbLabels();
         tipTextForAvFmaxLine.setToolTipText("");
-        fbLabel.setVisible(false);
-        fbSlopeLabel.setVisible(false);
         fmaxNrmzd.setVisible(false);
         graphTitle.setText("Fc Plot (Fc vs. Cycle)");
         Dimension size = this.getSize();
@@ -77,6 +74,13 @@ public class PlotFc extends javax.swing.JPanel {
             clearPlot = true;
             repaint();
         }
+    }
+    
+    private void clearFbLabels(){
+        fbDisplay.setText("");
+        fbSlopeDisplay.setText("");
+        fbLabel.setVisible(false);
+        fbSlopeLabel.setVisible(false);
     }
 
     /**
@@ -112,7 +116,7 @@ public class PlotFc extends javax.swing.JPanel {
         fbLabel.setToolTipText("Calculated from the average of the Fo values within the LRE window");
 
         fbDisplay.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        fbDisplay.setText("     ");
+        fbDisplay.setText("Fb");
 
         fmaxNrmzd.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         fmaxNrmzd.setForeground(new java.awt.Color(204, 0, 51));
@@ -126,49 +130,49 @@ public class PlotFc extends javax.swing.JPanel {
         fbSlopeLabel.setText("Fb Slope:");
 
         fbSlopeDisplay.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        fbSlopeDisplay.setText("jLabel2");
+        fbSlopeDisplay.setText("Fb slope");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(fbSlopeLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(fbSlopeDisplay)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap(126, Short.MAX_VALUE)
                 .addComponent(tipTextForAvFmaxLine, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(layout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addComponent(graphTitle)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(fmaxNrmzd)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(graphTitle)
+                        .addGap(36, 36, 36)
+                        .addComponent(fmaxNrmzd))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(fbLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(fbDisplay)))
-                .addGap(0, 0, Short.MAX_VALUE))
+                        .addComponent(fbDisplay))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(fbSlopeLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(fbSlopeDisplay)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(5, 5, 5)
-                .addComponent(graphTitle)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(graphTitle)
+                    .addComponent(fmaxNrmzd))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(fbSlopeLabel)
-                        .addComponent(fbSlopeDisplay))
-                    .addComponent(tipTextForAvFmaxLine))
-                .addGap(8, 8, 8)
-                .addComponent(fmaxNrmzd)
+                .addComponent(tipTextForAvFmaxLine)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(fbLabel)
                     .addComponent(fbDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(32, 32, 32))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(fbSlopeLabel)
+                    .addComponent(fbSlopeDisplay))
+                .addContainerGap(18, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -233,13 +237,11 @@ public class PlotFc extends javax.swing.JPanel {
         if (profile instanceof SampleProfile) {
             SampleProfile samPrf = (SampleProfile) profile;
             if (samPrf.isTargetQuantityNormalizedToFmax()) {
-                fmaxScalingFactor = avFmax / prfFmax;
                 fmaxNrmzd.setVisible(true);
             }
         } else if (profile instanceof CalibrationProfile) {
             CalibrationProfile calPrf = (CalibrationProfile) profile;
             if (calPrf.isOcfNormalizedToFmax()) {
-                fmaxScalingFactor = avFmax / prfFmax;
                 fmaxNrmzd.setVisible(true);
             }
         }
@@ -252,6 +254,7 @@ public class PlotFc extends javax.swing.JPanel {
         super.paintComponent(g);
         g2 = (Graphics2D) g;
         if (clearPlot || zeroCycle == null) {
+            clearFbLabels();
             return;
         }
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -284,6 +287,7 @@ public class PlotFc extends javax.swing.JPanel {
             runner = zeroCycle.getNextCycle();//Cycle #1
             //Allows display of the Fc plot if a LRE window has not been found
             if (!profile.hasAnLreWindowBeenFound() || profile.isExcluded()) {
+                clearFbLabels();
                 do {
                     double x = (runner.getCycNum() * scalingFactorX) - offsetX;
                     double y = height - (runner.getFc() * scalingFactorY) - offsetY;
@@ -323,21 +327,6 @@ public class PlotFc extends javax.swing.JPanel {
                     return;
                 }
             }
-            //This has been disabled because Fb is now derived via curve fitting
-            //Megenta circles denote the flourescence background window
-//            runner = zeroCycle;
-//            //Run to the beginning of the Fb window
-//            for (int i = 0; i < profile.getFbStart(); i++) {
-//                runner = runner.getNextCycle();
-//            }
-//            g2.setColor(Color.MAGENTA);
-//            for (int i = 0; i < profile.getFbWindow(); i++) {
-//                double x = (runner.getCycNum() * scalingFactorX) - offsetX;
-//                double yPrd = height - (runner.getPredFc() * scalingFactorY * fmaxScalingFactor) - offsetY;
-//                Ellipse2D.Double pt1 = new Ellipse2D.Double(x - ptSize * 0.25, yPrd - ptSize * 0.25, ptSize, ptSize); //XY offset = 25% of ptSize
-//                g2.draw(pt1);
-//                runner = runner.getNextCycle();
-//            }
         }
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -323,7 +323,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
         ocfDisplay.setToolTipText("Manually enter an OCF value that will be applied to all profiles");
 
         fmaxNormalizeChkBox.setText("Fmax Normalize");
-        fmaxNormalizeChkBox.setToolTipText("Normalize target quantity to the average Fmax");
+        fmaxNormalizeChkBox.setToolTipText("Normalize target quantities to the Run's average Fmax");
         fmaxNormalizeChkBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 fmaxNormalizeChkBoxActionPerformed(evt);
