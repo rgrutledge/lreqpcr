@@ -150,13 +150,13 @@ public class PlotFo extends javax.swing.JPanel {
         setBackground(new java.awt.Color(244, 245, 247));
         setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         setToolTipText("Conversion of Fc readings into target quantity expressed in fluorescence units (Fo)");
-        setMaximumSize(new java.awt.Dimension(1000, 1000));
-        setMinimumSize(new java.awt.Dimension(0, 0));
+        setMaximumSize(new java.awt.Dimension(240, 100));
+        setMinimumSize(new java.awt.Dimension(240, 100));
         setName("Fc Plot"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(250, 100));
+        setPreferredSize(new java.awt.Dimension(240, 100));
         setRequestFocusEnabled(false);
 
-        graphTitle.setFont(new java.awt.Font("Tahoma", 1, 12));
+        graphTitle.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         graphTitle.setForeground(new java.awt.Color(204, 0, 51));
         graphTitle.setText("Fo Plot (Fo vs. Fc)");
         graphTitle.setToolTipText("Fc-derived target quantity (Fo) vs. Fc (reaction fluorescence) ");
@@ -181,9 +181,9 @@ public class PlotFo extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(avFoLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(avFoDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE)
+                        .addComponent(avFoDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE)
                         .addGap(77, 77, 77)))
-                .addContainerGap())
+                .addGap(30, 30, 30))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

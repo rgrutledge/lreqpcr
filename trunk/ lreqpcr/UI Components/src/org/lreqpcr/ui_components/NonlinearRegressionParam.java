@@ -93,7 +93,10 @@ public class NonlinearRegressionParam extends javax.swing.JPanel {
         jLabel5 = new javax.swing.JLabel();
         nrFbSlopeDisplay = new javax.swing.JLabel();
 
-        setBorder(javax.swing.BorderFactory.createTitledBorder(null, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.border.title"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new java.awt.Color(255, 51, 51))); // NOI18N
+        setBorder(javax.swing.BorderFactory.createTitledBorder(null, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.border.title"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new java.awt.Color(204, 0, 51))); // NOI18N
+        setMaximumSize(new java.awt.Dimension(240, 117));
+        setMinimumSize(new java.awt.Dimension(240, 117));
+        setPreferredSize(new java.awt.Dimension(240, 117));
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.jLabel1.text")); // NOI18N
 
@@ -124,7 +127,7 @@ public class NonlinearRegressionParam extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(nrFoDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE))
+                        .addComponent(nrFoDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel3)
@@ -132,7 +135,7 @@ public class NonlinearRegressionParam extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(nrFmaxDisplay)
-                            .addComponent(nrEmaxDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(nrEmaxDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -164,8 +167,7 @@ public class NonlinearRegressionParam extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(nrFbSlopeDisplay))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(nrFbSlopeDisplay)))
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables

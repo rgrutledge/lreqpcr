@@ -37,6 +37,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.border.TitledBorder;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageProfile;
@@ -408,17 +409,18 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new JLabel();
-        minFcDisplay = new JTextField();
-        jLabel2 = new JLabel();
-        foThresholdDisplay = new JTextField();
-        avReplCvDisplay = new JLabel();
-        calcAvReplCV = new JRadioButton();
+        jLabel1 = new javax.swing.JLabel();
+        minFcDisplay = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        foThresholdDisplay = new javax.swing.JTextField();
+        avReplCvDisplay = new javax.swing.JLabel();
+        calcAvReplCV = new javax.swing.JRadioButton();
 
-        setBackground(new Color(244, 245, 247));
-        setBorder(BorderFactory.createTitledBorder("LRE Window Selection Parameters"));
-        setMinimumSize(new Dimension(250, 100));
-        setPreferredSize(new Dimension(230, 100));
+        setBackground(new java.awt.Color(244, 245, 247));
+        setBorder(javax.swing.BorderFactory.createTitledBorder(null, "LRE Window Selection Parameters", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new java.awt.Color(204, 0, 51)));
+        setMaximumSize(new java.awt.Dimension(240, 100));
+        setMinimumSize(new java.awt.Dimension(240, 100));
+        setPreferredSize(new java.awt.Dimension(240, 100));
 
         jLabel1.setText("Min Fc:");
         jLabel1.setToolTipText("Minimum Fc is used to select the Start Cycle or set to zero for automated selection");
@@ -433,51 +435,51 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         avReplCvDisplay.setText("  ");
         avReplCvDisplay.setToolTipText("Note that Replicat Profiles with <10 molecules are not included");
 
-        calcAvReplCV.setBackground(new Color(244, 245, 247));
+        calcAvReplCV.setBackground(new java.awt.Color(244, 245, 247));
         calcAvReplCV.setText("Calc Av Repl CV:");
         calcAvReplCV.setToolTipText("Calculates the average quantitative CV produced by each set of replicate profiles");
-        calcAvReplCV.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
+        calcAvReplCV.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 calcAvReplCVActionPerformed(evt);
             }
         });
 
-        GroupLayout layout = new GroupLayout(this);
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(Alignment.LEADING)
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(calcAvReplCV)
-                        .addPreferredGap(ComponentPlacement.RELATED)
-                        .addComponent(avReplCvDisplay, GroupLayout.DEFAULT_SIZE, 109, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(avReplCvDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 103, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addPreferredGap(ComponentPlacement.RELATED)
-                        .addComponent(minFcDisplay, GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(minFcDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
-                        .addPreferredGap(ComponentPlacement.RELATED)
-                        .addComponent(foThresholdDisplay, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(foThresholdDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(Alignment.LEADING)
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(minFcDisplay, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
-                    .addComponent(foThresholdDisplay, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(minFcDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(foThresholdDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
-                .addPreferredGap(ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(avReplCvDisplay)
                     .addComponent(calcAvReplCV))
-                .addContainerGap(34, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -496,12 +498,12 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         }
     }//GEN-LAST:event_calcAvReplCVActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private JLabel avReplCvDisplay;
-    private JRadioButton calcAvReplCV;
-    private JTextField foThresholdDisplay;
-    private JLabel jLabel1;
-    private JLabel jLabel2;
-    private JTextField minFcDisplay;
+    private javax.swing.JLabel avReplCvDisplay;
+    private javax.swing.JRadioButton calcAvReplCV;
+    private javax.swing.JTextField foThresholdDisplay;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JTextField minFcDisplay;
     // End of variables declaration//GEN-END:variables
 
     /**
