@@ -48,7 +48,7 @@ public final class ProfileEditorTopComponent extends TopComponent
     public ProfileEditorTopComponent() {
         initComponents();
 //        setName(NbBundle.getMessage(ProfileEditorTopComponent.class, "CTL_ProfileEditorTopComponent"));
-        setToolTipText(NbBundle.getMessage(ProfileEditorTopComponent.class, "HINT_ProfileEditorTopComponent"));
+//        setToolTipText(NbBundle.getMessage(ProfileEditorTopComponent.class, "HINT_ProfileEditorTopComponent"));
 //        setIcon(ImageUtilities.loadImage(ICON_PATH, true));
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_DRAGGING_DISABLED, Boolean.TRUE);
@@ -70,7 +70,7 @@ public final class ProfileEditorTopComponent extends TopComponent
 
         profileEditor1 = new org.lreqpcr.ui_components.ProfileEditor();
 
-        profileEditor1.setPreferredSize(new java.awt.Dimension(630, 640));
+        profileEditor1.setMinimumSize(new java.awt.Dimension(700, 640));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -78,15 +78,14 @@ public final class ProfileEditorTopComponent extends TopComponent
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(profileEditor1, javax.swing.GroupLayout.PREFERRED_SIZE, 638, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(19, Short.MAX_VALUE))
+                .addComponent(profileEditor1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addComponent(profileEditor1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(0, 14, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables

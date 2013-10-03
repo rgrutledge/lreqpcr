@@ -155,24 +155,30 @@ public class ProfileEditor extends JPanel implements
 
         setBackground(new java.awt.Color(51, 153, 255));
         setFocusCycleRoot(true);
-        setMaximumSize(new java.awt.Dimension(630, 640));
-        setMinimumSize(new java.awt.Dimension(630, 640));
-        setPreferredSize(new java.awt.Dimension(640, 640));
+        setMaximumSize(new java.awt.Dimension(700, 640));
+        setMinimumSize(new java.awt.Dimension(600, 640));
+        setPreferredSize(new java.awt.Dimension(616, 640));
         setRequestFocusEnabled(false);
 
         numericalTable.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        numericalTable.setMaximumSize(new java.awt.Dimension(250, 200));
-        numericalTable.setMinimumSize(new java.awt.Dimension(250, 200));
-        numericalTable.setPreferredSize(new java.awt.Dimension(250, 200));
+        numericalTable.setMaximumSize(new java.awt.Dimension(240, 225));
+        numericalTable.setMinimumSize(new java.awt.Dimension(240, 225));
+        numericalTable.setPreferredSize(new java.awt.Dimension(240, 225));
 
         lreObjectInfo.setMaximumSize(new java.awt.Dimension(300, 300));
         lreObjectInfo.setPreferredSize(new java.awt.Dimension(300, 300));
 
-        plotFo.setMaximumSize(new java.awt.Dimension(325, 100));
-        plotFo.setMinimumSize(new java.awt.Dimension(325, 100));
-        plotFo.setPreferredSize(new java.awt.Dimension(325, 100));
+        plotFo.setMaximumSize(new java.awt.Dimension(275, 100));
+        plotFo.setPreferredSize(new java.awt.Dimension(275, 100));
 
-        lreWindowParametersPanel.setPreferredSize(new java.awt.Dimension(250, 100));
+        lreWindowParametersPanel.setMaximumSize(new java.awt.Dimension(275, 100));
+        lreWindowParametersPanel.setMinimumSize(new java.awt.Dimension(275, 100));
+        lreWindowParametersPanel.setPreferredSize(new java.awt.Dimension(275, 100));
+
+        curveFittingParam1.setMaximumSize(new java.awt.Dimension(275, 117));
+        curveFittingParam1.setMinimumSize(new java.awt.Dimension(275, 117));
+        curveFittingParam1.setName(""); // NOI18N
+        curveFittingParam1.setPreferredSize(new java.awt.Dimension(275, 117));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -185,12 +191,12 @@ public class ProfileEditor extends JPanel implements
                     .addComponent(plotFc, 0, 0, Short.MAX_VALUE)
                     .addComponent(plotLREs, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(plotFo, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lreWindowParametersPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(numericalTable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(curveFittingParam1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(32, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(plotFo, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(lreWindowParametersPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(numericalTable, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(curveFittingParam1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -198,20 +204,21 @@ public class ProfileEditor extends JPanel implements
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(lreWindowParametersPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
+                        .addComponent(numericalTable, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(plotFo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(curveFittingParam1, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(57, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(plotFc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(plotLREs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(lreObjectInfo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lreWindowParametersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(numericalTable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(plotFo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(curveFittingParam1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(12, Short.MAX_VALUE))
+                        .addComponent(lreObjectInfo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables

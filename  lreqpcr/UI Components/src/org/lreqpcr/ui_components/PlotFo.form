@@ -12,14 +12,14 @@
     </Property>
     <Property name="toolTipText" type="java.lang.String" value="Conversion of Fc readings into target quantity expressed in fluorescence units (Fo)"/>
     <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-      <Dimension value="[1000, 1000]"/>
+      <Dimension value="[240, 100]"/>
     </Property>
     <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-      <Dimension value="[0, 0]"/>
+      <Dimension value="[240, 100]"/>
     </Property>
     <Property name="name" type="java.lang.String" value="Fc Plot" noResource="true"/>
     <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-      <Dimension value="[250, 100]"/>
+      <Dimension value="[240, 100]"/>
     </Property>
     <Property name="requestFocusEnabled" type="boolean" value="false"/>
   </Properties>
@@ -45,11 +45,11 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="avFoLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="avFoDisplay" pref="117" max="32767" attributes="0"/>
+                      <Component id="avFoDisplay" pref="77" max="32767" attributes="0"/>
                       <EmptySpace min="-2" pref="77" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="30" pref="30" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>

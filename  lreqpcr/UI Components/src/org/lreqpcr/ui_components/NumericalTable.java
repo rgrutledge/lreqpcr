@@ -242,7 +242,9 @@ public class NumericalTable extends javax.swing.JPanel {
         setMinimumSize(new java.awt.Dimension(225, 200));
         setPreferredSize(new java.awt.Dimension(225, 200));
 
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(280, 200));
+        jScrollPane1.setMaximumSize(new java.awt.Dimension(500, 500));
+        jScrollPane1.setMinimumSize(new java.awt.Dimension(0, 0));
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(175, 200));
 
         numTable.setBackground(new java.awt.Color(244, 245, 247));
         numTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -279,9 +281,9 @@ public class NumericalTable extends javax.swing.JPanel {
             }
         });
         numTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
-        numTable.setMaximumSize(new java.awt.Dimension(180, 175));
-        numTable.setMinimumSize(new java.awt.Dimension(180, 175));
-        numTable.setPreferredSize(new java.awt.Dimension(180, 175));
+        numTable.setMaximumSize(new java.awt.Dimension(240, 500));
+        numTable.setMinimumSize(new java.awt.Dimension(0, 0));
+        numTable.setPreferredSize(new java.awt.Dimension(240, 175));
         numTable.setShowHorizontalLines(false);
         numTable.setShowVerticalLines(false);
         jScrollPane1.setViewportView(numTable);
@@ -290,9 +292,7 @@ public class NumericalTable extends javax.swing.JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
