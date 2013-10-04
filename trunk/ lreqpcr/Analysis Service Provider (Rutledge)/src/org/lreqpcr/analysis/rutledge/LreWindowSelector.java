@@ -16,7 +16,6 @@
  */
 package org.lreqpcr.analysis.rutledge;
 
-import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_processing.Cycle;
@@ -24,7 +23,6 @@ import org.lreqpcr.core.data_processing.ProfileInitializer;
 import org.lreqpcr.core.data_processing.ProfileSummary;
 import org.lreqpcr.core.utilities.LREmath;
 import org.lreqpcr.core.utilities.MathFunctions;
-import org.openide.util.Lookup;
 
 /**
  * Static functions used for automated LRE window selection
@@ -44,14 +42,14 @@ public class LreWindowSelector {
      * of the start of the profile. <p>
      *
      * The LRE window is then set to 3 cycles and the StartCycle adjusted
-     * to the first cycle below half of Fmax, generating an LRE window in the
-     * center of the Profle. The upper limit of the LRE window is then
+     * to two cycles below half of Fmax, generating an LRE window in the
+     * lower region of the Profle. The upper limit of the LRE window is then
      * expanded based on a default Fo tolerance of 6%.
      *
      * @param prfSum the ProfileSummary to process
      */
     public static void findLreWindowUsingDefaultParameters(ProfileSummary prfSum) {
-        double r2Tolerance = 0.95; //The tolerance of the LRE r2 to determine the start of the profile
+        double r2Tolerance = 0.95; //The tolerance of the LRE window r2 to determine the start of the profile
         double emaxThreshold = 0.4;//Emax > 40%
         double foThreshold = 0.06;
         if (prfSum.getZeroCycle() == null) {
@@ -101,7 +99,7 @@ public class LreWindowSelector {
         while (runner.getNextCycle().getNextCycle().getNextCycle() != null) {
 
   //Test for the minimum r2 >r2 tolerance across 1 cycle before and after the target cycle
-            //Testing Emax was found to greatly increase the accuracy of the analysis ver 0.8.5
+ //Testing Emax was found to greatly increase the accuracy of the analysis ver 0.8.5
             //[slope, intercept, r2]
             if (runner.getPrevCycle().getCycLREparam()[2] > r2Tolerance
                     && runner.getCycLREparam()[2] > r2Tolerance
@@ -146,8 +144,8 @@ public class LreWindowSelector {
             profile.setHasAnLreWindowBeenFound(false);
             return;
         }
-        //Go back one cycle
-        runner = runner.getPrevCycle();
+        //Go back two cycles
+        runner = runner.getPrevCycle().getPrevCycle();
         try {
             profile.setStrCycleInt(runner.getCycNum());
         } catch (Exception e) {
