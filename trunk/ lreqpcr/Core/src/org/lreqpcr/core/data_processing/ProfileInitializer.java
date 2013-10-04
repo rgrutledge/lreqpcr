@@ -61,7 +61,8 @@ public class ProfileInitializer {
      * Updates the supplied ProfileSummary, which is necessary whenever the
      * encapsulated Profile is modified. This primarily involves either changes 
      * to the LRE window or changes to the Fb and/or Fb-slope that in turn modifies
-     * the working Fc dataset
+     * the working Fc dataset. Note that this does not include nonlinear regression 
+     * analysis. 
      *
      * @param prfSum
      */
@@ -86,7 +87,8 @@ public class ProfileInitializer {
      * editing of the associated Profile. Note that no additional analysis is
      * conducted other than to generate the link list.
      *
-     * @param fc the array containing the background subtracted Fc dataset
+     * @param fc the array containing the background subtracted and Fb-slope 
+     * corrected Fc dataset. 
      * @return the header (cycle zero) of the Cycle linked list
      */
     private static Cycle makeCycleList(double[] fc) {

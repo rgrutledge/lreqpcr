@@ -165,28 +165,23 @@ public class LrePlot extends javax.swing.JPanel {
     /**
      * Note that this is the only function that allows the user to modified the
      * LRE analysis, and only by modifying the LRE window. Note that modifying
-     * he LRE window requires that nonlinear regression be conducted using the
-     * new LRE window, in that the top of the LRE window to determine the upper
-     * cut off for the nonlinear regression analysis.
+     * the LRE window requires that nonlinear regression be conducted using the
+     * new LRE window, in that the top of the LRE window is the upper cut off
+     * for the nonlinear regression analysis.
      *
      * This function also assumes that this profile has a valid LRE window.
      */
     private void processModifiedLreWindow() {
-        //Check to see if a LRE window needs to be selected
-        if (!profile.hasAnLreWindowBeenFound()) {
-            List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
-            LreWindowSelectionParameters selectionParameters = l.get(0);
-            lreAnalService.conductAutomatedLreWindowSelection(profile, selectionParameters);
-        } else {
-            //All that is needed is to update the Profile
-            ProfileInitializer.updateProfileSummary(prfSum);
-            lreAnalService.updateProfile(profile);
-        }
+        //All that is needed is to update the Profile
+        ProfileInitializer.updateProfileSummary(prfSum);
+//This includes nonlinear regression analysis (if available) which provides values for Fb and Fb-slope
+//that are used to generate an optimized working Fc dataset
+        lreAnalService.updateProfile(profile);
         db.saveObject(profile);
-        //The AverageSampleProfile needs to be updated if <10N
+        //The AverageSampleProfile No needs to be updated if <10N
         if (profile instanceof SampleProfile && !(profile instanceof AverageProfile)) {
             AverageSampleProfile avProfile = (AverageSampleProfile) profile.getParent();
-            //This function will update the AverageSampleProfile if it is <10N
+            //This function will update the AverageSampleProfile No if it is <10N
             if (avProfile.isTheReplicateAverageNoLessThan10Molecules()) {
                 db.saveObject(avProfile);
             }
@@ -574,9 +569,15 @@ private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     if (profile == null) {
         return;
     }
-    //This will force a new LRE window to be selected 
-    profile.setHasAnLreWindowBeenFound(false);
-    processModifiedLreWindow();
+//This will force a new LRE window to be selected 
+    List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
+    LreWindowSelectionParameters selectionParameters = l.get(0);
+    lreAnalService.conductAutomatedLreWindowSelection(profile, selectionParameters);
+    if (profile.hasAnLreWindowBeenFound()) {
+        processModifiedLreWindow();
+    } else {
+        universalLookup.fireChangeEvent(PanelMessages.PROFILE_CHANGED);
+    }
 }//GEN-LAST:event_resetButtonActionPerformed
 
     /**

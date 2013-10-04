@@ -89,6 +89,8 @@ public class ProfileEditor extends JPanel implements
                 lreWindowSelectionParameters = l.get(0);
             }
         }
+        //Diable the NR parameter window for distribution of this version as it could unnecessarily confuse the user 
+//        curveFittingParam1.setVisible(false);
     }
 
     private void displayNewProfile(Profile profile) {
