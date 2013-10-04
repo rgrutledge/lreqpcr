@@ -17,11 +17,8 @@
 package org.lreqpcr.ui_components;
 
 import com.google.common.collect.Lists;
-import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
@@ -29,15 +26,7 @@ import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.BorderFactory;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.border.TitledBorder;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageProfile;
@@ -104,7 +93,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
             public void keyReleased(KeyEvent e) {
                 if (e.getKeyCode() == 10) {//"Return" key
                     if (e.getComponent().equals(minFcDisplay)) {
-                        double newMinFc = -1;//Signifies that an acceptable value has not been found
+                        double newMinFc;//Signifies that an acceptable value has not been found
                         //Reset minFcDisplay
                         String minFcString = minFcDisplay.getText();
                         if (!minFcString.equals("")) {
@@ -299,7 +288,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                 df.applyPattern(FormatingUtilities.decimalFormatPattern(minFc));
                 minFcDisplay.setText(df.format(minFc));
             } else {
-                minFcDisplay.setText("First cycle below C1/2");
+                minFcDisplay.setText("Two cycles below C1/2");
             }
         }
         if (foThreshold != null) {
