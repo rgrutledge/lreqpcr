@@ -30,12 +30,11 @@ public abstract interface LreAnalysisService {
     /**
      * Provides all the functions necessary for automated LRE window selection.
      * <p>
-     * This involves baseline subtraction and automated 
-     * LRE window selection using the LreWindowSelectionParameters, along with 
-     * setting values within the Profile for all of the parameters associated with the associated LRE analysis. 
-     * This should include nonlinear regression analysis if this function if available.
+     * This involves baseline subtraction based on averaging early cycles followed by automated 
+     * LRE window selection using the LreWindowSelectionParameters. 
+     * This should also include nonlinear regression analysis, if this function is available
      * ,<p>
-     * Note that the caller must take responsibility for saving changes to the Profile.
+     * Note that the calling function must take responsibility for saving changes to the Profile.
      *
      * @param profile the Profile to initialize
      * @param parameters the LRE window parameters which cannot be null
@@ -46,6 +45,8 @@ public abstract interface LreAnalysisService {
     /**
      * Updates the supplied Profile following changes to the LRE window. This 
      * should include nonlinear regression analysis if this function is available. 
+     * <p>
+     * Note that the calling function must take responsibility for saving changes to the Profile.
      * 
      * @param profile the profile to be updated 
      */ 
