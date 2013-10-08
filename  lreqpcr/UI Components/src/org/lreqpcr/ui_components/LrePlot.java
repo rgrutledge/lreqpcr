@@ -172,13 +172,20 @@ public class LrePlot extends javax.swing.JPanel {
      * This function also assumes that this profile has a valid LRE window.
      */
     private void processModifiedLreWindow() {
-        //All that is needed is to update the Profile
+        //The Profile has changed so the ProfileSummary needs updating
         ProfileInitializer.updateProfileSummary(prfSum);
-//This includes nonlinear regression analysis (if available) which provides values for Fb and Fb-slope
-//that are used to generate an optimized working Fc dataset
+//This includes nonlinear regression analysis (if available) which provides 
+//values for Fb and Fb-slope that are used to generate a new working Fc dataset
         lreAnalService.updateProfile(profile);
+        //The Profile has changed so needs to be saved and the ProfileSummary updated
+        ProfileInitializer.updateProfileSummary(prfSum);
         db.saveObject(profile);
-        //The AverageSampleProfile No needs to be updated if <10N
+        updateAvergeProfileIfNeeded();
+        universalLookup.fireChangeEvent(PanelMessages.PROFILE_CHANGED);
+    }
+
+    private void updateAvergeProfileIfNeeded() {
+        //The parent AverageSampleProfile No needs to be updated if <10N
         if (profile instanceof SampleProfile && !(profile instanceof AverageProfile)) {
             AverageSampleProfile avProfile = (AverageSampleProfile) profile.getParent();
             //This function will update the AverageSampleProfile No if it is <10N
@@ -186,7 +193,6 @@ public class LrePlot extends javax.swing.JPanel {
                 db.saveObject(avProfile);
             }
         }
-        universalLookup.fireChangeEvent(PanelMessages.PROFILE_CHANGED);
     }
 
     /**
@@ -573,16 +579,16 @@ private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
     LreWindowSelectionParameters selectionParameters = l.get(0);
     lreAnalService.conductAutomatedLreWindowSelection(profile, selectionParameters);
-    if (profile.hasAnLreWindowBeenFound()) {
-        processModifiedLreWindow();
-    } else {
-        universalLookup.fireChangeEvent(PanelMessages.PROFILE_CHANGED);
-    }
+    updateAvergeProfileIfNeeded();
+//Profile has been changed and therefore needs to be saved and the ProfileSummary updated
+     db.saveObject(profile);
+    ProfileInitializer.updateProfileSummary(prfSum);
+    universalLookup.fireChangeEvent(PanelMessages.PROFILE_CHANGED);
 }//GEN-LAST:event_resetButtonActionPerformed
 
     /**
-     * Three elements: the LRE line (axis to axis), the LRE window Fc-Ec and the
-     * profile FcEc with early cycles trimmed away
+     * Three elements: the LRE line (axis to axis), the LRE window Fc-Ec points and the
+     * profile FcEc points with early and late cycles trimmed away
      */
     @Override
     public void paintComponent(Graphics g) {

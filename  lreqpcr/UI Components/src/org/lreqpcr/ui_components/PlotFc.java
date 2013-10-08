@@ -75,8 +75,8 @@ public class PlotFc extends javax.swing.JPanel {
             repaint();
         }
     }
-    
-    private void clearFbLabels(){
+
+    private void clearFbLabels() {
         fbDisplay.setText("");
         fbSlopeDisplay.setText("");
         fbLabel.setVisible(false);
@@ -192,14 +192,19 @@ public class PlotFc extends javax.swing.JPanel {
         zeroCycle = prfSum.getZeroCycle();
         strCycle = prfSum.getStrCycle();
         profile = prfSum.getProfile();
-        prfFmax = profile.getEmax() / -profile.getDeltaE();
         lreWinSize = profile.getLreWinSize();
         DecimalFormat df = new DecimalFormat();
-        df.applyPattern(FormatingUtilities.decimalFormatPattern(profile.getNrFb()));
-        fbDisplay.setText(df.format(profile.getNrFb()));
+        if (profile.didNonlinearRegressionSucceed()) {
+            df.applyPattern(FormatingUtilities.decimalFormatPattern(profile.getNrFb()));
+            fbDisplay.setText(df.format(profile.getNrFb()));
+            df.applyPattern(FormatingUtilities.decimalFormatPattern(profile.getNrFbSlope()));
+            fbSlopeDisplay.setText(df.format(profile.getNrFbSlope()));
+        } else {
+            df.applyPattern(FormatingUtilities.decimalFormatPattern(profile.getFb()));
+            fbDisplay.setText(df.format(profile.getFb()));
+            fbSlopeDisplay.setText("n.d.");
+        }
         fbLabel.setVisible(true);
-        df.applyPattern(FormatingUtilities.decimalFormatPattern(profile.getNrFbSlope()));
-        fbSlopeDisplay.setText(df.format(profile.getNrFbSlope()));
         fbSlopeLabel.setVisible(true);
         df.applyLocalizedPattern("0.00");
         if (profile.getMidC() > 0) {
@@ -207,6 +212,9 @@ public class PlotFc extends javax.swing.JPanel {
         } else {
             graphTitle.setText("C1/2 = n.d.");
         }
+
+
+
         df.applyPattern("0.0000");
         //Need to determine scale for Fc (Y-axis)
         if (profile.getRun() instanceof CalibrationRun) {

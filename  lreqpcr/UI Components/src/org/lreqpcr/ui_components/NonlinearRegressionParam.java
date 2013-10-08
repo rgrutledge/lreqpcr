@@ -40,10 +40,22 @@ public class NonlinearRegressionParam extends javax.swing.JPanel {
 
     public void updateDisplay(ProfileSummary prfSum) {
         profile = prfSum.getProfile();
-        if(profile.isExcluded()){
+//        if(profile.isExcluded()){
+//            clearPanel();
+//            failureLabel.setText("Profile Excluded");
+//            return;
+//        }
+        if(!profile.didNonlinearRegressionSucceed()){
             clearPanel();
+            failureLabel.setVisible(true);
             return;
         }
+        failureLabel.setVisible(false);
+        foLabel.setVisible(true);
+        emaxLabel.setVisible(true);
+        fmaxLabel.setVisible(true);
+        fbLabel.setVisible(true);
+        fbslopeLabel.setVisible(true);
         String CV;
         df.applyPattern("#0.0%");
         CV = df.format(profile.getNrFoSD() / profile.getNrFo() * 100);
@@ -66,10 +78,15 @@ public class NonlinearRegressionParam extends javax.swing.JPanel {
     }
 
     void clearPanel() {
+        foLabel.setVisible(false);
         nrFoDisplay.setText("");
+        emaxLabel.setVisible(false);
         nrEmaxDisplay.setText("");
+        fmaxLabel.setVisible(false);
         nrFmaxDisplay.setText("");
+        fbLabel.setVisible(false);
         nrFbDisplay.setText("");
+        fbslopeLabel.setVisible(false);
         nrFbSlopeDisplay.setText("");
     }
 
@@ -82,41 +99,46 @@ public class NonlinearRegressionParam extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
+        foLabel = new javax.swing.JLabel();
         nrFoDisplay = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        emaxLabel = new javax.swing.JLabel();
         nrEmaxDisplay = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
+        fmaxLabel = new javax.swing.JLabel();
         nrFmaxDisplay = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
+        fbLabel = new javax.swing.JLabel();
         nrFbDisplay = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
+        fbslopeLabel = new javax.swing.JLabel();
         nrFbSlopeDisplay = new javax.swing.JLabel();
+        failureLabel = new javax.swing.JLabel();
 
         setBorder(javax.swing.BorderFactory.createTitledBorder(null, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.border.title"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new java.awt.Color(204, 0, 51))); // NOI18N
         setMaximumSize(new java.awt.Dimension(240, 117));
         setMinimumSize(new java.awt.Dimension(240, 117));
         setPreferredSize(new java.awt.Dimension(240, 117));
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.jLabel1.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(foLabel, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.foLabel.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(nrFoDisplay, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.nrFoDisplay.text")); // NOI18N
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.jLabel2.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(emaxLabel, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.emaxLabel.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(nrEmaxDisplay, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.nrEmaxDisplay.text")); // NOI18N
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.jLabel3.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(fmaxLabel, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.fmaxLabel.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(nrFmaxDisplay, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.nrFmaxDisplay.text")); // NOI18N
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel4, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.jLabel4.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(fbLabel, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.fbLabel.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(nrFbDisplay, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.nrFbDisplay.text")); // NOI18N
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel5, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.jLabel5.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(fbslopeLabel, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.fbslopeLabel.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(nrFbSlopeDisplay, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.nrFbSlopeDisplay.text")); // NOI18N
+
+        failureLabel.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        failureLabel.setForeground(new java.awt.Color(204, 0, 51));
+        org.openide.awt.Mnemonics.setLocalizedText(failureLabel, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.failureLabel.text")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -125,57 +147,64 @@ public class NonlinearRegressionParam extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(nrFoDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING))
+                            .addComponent(fmaxLabel)
+                            .addComponent(emaxLabel, javax.swing.GroupLayout.Alignment.LEADING))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(nrFmaxDisplay)
-                            .addComponent(nrEmaxDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)))
+                            .addComponent(nrEmaxDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel4)
+                        .addComponent(fbLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(nrFbDisplay))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel5)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(fbslopeLabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(nrFbSlopeDisplay)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(foLabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(nrFoDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 44, Short.MAX_VALUE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(nrFbSlopeDisplay)))
-                .addGap(0, 151, Short.MAX_VALUE))
+                        .addComponent(failureLabel)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
+                    .addComponent(emaxLabel)
                     .addComponent(nrEmaxDisplay))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(nrFoDisplay))
+                    .addComponent(foLabel)
+                    .addComponent(nrFoDisplay)
+                    .addComponent(failureLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
+                    .addComponent(fmaxLabel)
                     .addComponent(nrFmaxDisplay))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
+                    .addComponent(fbLabel)
                     .addComponent(nrFbDisplay))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
+                    .addComponent(fbslopeLabel)
                     .addComponent(nrFbSlopeDisplay)))
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel emaxLabel;
+    private javax.swing.JLabel failureLabel;
+    private javax.swing.JLabel fbLabel;
+    private javax.swing.JLabel fbslopeLabel;
+    private javax.swing.JLabel fmaxLabel;
+    private javax.swing.JLabel foLabel;
     private javax.swing.JLabel nrEmaxDisplay;
     private javax.swing.JLabel nrFbDisplay;
     private javax.swing.JLabel nrFbSlopeDisplay;
