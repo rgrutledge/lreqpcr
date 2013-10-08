@@ -44,7 +44,7 @@ public class LreObjectChildren extends Children.Keys<LreObject> {
     public LreActionFactory nodeActionFactory;
     public LabelFactory nodeLabelFactory;
     public Action[] actions;
-    private Comparator customComparator;//For sorting of the children nodes
+    protected Comparator customComparator;//For sorting of the children nodes
 
     /**
      * Generates children nodes containing the provided List of LRE objects.

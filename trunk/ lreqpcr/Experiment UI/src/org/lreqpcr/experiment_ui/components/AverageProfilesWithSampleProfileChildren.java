@@ -31,7 +31,7 @@ import org.openide.nodes.Node;
 import org.openide.util.lookup.Lookups;
 
 /**
- * Displays a list of AverageSampleProfile with replicate SampleProfiles as children. 
+ * Displays a list of AverageSampleProfile with replicate SampleProfileChildren as children. 
  *
  * @author Bob Rutledge
  */
@@ -62,7 +62,7 @@ public class AverageProfilesWithSampleProfileChildren extends LreObjectChildren{
             }
         }
 //SampleProfiles are retrieved from the AverageSampleProfile rather than searching the database
-        LreNode node = new LreNode(new SampleProfiles(mgr, db, 
+        LreNode node = new LreNode(new SampleProfileChildren(mgr, db, 
                 avSampleProfile.getReplicateProfileList(),
                 nodeActionFactory, nodeLabelFactory),
                     Lookups.singleton(avSampleProfile), actions);

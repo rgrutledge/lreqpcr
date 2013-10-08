@@ -17,6 +17,8 @@
 package org.lreqpcr.experiment_ui.components;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import javax.swing.Action;
 import org.lreqpcr.core.data_objects.AverageProfile;
@@ -43,7 +45,7 @@ public class RunsWithSampleProfileChildren extends LreObjectChildren {
 
     /**
      * Generates AverageProfile nodes for a Run.
-     * 
+     *
      * @param mgr the manager of the view
      * @param db the experiment database that is being viewed
      * @param runList list of Runs to be displayed
@@ -57,7 +59,7 @@ public class RunsWithSampleProfileChildren extends LreObjectChildren {
 
     /**
      * Displays a list of Runs with AverageProfile as their children.
-     * 
+     *
      * @param lreObject
      * @return the new node
      */
@@ -74,18 +76,19 @@ public class RunsWithSampleProfileChildren extends LreObjectChildren {
             }
         }
         List<AverageProfile> avProfileList = run.getAverageProfileList();
+
         List<SampleProfile> samplePrfList = new ArrayList<SampleProfile>();
         //Must cast to AverageSampleProfile
-        for (AverageProfile avPrf : avProfileList){
+        for (AverageProfile avPrf : avProfileList) {
             AverageSampleProfile avSamplePrf = (AverageSampleProfile) avPrf;
-            for (SampleProfile prf : avSamplePrf.getReplicateProfileList()){
-            samplePrfList.add(prf);
+            for (SampleProfile prf : avSamplePrf.getReplicateProfileList()) {
+                samplePrfList.add(prf);
             }
         }
-         LreNode node = new LreNode(new SampleProfiles(mgr, db, 
+        LreNode node = new LreNode(new SampleProfileChildren(mgr, db,
                 samplePrfList,
                 nodeActionFactory, nodeLabelFactory),
-                    Lookups.singleton(run), actions);
+                Lookups.singleton(run), actions);
         node.setExplorerManager(mgr);
         node.setDatabaseService(db);
         node.setName(lreObject.getName());

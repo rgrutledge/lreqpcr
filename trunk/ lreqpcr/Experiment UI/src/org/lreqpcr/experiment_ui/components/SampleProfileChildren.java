@@ -16,6 +16,7 @@
  */
 package org.lreqpcr.experiment_ui.components;
 
+import java.util.Comparator;
 import java.util.List;
 import javax.swing.Action;
 import org.lreqpcr.core.data_objects.LreObject;
@@ -35,15 +36,29 @@ import org.openide.util.lookup.Lookups;
  * 
  * @author Bob Rutledge
  */
-public class SampleProfiles extends LreObjectChildren {
+public class SampleProfileChildren extends LreObjectChildren {
 
-    public SampleProfiles(ExplorerManager mgr, DatabaseServices db, List<? extends SampleProfile>
+    public SampleProfileChildren(ExplorerManager mgr, DatabaseServices db, List<? extends SampleProfile>
             sampleProfileList, LreActionFactory actionFactory, LabelFactory labelFactory) {
         super(mgr, db, sampleProfileList, actionFactory, labelFactory);
+        setCustomComparator(new Comparator<SampleProfile>() {
+
+            public int compare(SampleProfile prf1, SampleProfile prf2) {
+                if (prf1.getWellNumber() > prf2.getWellNumber()){
+                    return 1;
+                }else {
+                    if (prf1.getWellNumber() < prf2.getWellNumber()){
+                        return -1;
+                    }
+                }
+                return 0;
+            }
+        }
+                );
     }
 
     /**
-     * Creates SampleProfile nodes from the member list of SampleProfiles.
+     * Creates SampleProfile nodes from the member list of SampleProfileChildren.
      *
      * @param lreObject
      * @return

@@ -15,6 +15,9 @@
             <file name="ProfileEditorAction.shadow">
                 <attr name="originalFile" stringvalue="Actions/Window/org-lreqpcr-profile_editor-ProfileEditorAction.instance"/>
             </file>
+            <folder name="Web">
+                <file name="org-netbeans-core-actions-HTMLViewAction.shadow_hidden"/>
+            </folder>
         </folder>
     </folder>
     <folder name="Windows2">
