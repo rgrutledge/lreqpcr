@@ -63,6 +63,7 @@ public class NonlinearRegressionProvider extends NonlinearRegressionServices {
         paramArray[3] = iniParam.getFmax();//LRE-derived Fmax
         paramArray[4] = iniParam.getFbSlope();//Baseline slope 
         initialParam.setData(paramArray);
+        //Returns true even when the NR fails!!!
         fitter.optimize(initialParam, cycle, fc);
         //Retrieve and set the optimized parameters
         double[] optParamArray = fitter.getOptimizedParameters().getData();

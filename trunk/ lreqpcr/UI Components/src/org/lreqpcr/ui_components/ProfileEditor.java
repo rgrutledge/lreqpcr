@@ -89,7 +89,7 @@ public class ProfileEditor extends JPanel implements
                 lreWindowSelectionParameters = l.get(0);
             }
         }
-        //Diable the NR parameter window for distribution of this version as it could unnecessarily confuse the user 
+  //Diable the NR parameter window for distribution of this version as it could unnecessarily confuse the user***********************************
 //        curveFittingParam1.setVisible(false);
     }
 
@@ -98,9 +98,9 @@ public class ProfileEditor extends JPanel implements
         this.profile = profile;
 //Display and editing of a profile is conducted through the ProfileSummary interface
         prfSum = ProfileInitializer.constructProfileSummary(profile);
-        if (profile.hasAnLreWindowBeenFound()) {
+        if (profile.hasAnLreWindowBeenFound() && !profile.isExcluded()) {
             updatePanels();
-        } else {//LRE window not found
+        } else {//LRE window not found or the Profile is excluded
             plotFo.clearPlot();
             plotLREs.clearPlot();
             plotFc.iniPlot(prfSum);

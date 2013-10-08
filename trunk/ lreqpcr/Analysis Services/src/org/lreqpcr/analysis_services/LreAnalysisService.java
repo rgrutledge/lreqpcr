@@ -50,5 +50,5 @@ public abstract interface LreAnalysisService {
      * 
      * @param profile the profile to be updated 
      */ 
-    public abstract void updateProfile(Profile profile);
+    public abstract boolean updateProfile(Profile profile);
 }

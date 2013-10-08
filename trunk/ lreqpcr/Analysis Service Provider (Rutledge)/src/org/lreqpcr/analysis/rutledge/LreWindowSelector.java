@@ -91,7 +91,6 @@ public class LreWindowSelector {
                     regressionValues[1]));
             runner = runner.getNextCycle();
         }
-        double fb = profile.getFb();
         /*-----Finds start cycle based on the Cycle LRE r2-----*/
         Cycle strCycle;
         runner = cycZero.getNextCycle().getNextCycle().getNextCycle(); //Start at cycle 3
@@ -144,9 +143,9 @@ public class LreWindowSelector {
             profile.setHasAnLreWindowBeenFound(false);
             return;
         }
-        //Go back two cycles
-        runner = runner.getPrevCycle().getPrevCycle();
+        //Go back two cycles        
         try {
+            runner = runner.getPrevCycle().getPrevCycle();
             profile.setStrCycleInt(runner.getCycNum());
         } catch (Exception e) {
             //null point exception

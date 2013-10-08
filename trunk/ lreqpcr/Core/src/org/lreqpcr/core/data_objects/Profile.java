@@ -45,6 +45,7 @@ public abstract class Profile extends LreObject {
     private double[] fcReadings; //Processed Fc readings corrected for fluorescence background and baseline slope
     private double fb;//Average fluorescence background derived directly from the raw Fc readings
     private boolean hasAnLreWindowBeenFound;//Is this a flat profile or has any abberrancy that dissallows an LRE window to be located
+    private boolean didNonlinearRegressionSucceed;
     private int strCycleInt; //LRE window start cycle
     private int lreWinSize; //LRE window size
     private double eMax, deltaE, r2;//Linear regression values for the LRE window
@@ -211,7 +212,7 @@ public abstract class Profile extends LreObject {
     }
 
     public double getFmax() {
-        if (!isExcluded() && hasAnLreWindowBeenFound) {
+        if (hasAnLreWindowBeenFound) {
             return eMax / -(deltaE);
         }
         return 0;
@@ -392,10 +393,22 @@ public abstract class Profile extends LreObject {
     /**
      * Indicates whether a this is a valid Profile.
      *
-     * @param hasAnLreWindowFound indicates whether an LRE window has been found
+     * @param hasAnLreWindowBeenFound indicates whether an LRE window has been found
      */
-    public void setHasAnLreWindowBeenFound(boolean hasAnLreWindowFound) {
-        this.hasAnLreWindowBeenFound = hasAnLreWindowFound;
+    public void setHasAnLreWindowBeenFound(boolean hasAnLreWindowBeenFound) {
+        this.hasAnLreWindowBeenFound = hasAnLreWindowBeenFound;
+    }
+
+    /**
+     * Indicates whether nonlinear regression analysis was successful 
+     * @return false if nonlinear regression has not been applied
+     */
+    public boolean didNonlinearRegressionSucceed() {
+        return didNonlinearRegressionSucceed;
+    }
+
+    public void setWasNonlinearRegressionSuccessful(boolean didNonlinearRegressionSucceed) {
+        this.didNonlinearRegressionSucceed = didNonlinearRegressionSucceed;
     }
 
     /**
@@ -518,7 +531,7 @@ public abstract class Profile extends LreObject {
         this.nrFoSD = nrFoSD;
     }
     
-    public void setNrVariablesToZero(){
+    public void setLreVariablesToZero(){
         nrEmax = 0;
         nrEmaxSD = 0;
         nrFb = 0;
@@ -529,6 +542,15 @@ public abstract class Profile extends LreObject {
         nrFmaxSD = 0;
         nrFo = 0;
         nrFoSD = 0;
+        eMax = 0;
+        deltaE = 0;
+        r2 = 0;
+        avFo = 0;
+        avFoCV = 0;
+        midC = 0;
+        strCycleInt = 0;
+        lreWinSize = 0;
+        hasAnLreWindowBeenFound = false;
     }
 
     @Override
