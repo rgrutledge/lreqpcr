@@ -100,6 +100,8 @@ public final class CalibrationTopComponent extends TopComponent
         if (calibrationDB != null) {
             UniversalLookup.getDefault().add(DatabaseType.CALIBRATION, calibrationDB);
         }
+//Deactivate the profile export button as this is not implemented...use Amplicon Overview panel instead
+        exportProfilesButton.setVisible(false);
     }
 
     /** This method is called from within the constructor to

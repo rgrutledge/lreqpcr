@@ -49,32 +49,6 @@ public class CalbnTreeNodeLabels implements LabelFactory {
             String fmaxCV = df.format(run.getAvFmaxCV() * 100);
             return sdf.format(run.getRunDate()) + ": Av Fmax= "
                     + avFmaxString + " ±" + fmaxCV + "%";
-
-//            run.setShortDescription(" [Av Fmax: " + avFmaxString + " ±" + fmaxCV + "%]");
-            //Recalculate the Run avOCF
-            //This is not expected to impact performance
-            //Display Run's average OCF
-//            if (run.getAvOCF() != 0) {
-//                double avOCF = run.getAvOCF();
-//                df.applyPattern(FormatingUtilities.decimalFormatPattern(avOCF));
-//                String avOCFstring = df.format(avOCF);
-//                df.applyPattern("#0");
-//                String ocfCV = df.format(run.getAvOcfCV() * 100);
-            //Determine if Fmax normalization has been applied
-//                CalibrationProfile calPrf = (CalibrationProfile) run.getAverageProfileList().get(0);
-//                String fmaxNormld = "";
-//                if (calPrf.isOcfNormalizedToFmax()) {
-//                    fmaxNormld = "*";
-//                }
-//                if (run.getAvOcfCV() != 0) {
-
-//                } else {
-//                    return sdf.format(run.getRunDate()) + "-" + member.getName() + ":  Av OCF= "
-//                            + avOCFstring + fmaxNormld;
-//                }
-//            } else {
-//                return sdf.format(run.getRunDate()) + " Run Av OCF not available";
-//            }
         }
 //Must be a CalibrationProfile
         CalibrationProfile calbrnProfile = (CalibrationProfile) member;

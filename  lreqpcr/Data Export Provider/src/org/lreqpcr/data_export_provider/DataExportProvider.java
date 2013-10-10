@@ -19,12 +19,14 @@ package org.lreqpcr.data_export_provider;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import jxl.write.WriteException;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
+import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.data_objects.SampleProfile;
@@ -73,48 +75,76 @@ public class DataExportProvider implements DataExportServices {
     
     private void exportSampleProfiles(HashMap<String, List<SampleProfile>> groupList){
          try {
-            SampleProfileDataExcelDataExport.exportProfiles(groupList);
+            SampleProfileExcelDataExport.exportProfiles(groupList);
         } catch (Exception ex) {
             Exceptions.printStackTrace(ex);
         }
-    }
-
-    public void exportAverageCalibrationProfiles(HashMap<String, List<AverageCalibrationProfile>> groupList) {
-        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     public void exportAverageSampleProfiles(HashMap<String, List<AverageSampleProfile>> groupList) {
         try {
-            ExcelAverageSampleProfileDataExport.exportProfiles(groupList);
+//Need to convert to HashMap with List<SampleProfile> in order to use the generic SampleProfile Excel export function
+            HashMap<String, List<SampleProfile>> sampleProfileMap = new HashMap<String, List<SampleProfile>>();
+            List<String> keyList = new ArrayList<String>(groupList.keySet());
+            for (String key : keyList){
+                List<AverageSampleProfile> avPrfList = groupList.get(key);
+                //Convert to a list of SampleProfiles
+                List<SampleProfile> samplePrfList = new ArrayList<SampleProfile>();
+                for (AverageSampleProfile prf : avPrfList){
+                    samplePrfList.add(prf);
+                }
+                sampleProfileMap.put(key, samplePrfList);
+            }
+            SampleProfileExcelDataExport.exportProfiles(sampleProfileMap);
         } catch (Exception ex) {
-            Exceptions.printStackTrace(ex);
-        }
-    }
-
-    public void exportAverageCalibrationProfiles(List<AverageCalibrationProfile> profileList) {
-        try {
-            ExcelCalibrationProfileExport.exportCalibrationProfiles(profileList);
-        } catch (WriteException ex) {
-            Exceptions.printStackTrace(ex);
-        } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
         }
     }
     
     public void exportReplicateSampleProfiles(HashMap<String, List<SampleProfile>> groupList) {
         try {
-            ExcelSampleProfileDataExport.exportProfiles(groupList);
+            SampleProfileExcelDataExport.exportProfiles(groupList);
+        } catch (Exception ex) {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+    
+    public void exportAverageCalibrationProfiles(HashMap<String, List<AverageCalibrationProfile>> groupList) {
+        try {
+//Need to convert to HashMap with List<SampleProfile> in order to use the generic SampleProfile Excel export function
+            HashMap<String, List<CalibrationProfile>> calibrationProfileMap = new HashMap<String, List<CalibrationProfile>>();
+            List<String> keyList = new ArrayList<String>(groupList.keySet());
+            for (String key : keyList){
+                List<AverageCalibrationProfile> avPrfList = groupList.get(key);
+                //Convert to a list of SampleProfiles
+                List<CalibrationProfile> calPrfList = new ArrayList<CalibrationProfile>();
+                for (AverageCalibrationProfile prf : avPrfList){
+                    calPrfList.add(prf);
+                }
+                calibrationProfileMap.put(key, calPrfList);
+            }
+            CalibrationProfileExcelDataExport.exportProfiles(calibrationProfileMap);
         } catch (Exception ex) {
             Exceptions.printStackTrace(ex);
         }
     }
 
-    public void exportReplicateCalibrationProfiles(List<AverageCalibrationProfile> profileList) {
+    public void exportReplicateCalibrationProfiles(HashMap<String, List<CalibrationProfile>> groupList) {
+        try {
+            CalibrationProfileExcelDataExport.exportProfiles(groupList);
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+        } catch (WriteException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+    
+    public void exportAverageCalibrationProfiles(List<AverageCalibrationProfile> profileList) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    public void exportReplicateCalibrationProfiles(HashMap<String, List<AverageCalibrationProfile>> profileList) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public void exportReplicateCalibrationProfiles(List<AverageCalibrationProfile> profileList) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
