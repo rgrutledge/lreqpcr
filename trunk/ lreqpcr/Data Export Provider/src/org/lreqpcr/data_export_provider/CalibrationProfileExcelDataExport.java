@@ -20,6 +20,7 @@ import java.awt.Desktop;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,8 +33,10 @@ import jxl.format.BorderLineStyle;
 import jxl.format.Colour;
 import jxl.write.*;
 import jxl.write.Number;
-import org.lreqpcr.core.data_objects.AverageSampleProfile;
-import org.lreqpcr.core.data_objects.SampleProfile;
+import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
+import org.lreqpcr.core.data_objects.AverageProfile;
+import org.lreqpcr.core.data_objects.CalibrationProfile;
+import org.lreqpcr.core.utilities.FormatingUtilities;
 import org.lreqpcr.core.utilities.IOUtilities;
 import org.openide.windows.WindowManager;
 
@@ -41,13 +44,14 @@ import org.openide.windows.WindowManager;
  *
  * @author Bob Rutledge
  */
-public class SampleProfileDataExcelDataExport {
+public class CalibrationProfileExcelDataExport {
 
     /**
      * Generic data export for both replicate and average profiles
      */
     @SuppressWarnings("unchecked")
-    public static void exportProfiles(HashMap<String, List<SampleProfile>> groupList) throws IOException, WriteException {
+    public static void exportProfiles(HashMap<String, List<CalibrationProfile>> groupList) throws IOException, WriteException {
+        DecimalFormat df = new DecimalFormat();
         //Setup the the workbook based on the file choosen by the user
         File selectedFile = IOUtilities.newExcelFile();
         if (selectedFile == null) {
@@ -114,63 +118,75 @@ public class SampleProfileDataExcelDataExport {
             }
             WritableSheet sheet = workbook.createSheet(pageName, pageCounter);
 
+            int startRow = 3;
             Label label = new Label(1, 0, "Name:", boldRight);
             sheet.addCell(label);
-            label = new Label(0, 2, "Run Date", centerBoldUnderline);
+            label = new Label(0, startRow, "Run Date", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(1, 2, "Amplicon", centerBoldUnderline);
+            label = new Label(1, startRow, "Amplicon", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(2, 2, "Sample", centerBoldUnderline);
+            label = new Label(2, startRow, "Sample", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(3, 2, "No", centerBoldUnderline);
+            label = new Label(3, startRow, "OCF", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(4, 2, "Emax", centerBoldUnderline);
+            label = new Label(4, startRow, "Emax", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(5, 2, "C1/2", centerBoldUnderline);
+            label = new Label(5, startRow, "C1/2", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(6, 2, "Fmax", centerBoldUnderline);
+            label = new Label(6, startRow, "Fmax", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(7, 2, "Amp Tm", centerBoldUnderline);
+            label = new Label(7, startRow, "Run AvFmax", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(8, 2, "Amp Size", centerBoldUnderline);
+            label = new Label(8, startRow, "Amp Size", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(9, 2, "OCF", centerBoldUnderline);
+            label = new Label(9, startRow, "Amp Tm", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(10, 2, "Well", centerBoldUnderline);
+            label = new Label(10, startRow, "Well", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(11, 2, "Notes", centerBoldUnderline);
-            sheet.addCell(label);
-            int row = 3;
-            label = new Label(2, 0, pageName);
+            label = new Label(11, startRow, "Notes", centerBoldUnderline);
             sheet.addCell(label);
 
+
+            List<CalibrationProfile> profileList = groupList.get(pageName);
+            //Setup the workbook name label
+            String name;
+            if (profileList.get(0) instanceof AverageProfile) {
+                name = pageName + "  (Average Profiles)";
+            } else {
+                name = pageName + "  (Replicate Profiles)";
+            }
+            label = new Label(2, 0, name);
+            sheet.addCell(label);
+
+            int row = startRow + 1;
             Number number;
             DateFormat customDateFormat = new DateFormat("ddMMMyy");
-
-            List<SampleProfile> profileList = groupList.get(pageName);
             Collections.sort(profileList);
-            for (SampleProfile sampleProfile : profileList) {
-                if (sampleProfile.isTargetQuantityNormalizedToFmax()) {
-                    label = new Label(2, 1, "Target quantities are normalized to the run's average Fmax", boldLeft);
+            for (CalibrationProfile calibrationProfile : profileList) {
+                if (calibrationProfile.isOcfNormalizedToFmax()) {
+                    double avRunFmax = calibrationProfile.getRun().getAverageFmax();
+                    df.applyPattern(FormatingUtilities.decimalFormatPattern(avRunFmax));
+                    String avFmaxMessage = "OCF values are normalized to their Run's average Fmax";
+                    label = new Label(2, 1, avFmaxMessage, boldLeft);
                     sheet.addCell(label);
                 }
                 WritableCellFormat dateFormat = new WritableCellFormat(customDateFormat);
                 dateFormat.setAlignment(Alignment.CENTRE);
-                DateTime dateCell = new DateTime(0, row, sampleProfile.getRunDate(), dateFormat);
+                DateTime dateCell = new DateTime(0, row, calibrationProfile.getRunDate(), dateFormat);
                 sheet.addCell(dateCell);
-                label = new Label(1, row, sampleProfile.getAmpliconName());
+                label = new Label(1, row, calibrationProfile.getAmpliconName());
                 sheet.addCell(label);
-                label = new Label(2, row, sampleProfile.getSampleName());
+                label = new Label(2, row, calibrationProfile.getSampleName());
                 sheet.addCell(label);
-                if (sampleProfile.isExcluded()) {
+                if (calibrationProfile.isExcluded()) {
                     //All replicate profiles have been excluded
                     label = new Label(3, row, "nd", center);
                     sheet.addCell(label);
-                    label = new Label(10, row, sampleProfile.getWellLabel());
+                    label = new Label(10, row, calibrationProfile.getWellLabel());
                     sheet.addCell(label);
                     String s;
-                    if (sampleProfile.getLongDescription() != null) {
-                        s = "EXCLUDED " + sampleProfile.getLongDescription();
+                    if (calibrationProfile.getLongDescription() != null) {
+                        s = "EXCLUDED " + calibrationProfile.getLongDescription();
                     } else {
                         s = "EXCLUDED ";
                     }
@@ -179,40 +195,37 @@ public class SampleProfileDataExcelDataExport {
                     row++;
                     continue;
                 } else {
-                    number = new Number(3, row, sampleProfile.getNo(), integerFormat);
+                    number = new Number(3, row, calibrationProfile.getOCF(), integerFormat);
                     sheet.addCell(number);
                 }
-                number = new Number(4, row, sampleProfile.getEmax(), percentFormat);
+                number = new Number(4, row, calibrationProfile.getEmax(), percentFormat);
                 sheet.addCell(number);
-                if (sampleProfile.getMidC() != 0) {
-                    number = new Number(5, row, sampleProfile.getMidC(), floatFormat);
+                if (calibrationProfile.getMidC() != 0) {
+                    number = new Number(5, row, calibrationProfile.getMidC(), floatFormat);
                     sheet.addCell(number);
                 }
-                if (sampleProfile.getEmax() != 0) {
-                    double fmax = (sampleProfile.getEmax() / sampleProfile.getDeltaE()) * -1;
+                if (calibrationProfile.getFmax() != 0) {
+                    double fmax = calibrationProfile.getFmax();
                     number = new Number(6, row, fmax, floatFormat);
                     sheet.addCell(number);
                 }
-                if (sampleProfile.getAmpTm() != 0) {
-                    number = new Number(7, row, sampleProfile.getAmpTm(), floatFormat);
+                number = new Number(7, row, calibrationProfile.getRun().getAverageFmax(), floatFormat);
+                sheet.addCell(number);
+                number = new Number(8, row, calibrationProfile.getAmpliconSize(), integerFormat);
+                sheet.addCell(number);
+                if (calibrationProfile.getAmpTm() != 0) {
+                    number = new Number(9, row, calibrationProfile.getAmpTm(), floatFormat);
                     sheet.addCell(number);
                 }
-                number = new Number(8, row, sampleProfile.getAmpliconSize(), integerFormat);
-                sheet.addCell(number);
-                number = new Number(9, row, sampleProfile.getOCF(), floatFormat);
-                sheet.addCell(number);
-                if (sampleProfile instanceof AverageSampleProfile) {
-                    //R
-                }
-                if (sampleProfile instanceof AverageSampleProfile) {
+                if (calibrationProfile instanceof AverageProfile) {
                     label = new Label(10, row, "Multiple", center);
                     sheet.addCell(label);
                 } else {
-                    label = new Label(10, row, sampleProfile.getWellLabel(), center);
+                    label = new Label(10, row, calibrationProfile.getWellLabel(), center);
                     sheet.addCell(label);
                 }
-                if (sampleProfile.getLongDescription() != null) {
-                    label = new Label(11, row, sampleProfile.getLongDescription());
+                if (calibrationProfile.getLongDescription() != null) {
+                    label = new Label(11, row, calibrationProfile.getLongDescription());
                     sheet.addCell(label);
                 }
                 row++;

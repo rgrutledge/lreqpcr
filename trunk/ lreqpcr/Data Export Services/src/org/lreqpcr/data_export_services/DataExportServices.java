@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
+import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.data_objects.SampleProfile;
 
@@ -61,5 +62,5 @@ public interface DataExportServices {
     
     public void exportAverageCalibrationProfiles(HashMap<String, List<AverageCalibrationProfile>> profileList);
     
-    public void exportReplicateCalibrationProfiles(HashMap<String, List<AverageCalibrationProfile>> profileList);
+    public void exportReplicateCalibrationProfiles(HashMap<String, List<CalibrationProfile>> profileList);
 }

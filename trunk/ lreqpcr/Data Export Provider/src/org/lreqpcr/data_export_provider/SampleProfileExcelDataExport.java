@@ -20,6 +20,7 @@ import java.awt.Desktop;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,7 +33,10 @@ import jxl.format.BorderLineStyle;
 import jxl.format.Colour;
 import jxl.write.*;
 import jxl.write.Number;
+import org.lreqpcr.core.data_objects.AverageProfile;
+import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.SampleProfile;
+import org.lreqpcr.core.utilities.FormatingUtilities;
 import org.lreqpcr.core.utilities.IOUtilities;
 import org.openide.windows.WindowManager;
 
@@ -40,14 +44,14 @@ import org.openide.windows.WindowManager;
  *
  * @author Bob Rutledge
  */
-public class ExcelSampleProfileDataExport {
+public class SampleProfileExcelDataExport {
 
     /**
-     *
+     * Generic data export for both replicate and average profiles
      */
-    // TODO JavaDoc text
     @SuppressWarnings("unchecked")
     public static void exportProfiles(HashMap<String, List<SampleProfile>> groupList) throws IOException, WriteException {
+        DecimalFormat df = new DecimalFormat();
         //Setup the the workbook based on the file choosen by the user
         File selectedFile = IOUtilities.newExcelFile();
         if (selectedFile == null) {
@@ -114,46 +118,55 @@ public class ExcelSampleProfileDataExport {
             }
             WritableSheet sheet = workbook.createSheet(pageName, pageCounter);
 
+            int startRow = 3;
             Label label = new Label(1, 0, "Name:", boldRight);
             sheet.addCell(label);
-            label = new Label(0, 2, "Run Date", centerBoldUnderline);
+            label = new Label(0, startRow, "Run Date", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(1, 2, "Amplicon", centerBoldUnderline);
+            label = new Label(1, startRow, "Amplicon", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(2, 2, "Sample", centerBoldUnderline);
+            label = new Label(2, startRow, "Sample", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(3, 2, "No", centerBoldUnderline);
+            label = new Label(3, startRow, "No", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(4, 2, "Emax", centerBoldUnderline);
+            label = new Label(4, startRow, "Emax", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(5, 2, "LRE Emax", centerBoldUnderline);
+            label = new Label(5, startRow, "C1/2", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(6, 2, "C1/2", centerBoldUnderline);
+            label = new Label(6, startRow, "Fmax", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(7, 2, "Fmax", centerBoldUnderline);
+            //**************************************************
+            label = new Label(7, startRow, "Run AvFmax", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(8, 2, "Amp Tm", centerBoldUnderline);
+            label = new Label(8, startRow, "OCF", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(9, 2, "Amp Size", centerBoldUnderline);
+            label = new Label(9, startRow, "Amp Size", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(10, 2, "OCF", centerBoldUnderline);
+            label = new Label(10, startRow, "Amp Tm", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(11, 2, "Well", centerBoldUnderline);
+            label = new Label(11, startRow, "Well", centerBoldUnderline);
             sheet.addCell(label);
-            label = new Label(12, 2, "Notes", centerBoldUnderline);
+            label = new Label(12, startRow, "Notes", centerBoldUnderline);
             sheet.addCell(label);
-            int row = 3;
-            label = new Label(2, 0, pageName);
-            sheet.addCell(label);
-
-            Number number;
-            DateFormat customDateFormat = new DateFormat("ddMMMyy");
 
             List<SampleProfile> profileList = groupList.get(pageName);
+            //Setup the workbook name label
+            String name;
+            if (profileList.get(0) instanceof AverageProfile) {
+                name = pageName + "  (Average Profiles)";
+            } else {
+                name = pageName + "  (Replicate Profiles)";
+            }
+            label = new Label(2, 0, name);
+            sheet.addCell(label);
             Collections.sort(profileList);
+            int row = startRow + 1;
+            DateFormat customDateFormat = new DateFormat("ddMMMyy");
+            Number number;
             for (SampleProfile sampleProfile : profileList) {
                 if (sampleProfile.isTargetQuantityNormalizedToFmax()) {
-                    label = new Label(2, 1, "Target quantities are normalized to the run's average Fmax", boldLeft);
+                    String avFmaxMessage = "Target quantities are normalized to their Run's average Fmax";
+                    label = new Label(2, 1, avFmaxMessage, boldLeft);
                     sheet.addCell(label);
                 }
                 WritableCellFormat dateFormat = new WritableCellFormat(customDateFormat);
@@ -168,7 +181,7 @@ public class ExcelSampleProfileDataExport {
                     //All replicate profiles have been excluded
                     label = new Label(3, row, "nd", center);
                     sheet.addCell(label);
-                    label = new Label(11, row, sampleProfile.getWellLabel());
+                    label = new Label(10, row, sampleProfile.getWellLabel());
                     sheet.addCell(label);
                     String s;
                     if (sampleProfile.getLongDescription() != null) {
@@ -176,7 +189,7 @@ public class ExcelSampleProfileDataExport {
                     } else {
                         s = "EXCLUDED ";
                     }
-                    label = new Label(12, row, s);
+                    label = new Label(11, row, s);
                     sheet.addCell(label);
                     row++;
                     continue;
@@ -184,29 +197,37 @@ public class ExcelSampleProfileDataExport {
                     number = new Number(3, row, sampleProfile.getNo(), integerFormat);
                     sheet.addCell(number);
                 }
-                label = new Label(4, row, "LRE-derived");
-                sheet.addCell(label);
-                number = new Number(5, row, sampleProfile.getEmax(), percentFormat);
+                number = new Number(4, row, sampleProfile.getEmax(), percentFormat);
                 sheet.addCell(number);
                 if (sampleProfile.getMidC() != 0) {
-                    number = new Number(6, row, sampleProfile.getMidC(), floatFormat);
+                    number = new Number(5, row, sampleProfile.getMidC(), floatFormat);
                     sheet.addCell(number);
                 }
-                if (sampleProfile.getEmax() != 0) {
-                    double fmax = (sampleProfile.getEmax() / sampleProfile.getDeltaE()) * -1;
-                    number = new Number(7, row, fmax, floatFormat);
+                if (sampleProfile.getFmax() != 0) {
+                    double fmax = (sampleProfile.getFmax());
+                    number = new Number(6, row, fmax, floatFormat);
                     sheet.addCell(number);
                 }
-                if (sampleProfile.getAmpTm() != 0) {
-                    number = new Number(8, row, sampleProfile.getAmpTm(), floatFormat);
-                    sheet.addCell(number);
-                }
+                double runAvFmax = sampleProfile.getRun().getAverageFmax();
+                df.applyPattern(FormatingUtilities.decimalFormatPattern(runAvFmax));
+                String runAvFmaxString = df.format(runAvFmax);
+                label = new Label(7, row, runAvFmaxString, center);
+                sheet.addCell(label);
+                number = new Number(8, row, sampleProfile.getOCF(), floatFormat);
+                sheet.addCell(number);
                 number = new Number(9, row, sampleProfile.getAmpliconSize(), integerFormat);
                 sheet.addCell(number);
-                number = new Number(10, row, sampleProfile.getOCF(), floatFormat);
-                sheet.addCell(number);
-                label = new Label(11, row, sampleProfile.getWellLabel());
-                sheet.addCell(label);
+                if (sampleProfile.getAmpTm() != 0) {
+                    number = new Number(10, row, sampleProfile.getAmpTm(), floatFormat);
+                    sheet.addCell(number);
+                }
+                if (sampleProfile instanceof AverageSampleProfile) {
+                    label = new Label(11, row, "Multiple", center);
+                    sheet.addCell(label);
+                } else {
+                    label = new Label(11, row, sampleProfile.getWellLabel(), center);
+                    sheet.addCell(label);
+                }
                 if (sampleProfile.getLongDescription() != null) {
                     label = new Label(12, row, sampleProfile.getLongDescription());
                     sheet.addCell(label);
