@@ -14,12 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * and open the template in the editor.
  */
+package org.lreqpcr.calibration_ui.components;
 
-package org.lreqpcr.experiment_ui.components;
-
+import java.util.Comparator;
 import java.util.List;
 import javax.swing.Action;
-import org.lreqpcr.core.data_objects.AverageSampleProfile;
+import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LabelFactory;
@@ -27,32 +27,32 @@ import org.lreqpcr.core.ui_elements.LreActionFactory;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
 import org.openide.explorer.ExplorerManager;
+import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.lookup.Lookups;
 
 /**
- * Displays a list of AverageSampleProfile with replicate SampleProfileChildren as children. 
- *
+ * Generates child nodes for an AverageSampleProfile based on the supplied list
+ * of SampleProfiles
  * @author Bob Rutledge
  */
-public class AverageProfilesWithSampleProfileChildren extends LreObjectChildren{
+public class CalProfileNodes extends LreObjectChildren {
 
-    public AverageProfilesWithSampleProfileChildren(ExplorerManager mgr, DatabaseServices db,
-            List<AverageSampleProfile> avSampleProfileList,
-            LreActionFactory actionFactory, LabelFactory labelFactory) {
-        super(mgr, db, avSampleProfileList, actionFactory, labelFactory);
+    public CalProfileNodes(ExplorerManager mgr, DatabaseServices db, List<? extends CalibrationProfile>
+            calibrationProfileList, LreActionFactory actionFactory, LabelFactory labelFactory) {
+        super(mgr, db, calibrationProfileList, actionFactory, labelFactory);
     }
 
     /**
-     * Displays the AverageSampleProfiles contained within the supplied list
+     * Creates AverageCalibration Profile nodes with Calibration Profile children
      *
-     * @param the list of AverageSampleProfiles to be displayed
+     * @param lreObject
      * @return
      */
     @SuppressWarnings(value = "unchecked")
     @Override
     protected Node[] createNodes(LreObject lreObject) {
-        AverageSampleProfile avSampleProfile = (AverageSampleProfile) lreObject;
+        CalibrationProfile calProfile = (CalibrationProfile) lreObject;
         if (nodeActionFactory == null) {
             actions = new Action[]{};//i.e. no Actions have been set
         } else {
@@ -61,11 +61,7 @@ public class AverageProfilesWithSampleProfileChildren extends LreObjectChildren{
                 actions = new Action[]{};//i.e. there are no Actions for this Node
             }
         }
-//SampleProfiles are retrieved from the AverageSampleProfile rather than searching the database
-        LreNode node = new LreNode(new SampleProfileChildren(mgr, db, 
-                avSampleProfile.getReplicateProfileList(),
-                nodeActionFactory, nodeLabelFactory),
-                    Lookups.singleton(avSampleProfile), actions);
+        LreNode node = new LreNode(Children.LEAF, Lookups.singleton(calProfile), actions);
         node.setExplorerManager(mgr);
         node.setDatabaseService(db);
         node.setName(lreObject.getName());
@@ -77,5 +73,4 @@ public class AverageProfilesWithSampleProfileChildren extends LreObjectChildren{
         }
         return new Node[]{node};
     }
-
 }

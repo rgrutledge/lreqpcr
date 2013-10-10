@@ -72,7 +72,7 @@ public class NonlinearRegressionParam extends javax.swing.JPanel {
         df.applyPattern(FormatingUtilities.decimalFormatPattern(fb));
         nrFbDisplay.setText((df.format(profile.getNrFb()) + " ±" + CV));
         df.applyPattern("#0.0%");
-        CV = df.format(profile.getNrFbSlopeSD() / profile.getNrFbSlope()* 100);
+        CV = df.format(profile.getNrFbSlopeSD() / Math.abs(profile.getNrFbSlope())* 100);
         df.applyPattern(FormatingUtilities.decimalFormatPattern(profile.getNrFbSlope()));
         nrFbSlopeDisplay.setText(df.format(profile.getNrFbSlope()) + " ±" + CV);
     }

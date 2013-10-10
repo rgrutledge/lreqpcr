@@ -17,49 +17,45 @@
 package org.lreqpcr.experiment_ui.components;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import javax.swing.Action;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.data_objects.Run;
-import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LabelFactory;
 import org.lreqpcr.core.ui_elements.LreActionFactory;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
 import org.openide.explorer.ExplorerManager;
-import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.lookup.Lookups;
 
 /**
- * Displays Run nodes for the supplied list of Runs
+ * Run node with AverageSample Profile children
  *
  * @author Bob Rutledge
  */
-public class RunsWithSampleProfileChildren extends LreObjectChildren {
+public class RunNodesWithAvSampleProfileChildren extends LreObjectChildren {
 
     /**
      * Generates AverageProfile nodes for a Run.
-     *
+     * 
      * @param mgr the manager of the view
      * @param db the experiment database that is being viewed
      * @param runList list of Runs to be displayed
      * @param actionFactory the node action factory
      * @param labelFactory the node label factory
      */
-    public RunsWithSampleProfileChildren(ExplorerManager mgr, DatabaseServices db, List<? extends Run> runList,
+    public RunNodesWithAvSampleProfileChildren(ExplorerManager mgr, DatabaseServices db, List<? extends Run> runList,
             LreActionFactory actionFactory, LabelFactory labelFactory) {
         super(mgr, db, runList, actionFactory, labelFactory);
     }
 
     /**
      * Displays a list of Runs with AverageProfile as their children.
-     *
+     * 
      * @param lreObject
      * @return the new node
      */
@@ -76,19 +72,14 @@ public class RunsWithSampleProfileChildren extends LreObjectChildren {
             }
         }
         List<AverageProfile> avProfileList = run.getAverageProfileList();
-
-        List<SampleProfile> samplePrfList = new ArrayList<SampleProfile>();
+        List<AverageSampleProfile> avSamplePrfList = new ArrayList<AverageSampleProfile>();
         //Must cast to AverageSampleProfile
-        for (AverageProfile avPrf : avProfileList) {
+        for (AverageProfile avPrf : avProfileList){
             AverageSampleProfile avSamplePrf = (AverageSampleProfile) avPrf;
-            for (SampleProfile prf : avSamplePrf.getReplicateProfileList()) {
-                samplePrfList.add(prf);
-            }
+            avSamplePrfList.add(avSamplePrf);
         }
-        LreNode node = new LreNode(new SampleProfileChildren(mgr, db,
-                samplePrfList,
-                nodeActionFactory, nodeLabelFactory),
-                Lookups.singleton(run), actions);
+        LreNode node = new LreNode(new AvProfileNodesWithSampleProfileChildren(mgr, db, avSamplePrfList, nodeActionFactory, nodeLabelFactory),
+                Lookups.singleton(lreObject), actions);
         node.setExplorerManager(mgr);
         node.setDatabaseService(db);
         node.setName(lreObject.getName());
