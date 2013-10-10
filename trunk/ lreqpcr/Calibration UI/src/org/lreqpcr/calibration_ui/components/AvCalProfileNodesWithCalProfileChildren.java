@@ -63,7 +63,7 @@ public class AvCalProfileNodesWithCalProfileChildren extends LreObjectChildren{
             }
         }
 //SampleProfiles are retrieved from the AverageCalibration Profile rather than searching the database
-        LreNode node = new LreNode(new CalProfileNodes(mgr, db, 
+        LreNode node = new LreNode(new CalProfileNodesSortedByWell(mgr, db, 
                 avCalProfile.getReplicateProfileList(),
                 nodeActionFactory, nodeLabelFactory),
                     Lookups.singleton(avCalProfile), actions);
