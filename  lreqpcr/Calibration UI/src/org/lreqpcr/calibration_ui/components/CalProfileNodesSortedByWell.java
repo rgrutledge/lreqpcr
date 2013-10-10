@@ -36,11 +36,23 @@ import org.openide.util.lookup.Lookups;
  * of SampleProfiles
  * @author Bob Rutledge
  */
-public class CalProfileNodes extends LreObjectChildren {
+public class CalProfileNodesSortedByWell extends LreObjectChildren {
 
-    public CalProfileNodes(ExplorerManager mgr, DatabaseServices db, List<? extends CalibrationProfile>
+    public CalProfileNodesSortedByWell(ExplorerManager mgr, DatabaseServices db, List<? extends CalibrationProfile>
             calibrationProfileList, LreActionFactory actionFactory, LabelFactory labelFactory) {
         super(mgr, db, calibrationProfileList, actionFactory, labelFactory);
+        setCustomComparator(new Comparator<CalibrationProfile>() {
+            public int compare(CalibrationProfile prf1, CalibrationProfile prf2) {
+                if (prf1.getWellNumber() > prf2.getWellNumber()) {
+                    return 1;
+                } else {
+                    if (prf1.getWellNumber() < prf2.getWellNumber()) {
+                        return -1;
+                    }
+                }
+                return 0;
+            }
+        });
     }
 
     /**

@@ -19,6 +19,7 @@ package org.lreqpcr.calibration_ui.components;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
+import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.CalibrationRun;
 import org.lreqpcr.core.data_objects.LreObject;
@@ -75,7 +76,7 @@ public class CalbnTreeNodeLabels implements LabelFactory {
 //                return sdf.format(run.getRunDate()) + " Run Av OCF not available";
 //            }
         }
-
+//Must be a CalibrationProfile
         CalibrationProfile calbrnProfile = (CalibrationProfile) member;
         calbrnProfile.setShortDescription("");
         //Label madeup of four components: run date, name, Emax and OCF
@@ -95,6 +96,12 @@ public class CalbnTreeNodeLabels implements LabelFactory {
         }
         //Determine what to display for Emax
         String emax;
+        String wellLabel;
+        if (calbrnProfile instanceof AverageProfile){
+            wellLabel = "";
+        }else{//Must be a CalibrationProfile replicate
+            wellLabel = calbrnProfile.getWellLabel() + ": ";
+        }
         if (!calbrnProfile.hasAnLreWindowBeenFound()) {
             emax = "<LRE window not found>";
             calbrnProfile.setShortDescription("An LRE window could not be found, likely due to being a flat profile"
@@ -109,10 +116,11 @@ public class CalbnTreeNodeLabels implements LabelFactory {
         //Determine if Fmax normalization has been set
         if (calbrnProfile.isOcfNormalizedToFmax()) {
             ocf = " OCF= " + df.format(calbrnProfile.getOCF()) + "*";
+            calbrnProfile.setShortDescription("The OCF has been normalized to the Run's average Fmax");
         } else {
             ocf = " OCF= " + df.format(calbrnProfile.getOCF());
         }
-        return profileName + emax + ocf;
+        return wellLabel + profileName + emax + ocf;
 
     }
 }
