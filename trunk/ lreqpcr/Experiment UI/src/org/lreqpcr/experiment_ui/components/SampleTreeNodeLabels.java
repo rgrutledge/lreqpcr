@@ -18,6 +18,7 @@ package org.lreqpcr.experiment_ui.components;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.data_objects.Profile;
@@ -47,12 +48,14 @@ public class SampleTreeNodeLabels implements LabelFactory {
             double avFmax = run.getAverageFmax();
             df.applyPattern(FormatingUtilities.decimalFormatPattern(avFmax));
             String avFmaxString = df.format(avFmax);
-            
-//            run.setShortDescription();
+
             //Indicate if a Run-specific OCF if one has been applied to this Run 
             String RSO = "";
-            if (run.getRunSpecificOCF() != 0){
+            if (run.getRunSpecificOCF() != 0) {
                 RSO = "*";
+                df.applyPattern(FormatingUtilities.decimalFormatPattern(run.getRunSpecificOCF()));
+                String rso = df.format(run.getRunSpecificOCF());
+                run.setShortDescription("Run-specific OCF = " + rso);
             }
             if (run.getAvFmaxCV() != 0) {
                 String cv = df.format(run.getAvFmaxCV() * 100);
@@ -92,25 +95,31 @@ public class SampleTreeNodeLabels implements LabelFactory {
             }
             String emax;
             String no;
+            String wellLabel;
+            if (profile instanceof AverageProfile) {
+                wellLabel = "";
+            } else {//Must be a replicate SampleProfile
+                wellLabel = profile.getWellLabel() + ": ";
+            }
             //Determine what to display for Emax
             if (!profile.hasAnLreWindowBeenFound() && profile.getOCF() > 0) {
 //This assumes an AverageSampleProfile that has <10N would not reach here 
                 profile.setShortDescription("An LRE window could not be found, likely due to being a flat profile"
                         + " or the Min Fc being set too high");
                 //Emax and No do not exsist
-                return profileName + "<LRE window not found>";
+                return wellLabel + profileName + "<LRE window not found>";
             }
             //Profile is OK
-                df.applyPattern("#0.0");
-                emax = "(" + df.format(profile.getEmax() * 100) + "%) ";
+            df.applyPattern("#0.0");
+            emax = "(" + df.format(profile.getEmax() * 100) + "%) ";
             //Determine what to display for No
             if (profile.getAmpliconSize() == 0) {
                 profile.setShortDescription("Target quantity could not be determined because an amplicon size has not been provided");
-                return profileName + emax + "n.d.<Amplicon size absent> ";
+                return wellLabel + profileName + emax + "n.d.<Amplicon size absent> ";
             }
             if (!(profile.getOCF() > 0)) {
                 profile.setShortDescription("Target quantity could not be determined because an OCF has not been applied");
-                return profileName + emax + "n.d. <No OCF>";
+                return wellLabel + profileName + emax + "n.d. <No OCF>";
             }
 
             if (profile.getNo() < 10) {
@@ -121,13 +130,13 @@ public class SampleTreeNodeLabels implements LabelFactory {
             if (!profile.hasAnLreWindowBeenFound()) {
                 no = "";
             }
-            if (profile.isTargetQuantityNormalizedToFmax()){
+            if (profile.isTargetQuantityNormalizedToFmax()) {
                 no = "  *N= " + df.format(profile.getNo());
                 profile.setShortDescription("Target quantity has be normalized to the Run's average Fmax");
-            }else {
+            } else {
                 no = "  N= " + df.format(profile.getNo());
             }
-            return profileName + emax + no;
+            return wellLabel + profileName + emax + no;
         }
         return "";
     }

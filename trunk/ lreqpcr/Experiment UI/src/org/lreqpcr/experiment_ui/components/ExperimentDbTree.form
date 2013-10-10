@@ -73,13 +73,13 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" attributes="0">
                   <Component id="runViewButton" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
                   <Component id="ocfLabel" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="ocfDisplay" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                  <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="fmaxNormalizeChkBox" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="37" max="32767" attributes="0"/>
+                  <EmptySpace pref="15" max="32767" attributes="0"/>
                   <Component id="repViewButton" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -115,7 +115,7 @@
         </Component>
         <Component class="javax.swing.JLabel" name="ocfLabel">
           <Properties>
-            <Property name="text" type="java.lang.String" value="OCF="/>
+            <Property name="text" type="java.lang.String" value="Av. OCF="/>
             <Property name="toolTipText" type="java.lang.String" value="Converts fluorescence target quantities to the number of molecules"/>
           </Properties>
         </Component>
@@ -136,7 +136,7 @@
         </Component>
         <Component class="javax.swing.JRadioButton" name="repViewButton">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Rep View"/>
+            <Property name="text" type="java.lang.String" value="Well View"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="repViewButtonActionPerformed"/>

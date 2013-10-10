@@ -14,59 +14,45 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * and open the template in the editor.
  */
+
 package org.lreqpcr.experiment_ui.components;
 
-import java.util.Comparator;
 import java.util.List;
 import javax.swing.Action;
+import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreObject;
-import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LabelFactory;
 import org.lreqpcr.core.ui_elements.LreActionFactory;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
 import org.openide.explorer.ExplorerManager;
-import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.lookup.Lookups;
 
 /**
- * Displays AvergeSampleProifles with SamplProfiles as children. 
- * 
+ * Displays a list of AverageSampleProfile with replicate SampleProfileNodesSortedByWell as children. 
+ *
  * @author Bob Rutledge
  */
-public class SampleProfileChildren extends LreObjectChildren {
+public class AvProfileNodesWithSampleProfileChildren extends LreObjectChildren{
 
-    public SampleProfileChildren(ExplorerManager mgr, DatabaseServices db, List<? extends SampleProfile>
-            sampleProfileList, LreActionFactory actionFactory, LabelFactory labelFactory) {
-        super(mgr, db, sampleProfileList, actionFactory, labelFactory);
-        setCustomComparator(new Comparator<SampleProfile>() {
-
-            public int compare(SampleProfile prf1, SampleProfile prf2) {
-                if (prf1.getWellNumber() > prf2.getWellNumber()){
-                    return 1;
-                }else {
-                    if (prf1.getWellNumber() < prf2.getWellNumber()){
-                        return -1;
-                    }
-                }
-                return 0;
-            }
-        }
-                );
+    public AvProfileNodesWithSampleProfileChildren(ExplorerManager mgr, DatabaseServices db,
+            List<AverageSampleProfile> avSampleProfileList,
+            LreActionFactory actionFactory, LabelFactory labelFactory) {
+        super(mgr, db, avSampleProfileList, actionFactory, labelFactory);
     }
 
     /**
-     * Creates SampleProfile nodes from the member list of SampleProfileChildren.
+     * Displays the AverageSample Profiles with Sample Profile children
      *
-     * @param lreObject
+     * @param the list of AverageSampleProfiles to be displayed
      * @return
      */
     @SuppressWarnings(value = "unchecked")
     @Override
     protected Node[] createNodes(LreObject lreObject) {
-        SampleProfile sampleProfile = (SampleProfile) lreObject;
+        AverageSampleProfile avSampleProfile = (AverageSampleProfile) lreObject;
         if (nodeActionFactory == null) {
             actions = new Action[]{};//i.e. no Actions have been set
         } else {
@@ -75,7 +61,11 @@ public class SampleProfileChildren extends LreObjectChildren {
                 actions = new Action[]{};//i.e. there are no Actions for this Node
             }
         }
-        LreNode node = new LreNode(Children.LEAF, Lookups.singleton(sampleProfile), actions);
+//SampleProfiles are retrieved from the AverageSampleProfile rather than searching the database
+        LreNode node = new LreNode(new SampleProfileNodesSortedByWell(mgr, db, 
+                avSampleProfile.getReplicateProfileList(),
+                nodeActionFactory, nodeLabelFactory),
+                    Lookups.singleton(avSampleProfile), actions);
         node.setExplorerManager(mgr);
         node.setDatabaseService(db);
         node.setName(lreObject.getName());
@@ -87,4 +77,5 @@ public class SampleProfileChildren extends LreObjectChildren {
         }
         return new Node[]{node};
     }
+
 }

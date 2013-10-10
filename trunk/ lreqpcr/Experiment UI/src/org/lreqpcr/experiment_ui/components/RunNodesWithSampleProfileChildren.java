@@ -23,6 +23,7 @@ import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.data_objects.Run;
+import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LabelFactory;
 import org.lreqpcr.core.ui_elements.LreActionFactory;
@@ -37,25 +38,25 @@ import org.openide.util.lookup.Lookups;
  *
  * @author Bob Rutledge
  */
-public class RunsWithAverageProfileChildren extends LreObjectChildren {
+public class RunNodesWithSampleProfileChildren extends LreObjectChildren {
 
     /**
-     * Generates AverageProfile nodes for a Run.
-     * 
+     * Generates AverageSample Profile nodes for a Run.
+     *
      * @param mgr the manager of the view
      * @param db the experiment database that is being viewed
      * @param runList list of Runs to be displayed
      * @param actionFactory the node action factory
      * @param labelFactory the node label factory
      */
-    public RunsWithAverageProfileChildren(ExplorerManager mgr, DatabaseServices db, List<? extends Run> runList,
+    public RunNodesWithSampleProfileChildren(ExplorerManager mgr, DatabaseServices db, List<? extends Run> runList,
             LreActionFactory actionFactory, LabelFactory labelFactory) {
         super(mgr, db, runList, actionFactory, labelFactory);
     }
 
     /**
      * Displays a list of Runs with AverageProfile as their children.
-     * 
+     *
      * @param lreObject
      * @return the new node
      */
@@ -72,14 +73,19 @@ public class RunsWithAverageProfileChildren extends LreObjectChildren {
             }
         }
         List<AverageProfile> avProfileList = run.getAverageProfileList();
-        List<AverageSampleProfile> avSamplePrfList = new ArrayList<AverageSampleProfile>();
+
+        List<SampleProfile> samplePrfList = new ArrayList<SampleProfile>();
         //Must cast to AverageSampleProfile
-        for (AverageProfile avPrf : avProfileList){
+        for (AverageProfile avPrf : avProfileList) {
             AverageSampleProfile avSamplePrf = (AverageSampleProfile) avPrf;
-            avSamplePrfList.add(avSamplePrf);
+            for (SampleProfile prf : avSamplePrf.getReplicateProfileList()) {
+                samplePrfList.add(prf);
+            }
         }
-        LreNode node = new LreNode(new AverageProfilesWithSampleProfileChildren(mgr, db, avSamplePrfList, nodeActionFactory, nodeLabelFactory),
-                Lookups.singleton(lreObject), actions);
+        LreNode node = new LreNode(new SampleProfileNodesSortedByWell(mgr, db,
+                samplePrfList,
+                nodeActionFactory, nodeLabelFactory),
+                Lookups.singleton(run), actions);
         node.setExplorerManager(mgr);
         node.setDatabaseService(db);
         node.setName(lreObject.getName());

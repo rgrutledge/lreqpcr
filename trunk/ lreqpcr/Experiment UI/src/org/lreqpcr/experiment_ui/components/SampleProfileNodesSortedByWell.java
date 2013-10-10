@@ -14,12 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * and open the template in the editor.
  */
-package org.lreqpcr.calibration_ui.components;
+package org.lreqpcr.experiment_ui.components;
 
+import java.util.Comparator;
 import java.util.List;
 import javax.swing.Action;
-import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.LreObject;
+import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LabelFactory;
 import org.lreqpcr.core.ui_elements.LreActionFactory;
@@ -31,19 +32,31 @@ import org.openide.nodes.Node;
 import org.openide.util.lookup.Lookups;
 
 /**
- * Generates child nodes for an AverageSampleProfile based on the supplied list
- * of SampleProfiles
+ * Displays AvergeSampleProifles with SamplProfiles as children.
+ *
  * @author Bob Rutledge
  */
-public class AvCalProfileChildren extends LreObjectChildren {
+public class SampleProfileNodesSortedByWell extends LreObjectChildren {
 
-    public AvCalProfileChildren(ExplorerManager mgr, DatabaseServices db, List<? extends CalibrationProfile>
-            calibrationProfileList, LreActionFactory actionFactory, LabelFactory labelFactory) {
-        super(mgr, db, calibrationProfileList, actionFactory, labelFactory);
+    public SampleProfileNodesSortedByWell(ExplorerManager mgr, DatabaseServices db, List<? extends SampleProfile> sampleProfileList, LreActionFactory actionFactory, LabelFactory labelFactory) {
+        super(mgr, db, sampleProfileList, actionFactory, labelFactory);
+        setCustomComparator(new Comparator<SampleProfile>() {
+            public int compare(SampleProfile prf1, SampleProfile prf2) {
+                if (prf1.getWellNumber() > prf2.getWellNumber()) {
+                    return 1;
+                } else {
+                    if (prf1.getWellNumber() < prf2.getWellNumber()) {
+                        return -1;
+                    }
+                }
+                return 0;
+            }
+        });
     }
 
     /**
-     * Creates SampleProfile nodes from the member list of SampleProfiles.
+     * Creates SampleProfile nodes from the member list of
+     * SampleProfileNodesSortedByWell.
      *
      * @param lreObject
      * @return
@@ -51,7 +64,7 @@ public class AvCalProfileChildren extends LreObjectChildren {
     @SuppressWarnings(value = "unchecked")
     @Override
     protected Node[] createNodes(LreObject lreObject) {
-        CalibrationProfile sampleProfile = (CalibrationProfile) lreObject;
+        SampleProfile sampleProfile = (SampleProfile) lreObject;
         if (nodeActionFactory == null) {
             actions = new Action[]{};//i.e. no Actions have been set
         } else {

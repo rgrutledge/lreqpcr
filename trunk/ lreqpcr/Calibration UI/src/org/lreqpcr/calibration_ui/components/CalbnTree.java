@@ -24,31 +24,25 @@ import java.util.List;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.calibration_ui.UpdateCalbrationDatabase;
 import org.lreqpcr.calibration_ui.actions.CalbnTreeNodeActions;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageProfile;
-import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.CalibrationDbInfo;
 import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.CalibrationRun;
-import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LabelFactory;
 import org.lreqpcr.core.ui_elements.LreActionFactory;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.utilities.FormatingUtilities;
 import org.lreqpcr.core.utilities.MathFunctions;
-import org.lreqpcr.core.utilities.ProfileUtilities;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.ui_components.PanelMessages;
-import org.openide.awt.StatusDisplayer;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
-import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 import org.openide.windows.WindowManager;
 
@@ -60,8 +54,6 @@ public class CalbnTree extends JPanel {
 
     private ExplorerManager mgr;
     private DatabaseServices calbnDB;
-    private LreAnalysisService analysisService;
-    private LreWindowSelectionParameters selectionParameters;
     private LreActionFactory nodeActionFactory;
     private LabelFactory nodeLabelFactory;
     private DecimalFormat df = new DecimalFormat();
@@ -87,21 +79,15 @@ public class CalbnTree extends JPanel {
 
     @SuppressWarnings(value = "unchecked")
     public void createTree() {
-        //A new calibration database has been opened
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.CLEAR_PROFILE_EDITOR);
         if (!calbnDB.isDatabaseOpen()) {
             AbstractNode root = new AbstractNode(Children.LEAF);
             root.setName("No CalbnDB is open");
             mgr.setRootContext(root);
             avProfileOCFdisplay.setText("");
             fmaxNrmzBox.setSelected(false);
-            //An attempt to display something during optening of a database file 
-//            if (statusLineMessage != null) {
-//                statusLineMessage.clear(1);
-//            }
             return;
         }
-        analysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
-        selectionParameters = (LreWindowSelectionParameters) calbnDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
         List<AverageCalibrationProfile> avCalPrfList =
                 (List<AverageCalibrationProfile>) calbnDB.getAllObjects(AverageCalibrationProfile.class);
         if (!avCalPrfList.isEmpty()) {
@@ -135,34 +121,17 @@ public class CalbnTree extends JPanel {
             calDbInfo = l.get(0);
         }
         fmaxNrmzBox.setSelected(calDbInfo.isOcfNormalizedToFmax());
-        //TO DO clean this up
-        //This is only for testing
-        List<AverageSampleProfile> avSamPrfList = calbnDB.getAllObjects(AverageSampleProfile.class);
-        System.out.println("The number of average Calibration profiles = " + avCalPrfList.size());
-        System.out.println("The number of average Sample profiles = " + avSamPrfList.size());
-
         //Setup the tree with CalbrationDbInfo in root
         //Retrieval all Calibration Runs from the database
         List<CalibrationRun> runList = (List<CalibrationRun>) calbnDB.getAllObjects(CalibrationRun.class);
-        CalRootChildren calRootChildren = new CalRootChildren(mgr, calbnDB, runList, nodeActionFactory, nodeLabelFactory);
+        RunNodesWithAvCalChildren calRootChildren = new RunNodesWithAvCalChildren(mgr, calbnDB, runList, nodeActionFactory, nodeLabelFactory);
         LreNode root = new LreNode(calRootChildren, Lookups.singleton(calDbInfo), new Action[]{});
         root.setDatabaseService(calbnDB);
         File dbFile = calbnDB.getDatabaseFile();
         String dbFileName = dbFile.getName();
         int length = dbFileName.length();
         String displayName = dbFileName.substring(0, length - 4);
-        //Determine if the average Run Fmax should be displayed, i.e. when >1 Run is present
-        if (runList.size() > 1) {
-            //Calculate and display the average Run Fmax along with correlation of coefficient
-            ProfileUtilities.calcAvFmaxForAllRuns(calbnDB);
-            df.applyPattern("#0.0");
-            String cv = df.format(calDbInfo.getAvRunFmaxCV() * 100);
-            df.applyPattern(FormatingUtilities.decimalFormatPattern(calDbInfo.getAvRunFmax()));
-            root.setDisplayName(displayName + " [Av Run Fmax: " + df.format(calDbInfo.getAvRunFmax()) + " ±" + cv + "%]");
-        } else {
-            root.setDisplayName(displayName);
-        }
-//        statusLineMessage = StatusDisplayer.getDefault().setStatusText(dbFile.getAbsolutePath(), 1);
+        root.setDisplayName(displayName);
         mgr.setRootContext(root);
         calcAverageOCF();
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.CLEAR_PROFILE_EDITOR);
@@ -180,7 +149,7 @@ public class CalbnTree extends JPanel {
         if (calbnDB.isDatabaseOpen()) {
             //Retrieve all AverageSampleProfile that used the amplicon "ampName"    
             List avCalPrfList = calbnDB.retrieveUsingFieldValue(AverageCalibrationProfile.class, "ampliconName", ampName);
-            LreNode root = new LreNode(new CalRunChildren(mgr, calbnDB, avCalPrfList, nodeActionFactory,
+            LreNode root = new LreNode(new AvCalProfileNodesWithCalProfileChildren(mgr, calbnDB, avCalPrfList, nodeActionFactory,
                     nodeLabelFactory), null, new Action[]{});
             root.setDisplayName(ampName + " (" + String.valueOf(avCalPrfList.size()) + ")");
             root.setDatabaseService(calbnDB);
@@ -193,7 +162,7 @@ public class CalbnTree extends JPanel {
     @SuppressWarnings(value = "unchecked")
     public void createSampleTree(String sampleName) {
         List avCalProfilList = calbnDB.retrieveUsingFieldValue(AverageCalibrationProfile.class, "sampleName", sampleName);
-        LreNode root = new LreNode(new CalRunChildren(mgr, calbnDB, avCalProfilList, nodeActionFactory, nodeLabelFactory),
+        LreNode root = new LreNode(new AvCalProfileNodesWithCalProfileChildren(mgr, calbnDB, avCalProfilList, nodeActionFactory, nodeLabelFactory),
                 null, new Action[]{});
         root.setDisplayName(sampleName + " (" + String.valueOf(avCalProfilList.size()) + ")");
         root.setDatabaseService(calbnDB);
@@ -256,9 +225,9 @@ public class CalbnTree extends JPanel {
         setRequestFocusEnabled(false);
 
         beanTree.setMinimumSize(new java.awt.Dimension(250, 100));
-        beanTree.setPreferredSize(new java.awt.Dimension(250, 100));
+        beanTree.setPreferredSize(new java.awt.Dimension(425, 400));
 
-        jPanel1.setPreferredSize(new java.awt.Dimension(420, 23));
+        jPanel1.setPreferredSize(new java.awt.Dimension(425, 23));
 
         runViewButton.setText("Run View");
         runViewButton.setToolTipText("Return to viewing all Calibration profiles");
@@ -292,9 +261,9 @@ public class CalbnTree extends JPanel {
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(avProfileOCFdisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(fmaxNrmzBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(65, 65, 65))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(fmaxNrmzBox, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
+                .addGap(81, 81, 81))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -312,10 +281,12 @@ public class CalbnTree extends JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(beanTree, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 417, Short.MAX_VALUE))
-                .addContainerGap(8, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(beanTree, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -331,36 +302,36 @@ public class CalbnTree extends JPanel {
         runViewButton.setSelected(true);
         UniversalLookup.getDefault().add(PanelMessages.RUN_VIEW_SELECTED, null);
     }//GEN-LAST:event_runViewButtonActionPerformed
-@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     private void fmaxNrmzBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fmaxNrmzBoxActionPerformed
-        boolean arg = fmaxNrmzBox.isSelected();
-        if (!calbnDB.isDatabaseOpen()) {
-            fmaxNrmzBox.setSelected(false);
-            return;
-        }
-        //Note that this is applied to all profiles in the database
-        List<CalibrationRun> runList = calbnDB.getAllObjects(CalibrationRun.class);
-        for (CalibrationRun run : runList) {
-            for (AverageProfile avPrf : run.getAverageProfileList()) {
-                AverageCalibrationProfile avCalPrf = (AverageCalibrationProfile) avPrf;
-                avCalPrf.setIsOcfNormalizedToFmax(arg);
-                calbnDB.saveObject(avCalPrf);
-                run.calculateAverageOCF();
-                calbnDB.saveObject(run);
-                for (CalibrationProfile prf : avCalPrf.getReplicateProfileList()) {
-                    prf.setIsOcfNormalizedToFmax(arg);
-                    //There is no need to reinitiaze the profiles because 
-                    //normalization DOES NOT CHANGE the Fo
-                    calbnDB.saveObject(prf);
-                }
+    boolean arg = fmaxNrmzBox.isSelected();
+    if (!calbnDB.isDatabaseOpen()) {
+        fmaxNrmzBox.setSelected(false);
+        return;
+    }
+    //Note that this is applied to all profiles in the database
+    List<CalibrationRun> runList = calbnDB.getAllObjects(CalibrationRun.class);
+    for (CalibrationRun run : runList) {
+        for (AverageProfile avPrf : run.getAverageProfileList()) {
+            AverageCalibrationProfile avCalPrf = (AverageCalibrationProfile) avPrf;
+            avCalPrf.setIsOcfNormalizedToFmax(arg);
+            calbnDB.saveObject(avCalPrf);
+            run.calculateAverageOCF();
+            calbnDB.saveObject(run);
+            for (CalibrationProfile prf : avCalPrf.getReplicateProfileList()) {
+                prf.setIsOcfNormalizedToFmax(arg);
+                //There is no need to reinitiaze the profiles because 
+                //normalization DOES NOT CHANGE the Fo
+                calbnDB.saveObject(prf);
             }
-        }//End of Run for loop
-        calDbInfo.setIsOcfNormalizedToFmax(arg);
-        calbnDB.saveObject(calDbInfo);
-        calbnDB.commitChanges();
-        calcAverageOCF();
-        createTree();
-        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_CALIBRATION_PANELS);
+        }
+    }//End of Run for loop
+    calDbInfo.setIsOcfNormalizedToFmax(arg);
+    calbnDB.saveObject(calDbInfo);
+    calbnDB.commitChanges();
+    calcAverageOCF();
+    createTree();
+    UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_CALIBRATION_PANELS);
     }//GEN-LAST:event_fmaxNrmzBoxActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField avProfileOCFdisplay;
