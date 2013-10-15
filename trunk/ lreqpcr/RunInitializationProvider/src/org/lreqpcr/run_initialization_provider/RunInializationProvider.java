@@ -135,6 +135,9 @@ public class RunInializationProvider implements RunInitializationService {
                             (LreWindowSelectionParameters) experimentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
                     ExptDbInfo dbInfo = (ExptDbInfo) experimentDB.getAllObjects(ExptDbInfo.class).get(0);
                     double ocf = dbInfo.getOcf();
+                    if (ocf == 0){
+                        displayNoOcfWarning();
+                    }
                     for (SampleProfile sampleProfile : sampleProfileList) {
                         if (ampliconDB != null) {
                             if (ampliconDB.isDatabaseOpen()
@@ -307,5 +310,18 @@ public class RunInializationProvider implements RunInitializationService {
         String msg = "An Amplicon database has not been opened. \n"
                 + "Do you want to continue with the data import?";
         return RunImportUtilities.requestYesNoAnswer("Amplicon database not open?", msg);
+    }
+    
+    /**
+     * Warns that an OCF must be entered manually. 
+     */
+    public void displayNoOcfWarning(){
+        Toolkit.getDefaultToolkit().beep();
+        String msg = "This appears to be a new experiment database for \n"
+                        + "which an OCF has not yet been entered. Please note \n"
+                + "that it will be necessary to manually enter an OCF \n"
+                + "in order for target quantities to be determined.";
+                JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "An OCF has not been entered",
+                        JOptionPane.WARNING_MESSAGE);
     }
 }
