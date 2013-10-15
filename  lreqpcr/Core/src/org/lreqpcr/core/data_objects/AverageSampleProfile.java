@@ -229,7 +229,7 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
                     highest = prf;
                 }
                 if (prf.getMidC() >= highest.getMidC()) {
-                    //prf is the highest, so check to see if it is higher than the lowest
+                    //prf has the higher C1/2, so check to see if it is higher than lowest
                     if (lowest != null) {
                         if (lowest.getMidC() > highest.getMidC()) {
                             lowest = highest;
@@ -238,19 +238,20 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
                         lowest = highest;
                     }
                     highest = prf;
-                } else {
+                } else {//prf is lower, so check if it is lower that lowest
                     if (lowest != null) {
                         if (lowest.getMidC() > prf.getMidC()) {
                             lowest = prf;
                         }
-                    } else {
+                    } else {//No lower has been identified, so make prf the lowest
                         lowest = prf;
                     }
                 }
             }
         }
         if (replicateScatterTolerance == 0) {//Profile predates scatter tolerance
-            replicateScatterTolerance = 0.5;
+            replicateScatterTolerance = 0.5;//Default value at the time of first implementation
+            //Future versions should included the ability for the user to set the scatter tolerance
         }
         if (highest.getMidC() - lowest.getMidC() > replicateScatterTolerance) {
             return false;

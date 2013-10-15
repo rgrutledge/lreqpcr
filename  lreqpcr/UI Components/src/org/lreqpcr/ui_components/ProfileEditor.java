@@ -82,14 +82,14 @@ public class ProfileEditor extends JPanel implements
             if (currentDB.isDatabaseOpen()) {
                 List<LreWindowSelectionParameters> l = currentDB.getAllObjects(LreWindowSelectionParameters.class);
                 if (l.isEmpty()) {
- //This is 0.7.7 database that preceeded implementatin of window selection parameters
+                    //This is 0.7.7 database that preceeded implementatin of window selection parameters
                     displayVersionIncompatiblityMessage();
                     return;
-            }
+                }
                 lreWindowSelectionParameters = l.get(0);
             }
         }
-  //Diable the NR parameter window for distribution of this version as it could unnecessarily confuse the user***********************************
+        //Diable the NR parameter window for distribution of this version as it could unnecessarily confuse the user***********************************
 //        curveFittingParam1.setVisible(false);
     }
 
@@ -98,38 +98,38 @@ public class ProfileEditor extends JPanel implements
         this.profile = profile;
 //Display and editing of a profile is conducted through the ProfileSummary interface
         prfSum = ProfileInitializer.constructProfileSummary(profile);
-        if (profile.hasAnLreWindowBeenFound() && !profile.isExcluded()) {
+        if (profile.hasAnLreWindowBeenFound() || !profile.isExcluded()) {
             updatePanels();
         } else {//LRE window not found or the Profile is excluded
-            plotFo.clearPlot();
-            plotLREs.clearPlot();
-            plotFc.iniPlot(prfSum);
-            lreObjectInfo.displayMember(selectedNode);
-            curveFittingParam1.clearPanel();
+            displayInvalidProfile();
+//            plotFo.clearPlot();
+//            plotLREs.clearPlot();
+//            plotFc.iniPlot(prfSum);
+//            lreObjectInfo.displayMember(selectedNode);
+//            curveFittingParam1.clearPanel();
         }
     }
 
     private void updatePanels() {
- //Test to see if this is an AverageProfile with just one replicate
+        //Test to see if this is an AverageProfile with just one replicate
         if (profile instanceof AverageSampleProfile) {
+            //Average profiles must be reviewed to determine if it can be displayed
             AverageSampleProfile avSampleProfile = (AverageSampleProfile) profile;
             if (avSampleProfile.getTheNumberOfActiveReplicateProfiles() == 1) {
 //Display the AverageSampleProfile because it has only one replicate SampleProfile
-                plotLREs.iniPlotLREs(prfSum, currentDB);
-                numericalTable.iniNumTable(prfSum);
-                plotFc.iniPlot(prfSum);
-                plotFo.iniPlot(prfSum);
-                lreObjectInfo.displayMember(selectedNode);
-                curveFittingParam1.updateDisplay(prfSum);
+                displayProfile();
                 return;
+            } else {
+                if (avSampleProfile.isTheReplicateAverageNoLessThan10Molecules()) {
+                    displayInvalidProfile();
+                    //But do not want to display the Fc plot
+                    plotFc.clearPlot();
+                    return;
+                }
             }
         }
-        plotLREs.iniPlotLREs(prfSum, currentDB);
-        numericalTable.iniNumTable(prfSum);
-        plotFc.iniPlot(prfSum);
-        plotFo.iniPlot(prfSum);
-        lreObjectInfo.displayMember(selectedNode);
-        curveFittingParam1.updateDisplay(prfSum);
+        //Must be a replicate profile so attempt to display it
+        displayProfile();
     }
 
     private void clearPanels() {
@@ -140,6 +140,23 @@ public class ProfileEditor extends JPanel implements
         plotLREs.clearPlot();
         numericalTable.clearTable();
         lreObjectInfo.clearPanel();
+        curveFittingParam1.clearPanel();
+    }
+
+    private void displayProfile() {
+        plotLREs.iniPlotLREs(prfSum, currentDB);
+        numericalTable.iniNumTable(prfSum);
+        plotFc.iniPlot(prfSum);
+        plotFo.iniPlot(prfSum);
+        lreObjectInfo.displayMember(selectedNode);
+        curveFittingParam1.updateDisplay(prfSum);
+    }
+
+    private void displayInvalidProfile() {
+        plotFo.clearPlot();
+        plotLREs.clearPlot();
+        plotFc.iniPlot(prfSum);
+        lreObjectInfo.displayMember(selectedNode);
         curveFittingParam1.clearPanel();
     }
 
@@ -288,16 +305,16 @@ public class ProfileEditor extends JPanel implements
         if (key == PanelMessages.CALBN_TC_SELECTED) {
             //The calibration explorer window has be selected
             //If the selected node is not a calibration node, clear the panels
-            if (selectedNode != null &&
-                    selectedNode.getDatabaseServices().getDatabaseType() != DatabaseType.CALIBRATION){
+            if (selectedNode != null
+                    && selectedNode.getDatabaseServices().getDatabaseType() != DatabaseType.CALIBRATION) {
                 clearPanels();
             }
         }
         if (key == PanelMessages.EXPT_TC_SELECTED) {
             //The experiment explorer window has be selected
             //If the selected node is not an experiment node, clear the panels
-            if (selectedNode != null &&
-                    selectedNode.getDatabaseServices().getDatabaseType() != DatabaseType.EXPERIMENT){
+            if (selectedNode != null
+                    && selectedNode.getDatabaseServices().getDatabaseType() != DatabaseType.EXPERIMENT) {
                 clearPanels();
             }
         }
@@ -339,11 +356,11 @@ public class ProfileEditor extends JPanel implements
             } else {
                 if (currentDB.isDatabaseOpen()) {
                     List<LreWindowSelectionParameters> l = currentDB.getAllObjects(LreWindowSelectionParameters.class);
-                if (l.isEmpty()) {
+                    if (l.isEmpty()) {
 //This occurs with databases created before implementation of the LRE window parameters
-                    displayVersionIncompatiblityMessage();
-                    return;
-                }
+                        displayVersionIncompatiblityMessage();
+                        return;
+                    }
                     lreWindowSelectionParameters = l.get(0);
                 }
                 clearPanels();
