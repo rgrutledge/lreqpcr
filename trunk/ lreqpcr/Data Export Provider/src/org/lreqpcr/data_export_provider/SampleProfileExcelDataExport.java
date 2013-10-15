@@ -36,7 +36,6 @@ import jxl.write.Number;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.SampleProfile;
-import org.lreqpcr.core.utilities.FormatingUtilities;
 import org.lreqpcr.core.utilities.IOUtilities;
 import org.openide.windows.WindowManager;
 
@@ -208,11 +207,8 @@ public class SampleProfileExcelDataExport {
                     number = new Number(6, row, fmax, floatFormat);
                     sheet.addCell(number);
                 }
-                double runAvFmax = sampleProfile.getRun().getAverageFmax();
-                df.applyPattern(FormatingUtilities.decimalFormatPattern(runAvFmax));
-                String runAvFmaxString = df.format(runAvFmax);
-                label = new Label(7, row, runAvFmaxString, center);
-                sheet.addCell(label);
+                number = new Number(7, row, sampleProfile.getRun().getAverageFmax(), floatFormat);
+                sheet.addCell(number);
                 number = new Number(8, row, sampleProfile.getOCF(), floatFormat);
                 sheet.addCell(number);
                 number = new Number(9, row, sampleProfile.getAmpliconSize(), integerFormat);

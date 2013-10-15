@@ -65,7 +65,7 @@ public class SampleTreeNodeLabels implements LabelFactory {
             }
         }
 
-        //Label madeup of three components: name + Emax + No
+        //Label madeup of three components: name + Emax + No + Replicate Scatter Warning
         if (member instanceof Profile) {
             SampleProfile profile = (SampleProfile) member;
             profile.setShortDescription("");
@@ -78,7 +78,10 @@ public class SampleTreeNodeLabels implements LabelFactory {
                     profile.setShortDescription("This Sample Profile has been excluded "
                             + "by the user and will not be included in the Average Profile");
                 }
-                return profileName + "<PROFILE EXCLUDED>";
+                if(profile instanceof SampleProfile){
+                    return profile.getWellLabel() + ": " + profileName + "<EXCLUDED>";
+                }
+                return profileName + "<EXCLUDED>";
             }
 
             if (profile instanceof AverageSampleProfile) {
@@ -91,6 +94,9 @@ public class SampleTreeNodeLabels implements LabelFactory {
                     profile.setShortDescription("Less than 10 molecules requires averaging the replicate profiles quantities");
                     double no = avPrf.getNo();
                     return profileName + "  <10N  [avRep= " + df.format(no) + "]";
+                }
+                if (!avPrf.areTheRepProfilesSufficientlyClustered()){
+                    return profileName + ": Replicate profiles are not sufficiently clustered";
                 }
             }
             String emax;
