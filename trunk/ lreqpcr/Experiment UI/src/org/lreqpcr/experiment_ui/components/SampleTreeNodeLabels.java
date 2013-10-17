@@ -88,15 +88,18 @@ public class SampleTreeNodeLabels implements LabelFactory {
                 AverageSampleProfile avPrf = (AverageSampleProfile) profile;
                 //This assumes that excluded profiles would not reach to this point
                 if (avPrf.isTheReplicateAverageNoLessThan10Molecules() && avPrf.getOCF() > 0) {
-                    //An average profile does not exist, so No is inherented 
-                    //from the average replicate No
+    //This average profile is invalid, so No is inherented from the average replicate No
                     df.applyPattern("0.00");
                     profile.setShortDescription("Less than 10 molecules requires averaging the replicate profiles quantities");
-                    double no = avPrf.getNo();
+                    double no = avPrf.getReplicatePrfAvNo();
                     return profileName + "  <10N  [avRep= " + df.format(no) + "]";
                 }
                 if (!avPrf.areTheRepProfilesSufficientlyClustered()){
-                    return profileName + ": Replicate profiles are not sufficiently clustered";
+         //Falll back to the replicate average No
+                    df.applyPattern("0.00");
+//                    profile.setShortDescription("Less than 10 molecules requires averaging the replicate profiles quantities");
+                    double no = avPrf.getReplicatePrfAvNo();
+                    return profileName + ": Replc profiles are too scattered [avRep= " + df.format(no) + "]";
                 }
             }
             String emax;

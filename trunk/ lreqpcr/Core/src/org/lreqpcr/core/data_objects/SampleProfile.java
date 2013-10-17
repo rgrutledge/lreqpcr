@@ -136,7 +136,7 @@ public class SampleProfile extends Profile {
     // TODO need to set a see also tag to Fmax and Emax 
     /**
      * Returns the number of target molecules. Note the setting Fmax normalization 
-     * or fixing Emax to 100% will adjust this quantity accordingly. 
+     * adjusts this quantity relative to the Run's average Fmax. 
      *
      * @return No, the number of target molecules or -1 if a value is unavailable
      */

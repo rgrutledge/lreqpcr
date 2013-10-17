@@ -272,7 +272,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                 lreAnalysisService.conductAutomatedLreWindowSelection(profile, selectionParameters);
                 currentDB.saveObject(profile);
             }
-            if (!avProfile.isTheReplicateAverageNoLessThan10Molecules()) {
+            if (!avProfile.isTheReplicateAverageNoLessThan10Molecules() && avProfile.areTheRepProfilesSufficientlyClustered()) {
                 //The AverageProfile is valid thus reinitialize it
                 Profile profile = (Profile) avProfile;
                 lreAnalysisService.conductAutomatedLreWindowSelection(profile, selectionParameters);
@@ -341,7 +341,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
             //Calculate and collect the Replicate Fo CVs
             for (AverageSampleProfile avProfile : avSampleProfileList) {
                 List<Double> noValues = Lists.newArrayList();
-                if (!avProfile.isTheReplicateAverageNoLessThan10Molecules()) {
+                if (!avProfile.isTheReplicateAverageNoLessThan10Molecules() && avProfile.areTheRepProfilesSufficientlyClustered()) {
 //Only include replicate that are >10 molecules in order to avoid scattering produced by Poisson distribution 
                     double sum = 0;
                     for (SampleProfile profile : avProfile.getReplicateProfileList()) {

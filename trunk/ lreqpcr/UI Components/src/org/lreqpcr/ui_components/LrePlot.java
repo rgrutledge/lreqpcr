@@ -191,6 +191,12 @@ public class LrePlot extends javax.swing.JPanel {
             //This function will update the AverageSampleProfile No if it is <10N
             if (avProfile.isTheReplicateAverageNoLessThan10Molecules()) {
                 db.saveObject(avProfile);
+            }else {
+                if (avProfile.areTheRepProfilesSufficientlyClustered()){
+                    //This updates the replicate profile average No
+                    avProfile.getReplicatePrfAvNo();
+                    db.saveObject(avProfile);
+                }
             }
         }
     }

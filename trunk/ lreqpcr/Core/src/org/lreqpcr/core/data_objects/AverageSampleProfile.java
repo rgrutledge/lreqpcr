@@ -29,9 +29,8 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
 
     private List<SampleProfile> sampleProfileList;
     private double avTm = 0;//The average amplicon melting temperature of the SampleProfiles
-    private boolean isTheAverageReplicateNoLessThan10Molecules;
-    private double repAvNo = -1;//This should conform to both +/-fixing Emax and Fmax normalization
-    private double replicateScatterTolerance = 0.5;//The maximum C1/2 range of the replicate profiles allowed for valid average profile construction
+    private double repAvNo = -1;//This should also conform when Fmax normalization has been applied
+    private double replicateScatterTolerance = 0.7;//The maximum C1/2 range of the replicate profiles allowed for valid average profile construction
 
     /**
      * An average sample profile constructed from its sample replicate profiles.
@@ -102,25 +101,24 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
     public void updateSampleProfile() {
         //Without an OCF, No values cannot be calculated
         if (getOCF() >= 0) {
-            isTheReplicateAverageNoLessThan10Molecules();
+            isTheReplicateAverageNoLessThan10Molecules();//This simply updates the Replicate average No
         } else {
             no = -1;//Signifies no values vs. just zero
         }
-        if (!isTheAverageReplicateNoLessThan10Molecules) {
-            super.updateSampleProfile();
+        if (!isTheReplicateAverageNoLessThan10Molecules()) {
+            super.updateSampleProfile();//Let the Sample Profile update No
         }
-        //Updates the No values
     }
 
     /**
      * Sort By Amplicon Name, then Sample name
      *
-     * @param o
+     * @param sampleProfile the Sample Profile to compare to 
      * @return
      */
     @Override
-    public int compareTo(Object o) {
-        SampleProfile profile = (AverageSampleProfile) o;
+    public int compareTo(Object sampleProfile) {
+        SampleProfile profile = (AverageSampleProfile) sampleProfile;
         //Sort by name
         if (getAmpliconName().compareTo(profile.getAmpliconName()) == 0) {
             //They have the same Sample name
@@ -140,7 +138,7 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
      * <p>
      * In this case, the AverageProfile inherits the target quantities
      * determined by the replicate profiles, that is the average from the
-     * replicate profiles. Calling this function will also update the profile.
+     * replicate profiles.
      *
      * @return whether the average No is less than 10 molecules
      */
@@ -149,52 +147,25 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
             //Occurs during data import
             return false;
         }
-        //Not sure how well this will work
-        if (isExcluded()) {
-            return true;
-        }
-
-//        if (getTheNumberOfActiveReplicateProfiles() == 1){
-//        //not sure if this is needed...
-//       //TODO review how avProfiles revert to a single replicate profile
-//    }
-        //Try to calculate the replicate average No
-        double sum = 0;
-        int counter = 0;
-        for (SampleProfile repPrf : getReplicateProfileList()) {
-            //It is important not to include excluded profiles
-            if (!repPrf.isExcluded()) {
-                if (!repPrf.hasAnLreWindowBeenFound()) {
-//Without an LRE Window, a valid LRE-derived avNo is not available
-//However, such profiles (i.e. flat profiles) default to zero molecules and thus must be counted
-                    counter++;
-                } else {
-                    sum += repPrf.getNo();
-                    counter++;
-                }
-            }
-        }
-        if (counter == 0) {
-            //No replicate profiles are avaiable
-            repAvNo = 0;
-            isTheAverageReplicateNoLessThan10Molecules = true;
-            return true;
-        }
-        repAvNo = sum / counter;
+        //Update the replicate average No
+        getReplicatePrfAvNo();
         if (repAvNo < 10) {
-            isTheAverageReplicateNoLessThan10Molecules = true;
             return true;
         } else {
-            isTheAverageReplicateNoLessThan10Molecules = false;
             return false;
         }
     }
 
+    /**
+     * 
+     * @return the calculated number of target molecules (No), or if the Average Profile is invalid, the replicate average No
+     */
     @Override
     public double getNo() {
-        if (!isTheAverageReplicateNoLessThan10Molecules) {
+        //This updates the average replicate No
+        if (getReplicatePrfAvNo() >10 && areTheRepProfilesSufficientlyClustered()) {
             return super.getNo();
-        }
+        }//If not return the replicate average No which has been already updated
         return repAvNo;
     }
 
@@ -219,7 +190,7 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
         if (getTheNumberOfActiveReplicateProfiles() == 1) {
             return true;
         }
-        //Determine if the replicate C1/2 values range is >0.3 cycles
+        //Determine if the replicate C1/2 values spread is >replicateScatterTolerance
         //Determine the 2 most different C1/2 values
         Profile highest = null;
         Profile lowest = null;
@@ -250,18 +221,22 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
             }
         }
         if (replicateScatterTolerance == 0) {//Profile predates scatter tolerance
-            replicateScatterTolerance = 0.5;//Default value at the time of first implementation
+            replicateScatterTolerance = 0.7;//Default value at the time of first implementation
             //Future versions should included the ability for the user to set the scatter tolerance
         }
-        if (highest.getMidC() - lowest.getMidC() > replicateScatterTolerance) {
+        if (highest != null && lowest != null){//This should never be false
+            if (highest.getMidC() - lowest.getMidC() > replicateScatterTolerance) {
             return false;
+        }else {
+                return true;
+            }
         }
-        return true;
+        return true;//This should never be reached as this should only occur when there is one replicate profile
     }
 
     /**
-     * The maximum allowable range of C1/2 values across the replicate profiles
-     * for generating a valid average profile.
+     * Returns the maximum allowable difference in C1/2 across the replicate
+     * profiles for determining if a valid average profile can be constructed.
      *
      * @return the maximum range of C1/2 values
      */
@@ -270,12 +245,46 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
     }
 
     /**
-     * Sets the maximum allowable range of C1/2 values across the replicate
-     * profiles for generating a valid average profile.
+     * Sets the maximum allowable difference in C1/2 across the replicate
+     * profiles for determining if a valid average profile can be constructed.
      *
      * @param replicateScatterTolerance
      */
     public void setReplicateScatterTolerance(double replicateScatterTolerance) {
         this.replicateScatterTolerance = replicateScatterTolerance;
+    }
+    
+     /**
+     * An alternative method for determining the number of target molecules is 
+     * to average the No values generated by the replicate profiles. This is 
+     * primarily used the replicate profiles are not sufficiently clustered to 
+     * generate a valid average profile, such as when the target quantity is less 
+     * than 10 molecules.
+     * 
+     * @return the updates average replicate target quantity expressed in molecules 
+     */
+    public double getReplicatePrfAvNo(){
+        double sum = 0;
+        int counter = 0;
+        for (SampleProfile repPrf : getReplicateProfileList()) {
+            //It is important not to include excluded profiles
+            if (!repPrf.isExcluded()) {
+                if (!repPrf.hasAnLreWindowBeenFound()) {
+//Without an LRE Window, a valid LRE-derived avNo is not available
+//However, such profiles (i.e. flat profiles) default to zero molecules and thus must be counted
+                    counter++;
+                } else {
+                    sum += repPrf.getNo();
+                    counter++;
+                }
+            }
+        }
+        if (counter == 0) {
+            //No replicate profiles are avaiable
+            repAvNo = 0;
+        }else{
+            repAvNo = sum / counter;
+        }
+        return repAvNo;
     }
 }
