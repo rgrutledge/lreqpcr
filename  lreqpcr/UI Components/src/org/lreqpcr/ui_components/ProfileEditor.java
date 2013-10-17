@@ -120,7 +120,7 @@ public class ProfileEditor extends JPanel implements
                 displayProfile();
                 return;
             } else {
-                if (avSampleProfile.isTheReplicateAverageNoLessThan10Molecules()) {
+                if (avSampleProfile.isTheReplicateAverageNoLessThan10Molecules() || !avSampleProfile.areTheRepProfilesSufficientlyClustered()) {
                     displayInvalidProfile();
                     //But do not want to display the Fc plot
                     plotFc.clearPlot();
@@ -338,7 +338,7 @@ public class ProfileEditor extends JPanel implements
             selectedNode.refreshNodeLabel();
             if (!(profile instanceof AverageProfile)) {
                 AverageProfile avProfile = (AverageProfile) profile.getParent();
-                if (avProfile.isTheReplicateAverageNoLessThan10Molecules()) {
+                if (avProfile.isTheReplicateAverageNoLessThan10Molecules() || !avProfile.areTheRepProfilesSufficientlyClustered()) {
                     //Need to update the AveragProfile parent node labels
                     LreNode parentNode = (LreNode) selectedNode.getParentNode();
                     parentNode.refreshNodeLabel();

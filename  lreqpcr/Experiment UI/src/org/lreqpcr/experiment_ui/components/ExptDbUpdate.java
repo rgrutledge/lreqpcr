@@ -48,7 +48,8 @@ public class ExptDbUpdate {
         exptDB.saveObject(newDbInfo);
         exptDB.deleteObject(oldDbInfo);
     }
-
+    
+//****************This is currently not used*************************************
     /**
      * Applies nonlinear regression analysis to pre Version 0.9 database files 
      *
@@ -71,7 +72,7 @@ public class ExptDbUpdate {
                 lreAnalysisService.updateProfile(profile);
                 dbs.saveObject(profile);
             }
-            if (!avProfile.isTheReplicateAverageNoLessThan10Molecules()) {
+            if (!avProfile.isTheReplicateAverageNoLessThan10Molecules() && avProfile.areTheRepProfilesSufficientlyClustered()) {
                 //The AverageProfile is valid thus reinitialize it
                 Profile profile = (Profile) avProfile;
                 lreAnalysisService.updateProfile(profile);
