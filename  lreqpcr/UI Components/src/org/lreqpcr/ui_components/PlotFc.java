@@ -43,7 +43,6 @@ public class PlotFc extends javax.swing.JPanel {
 
     private boolean isInitiated;
     private double maxFc;//The scaling factor for plotting cycle Fc (Y-axis)
-    private double prfFmax;//The profile's Fmax
     private double fmaxScalingFactor;//Fmax normalizing factor
     private Graphics2D g2;
     private int lreWinSize; //LRE window size
@@ -220,7 +219,7 @@ public class PlotFc extends javax.swing.JPanel {
         if (profile.getRun() instanceof CalibrationRun) {
             avFmax = profile.getRun().getAverageFmax();
         } else if (profile.getRun().getAverageFmax() == 0) {
-            profile.getRun().calculateAverageFmax();
+//            profile.getRun().calculateAverageFmax();//This is certainly not necessary*****************************************************
             if (profile.getRun().getAverageFmax() == 0) {
                 //Most likely due to old dataset in which Fmax was not implemented
                 //Failed average Fmax calculation...likely a very rare event

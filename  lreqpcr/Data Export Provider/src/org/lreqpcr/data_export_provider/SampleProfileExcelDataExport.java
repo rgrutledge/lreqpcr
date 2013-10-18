@@ -34,7 +34,6 @@ import jxl.format.Colour;
 import jxl.write.*;
 import jxl.write.Number;
 import org.lreqpcr.core.data_objects.AverageProfile;
-import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.utilities.IOUtilities;
 import org.openide.windows.WindowManager;
@@ -134,7 +133,6 @@ public class SampleProfileExcelDataExport {
             sheet.addCell(label);
             label = new Label(6, startRow, "Fmax", centerBoldUnderline);
             sheet.addCell(label);
-            //**************************************************
             label = new Label(7, startRow, "Run AvFmax", centerBoldUnderline);
             sheet.addCell(label);
             label = new Label(8, startRow, "OCF", centerBoldUnderline);
@@ -176,33 +174,24 @@ public class SampleProfileExcelDataExport {
                 sheet.addCell(label);
                 label = new Label(2, row, sampleProfile.getSampleName());
                 sheet.addCell(label);
-                if (sampleProfile.isExcluded()) {
-                    //All replicate profiles have been excluded
+                double no = sampleProfile.getNo();
+                if (no >= 0 && !sampleProfile.isExcluded()) {
+                    number = new Number(3, row, no, integerFormat);
+                    sheet.addCell(number);
+                } else {//Must be -1 signifying that this is an invalid profile\
+                    //This will also trigger a note to be added to this Profile in the Notes column
                     label = new Label(3, row, "nd", center);
                     sheet.addCell(label);
-                    label = new Label(10, row, sampleProfile.getWellLabel());
-                    sheet.addCell(label);
-                    String s;
-                    if (sampleProfile.getLongDescription() != null) {
-                        s = "EXCLUDED " + sampleProfile.getLongDescription();
-                    } else {
-                        s = "EXCLUDED ";
-                    }
-                    label = new Label(11, row, s);
-                    sheet.addCell(label);
-                    row++;
-                    continue;
-                } else {
-                    number = new Number(3, row, sampleProfile.getNo(), integerFormat);
+                }
+                if (sampleProfile.getEmax() != -1) {
+                    number = new Number(4, row, sampleProfile.getEmax(), percentFormat);
                     sheet.addCell(number);
                 }
-                number = new Number(4, row, sampleProfile.getEmax(), percentFormat);
-                sheet.addCell(number);
-                if (sampleProfile.getMidC() != 0) {
+                if (sampleProfile.getMidC() != -1) {
                     number = new Number(5, row, sampleProfile.getMidC(), floatFormat);
                     sheet.addCell(number);
                 }
-                if (sampleProfile.getFmax() != 0) {
+                if (sampleProfile.getFmax() != -1) {
                     double fmax = (sampleProfile.getFmax());
                     number = new Number(6, row, fmax, floatFormat);
                     sheet.addCell(number);
@@ -213,21 +202,33 @@ public class SampleProfileExcelDataExport {
                 sheet.addCell(number);
                 number = new Number(9, row, sampleProfile.getAmpliconSize(), integerFormat);
                 sheet.addCell(number);
-                if (sampleProfile.getAmpTm() != 0) {
+                if (sampleProfile.getAmpTm() != -1) {
                     number = new Number(10, row, sampleProfile.getAmpTm(), floatFormat);
                     sheet.addCell(number);
                 }
-                if (sampleProfile instanceof AverageSampleProfile) {
-                    label = new Label(11, row, "Multiple", center);
-                    sheet.addCell(label);
-                } else {
-                    label = new Label(11, row, sampleProfile.getWellLabel(), center);
-                    sheet.addCell(label);
-                }
+                label = new Label(11, row, sampleProfile.getWellLabel(), center);
+                sheet.addCell(label);
+                String note = "";
                 if (sampleProfile.getLongDescription() != null) {
-                    label = new Label(12, row, sampleProfile.getLongDescription());
-                    sheet.addCell(label);
+                    note = sampleProfile.getLongDescription();
                 }
+                if (sampleProfile.isExcluded()) {
+                    note = "[Excluded] " + note;
+                } else {
+                    if (sampleProfile instanceof AverageProfile) {
+                        AverageProfile avPrf = (AverageProfile) sampleProfile;
+                        if (avPrf.isTheReplicateAverageNoLessThan10Molecules()) {
+                            note = "[<10 molecules] " + note;
+                        } else {
+                            //Check to see if this is a valid Average Profile
+                            if (!avPrf.areTheRepProfilesSufficientlyClustered()) {
+                                note = "[Scattered Replicate Profiles] " + note;
+                            }
+                        }
+                    }
+                }
+                label = new Label(12, row, note);
+                sheet.addCell(label);
                 row++;
             }
             pageCounter++;

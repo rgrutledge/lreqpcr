@@ -76,7 +76,7 @@ public class ProfileEditor extends JPanel implements
         nodeResult = Utilities.actionsGlobalContext().lookupResult(LreNode.class);
         nodeResult.allItems();
         nodeResult.addLookupListener(this);
-        plotLREs.clearPlot();
+        plotLRE.clearPlot();
         curveFittingParam1.clearPanel();
         if (currentDB != null) {
             if (currentDB.isDatabaseOpen()) {
@@ -137,14 +137,14 @@ public class ProfileEditor extends JPanel implements
         prfSum = null;
         plotFo.clearPlot();
         plotFc.clearPlot();
-        plotLREs.clearPlot();
+        plotLRE.clearPlot();
         numericalTable.clearTable();
         lreObjectInfo.clearPanel();
         curveFittingParam1.clearPanel();
     }
 
     private void displayProfile() {
-        plotLREs.iniPlotLREs(prfSum, currentDB);
+        plotLRE.iniPlotLREs(prfSum, currentDB);
         numericalTable.iniNumTable(prfSum);
         plotFc.iniPlot(prfSum);
         plotFo.iniPlot(prfSum);
@@ -154,7 +154,7 @@ public class ProfileEditor extends JPanel implements
 
     private void displayInvalidProfile() {
         plotFo.clearPlot();
-        plotLREs.clearPlot();
+        plotLRE.clearPlot();
         plotFc.iniPlot(prfSum);
         lreObjectInfo.displayMember(selectedNode);
         curveFittingParam1.clearPanel();
@@ -165,7 +165,7 @@ public class ProfileEditor extends JPanel implements
     private void initComponents() {
 
         numericalTable = new org.lreqpcr.ui_components.NumericalTable();
-        plotLREs = new org.lreqpcr.ui_components.LrePlot();
+        plotLRE = new org.lreqpcr.ui_components.LrePlot();
         plotFc = new org.lreqpcr.ui_components.PlotFc();
         lreObjectInfo = new org.lreqpcr.ui_components.LreObjectInfo();
         plotFo = new org.lreqpcr.ui_components.PlotFo();
@@ -208,7 +208,7 @@ public class ProfileEditor extends JPanel implements
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(lreObjectInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(plotFc, 0, 0, Short.MAX_VALUE)
-                    .addComponent(plotLREs, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(plotLRE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(plotFo, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
@@ -234,7 +234,7 @@ public class ProfileEditor extends JPanel implements
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(plotFc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(plotLREs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(plotLRE, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lreObjectInfo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
@@ -247,7 +247,7 @@ public class ProfileEditor extends JPanel implements
     private org.lreqpcr.ui_components.NumericalTable numericalTable;
     private org.lreqpcr.ui_components.PlotFc plotFc;
     private org.lreqpcr.ui_components.PlotFo plotFo;
-    private org.lreqpcr.ui_components.LrePlot plotLREs;
+    private org.lreqpcr.ui_components.LrePlot plotLRE;
     // End of variables declaration//GEN-END:variables
 
     /**

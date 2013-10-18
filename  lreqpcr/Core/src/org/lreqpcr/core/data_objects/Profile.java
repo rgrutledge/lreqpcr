@@ -203,7 +203,14 @@ public abstract class Profile extends LreObject {
         this.deltaE = deltaE;
     }
 
+    /**
+     * 
+     * @return LRE-derived Emax or -1 if the profile is invalid
+     */
     public double getEmax() {
+        if (isExcluded()){
+            return -1;
+        }
         return eMax;
     }
 
@@ -211,11 +218,18 @@ public abstract class Profile extends LreObject {
         this.eMax = eMax;
     }
 
+    /**
+     * 
+     * @return LRE-derived Fmax or -1 if the profile is invalid
+     */
     public double getFmax() {
+        if (isExcluded()){
+            return -1;
+        }
         if (hasAnLreWindowBeenFound) {
             return eMax / -(deltaE);
         }
-        return 0;
+        return -1;
     }
 
     public double getFb() {
@@ -252,7 +266,14 @@ public abstract class Profile extends LreObject {
         this.lreWinSize = lreWinSize;
     }
 
+    /**
+     * 
+     * @return the LRE-derived C1/2 or -1 if the profile is invalid
+     */
     public double getMidC() {
+        if (isExcluded()){
+            return -1;
+        }
         return midC;
     }
 

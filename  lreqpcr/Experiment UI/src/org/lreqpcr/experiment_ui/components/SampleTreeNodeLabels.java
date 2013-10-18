@@ -77,8 +77,6 @@ public class SampleTreeNodeLabels implements LabelFactory {
                 } else {//Must be a SampleProfile
                     profile.setShortDescription("This Sample Profile has been excluded "
                             + "by the user and will not be included in the Average Profile");
-                }
-                if(profile instanceof SampleProfile){
                     return profile.getWellLabel() + ": " + profileName + "<EXCLUDED>";
                 }
                 return profileName + "<EXCLUDED>";
@@ -86,8 +84,13 @@ public class SampleTreeNodeLabels implements LabelFactory {
 
             if (profile instanceof AverageSampleProfile) {
                 AverageSampleProfile avPrf = (AverageSampleProfile) profile;
+                if (!(avPrf.getOCF() > 0)){
+                    //The averge profile cannot be initialized...so there is no Emax or No values
+                    profile.setShortDescription("Average Profiles cannot be intialized because an OCF has not been entered");
+                    return profileName + "  <No OCF>";
+                }
                 //This assumes that excluded profiles would not reach to this point
-                if (avPrf.isTheReplicateAverageNoLessThan10Molecules() && avPrf.getOCF() > 0) {
+                if (avPrf.isTheReplicateAverageNoLessThan10Molecules()) {
     //This average profile is invalid, so No is inherented from the average replicate No
                     df.applyPattern("0.00");
                     profile.setShortDescription("Less than 10 molecules requires averaging the replicate profiles quantities");
@@ -95,11 +98,10 @@ public class SampleTreeNodeLabels implements LabelFactory {
                     return profileName + "  <10N  [avRep= " + df.format(no) + "]";
                 }
                 if (!avPrf.areTheRepProfilesSufficientlyClustered()){
-         //Falll back to the replicate average No
                     df.applyPattern("0.00");
-//                    profile.setShortDescription("Less than 10 molecules requires averaging the replicate profiles quantities");
+                    profile.setShortDescription("Lack of replicate profile clustering invalidates this Average Profile");
                     double no = avPrf.getReplicatePrfAvNo();
-                    return profileName + ": Replc profiles are too scattered [avRep= " + df.format(no) + "]";
+                    return profileName + ": Replicate Profiles are scattered [avRep= " + df.format(no) + "]";
                 }
             }
             String emax;
@@ -126,9 +128,9 @@ public class SampleTreeNodeLabels implements LabelFactory {
                 profile.setShortDescription("Target quantity could not be determined because an amplicon size has not been provided");
                 return wellLabel + profileName + emax + "n.d.<Amplicon size absent> ";
             }
-            if (!(profile.getOCF() > 0)) {
-                profile.setShortDescription("Target quantity could not be determined because an OCF has not been applied");
-                return wellLabel + profileName + emax + "n.d. <No OCF>";
+            if (!(profile.getOCF() > 0)) {//This is needed for replicate profiles
+                profile.setShortDescription("Target quantity could not be determined because an OCF has not been entered");
+                return wellLabel + profileName + emax + " <No OCF>";
             }
 
             if (profile.getNo() < 10) {

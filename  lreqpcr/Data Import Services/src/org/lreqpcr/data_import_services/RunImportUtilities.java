@@ -197,7 +197,7 @@ public class RunImportUtilities {
             if (!exptDB.isDatabaseOpen()) {
                 //Provide the ability to continue Run import without a exptDB
                 Toolkit.getDefaultToolkit().beep();
-                String msg = "An Experiment database has not been opened. "
+                String msg = "An Experiment database has not been opened.\n\n"
                         + "Do you want to continue with the data import?";
                 int n = JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(), msg, "Calibration database not available. ",
                         JOptionPane.YES_NO_OPTION);
@@ -215,7 +215,7 @@ public class RunImportUtilities {
             if (!calbnDB.isDatabaseOpen()) {
                 //Provide the ability to continue Run import without a calbnDB
                 Toolkit.getDefaultToolkit().beep();
-                String msg = "A Calibration database has not been opened. "
+                String msg = "A Calibration database has not been opened.\n\n"
                         + "Do you want to continue with the data import?";
                 int n = JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(), msg, "Calibration database not available. ",
                         JOptionPane.YES_NO_OPTION);
@@ -233,7 +233,7 @@ public class RunImportUtilities {
             //Provide the ability to continue Run import without a calbnDB
             if (!ampliconDB.isDatabaseOpen()) {
                 Toolkit.getDefaultToolkit().beep();
-                String msg = "An Amplicon database has not been opened. "
+                String msg = "An Amplicon database has not been opened.\n\n"
                         + "Do you want to continue with the data import?";
                 int n = JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(), msg, "Amplicon database not available. ",
                         JOptionPane.YES_NO_OPTION);
@@ -258,11 +258,11 @@ public class RunImportUtilities {
     public static TargetStrandedness isTheTargetSingleStranded() {
         Toolkit.getDefaultToolkit().beep();
         String msg = "Are the majority of the targets SINGLE STRANDED "
-                + "(excluding the Lambda calibrator)? "
-                + "\nNote that if this run contains a mix of ssDNA and dsDNA "
+                + "(excluding any Lambda calibrators)?\n\n"
+                + "Note that if this Run contains a mix of ssDNA and dsDNA "
                 + "targets, strandedness will "
-                + "\nhave to be manually corrected via the Profile viewer";
-        if (requestYesNoAnswer("Are the Targets single stranded", msg)){
+                + "\nhave to be manually corrected via the Profile Editor.\n";
+        if (requestYesNoAnswer("Are the Targets Single Stranded", msg)){
              return TargetStrandedness.SINGLESTRANDED;
         }
         return TargetStrandedness.DOUBLESTRANDED;

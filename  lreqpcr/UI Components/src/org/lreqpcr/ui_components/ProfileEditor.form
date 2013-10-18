@@ -37,7 +37,7 @@
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                   <Component id="lreObjectInfo" max="32767" attributes="1"/>
                   <Component id="plotFc" alignment="0" min="0" pref="0" max="32767" attributes="1"/>
-                  <Component id="plotLREs" alignment="0" max="32767" attributes="1"/>
+                  <Component id="plotLRE" alignment="0" max="32767" attributes="1"/>
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" max="-2" attributes="0">
@@ -68,7 +68,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="plotFc" min="-2" max="-2" attributes="1"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="plotLREs" min="-2" max="-2" attributes="1"/>
+                      <Component id="plotLRE" min="-2" max="-2" attributes="1"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="lreObjectInfo" min="-2" max="-2" attributes="3"/>
                       <EmptySpace max="32767" attributes="0"/>
@@ -97,7 +97,7 @@
         </Property>
       </Properties>
     </Component>
-    <Component class="org.lreqpcr.ui_components.LrePlot" name="plotLREs">
+    <Component class="org.lreqpcr.ui_components.LrePlot" name="plotLRE">
     </Component>
     <Component class="org.lreqpcr.ui_components.PlotFc" name="plotFc">
     </Component>
