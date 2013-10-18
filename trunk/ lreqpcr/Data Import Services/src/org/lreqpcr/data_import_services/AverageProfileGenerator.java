@@ -14,6 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * and open the template in the editor.
  */
+// TODO this should be moved into core utilities
 package org.lreqpcr.data_import_services;
 
 import java.util.ArrayList;
@@ -246,12 +247,12 @@ public class AverageProfileGenerator {
         fooProfile.setAmpliconName(firstRepProfile.getAmpliconName());
         fooProfile.setAmpliconSize(firstRepProfile.getAmpliconSize());
         fooProfile.setSampleName(firstRepProfile.getSampleName());
-        fooProfile.setAmpTm(0);
+//        fooProfile.setAmpTm(0);//This is unnecessary
         fooProfile.setName(fooProfile.getAmpliconName() + "@" + fooProfile.getSampleName());
-        if (fooProfile.getRawFcReadings().length != 0) {
+        if (fooProfile.getRawFcReadings().length != 0) {//************************This should never happen!!!!
             //If the replicate No average is <10 it cannot be initialized
             AverageProfile avProfile = (AverageProfile) fooProfile;
-            if (!avProfile.isTheReplicateAverageNoLessThan10Molecules() && avProfile.areTheRepProfilesSufficientlyClustered()) {
+            if (!avProfile.isTheReplicateAverageNoLessThan10Molecules() && avProfile.areTheRepProfilesSufficientlyClustered()) {//
                 //Note the the replicate sample profiles have already been initialized
                 profileIntialization.conductAutomatedLreWindowSelection(fooProfile, parameters);
             }

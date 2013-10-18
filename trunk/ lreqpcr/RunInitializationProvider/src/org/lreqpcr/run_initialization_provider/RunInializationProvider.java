@@ -79,6 +79,7 @@ public class RunInializationProvider implements RunInitializationService {
         //to very few types, with the manual data import being rare exceptions
         //Check for the necessary databases for each type of import format
         if (importType == DataImportType.STANDARD) {
+//*************** TO DO should present error dialogs rather than simply returning...BUT is this really necessary?????
             //All three databases will likely be needed
             if (!experimentDB.isDatabaseOpen()) {
                 if (!experimentDatabaseNotOpen()) {
@@ -107,7 +108,6 @@ public class RunInializationProvider implements RunInitializationService {
             }
         }
         if (importType == DataImportType.MANUAL_CALIBRATION_PROFILE) {
-            //Absolutely need an active Experiment database
             if (!calbnDB.isDatabaseOpen()) {
                 String msg = "A Calibration database is not open. \n"
                         + "Data import will be terminated.";
@@ -125,9 +125,11 @@ public class RunInializationProvider implements RunInitializationService {
         LreAnalysisService profileInitializer = Lookup.getDefault().lookup(LreAnalysisService.class);
 
 //Process the SampleProfiles if an Experiment database is open
+        // TOD ************************ why would the list be null????
         if (sampleProfileList != null) {
-            if (!sampleProfileList.isEmpty()) {//A manual Calibration Profile import type should have an empty SampleProfile list
-                if (experimentDB.isDatabaseOpen()) {
+//******************************BUT should not the DataImportType not deal with this????
+            if (!sampleProfileList.isEmpty()) {//A manual Calibration Profile import type does not have an empty SampleProfile list
+                if (experimentDB.isDatabaseOpen()) {//******Again has this not been check already at the beginning of the function???
                     sampleRun = new RunImpl();//This is the Run object that will hold the sample profiles
                     sampleRun.setRunDate(runDate);
                     sampleRun.setName(runName);
@@ -166,7 +168,6 @@ public class RunInializationProvider implements RunInitializationService {
                         //Need to first calculate the run average Fmax
                         sampleRun.calculateAverageFmax();
                         //Cycle through all the sample profiles and set Fmax normalization to true
-                        //Set Emax fixed and Fmax normalization
                         for (AverageProfile profile : averageSampleProfileList) {
                             AverageSampleProfile avProfile = (AverageSampleProfile) profile;
                             avProfile.setIsTargetQuantityNormalizedToFmax(true);
@@ -286,7 +287,7 @@ public class RunInializationProvider implements RunInitializationService {
      */
     public boolean experimentDatabaseNotOpen() {
         Toolkit.getDefaultToolkit().beep();
-        String msg = "An Experiment database has not been opened. \n"
+        String msg = "An Experiment database has not been opened. \n\n"
                 + "Do you want to continue with the data import?";
         return RunImportUtilities.requestYesNoAnswer("Experiment database not open?",
                 msg);
@@ -300,14 +301,14 @@ public class RunInializationProvider implements RunInitializationService {
      */
     public boolean calibrationDatabaseNotOpen() {
         Toolkit.getDefaultToolkit().beep();
-        String msg = "A Calibration database has not been opened. \n"
+        String msg = "A Calibration database has not been opened.\n\n"
                 + "Do you want to continue with the data import?";
-        return RunImportUtilities.requestYesNoAnswer("Calibration database not open?", msg);
+        return RunImportUtilities.requestYesNoAnswer("Calibration database not open", msg);
     }
 
     public boolean ampliconDatabaseNotOpen() {
         Toolkit.getDefaultToolkit().beep();
-        String msg = "An Amplicon database has not been opened. \n"
+        String msg = "An Amplicon database has not been opened.\n\n"
                 + "Do you want to continue with the data import?";
         return RunImportUtilities.requestYesNoAnswer("Amplicon database not open?", msg);
     }
@@ -317,10 +318,13 @@ public class RunInializationProvider implements RunInitializationService {
      */
     public void displayNoOcfWarning(){
         Toolkit.getDefaultToolkit().beep();
-        String msg = "This appears to be a new experiment database for \n"
-                        + "which an OCF has not yet been entered. Please note \n"
-                + "that it will be necessary to manually enter an OCF \n"
-                + "in order for target quantities to be determined.";
+        String msg = "This appears to be a new experiment database for\n"
+                   + "which an optical calibration factor (OCF) has not\n"
+                   + "yet been entered.\n\n"
+                   + "Please note that it will be necessary to manually\n"
+                   + "enter an OCF in order to allow target quantities\n"
+                   + "to be calculated. See Help for additional information\n"
+                   + "about optical calibration.";
                 JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "An OCF has not been entered",
                         JOptionPane.WARNING_MESSAGE);
     }

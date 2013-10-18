@@ -183,12 +183,9 @@ public class AB7500Ver2ImportProvider extends RunImportService {
         }
 
         //Setup the Run and determine run date
-//        Run run = new RunImpl();
         String runName = ver2ExcelImportFile.getName();
         //Remove the file extension
         runName = runName.substring(0, runName.indexOf("."));
-//        run.setName(runName);
-//        run.setRunDate(
         Date runDate = RunImportUtilities.importExcelDate(date);
         //Import the data
         List<SampleProfile> sampleProfileList = new ArrayList<SampleProfile>();

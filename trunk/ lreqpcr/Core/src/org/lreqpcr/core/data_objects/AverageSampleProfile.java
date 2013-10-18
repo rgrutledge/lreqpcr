@@ -157,17 +157,68 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
     }
 
     /**
+     * Depending on whether this is a valid Average Profile, this function will return the 
+     * the number of target molecules determined from the average amplification 
+     * profile. Note that getNo() is overridden to call this function.
      * 
-     * @return the calculated number of target molecules (No), or if the Average Profile is invalid, the replicate average No
+     * @return the calculated number of target molecules (No) if this is a valid 
+     * average profile; 
+     * <p> 
+     * if No is less than 10 molecules, the average replicate No is returned; 
+     * <p>
+     * if the replicate profiles are too scattered, -1 is returned.
      */
-    @Override
-    public double getNo() {
-        //This updates the average replicate No
-        if (getReplicatePrfAvNo() >10 && areTheRepProfilesSufficientlyClustered()) {
-            return super.getNo();
-        }//If not return the replicate average No which has been already updated
-        return repAvNo;
+    public double getAvProfileNo() {
+        if (getReplicatePrfAvNo() <10){
+            //revert to the average replicate No
+            return getReplicatePrfAvNo();
+        }
+        if (!areTheRepProfilesSufficientlyClustered()) {
+            //A valid No is not available, to return -1
+            return -1;
+        }
+        return super.getNo();
     }
+    
+    @Override
+    public double getNo(){
+        return getAvProfileNo();
+    }
+    
+    //Override get Emax, midC and Fmax in order to test if this is a valid profile
+    @Override
+    public double getEmax() {
+        if (!areTheRepProfilesSufficientlyClustered() || isTheReplicateAverageNoLessThan10Molecules()){
+            return -1;
+        }
+        return super.getEmax(); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public double getFmax() {
+        if (!areTheRepProfilesSufficientlyClustered() || isTheReplicateAverageNoLessThan10Molecules()){
+            return -1;
+        }
+        return super.getFmax(); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public double getMidC() {
+        if (!areTheRepProfilesSufficientlyClustered() || isTheReplicateAverageNoLessThan10Molecules()){
+            return -1;
+        }
+        return super.getMidC(); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    //Override getWellLabel to allow single replicate profile well labels to be returned
+    @Override
+    public String getWellLabel() {
+        if (getTheNumberOfActiveReplicateProfiles() == 1){
+            return super.getWellLabel();
+        }
+        return "Multiple";
+    }
+    
 
     public int getTheNumberOfActiveReplicateProfiles() {
         int numberOfActiveReplicateProfiles = 0;
@@ -178,10 +229,12 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
         }
         return numberOfActiveReplicateProfiles;
     }
-
+    
     /**
      * Determines whether the replicate profiles are sufficiently clustered to
-     * generate a valid Fc dataset that was used to create this average profile.
+     * generate a valid Fc dataset that was used to create this average profile. 
+     * If sufficient clustering is not apparent, the target quantity reverts to 
+     * the average replicate No, although this 
      *
      * @return whether this is a valid average profile
      */
@@ -281,7 +334,8 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
         }
         if (counter == 0) {
             //No replicate profiles are avaiable
-            repAvNo = 0;
+            //This should never happen
+            repAvNo = -1;
         }else{
             repAvNo = sum / counter;
         }
