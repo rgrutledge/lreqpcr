@@ -86,20 +86,20 @@ public class SampleTreeNodeLabels implements LabelFactory {
                 AverageSampleProfile avPrf = (AverageSampleProfile) profile;
                 if (!(avPrf.getOCF() > 0)){
                     //The averge profile cannot be initialized...so there is no Emax or No values
-                    profile.setShortDescription("Average Profiles cannot be intialized because an OCF has not been entered");
+                    profile.setShortDescription("Invalid Average Profile: OCF has not been entered");
                     return profileName + "  <No OCF>";
                 }
                 //This assumes that excluded profiles would not reach to this point
                 if (avPrf.isTheReplicateAverageNoLessThan10Molecules()) {
     //This average profile is invalid, so No is inherented from the average replicate No
                     df.applyPattern("0.00");
-                    profile.setShortDescription("Less than 10 molecules requires averaging the replicate profiles quantities");
+                    profile.setShortDescription("Invalid Average Profile: replicate profile average is less than 10 molecules");
                     double no = avPrf.getReplicatePrfAvNo();
                     return profileName + "  <10N  [avRep= " + df.format(no) + "]";
                 }
                 if (!avPrf.areTheRepProfilesSufficientlyClustered()){
                     df.applyPattern("0.00");
-                    profile.setShortDescription("Lack of replicate profile clustering invalidates this Average Profile");
+                    profile.setShortDescription("Invlaid Average Profile: replicate profiles are too scattered");
                     double no = avPrf.getReplicatePrfAvNo();
                     return profileName + ": Replicate Profiles are scattered [avRep= " + df.format(no) + "]";
                 }
