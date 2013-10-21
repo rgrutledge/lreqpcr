@@ -218,7 +218,6 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
         }
         return "Multiple";
     }
-    
 
     public int getTheNumberOfActiveReplicateProfiles() {
         int numberOfActiveReplicateProfiles = 0;

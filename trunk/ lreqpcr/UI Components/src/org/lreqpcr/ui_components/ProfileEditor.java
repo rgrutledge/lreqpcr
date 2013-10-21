@@ -98,15 +98,10 @@ public class ProfileEditor extends JPanel implements
         this.profile = profile;
 //Display and editing of a profile is conducted through the ProfileSummary interface
         prfSum = ProfileInitializer.constructProfileSummary(profile);
-        if (profile.hasAnLreWindowBeenFound() || !profile.isExcluded()) {
+        if (profile.hasAnLreWindowBeenFound() && !profile.isExcluded()) {
             updatePanels();
-        } else {//LRE window not found or the Profile is excluded
+        } else {
             displayInvalidProfile();
-//            plotFo.clearPlot();
-//            plotLREs.clearPlot();
-//            plotFc.iniPlot(prfSum);
-//            lreObjectInfo.displayMember(selectedNode);
-//            curveFittingParam1.clearPanel();
         }
     }
 
