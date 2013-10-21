@@ -21,7 +21,6 @@ import java.awt.event.KeyEvent;
 import java.text.DecimalFormat;
 import javax.swing.JPanel;
 import org.lreqpcr.core.data_objects.AverageProfile;
-import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.SampleProfile;
@@ -112,7 +111,7 @@ public class LreObjectInfo extends JPanel {
                             prf.setAmpliconSize(i);
                         }
                         updateReplicateProfileNodeLabels();
-            //Changing amplicon size changes target quantity and so fire a profile change event
+                        //Changing amplicon size changes target quantity and so fire a profile change event
                         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_CHANGED);
                     }
                 }
@@ -128,8 +127,8 @@ public class LreObjectInfo extends JPanel {
         ampSizeDisplay.setVisible(false);
         tmLabel.setVisible(false);
         tmDisplay.setVisible(false);
-        avTmDisplay.setVisible(false);
-        avTmLabel.setVisible(false);
+        tmDisplay.setVisible(false);
+        tmLabel.setVisible(false);
         sampleLabel.setVisible(false);
         sampleNameDisplay.setVisible(false);
         nanErrorDisplay.setVisible(false);
@@ -167,23 +166,20 @@ public class LreObjectInfo extends JPanel {
             ampNameDisplay.setVisible(true);
             ampSizeLabel.setVisible(true);
             ampSizeDisplay.setVisible(true);
-            tmLabel.setVisible(true);
-            tmDisplay.setVisible(true);
-            avTmLabel.setVisible(false);
-            avTmDisplay.setVisible(false);
             sampleLabel.setVisible(true);
             sampleLabel.setVisible(true);
             sampleNameDisplay.setVisible(true);
             profile = (Profile) member;
-            if (profile instanceof SampleProfile || profile instanceof AverageSampleProfile) {
+            //If this is a sample profile, set the target standedness
+            if (profile instanceof SampleProfile) {
                 ssDNAcheckBox1.setVisible(true);
                 if (profile.getTargetStrandedness() == TargetStrandedness.SINGLESTRANDED) {
                     ssDNAcheckBox1.setSelected(true);
-                } else {
+                } else {//This must be a Calibration profile and so is double stranded
                     ssDNAcheckBox1.setSelected(false);
                 }
             }
-            if (profile.getWellLabel() != null) {
+            if (profile.getWellLabel() != null) {//This should never be null
                 wellLabelLabel.setVisible(true);
                 wellLabelDisplay.setVisible(true);
                 wellLabelDisplay.setText(profile.getWellLabel());
@@ -199,31 +195,22 @@ public class LreObjectInfo extends JPanel {
                 ampSizeDisplay.setText(String.valueOf(profile.getAmpliconSize()));
             }
             sampleNameDisplay.setText(profile.getSampleName());
-            if (profile.getAmpTm() != 0 && profile.hasAnLreWindowBeenFound()) {
-                tmDisplay.setText(df.format(profile.getAmpTm()) + " °C");
-            } else {
-                tmDisplay.setVisible(false);
-                tmLabel.setVisible(false);
-            }
             //Display the average Tm, if available
-            if (profile instanceof AverageProfile) {
-                AverageProfile avProfile = (AverageProfile) profile;
-                if (profile.isExcluded()) {
-                    avTmLabel.setVisible(false);
-                    avTmDisplay.setVisible(false);
-//This is a pretty crude approach but has very low overhead and ensures a current value
-                } else {
-                    if (avProfile.calculateAvAmpTm() > 0) {
-                        avTmDisplay.setText(df.format(avProfile.calculateAvAmpTm()) + " °C");
-                        avTmLabel.setVisible(true);
-                        avTmDisplay.setVisible(true);
-                    } else {
-                        avTmLabel.setVisible(false);
-                        avTmDisplay.setVisible(false);
-                    }
+            if (profile.getAmpTm() != 0
+                    && profile.hasAnLreWindowBeenFound()
+                    && !profile.isExcluded()) {
+                //Determine which Tm label to use
+                if (profile instanceof AverageProfile) {
+                    tmLabel.setText("Av. Tm");
+                } else {//Must be a replicate profile
+                    tmLabel.setText("Tm");
                 }
+                tmLabel.setVisible(true);
+                //Display the Tm
+                tmDisplay.setText(df.format(profile.getAmpTm()) + " °C");
+                tmDisplay.setVisible(true);
             }
-        } else {
+        } else {//This memeber is not a Profile
             wellLabelLabel.setVisible(false);
             wellLabelDisplay.setVisible(false);
             ampLabel.setVisible(false);
@@ -232,21 +219,21 @@ public class LreObjectInfo extends JPanel {
             ampSizeDisplay.setVisible(false);
             tmLabel.setVisible(false);
             tmDisplay.setVisible(false);
-            avTmLabel.setVisible(false);
-            avTmDisplay.setVisible(false);
+            tmLabel.setVisible(false);
+            tmDisplay.setVisible(false);
             sampleLabel.setVisible(false);
             sampleNameDisplay.setVisible(false);
             nanErrorDisplay.setVisible(false);
             ssDNAcheckBox1.setVisible(false);
         }
-    }
+    }//End of iniInfo
 
     public void clearPanel() {
         member = null;
         nameDisplay.setText("");
         notesDisplay.setText("");
         tmDisplay.setText("");
-        avTmDisplay.setText("");
+        tmDisplay.setText("");
         ampLabel.setVisible(false);
         ampNameDisplay.setVisible(false);
         ampSizeLabel.setVisible(false);
@@ -257,8 +244,8 @@ public class LreObjectInfo extends JPanel {
         wellLabelLabel.setVisible(false);
         wellLabelDisplay.setVisible(false);
         tmDisplay.setVisible(false);
-        avTmDisplay.setVisible(false);
-        avTmLabel.setVisible(false);
+        tmDisplay.setVisible(false);
+        tmLabel.setVisible(false);
         tmLabel.setVisible(false);
         ssDNAcheckBox1.setVisible(false);
     }
@@ -301,11 +288,9 @@ public class LreObjectInfo extends JPanel {
         notesDisplay = new javax.swing.JTextArea();
         wellLabelLabel = new javax.swing.JLabel();
         wellLabelDisplay = new javax.swing.JTextField();
-        tmDisplay = new javax.swing.JTextField();
-        tmLabel = new javax.swing.JLabel();
         ssDNAcheckBox1 = new javax.swing.JCheckBox();
-        avTmLabel = new javax.swing.JLabel();
-        avTmDisplay = new javax.swing.JTextField();
+        tmLabel = new javax.swing.JLabel();
+        tmDisplay = new javax.swing.JTextField();
 
         setBackground(new java.awt.Color(244, 245, 247));
         setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -346,11 +331,9 @@ public class LreObjectInfo extends JPanel {
 
         wellLabelDisplay.setEditable(false);
         wellLabelDisplay.setColumns(3);
-
-        tmDisplay.setEditable(false);
-        tmDisplay.setColumns(3);
-
-        tmLabel.setText("Tm:");
+        wellLabelDisplay.setMaximumSize(new java.awt.Dimension(55, 20));
+        wellLabelDisplay.setMinimumSize(new java.awt.Dimension(55, 20));
+        wellLabelDisplay.setPreferredSize(new java.awt.Dimension(55, 20));
 
         ssDNAcheckBox1.setBackground(new java.awt.Color(244, 245, 247));
         ssDNAcheckBox1.setText("ssDNA Target");
@@ -360,11 +343,11 @@ public class LreObjectInfo extends JPanel {
             }
         });
 
-        avTmLabel.setText("Av. Tm:");
+        tmLabel.setText("Av. Tm:");
 
-        avTmDisplay.setEditable(false);
-        avTmDisplay.setColumns(3);
-        avTmDisplay.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+        tmDisplay.setEditable(false);
+        tmDisplay.setColumns(3);
+        tmDisplay.setHorizontalAlignment(javax.swing.JTextField.LEFT);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -384,11 +367,7 @@ public class LreObjectInfo extends JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(wellLabelLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(wellLabelDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(tmLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tmDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(wellLabelDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(sampleLabel)
@@ -410,9 +389,9 @@ public class LreObjectInfo extends JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ampSizeDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(avTmLabel)
+                        .addComponent(tmLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(avTmDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(tmDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(nanErrorDisplay)
                         .addContainerGap())))
@@ -439,8 +418,8 @@ public class LreObjectInfo extends JPanel {
                     .addComponent(ampSizeLabel)
                     .addComponent(ampSizeDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(nanErrorDisplay)
-                    .addComponent(avTmLabel)
-                    .addComponent(avTmDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(tmLabel)
+                    .addComponent(tmDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(sampleLabel)
@@ -448,10 +427,8 @@ public class LreObjectInfo extends JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(wellLabelLabel)
-                    .addComponent(wellLabelDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tmDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tmLabel))
-                .addContainerGap(18, Short.MAX_VALUE))
+                    .addComponent(wellLabelDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(17, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -470,8 +447,6 @@ public class LreObjectInfo extends JPanel {
     private javax.swing.JTextField ampNameDisplay;
     private javax.swing.JTextField ampSizeDisplay;
     private javax.swing.JLabel ampSizeLabel;
-    private javax.swing.JTextField avTmDisplay;
-    private javax.swing.JLabel avTmLabel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane2;
