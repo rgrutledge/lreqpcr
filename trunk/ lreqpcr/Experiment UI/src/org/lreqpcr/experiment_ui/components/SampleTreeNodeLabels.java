@@ -89,6 +89,10 @@ public class SampleTreeNodeLabels implements LabelFactory {
                     profile.setShortDescription("Invalid Average Profile: OCF has not been entered");
                     return profileName + "  <No OCF>";
                 }
+                if (avPrf.getAmpliconSize() == 0) {
+                profile.setShortDescription("Invalid Average Profile: an amplicon size is unknown");
+                return profileName + "n.d.<Amplicon Size Unknown> ";
+            }
                 //This assumes that excluded profiles would not reach to this point
                 if (avPrf.isTheReplicateAverageNoLessThan10Molecules()) {
     //This average profile is invalid, so No is inherented from the average replicate No
@@ -125,8 +129,8 @@ public class SampleTreeNodeLabels implements LabelFactory {
             emax = "(" + df.format(profile.getEmax() * 100) + "%) ";
             //Determine what to display for No
             if (profile.getAmpliconSize() == 0) {
-                profile.setShortDescription("Target quantity could not be determined because an amplicon size has not been provided");
-                return wellLabel + profileName + emax + "n.d.<Amplicon size absent> ";
+                profile.setShortDescription("Target quantity could not be determined because the amplicon size is unknown");
+                return wellLabel + profileName + emax + "n.d.<Amplicon Size Unknown> ";
             }
             if (!(profile.getOCF() > 0)) {//This is needed for replicate profiles
                 profile.setShortDescription("Target quantity could not be determined because an OCF has not been entered");
