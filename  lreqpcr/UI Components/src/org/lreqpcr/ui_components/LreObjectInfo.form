@@ -51,11 +51,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="wellLabelLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="wellLabelDisplay" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="tmLabel" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="tmDisplay" min="-2" pref="52" max="-2" attributes="2"/>
+                      <Component id="wellLabelDisplay" min="-2" pref="55" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
@@ -81,9 +77,9 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="ampSizeDisplay" min="-2" pref="58" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="avTmLabel" min="-2" max="-2" attributes="0"/>
+                      <Component id="tmLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="avTmDisplay" min="-2" pref="50" max="-2" attributes="2"/>
+                      <Component id="tmDisplay" min="-2" pref="50" max="-2" attributes="2"/>
                       <EmptySpace max="32767" attributes="0"/>
                       <Component id="nanErrorDisplay" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
@@ -117,8 +113,8 @@
                   <Component id="ampSizeLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="ampSizeDisplay" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="nanErrorDisplay" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="avTmLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="avTmDisplay" alignment="3" min="-2" pref="20" max="-2" attributes="0"/>
+                  <Component id="tmLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="tmDisplay" alignment="3" min="-2" pref="20" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -128,11 +124,9 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="wellLabelLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="wellLabelDisplay" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="tmDisplay" alignment="3" min="-2" pref="20" max="-2" attributes="0"/>
-                  <Component id="tmLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="wellLabelDisplay" alignment="3" min="-2" pref="21" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="18" max="32767" attributes="1"/>
+              <EmptySpace pref="17" max="32767" attributes="1"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -221,17 +215,15 @@
       <Properties>
         <Property name="editable" type="boolean" value="false"/>
         <Property name="columns" type="int" value="3"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="tmDisplay">
-      <Properties>
-        <Property name="editable" type="boolean" value="false"/>
-        <Property name="columns" type="int" value="3"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="tmLabel">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Tm:"/>
+        <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[55, 20]"/>
+        </Property>
+        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[55, 20]"/>
+        </Property>
+        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[55, 20]"/>
+        </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JCheckBox" name="ssDNAcheckBox1">
@@ -245,12 +237,12 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ssDNAcheckBox1ActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JLabel" name="avTmLabel">
+    <Component class="javax.swing.JLabel" name="tmLabel">
       <Properties>
         <Property name="text" type="java.lang.String" value="Av. Tm:"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="avTmDisplay">
+    <Component class="javax.swing.JTextField" name="tmDisplay">
       <Properties>
         <Property name="editable" type="boolean" value="false"/>
         <Property name="columns" type="int" value="3"/>
