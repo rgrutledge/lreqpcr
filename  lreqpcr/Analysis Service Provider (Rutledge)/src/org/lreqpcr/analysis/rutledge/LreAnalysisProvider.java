@@ -161,9 +161,10 @@ public class LreAnalysisProvider implements LreAnalysisService {
             //Error dialog
             Toolkit.getDefaultToolkit().beep();
             JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
-                    "The nonlinear regression analysis has failed. \n"
-                    + "LRE analysis will thus not include a baseline slope correction",
-                    "Failed to apply nonlinear regression",
+                    "The nonlinear regression analysis has failed for well '"
+                     + profile.getWellLabel() + "'.\n\n"
+                    + "LRE analysis will thus not include a baseline-slope correction",
+                    "Failed to apply nonlinear regression.",
                     JOptionPane.ERROR_MESSAGE);
             //Reset the LRE window using Fb
             profile.setWasNonlinearRegressionSuccessful(false);
