@@ -197,13 +197,17 @@ public class LreAnalysisProvider implements LreAnalysisService {
         //Exclude the first three cycles
         int firstCycle = 4;//Start at cycle 4        
 //Use the top of the LRE window as the last cycle included in the regression analysis
-        int lastCycle = profile.getStrCycleInt() + profile.getLreWinSize() - 1;
-        int numberOfCycles = lastCycle - firstCycle + 1;
         double[] fcArray = profile.getRawFcReadings();
+        int lastCycle = profile.getStrCycleInt() + profile.getLreWinSize() - 1;
+        //LRE windows at the end of the profile can generate an incorrect last cycle
+        if (lastCycle > fcArray.length){
+            lastCycle = fcArray.length;
+        }
+        int numberOfCycles = lastCycle - firstCycle + 1;
         //Construct the trimmed Fc dataset TreeMap<cycle number, Fc reading>
         TreeMap<Integer, Double> profileMap = new TreeMap<Integer, Double>();
         for (int i = 0; i < numberOfCycles; i++) {
-            profileMap.put(firstCycle + i, fcArray[firstCycle - 1 + i]);
+                profileMap.put(firstCycle + i, fcArray[firstCycle - 1 + i]);
         }
         //Run NR once to grossly stablize the LRE-derived parameters
         LreParameters lreDerivedParam = getLreParameters();
