@@ -195,8 +195,9 @@ public abstract class Cycle {
     }
 
     /**
-     * Sets the cycLREparam the linear regression parameters for this cycle [slope, intercept, r2].
-     * @param cycLREparam the linear regression parameters for this cycle [slope, intercept, r2]
+     * Sets the the LRE linear regression parameters for this cycle [slope, intercept, r2].
+     * 
+     * @param cycLREparam the LRE linear regression parameters for this cycle [slope, intercept, r2]
      */
     public void setCycLREparam(double[] cycLREparam) {
         this.cycLREparam = cycLREparam;

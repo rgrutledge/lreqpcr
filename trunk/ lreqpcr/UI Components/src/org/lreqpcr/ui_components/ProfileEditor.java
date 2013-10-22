@@ -26,8 +26,8 @@ import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
-import org.lreqpcr.core.data_processing.ProfileInitializer;
 import org.lreqpcr.core.data_processing.ProfileSummary;
+import org.lreqpcr.core.data_processing.ProfileSummaryImp;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
 import org.lreqpcr.core.ui_elements.LreNode;
@@ -97,7 +97,7 @@ public class ProfileEditor extends JPanel implements
         clearPanels();
         this.profile = profile;
 //Display and editing of a profile is conducted through the ProfileSummary interface
-        prfSum = ProfileInitializer.constructProfileSummary(profile);
+        prfSum = new ProfileSummaryImp(profile);
         if (profile.hasAnLreWindowBeenFound() && !profile.isExcluded()) {
             updatePanels();
         } else {
@@ -115,7 +115,8 @@ public class ProfileEditor extends JPanel implements
                 displayProfile();
                 return;
             } else {
-                if (avSampleProfile.isTheReplicateAverageNoLessThan10Molecules() || !avSampleProfile.areTheRepProfilesSufficientlyClustered()) {
+                if (avSampleProfile.isTheReplicateAverageNoLessThan10Molecules() 
+                        || !avSampleProfile.areTheRepProfilesSufficientlyClustered()) {
                     displayInvalidProfile();
                     //But do not want to display the Fc plot
                     plotFc.clearPlot();
@@ -339,8 +340,9 @@ public class ProfileEditor extends JPanel implements
                     parentNode.refreshNodeLabel();
                 }
             }
-            //Following curve fitting, the Profile Summary must be updated
-            ProfileInitializer.constructProfileSummary(profile);
+            //Changes to the Profile requires the ProfileSummary to be updated
+//            ProfileInitializer.constructProfileSummary(profile);
+            prfSum.updateProfileSummary();
             updatePanels();
         }
         if (key == PanelMessages.NEW_DATABASE) {

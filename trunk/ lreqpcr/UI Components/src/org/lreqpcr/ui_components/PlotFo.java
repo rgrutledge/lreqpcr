@@ -72,7 +72,7 @@ public class PlotFo extends javax.swing.JPanel {
             return;
         }
         this.prfSum = prfSum;
-        strCycle = prfSum.getStrCycle();
+        strCycle = prfSum.getLreWindowStartCycle();
         if (strCycle == null) {
             clearPlot();
             return;
@@ -224,11 +224,11 @@ public class PlotFo extends javax.swing.JPanel {
         double yOffset = height * 0.05; //5% top border
         double ptSize = 16;
         if (prfSum != null) {
-            if (prfSum.getStrCycle() == null || prfSum.getStrCycle().getCycNum() == 0) {
+            if (prfSum.getLreWindowStartCycle() == null || prfSum.getLreWindowStartCycle().getCycNum() == 0) {
                 clearPlot();
                 return;
             }
-            Cycle runner = prfSum.getStrCycle();
+            Cycle runner = prfSum.getLreWindowStartCycle();
             //Run back 5 cycles below the start cycle
             for (int i = 1; i < 5; i++) {
                 if (runner == null) {
@@ -249,7 +249,7 @@ public class PlotFo extends javax.swing.JPanel {
             }
             g2.setColor(Color.RED);
             //Draw red circles specifying the cycles included within the LRE window
-            runner = prfSum.getStrCycle().getPrevCycle();
+            runner = prfSum.getLreWindowStartCycle().getPrevCycle();
             if (runner == null) {
                 return;
             }
