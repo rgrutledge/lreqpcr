@@ -189,7 +189,7 @@ public class PlotFc extends javax.swing.JPanel {
         fmaxNrmzd.setVisible(false);
         clearPlot = false;
         zeroCycle = prfSum.getZeroCycle();
-        strCycle = prfSum.getStrCycle();
+        strCycle = prfSum.getLreWindowStartCycle();
         profile = prfSum.getProfile();
         lreWinSize = profile.getLreWinSize();
         DecimalFormat df = new DecimalFormat();

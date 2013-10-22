@@ -192,7 +192,7 @@ public class NumericalTable extends javax.swing.JPanel {
         tc4.setPreferredWidth(7);
         Cycle runner = null;
         try {
-            runner = prfSum.getStrCycle().getPrevCycle().getPrevCycle().getPrevCycle();
+            runner = prfSum.getLreWindowStartCycle().getPrevCycle().getPrevCycle().getPrevCycle();
         } catch (Exception e) {
             return;
         }

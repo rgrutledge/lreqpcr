@@ -173,12 +173,10 @@ public class LrePlot extends javax.swing.JPanel {
      */
     private void processModifiedLreWindow() {
         //The Profile has changed so the ProfileSummary needs updating
-        ProfileInitializer.updateProfileSummary(prfSum);
-//This includes nonlinear regression analysis (if available) which provides 
-//values for Fb and Fb-slope that are used to generate a new working Fc dataset
-        lreAnalService.updateProfile(profile);
+        prfSum.updateProfileSummary();//This also updates the Profile
+//        lreAnalService.updateProfile(profile);
         //The Profile has changed so needs to be saved and the ProfileSummary updated
-        ProfileInitializer.updateProfileSummary(prfSum);
+//        prfSum = ProfileInitializer.constructProfileSummary(profile);
         db.saveObject(profile);
         updateAvergeProfileIfNeeded();
         universalLookup.fireChangeEvent(PanelMessages.PROFILE_CHANGED);
@@ -191,8 +189,8 @@ public class LrePlot extends javax.swing.JPanel {
             //This function will update the AverageSampleProfile No if it is <10N
             if (avProfile.isTheReplicateAverageNoLessThan10Molecules()) {
                 db.saveObject(avProfile);
-            }else {
-                if (avProfile.areTheRepProfilesSufficientlyClustered()){
+            } else {
+                if (avProfile.areTheRepProfilesSufficientlyClustered()) {
                     //This updates the replicate profile average No
                     avProfile.getReplicatePrfAvNo();
                     db.saveObject(avProfile);
@@ -561,7 +559,6 @@ public class LrePlot extends javax.swing.JPanel {
             return;
         }
         profile.setStrCycleInt(profile.getStrCycleInt() + 1);
-        prfSum.setStrCycle(prfSum.getStrCycle().getNextCycle());
         profile.setLreWinSize(profile.getLreWinSize() - 1);
         processModifiedLreWindow();
     }//GEN-LAST:event_removeBottomActionPerformed
@@ -572,7 +569,6 @@ public class LrePlot extends javax.swing.JPanel {
             return;
         }
         profile.setStrCycleInt(profile.getStrCycleInt() - 1);
-        prfSum.setStrCycle(prfSum.getStrCycle().getPrevCycle());
         profile.setLreWinSize(profile.getLreWinSize() + 1);
         processModifiedLreWindow();
     }//GEN-LAST:event_addBottomActionPerformed
@@ -585,16 +581,16 @@ private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
     LreWindowSelectionParameters selectionParameters = l.get(0);
     lreAnalService.conductAutomatedLreWindowSelection(profile, selectionParameters);
-    updateAvergeProfileIfNeeded();
 //Profile has been changed and therefore needs to be saved and the ProfileSummary updated
-     db.saveObject(profile);
-    ProfileInitializer.updateProfileSummary(prfSum);
+    prfSum.updateProfileSummary();
+    updateAvergeProfileIfNeeded();
+    db.saveObject(profile);
     universalLookup.fireChangeEvent(PanelMessages.PROFILE_CHANGED);
 }//GEN-LAST:event_resetButtonActionPerformed
 
     /**
-     * Three elements: the LRE line (axis to axis), the LRE window Fc-Ec points and the
-     * profile FcEc points with early and late cycles trimmed away
+     * Three elements: the LRE line (axis to axis), the LRE window Fc-Ec points
+     * and the profile FcEc points with early and late cycles trimmed away
      */
     @Override
     public void paintComponent(Graphics g) {
@@ -642,7 +638,7 @@ private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         double ptSize = 16; //Point size
         //Draw the LRE points
         if (prfSum != null) {
-            runner = prfSum.getStrCycle();
+            runner = prfSum.getLreWindowStartCycle();
             if (runner == null) {
                 return;
             }
@@ -664,7 +660,7 @@ private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
                 runner = runner.getNextCycle();
             }
             //Draw circles around the LRE window points
-            runner = prfSum.getStrCycle();
+            runner = prfSum.getLreWindowStartCycle();
             if (runner == null) {
                 return;
             }

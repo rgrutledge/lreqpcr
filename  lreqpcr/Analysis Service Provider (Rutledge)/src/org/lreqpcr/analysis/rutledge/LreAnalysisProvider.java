@@ -24,8 +24,8 @@ import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_processing.Cycle;
-import org.lreqpcr.core.data_processing.ProfileInitializer;
 import org.lreqpcr.core.data_processing.ProfileSummary;
+import org.lreqpcr.core.data_processing.ProfileSummaryImp;
 import org.lreqpcr.core.utilities.MathFunctions;
 import org.lreqpcr.nonlinear_regression_services.LreParameters;
 import org.lreqpcr.nonlinear_regression_services.NonlinearRegressionServices;
@@ -47,8 +47,9 @@ import org.openide.windows.WindowManager;
 public class LreAnalysisProvider implements LreAnalysisService {
 
     private NonlinearRegressionServices nrService = Lookup.getDefault().lookup(NonlinearRegressionServices.class);
-    private ProfileSummary prfSum;
     private Profile profile;
+    private ProfileSummary prfSum;
+    private Cycle runner;
     private LreWindowSelectionParameters parameters;
 
     public LreAnalysisProvider() {
@@ -72,8 +73,8 @@ public class LreAnalysisProvider implements LreAnalysisService {
         profile.setLreVariablesToZero();
         //Start with a crude Fb subtraction
         substractBackground();
-        //Try to find an LRE window
-        prfSum = ProfileInitializer.constructProfileSummary(profile);
+        //Try to find an LRE window, which requires a ProfileSummary
+        prfSum = new ProfileSummaryImp(profile);
         LreWindowSelector.selectLreWindowUsingMinFc(prfSum, parameters);
         if (!profile.hasAnLreWindowBeenFound()) {
 //Failed to find a window, thus return as updating the LRE parameters is irrelevant
@@ -81,7 +82,7 @@ public class LreAnalysisProvider implements LreAnalysisService {
         }
 //Use this preliminary LRE window for nonlinear regression analysis 
 //This generates an optimized working Fc dataset and updates the LRE parameters
-        conductNonlinearRegressionAnalysis();
+        conductNonlinearRegressionAnalysisX10();
         if (!testIfRegressionWasSuccessful()) {
             return profile.hasAnLreWindowBeenFound();
         }
@@ -92,7 +93,8 @@ public class LreAnalysisProvider implements LreAnalysisService {
 
     /**
      * This code comes from the LREWindowSelector but includes nonlinear
-     * regression after each increase in the LRE window size
+     * regression after each increase in the LRE window size. LRE window size is
+     * reset to three in order to avoid aberrations generated from lack of NR.
      *
      * Expands the upper LRE window boundary based upon the difference between
      * the average LRE window Fo and the Fo value derived from the first cycle
@@ -105,49 +107,72 @@ public class LreAnalysisProvider implements LreAnalysisService {
      */
     private void optmzLreWinWithNR() {
         //Go to the first cycle of the LRE window
-        Cycle runner = prfSum.getStrCycle();
-        //Run to the last cycle of the LRE window
-        for (int i = 1; i < profile.getLreWinSize(); i++) {
-            runner = runner.getNextCycle();
-            if (runner == null) {
-                return;//Runner is at the end of the Profile
-            }
+        runner = prfSum.getLreWindowStartCycle();
+        //Start with a 3 cycle window
+        if (runner.getNextCycle().getNextCycle() == null) {
+            return;//Have reached the last cycle of the profile so the window cannot be expanded
         }
-        //Set the initial upper boundary of the LRE window based on the Fo threshold
-        if (runner.getNextCycle() == null) {//This is most certainly redundant
-            return;//Have reached the last cycle of the profile
-        }
+        profile.setLreWinSize(3);
+        //Run up two cycles so that the LRE window size starts at 3 cycles
+        runner = runner.getNextCycle().getNextCycle();
+        //Try to expand the upper region of the window based on the Fo threshold
         //This also limits the top of the LRE window to 95% of Fmax
+        double fmaxThreshold = profile.getFmax() * 0.95;
+        double fcNext = runner.getNextCycle().getFc();
+        double foFrac = runner.getNextCycle().getFoFracFoAv();
+        int cycle = runner.getNextCycle().getCycNum();
         while (Math.abs(runner.getNextCycle().getFoFracFoAv()) < parameters.getFoThreshold()
-                && runner.getNextCycle().getFc() < profile.getFmax() * 0.95) {
+                && runner.getNextCycle().getFc() < fmaxThreshold) {
             //Increase and set the LRE window size by 1 cycle
             profile.setLreWinSize(profile.getLreWinSize() + 1);
             //Need to conduct nonlinear regression analysis
-            //First update the LRE parameters
-            ProfileInitializer.updateProfileSummary(prfSum);
-            conductNonlinearRegressionAnalysis();
-            if (runner.getNextCycle().getNextCycle() == null) {
-                return;//Odd situation in which the second to last cycle was reached
+            //First update the LRE parameters, which also generates a new Cycle linked list
+            prfSum.updateProfileSummary();
+            //Conduct NR which also updates the LRE parameters and instantiates a new Cycle list
+            conductNonlinearRegressionAnalysisX10();
+            //Must now set the runner to the new last Cycle in the LRE window
+            runner = prfSum.getWindowEndCycle();
+            if (runner.getNextCycle() == null) {
+                return;//Odd situation in which the end of the profile is reached
             }
             runner = runner.getNextCycle();
+            fcNext = runner.getNextCycle().getFc();
+            foFrac = runner.getNextCycle().getFoFracFoAv();
+            cycle = runner.getNextCycle().getCycNum();
+            int stop = 1;
         }
     }
+
+    /**
+     * Because updating the profile requires construction of a new runner linked
+     * list, LRE window selection requires that this new runner is set to the
+     * last cycle of the LRE window.
+     */
+//    private void setRunnerToTheEndOfTheLreWindow() {**************************************************************************************
+//        runner = prfSum.getLreWindowStartCycle();
+//        int lreWindowSize = profile.getLreWinSize();
+//        for (int i = runner.getCycNum(); i < lreWindowSize; i++) {
+//            runner = runner.getNextCycle();
+//        }
+//    }
 
     /**
      * Updates a Profile with a new or modified LRE window, which includes
      * nonlinear regression analysis to determine Fb and Fb-slope. This in turn
      * triggers reprocessing of the raw Fc dataset to generate a new working Fc
      * dataset corrected for Fb-slope, which is followed by LRE analysis using
-     * this optimized working Fc dataset.
+     * this optimized working Fc dataset, and updating of the LRE parameters
+     * using this new Fc dataset.
      *
      * @param profile the Profile to be updated
      */
     public boolean updateProfile(Profile profile) {
         this.profile = profile;
-//Initialize the ProfileSummary which updates that LRE parameters within the Profile
-        prfSum = ProfileInitializer.constructProfileSummary(profile);
+//Construct a new ProfileSummary which updates that LRE parameters within the Profile
+        prfSum = new ProfileSummaryImp(profile);
 //Apply nonlinear regression analysis to optimize the LRE analysis based on the new LRE window
-        conductNonlinearRegressionAnalysis();
+        //This also updates both the ProfileSummary and Profile
+        conductNonlinearRegressionAnalysisX10();
         if (!testIfRegressionWasSuccessful()) {
             return profile.hasAnLreWindowBeenFound();
         }
@@ -155,16 +180,16 @@ public class LreAnalysisProvider implements LreAnalysisService {
     }
 
     private boolean testIfRegressionWasSuccessful() {
-        //Test if the regression analysis was successful based on the LRE line R2
+//Test if the regression analysis was successful based on the LRE line R2
         Double d = profile.getR2();
         if (d < 0.8 || d.isNaN()) {
             //Error dialog
             Toolkit.getDefaultToolkit().beep();
             JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
                     "The nonlinear regression analysis has failed for well '"
-                     + profile.getWellLabel() + "'.\n\n"
-                    + "LRE analysis will thus not include a baseline-slope correction",
-                    "Failed to apply nonlinear regression.",
+                    + profile.getWellLabel() + "'.\n\n"
+                    + "LRE analysis will be conducted without baseline-slope correction",
+                    "Failed to Apply Nonlinear Regression.",
                     JOptionPane.ERROR_MESSAGE);
             //Reset the LRE window using Fb
             profile.setWasNonlinearRegressionSuccessful(false);
@@ -172,7 +197,7 @@ public class LreAnalysisProvider implements LreAnalysisService {
             profile.setNrFbSlope(0);
             substractBackground();
             //Try to find an LRE window
-            prfSum = ProfileInitializer.constructProfileSummary(profile);
+            prfSum.updateProfileSummary();
             LreWindowSelector.selectLreWindowUsingMinFc(prfSum, parameters);
             return false;
         }
@@ -181,16 +206,21 @@ public class LreAnalysisProvider implements LreAnalysisService {
     }
 
     /**
+     * Conducts nonlinear regression reiterated 10 times. Note that this
+     * instantiates a new Cycle linked list, so any calling function utilizing 
+     * a runner must reset it.
+     *
      * Nonlinear regression analysis based on Peter Abeles’s EJML API
      * (http://code.google.com/p/efficient-java-matrix-library/wiki/LevenbergMarquardtExample)
      * <p>
      * Note that this requires that an LRE window has previously been identified
      * and that the LRE window will not be modified by this function. Note also
      * that the LRE parameters are updated within the Profile, so the calling
-     * function must take responsibility for saving the modified Profile.
+     * function must take responsibility for saving the modified Profile and for
+     * constructing a new Profile Summary.
      *
      */
-    private void conductNonlinearRegressionAnalysis() {
+    private void conductNonlinearRegressionAnalysisX10() {
 //This ensures a clean regression analysis that is not influenced from previous NR analyses 
 //        profile.setLreVariablesToZero();
 //Need to trim the profile in order to avoid aberrancies within early cycles and within the plateau phase
@@ -198,16 +228,17 @@ public class LreAnalysisProvider implements LreAnalysisService {
         int firstCycle = 4;//Start at cycle 4        
 //Use the top of the LRE window as the last cycle included in the regression analysis
         double[] fcArray = profile.getRawFcReadings();
-        int lastCycle = profile.getStrCycleInt() + profile.getLreWinSize() - 1;
+//        int lastCycle = profile.getStrCycleInt() + profile.getLreWinSize() - 1;
+        int lastCycle = prfSum.getWindowEndCycle().getCycNum();//Needs testing**************************************************************
         //LRE windows at the end of the profile can generate an incorrect last cycle
-        if (lastCycle > fcArray.length){
+        if (lastCycle > fcArray.length) {
             lastCycle = fcArray.length;
         }
         int numberOfCycles = lastCycle - firstCycle + 1;
         //Construct the trimmed Fc dataset TreeMap<cycle number, Fc reading>
         TreeMap<Integer, Double> profileMap = new TreeMap<Integer, Double>();
         for (int i = 0; i < numberOfCycles; i++) {
-                profileMap.put(firstCycle + i, fcArray[firstCycle - 1 + i]);
+            profileMap.put(firstCycle + i, fcArray[firstCycle - 1 + i]);
         }
         //Run NR once to grossly stablize the LRE-derived parameters
         LreParameters lreDerivedParam = getLreParameters();
@@ -218,9 +249,9 @@ public class LreAnalysisProvider implements LreAnalysisService {
         profile.setNrFbSlope(optParam.getFbSlope());
 //Generate a new optimized Fc dataset based on NR-derived Fb and Fb-slope
         conductBaselineCorrection(profile);
-//Updating the ProfileSummary updates the LRE-derived parameters within the Profile
+//Updating the ProfileSummary updates the LRE-derived parameters within the Profile with no change to the LRE window
         //However, this assumes that the NR was successful
-        ProfileInitializer.updateProfileSummary(prfSum);
+        prfSum.updateProfileSummary();
         //Reset the LRE-derived paramaters
         lreDerivedParam = getLreParameters();
         //Run the regression analysis 10 times to determine the average and SD
@@ -254,7 +285,7 @@ public class LreAnalysisProvider implements LreAnalysisService {
             //Generate a new optimized Fc dataset
             conductBaselineCorrection(profile);
             //Update the LRE-derived parameters within the Profile
-            ProfileInitializer.updateProfileSummary(prfSum);
+            prfSum.updateProfileSummary();
             //Retrieve the new LRE parameters
             lreDerivedParam = getLreParameters();
         }
@@ -274,7 +305,7 @@ public class LreAnalysisProvider implements LreAnalysisService {
 //Recaculate the optimized Fc dataset using the average NR-derived Fb and Fb-slope
         conductBaselineCorrection(profile);
         //Update the LRE parameters
-        ProfileInitializer.updateProfileSummary(prfSum);
+        prfSum.updateProfileSummary();
     }
 
     /**
@@ -294,7 +325,6 @@ public class LreAnalysisProvider implements LreAnalysisService {
         }
         lreDerivedParam.setEmax(profile.getEmax());//Current LRE-derived Emax
         lreDerivedParam.setFmax(profile.getFmax());//Current LRE-derived Fmax
-//        lreDerivedParam.setFmax(0);
         lreDerivedParam.setFo(profile.getAvFo());//Current LRE-derived average Fo
         lreDerivedParam.setFbSlope(profile.getNrFbSlope());//Current Fb slope
         return lreDerivedParam;
@@ -321,8 +351,8 @@ public class LreAnalysisProvider implements LreAnalysisService {
 
     /**
      * This is a very crude method based on averaging cycles 4-9 to determine
-     * Fb. Starting at cycle 4 avoids aberrant fluorescence readings that are is
-     * commonly observed for cycles 1-3.
+     * the fluorescence background (Fb). Starting at cycle 4 avoids aberrant
+     * fluorescence readings that are is commonly observed for cycles 1-3.
      *
      * @param profile the Profile to be processed
      */
