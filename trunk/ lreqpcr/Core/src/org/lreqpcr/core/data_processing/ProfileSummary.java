@@ -38,7 +38,11 @@ public abstract class ProfileSummary {
 
     public ProfileSummary(Profile profile) {
         this.profile = profile;
-        initiateProfileSummary();
+        if (!profile.hasAnLreWindowBeenFound()){
+             makeCycleList();
+        } else {
+            initiateProfileSummary();
+        }
     }
 
     private void initiateProfileSummary() {
@@ -122,12 +126,7 @@ public abstract class ProfileSummary {
      * @param prfSum the ProfileSummary holding the Profile to be processed
      */
     private void calcLreParameters() {
-        Cycle runner = zeroCycle;
-        //Assume that the start cycle has been changed
-        //Run to the start cycle and reset the ProfileSummary Start Cycle
-        for (int i = 0; i < profile.getStrCycleInt(); i++) {
-            runner = runner.getNextCycle();
-        }
+        Cycle runner = getLreWindowStartCycle();
         //Gather Fc and Ec from the LRE window
         int winSize = profile.getLreWinSize();
         double[][] lreWinPts = new double[2][winSize];

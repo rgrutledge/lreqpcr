@@ -113,7 +113,7 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
     /**
      * Sort By Amplicon Name, then Sample name
      *
-     * @param sampleProfile the Sample Profile to compare to 
+     * @param sampleProfile the Sample Profile to compare to
      * @return
      */
     @Override
@@ -157,19 +157,20 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
     }
 
     /**
-     * Depending on whether this is a valid Average Profile, this function will return the 
-     * the number of target molecules determined from the average amplification 
-     * profile. Note that getNo() is overridden to call this function.
-     * 
-     * @return the calculated number of target molecules (No) if this is a valid 
-     * average profile; 
-     * <p> 
-     * if No is less than 10 molecules, the average replicate No is returned; 
+     * Depending on whether this is a valid Average Profile, this function will
+     * return the the number of target molecules determined from the average
+     * amplification profile. Note that getNo() is overridden to call this
+     * function.
+     *
+     * @return the calculated number of target molecules (No) if this is a valid
+     * average profile;
+     * <p>
+     * if No is less than 10 molecules, the average replicate No is returned;
      * <p>
      * if the replicate profiles are too scattered, -1 is returned.
      */
     public double getAvProfileNo() {
-        if (getReplicatePrfAvNo() <10){
+        if (getReplicatePrfAvNo() < 10) {
             //revert to the average replicate No
             return getReplicatePrfAvNo();
         }
@@ -179,16 +180,16 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
         }
         return super.getNo();
     }
-    
+
     @Override
-    public double getNo(){
+    public double getNo() {
         return getAvProfileNo();
     }
-    
+
     //Override get Emax, midC and Fmax in order to test if this is a valid profile
     @Override
     public double getEmax() {
-        if (!areTheRepProfilesSufficientlyClustered() || isTheReplicateAverageNoLessThan10Molecules()){
+        if (!areTheRepProfilesSufficientlyClustered() || isTheReplicateAverageNoLessThan10Molecules()) {
             return -1;
         }
         return super.getEmax(); //To change body of generated methods, choose Tools | Templates.
@@ -196,7 +197,7 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
 
     @Override
     public double getFmax() {
-        if (!areTheRepProfilesSufficientlyClustered() || isTheReplicateAverageNoLessThan10Molecules()){
+        if (!areTheRepProfilesSufficientlyClustered() || isTheReplicateAverageNoLessThan10Molecules()) {
             return -1;
         }
         return super.getFmax(); //To change body of generated methods, choose Tools | Templates.
@@ -204,7 +205,7 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
 
     @Override
     public double getMidC() {
-        if (!areTheRepProfilesSufficientlyClustered() || isTheReplicateAverageNoLessThan10Molecules()){
+        if (!areTheRepProfilesSufficientlyClustered() || isTheReplicateAverageNoLessThan10Molecules()) {
             return -1;
         }
         return super.getMidC(); //To change body of generated methods, choose Tools | Templates.
@@ -213,8 +214,13 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
     //Override getWellLabel to allow single replicate profile well labels to be returned
     @Override
     public String getWellLabel() {
-        if (getTheNumberOfActiveReplicateProfiles() == 1){
-            return super.getWellLabel();
+        int i = getTheNumberOfActiveReplicateProfiles();
+        if (getTheNumberOfActiveReplicateProfiles() == 1) {
+            for (Profile profile : sampleProfileList) {
+                if (!profile.isExcluded() && profile.hasAnLreWindowBeenFound()) {
+                    return profile.getWellLabel();
+                }
+            }
         }
         return "Multiple";
     }
@@ -222,18 +228,18 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
     public int getTheNumberOfActiveReplicateProfiles() {
         int numberOfActiveReplicateProfiles = 0;
         for (Profile profile : sampleProfileList) {
-            if (!profile.isExcluded() || profile.hasAnLreWindowBeenFound()) {
+            if (!profile.isExcluded() && profile.hasAnLreWindowBeenFound()) {
                 numberOfActiveReplicateProfiles++;
             }
         }
         return numberOfActiveReplicateProfiles;
     }
-    
+
     /**
      * Determines whether the replicate profiles are sufficiently clustered to
-     * generate a valid Fc dataset that was used to create this average profile. 
-     * If sufficient clustering is not apparent, the target quantity reverts to 
-     * the average replicate No, although this 
+     * generate a valid Fc dataset that was used to create this average profile.
+     * If sufficient clustering is not apparent, the target quantity reverts to
+     * the average replicate No, although this
      *
      * @return whether this is a valid average profile
      */
@@ -248,7 +254,7 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
         Profile lowest = null;
         for (Profile prf : getReplicateProfileList()) {
             if (prf.hasAnLreWindowBeenFound() && !prf.isExcluded()) {
-                if (highest == null){
+                if (highest == null) {
                     highest = prf;
                 }
                 if (prf.getMidC() >= highest.getMidC()) {
@@ -276,10 +282,10 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
             replicateScatterTolerance = 0.7;//Default value at the time of first implementation
             //Future versions should included the ability for the user to set the scatter tolerance
         }
-        if (highest != null && lowest != null){//This should never be false
+        if (highest != null && lowest != null) {//This should never be false
             if (highest.getMidC() - lowest.getMidC() > replicateScatterTolerance) {
-            return false;
-        }else {
+                return false;
+            } else {
                 return true;
             }
         }
@@ -305,17 +311,18 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
     public void setReplicateScatterTolerance(double replicateScatterTolerance) {
         this.replicateScatterTolerance = replicateScatterTolerance;
     }
-    
-     /**
-     * An alternative method for determining the number of target molecules is 
-     * to average the No values generated by the replicate profiles. This is 
-     * primarily used the replicate profiles are not sufficiently clustered to 
-     * generate a valid average profile, such as when the target quantity is less 
-     * than 10 molecules.
-     * 
-     * @return the updates average replicate target quantity expressed in molecules 
+
+    /**
+     * An alternative method for determining the number of target molecules is
+     * to average the No values generated by the replicate profiles. This is
+     * primarily used the replicate profiles are not sufficiently clustered to
+     * generate a valid average profile, such as when the target quantity is
+     * less than 10 molecules.
+     *
+     * @return the updates average replicate target quantity expressed in
+     * molecules
      */
-    public double getReplicatePrfAvNo(){
+    public double getReplicatePrfAvNo() {
         double sum = 0;
         int counter = 0;
         for (SampleProfile repPrf : getReplicateProfileList()) {
@@ -335,7 +342,7 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
             //No replicate profiles are avaiable
             //This should never happen
             repAvNo = -1;
-        }else{
+        } else {
             repAvNo = sum / counter;
         }
         return repAvNo;
