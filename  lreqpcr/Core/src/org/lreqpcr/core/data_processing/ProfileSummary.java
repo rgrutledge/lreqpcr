@@ -34,25 +34,26 @@ import org.lreqpcr.core.utilities.MathFunctions;
 public abstract class ProfileSummary {
 
     private Profile profile;
-    private Cycle zeroCycle, windowStartCycle, windowEndCycle;
+    private Cycle zeroCycle;
 
     public ProfileSummary(Profile profile) {
         this.profile = profile;
         initiateProfileSummary();
     }
-    
+
     private void initiateProfileSummary() {
         updateProfileSummary();
     }
 
     /**
-     * Reinitializes this ProfileSummary's Cycle linked list, which is necessary whenever the
-     * encapsulated Profile is modified. This involves either changes 
-     * to the LRE window or changes to the working Fc dataset. 
+     * Reinitializes this ProfileSummary's Cycle linked list, which is necessary
+     * whenever the encapsulated Profile is modified. This involves either
+     * changes to the LRE window or changes to the working Fc dataset following 
+     * nonlinear regression analysis.
      *
      */
     public void updateProfileSummary() {
-        //Assume that the working Fc dataset has been modified and thus the Cycle list needs updating
+        //Create a new Cycle 
         makeCycleList();
         //Update the LRE parameters within the profile
         calcLreParameters();
@@ -61,29 +62,25 @@ public abstract class ProfileSummary {
         //Update the average Fo within the Profile
         calcAverageFo();
         //Update the cycle predicted Fc
-        calcAllpFc();
+        calcPredictedFc();
         //Update C1/2
         profile.setMidC(LREmath.getMidC(profile.getDeltaE(), profile.getEmax(), profile.getAvFo()));
     }
-
 
     public Profile getProfile() {
         return profile;
     }
 
     /**
-     * Constructs a Cycle linked list for a Profile that is used for display and
+     * Constructs a Cycle linked-list for a Profile that is used for display and
      * editing of the cycles within the amplification profile. Note that no
      * additional analysis is conducted other than to generate the link list.
      *
-     * @param fc the array containing the background subtracted and Fb-slope
-     * corrected Fc dataset.
-     * @return the header (cycle zero) of the Cycle linked list
      */
     private void makeCycleList() {
         if (profile.getFcReadings() == null) {
-             zeroCycle = null;
-             return;
+            zeroCycle = null;
+            return;
         }
         double[] fc = profile.getFcReadings();
         zeroCycle = new CycleImp(0, 0, null); //Zero cycle does not have a previous cycle
@@ -108,7 +105,7 @@ public abstract class ProfileSummary {
     private void calcAllFo() {
         //The Linked Cycle List is traversed & Fo values assigned to each cycle
         //The Cycle#-Fo Point2D.Double is also initialized 
-        Cycle runner = windowStartCycle.getNextCycle();//Start at cycle #1
+        Cycle runner = zeroCycle.getNextCycle();//Start at cycle #1
         do { //This should provide Fo and FoEmax100 values for all Cycles
             runner.setFo(LREmath.calcFo(runner.getCycNum(), runner.getFc(),
                     profile.getDeltaE(), profile.getEmax()));
@@ -131,7 +128,6 @@ public abstract class ProfileSummary {
         for (int i = 0; i < profile.getStrCycleInt(); i++) {
             runner = runner.getNextCycle();
         }
-        windowStartCycle = runner;
         //Gather Fc and Ec from the LRE window
         int winSize = profile.getLreWinSize();
         double[][] lreWinPts = new double[2][winSize];
@@ -151,7 +147,7 @@ public abstract class ProfileSummary {
         profile.setR2(regressionValues[2]);
         //Gather the LRE window Fc and predicted Fc
         //Start at the cycle immediately preceeding the start cycle
-        runner = windowStartCycle.getPrevCycle();
+        runner = getLreWindowStartCycle().getPrevCycle();
         double[][] winFcpFc = new double[2][winSize + 1];
         //Transverse the LRE window Fc values to construct the Fc-pFc list
         try {
@@ -164,7 +160,7 @@ public abstract class ProfileSummary {
             //Not sure if this is necessary
         }
     }
-    
+
     /**
      * Calculates the average Fo and Fo CV derived from the cycles within the
      * LRE window, using the Cycle linked-list within the ProfileSummary. Note
@@ -201,14 +197,12 @@ public abstract class ProfileSummary {
     }
 
     /**
-     * Calculates the predicted cycle fluorescence (Fc) across the entire cycle
+     * Calculates the predicted cycle fluorescence (Fc) across the entire Cycle
      * linked-list using the LRE-derived parameters. Note that the encapsulated
      * Profile is not modified.
-     *
-     * @param prfSum the ProfileSummary holding the Profile to be processed
      */
-    private void calcAllpFc() {
-        //The cycle linked-list is traversed & predicted Fc values assigned to each cycle
+    private void calcPredictedFc() {
+//The cycle linked-list is traversed & predicted Fc values assigned to each cycle
         Cycle runner = getZeroCycle().getNextCycle();//Goto cycle #1
         do {
             runner.setPredFc(LREmath.calcPrdFc(runner.getCycNum(), profile.getDeltaE(),
@@ -216,7 +210,7 @@ public abstract class ProfileSummary {
             runner = runner.getNextCycle();
         } while (runner != null);
     }
-    
+
     /**
      *
      *
@@ -229,7 +223,8 @@ public abstract class ProfileSummary {
     }
 
     /**
-     *
+     * Traverses the Cycle linked-list to the first cycle of the LRE window and 
+     * returns the corresponding Cycle object.
      *
      * @return the first Cycle of the LRE window or null if a LRE window has not
      * been found
@@ -244,23 +239,20 @@ public abstract class ProfileSummary {
         }
         return runner;
     }
-
-    // TODO reveiw how this could be eliminated as it is likely unsafe visa vi updating instantiates a new Cycle list
-    public void setLreWindowStartCycle(Cycle strCycle) {//Is this safe??*****************************************************
-        this.windowStartCycle = strCycle;
-    }
     
     /**
+     ** Traverses the Cycle linked-list to the last cycle of the LRE window and 
+     * returns the corresponding Cycle object.
      * 
-     * @return the Cycle corresponding to the last cycle in the LRE window or 
+     * @return the Cycle corresponding to the last cycle in the LRE window or
      * null if a LRE window has not been found
      */
-    public Cycle getWindowEndCycle(){
+    public Cycle getLreWindowEndCycle() {
         if (!profile.hasAnLreWindowBeenFound()) {
             return null;
         }
         Cycle runner = zeroCycle;
-        for (int i = 0; i < profile.getStrCycleInt() + profile.getLreWinSize() -1; i++) {//Accuracy unknown**************************************
+        for (int i = 0; i < profile.getStrCycleInt() + profile.getLreWinSize() - 1; i++) {//Accuracy unknown**************************************
             runner = runner.getNextCycle();
         }
         return runner;
