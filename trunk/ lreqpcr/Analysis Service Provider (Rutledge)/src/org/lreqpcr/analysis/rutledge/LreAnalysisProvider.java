@@ -131,7 +131,7 @@ public class LreAnalysisProvider implements LreAnalysisService {
             //Conduct NR which also updates the LRE parameters and instantiates a new Cycle list
             conductNonlinearRegressionAnalysisX10();
             //Must now set the runner to the new last Cycle in the LRE window
-            runner = prfSum.getWindowEndCycle();
+            runner = prfSum.getLreWindowEndCycle();
             if (runner.getNextCycle() == null) {
                 return;//Odd situation in which the end of the profile is reached
             }
@@ -229,7 +229,7 @@ public class LreAnalysisProvider implements LreAnalysisService {
 //Use the top of the LRE window as the last cycle included in the regression analysis
         double[] fcArray = profile.getRawFcReadings();
 //        int lastCycle = profile.getStrCycleInt() + profile.getLreWinSize() - 1;
-        int lastCycle = prfSum.getWindowEndCycle().getCycNum();//Needs testing**************************************************************
+        int lastCycle = prfSum.getLreWindowEndCycle().getCycNum();//Needs testing**************************************************************
         //LRE windows at the end of the profile can generate an incorrect last cycle
         if (lastCycle > fcArray.length) {
             lastCycle = fcArray.length;
