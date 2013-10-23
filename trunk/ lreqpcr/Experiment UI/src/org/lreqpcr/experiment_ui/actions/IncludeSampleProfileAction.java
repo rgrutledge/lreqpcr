@@ -79,12 +79,10 @@ class IncludeSampleProfileAction extends AbstractAction {
             //Update the parent Average Sample Profile
             LreNode avSampleProfileLreNode = (LreNode) nodes[0].getParentNode();
             parentAvProfile.setRawFcReadings(ProfileUtilities.generateAverageFcDataset(profileList));
-            parentAvProfile.setFcReadings(null);//This will trigger a new Fc dataset to be generated from the raw Fc dataset
             //Reinitialize the Average Profile
-            LreAnalysisService profileIntialization = Lookup.getDefault().lookup(LreAnalysisService.class);
-            profileIntialization.conductAutomatedLreWindowSelection(parentAvProfile, selectionParameters);
+            LreAnalysisService lreAnalysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
+            lreAnalysisService.conductAutomatedLreWindowSelection(parentAvProfile, selectionParameters);
             db.saveObject(parentAvProfile);
-            db.saveObject(parentAvProfile.getRun());
             //Update the tree
             avSampleProfileLreNode.refreshNodeLabel();
             //Determine if the parent node is a Run node
@@ -92,6 +90,7 @@ class IncludeSampleProfileAction extends AbstractAction {
                 //Refresh the Run label to update the average Fmax
                 LreNode runNode = (LreNode) avSampleProfileLreNode.getParentNode();
                 runNode.refreshNodeLabel();
+                db.saveObject(parentAvProfile.getRun());
             }
             LreObjectChildren parentChildren = (LreObjectChildren) avSampleProfileLreNode.getChildren();
             parentChildren.setLreObjectList(profileList);

@@ -68,8 +68,6 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
     private LreActionFactory nodeActionFactory;
     private LabelFactory runNodeLabelFactory;
     private DecimalFormat df = new DecimalFormat();
-    private double avRunFmax = 0;
-    private double avRunFmaxCV = 0;
     private Lookup.Result nodeResult;
     protected LreNode selectedNode;
     private boolean repView = false;
@@ -436,18 +434,6 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
             if (type != DatabaseType.EXPERIMENT) {
                 return;
             }
-//            if (selectedNode.getDatabaseServices() != currentDB) {
-//                //A new database has been opened
-//                clearPanels();
-//                currentDB = selectedNode.getDatabaseServices();
-//                List<LreWindowSelectionParameters> l = currentDB.getAllObjects(LreWindowSelectionParameters.class);
-//                if (l.isEmpty()) {
-////This occurs with databases created before implementation of the LRE window parameters
-//                    displayVersionIncompatiblityMessage();
-//                    return;
-//                }
-//                selectionParameters = l.get(0);
-//            }
             LreObject member = selectedNode.getLookup().lookup(LreObject.class);
             if (member instanceof Profile) {
                 Profile profile = (Profile) member;
@@ -485,7 +471,4 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
             }
         }
     }
-//    public void resultChanged(LookupEvent le) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
 }

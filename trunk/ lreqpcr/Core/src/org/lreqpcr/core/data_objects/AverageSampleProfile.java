@@ -103,7 +103,7 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
         if (getOCF() >= 0) {
             isTheReplicateAverageNoLessThan10Molecules();//This simply updates the Replicate average No
         } else {
-            no = -1;//Signifies no values vs. just zero
+            no = -1;//Signifies no value vs. just zero
         }
         if (!isTheReplicateAverageNoLessThan10Molecules()) {
             super.updateSampleProfile();//Let the Sample Profile update No
@@ -205,16 +205,12 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
 
     @Override
     public double getMidC() {
-        if (!areTheRepProfilesSufficientlyClustered() || isTheReplicateAverageNoLessThan10Molecules()) {
-            return -1;
-        }
         return super.getMidC(); //To change body of generated methods, choose Tools | Templates.
     }
 
     //Override getWellLabel to allow single replicate profile well labels to be returned
     @Override
     public String getWellLabel() {
-        int i = getTheNumberOfActiveReplicateProfiles();
         if (getTheNumberOfActiveReplicateProfiles() == 1) {
             for (Profile profile : sampleProfileList) {
                 if (!profile.isExcluded() && profile.hasAnLreWindowBeenFound()) {
@@ -239,7 +235,8 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
      * Determines whether the replicate profiles are sufficiently clustered to
      * generate a valid Fc dataset that was used to create this average profile.
      * If sufficient clustering is not apparent, the target quantity reverts to
-     * the average replicate No, although this
+     * the average replicate No and the Profile is excluded. If true, the 
+     * isExcluded is set to false.
      *
      * @return whether this is a valid average profile
      */
@@ -284,8 +281,10 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
         }
         if (highest != null && lowest != null) {//This should never be false
             if (highest.getMidC() - lowest.getMidC() > replicateScatterTolerance) {
+                setExcluded(true);//***************************An attempt to invalidate the average profile via exclusion***********************
                 return false;
             } else {
+                setExcluded(false);
                 return true;
             }
         }
