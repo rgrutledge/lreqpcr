@@ -96,18 +96,18 @@ class ExcludeSampleProfileAction extends AbstractAction {
      //This will force a new Fc dataset to be generated from the new raw Fc dataset using cycles 4-9 for Fb determination
             parentAvProfile.setFcReadings(null);
      //Reinitialize the Average Profile
-            LreAnalysisService profileIntialization =
+            LreAnalysisService lreAnalysisServide =
                     Lookup.getDefault().lookup(LreAnalysisService.class);
     //Now need to identify a new LRE window, which also conducts nonlinear regression analysis
-            profileIntialization.conductAutomatedLreWindowSelection(parentAvProfile, selectionParameters);
+            lreAnalysisServide.conductAutomatedLreWindowSelection(parentAvProfile, selectionParameters);
             db.saveObject(parentAvProfile);
-            db.saveObject(sampleProfile.getRun());
             //Update the tree
             avSampleProfileLreNode.refreshNodeLabel();
             //See if the AverageSample parent node is a Run node
             if (avSampleProfileLreNode.getParentNode().getLookup().lookup(Run.class) != null) {
                 LreNode runLreNode = (LreNode) avSampleProfileLreNode.getParentNode();
                 runLreNode.refreshNodeLabel();
+                db.saveObject(sampleProfile.getRun());
             }
             LreObjectChildren parentChildren = (LreObjectChildren) avSampleProfileLreNode.getChildren();
             parentChildren.setLreObjectList(repProfileList);

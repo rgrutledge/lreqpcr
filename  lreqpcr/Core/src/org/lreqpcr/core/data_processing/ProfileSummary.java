@@ -38,8 +38,10 @@ public abstract class ProfileSummary {
 
     public ProfileSummary(Profile profile) {
         this.profile = profile;
-        if (!profile.hasAnLreWindowBeenFound()){
-             makeCycleList();
+        //Expect that this will be necessary during data import
+        if (!profile.hasAnLreWindowBeenFound()) {
+            //LRE parameters are no available
+            makeCycleList();
         } else {
             initiateProfileSummary();
         }
@@ -52,7 +54,7 @@ public abstract class ProfileSummary {
     /**
      * Reinitializes this ProfileSummary's Cycle linked list, which is necessary
      * whenever the encapsulated Profile is modified. This involves either
-     * changes to the LRE window or changes to the working Fc dataset following 
+     * changes to the LRE window or changes to the working Fc dataset following
      * nonlinear regression analysis.
      *
      */
@@ -60,15 +62,17 @@ public abstract class ProfileSummary {
         //Create a new Cycle 
         makeCycleList();
         //Update the LRE parameters within the profile
-        calcLreParameters();
-        //Update the cycle Fo
-        calcAllFo();
-        //Update the average Fo within the Profile
-        calcAverageFo();
-        //Update the cycle predicted Fc
-        calcPredictedFc();
-        //Update C1/2
-        profile.setMidC(LREmath.getMidC(profile.getDeltaE(), profile.getEmax(), profile.getAvFo()));
+        if (profile.hasAnLreWindowBeenFound()) {
+            calcLreParameters();
+            //Update the cycle Fo
+            calcAllFo();
+            //Update the average Fo within the Profile
+            calcAverageFo();
+            //Update the cycle predicted Fc
+            calcPredictedFc();
+            //Update C1/2
+            profile.setMidC(LREmath.getMidC(profile.getDeltaE(), profile.getEmax(), profile.getAvFo()));
+        }
     }
 
     public Profile getProfile() {
@@ -78,7 +82,8 @@ public abstract class ProfileSummary {
     /**
      * Constructs a Cycle linked-list for a Profile that is used for display and
      * editing of the cycles within the amplification profile. Note that no
-     * additional analysis is conducted other than to generate the link list.
+     * additional analysis is conducted other than to generate the link list in
+     * which the Fc readings are set for each cycle.
      *
      */
     private void makeCycleList() {
@@ -97,27 +102,6 @@ public abstract class ProfileSummary {
     }
 
     /**
-     * Calculates and assigns Fo values across the entire cycle profile using
-     * the LRE parameters supplied by the current LRE window within the
-     * encapsulated Profile. An average Fo value is also calculated across the
-     * LRE window, and the fractional difference of each cycle Fo value vs. the
-     * average Fo from the LRE window is set for each Cycle. Note that the
-     * Profile is not modified.
-     *
-     * @param prfSum the ProfileSummary holding the Profile to be processed
-     */
-    private void calcAllFo() {
-        //The Linked Cycle List is traversed & Fo values assigned to each cycle
-        //The Cycle#-Fo Point2D.Double is also initialized 
-        Cycle runner = zeroCycle.getNextCycle();//Start at cycle #1
-        do { //This should provide Fo and FoEmax100 values for all Cycles
-            runner.setFo(LREmath.calcFo(runner.getCycNum(), runner.getFc(),
-                    profile.getDeltaE(), profile.getEmax()));
-            runner = runner.getNextCycle();
-        } while (runner != null);
-    }
-
-    /**
      * Calculates and updates the LRE parameters within encapsulated Profile.
      * Note that the calling function is responsible for saving the modified
      * Profile. The ProfileSummary is also updated to allow display of the
@@ -126,6 +110,9 @@ public abstract class ProfileSummary {
      * @param prfSum the ProfileSummary holding the Profile to be processed
      */
     private void calcLreParameters() {
+        if (profile.isExcluded() || !profile.hasAnLreWindowBeenFound()) {//Invalid profile
+            return;//Invalid profile
+        }
         Cycle runner = getLreWindowStartCycle();
         //Gather Fc and Ec from the LRE window
         int winSize = profile.getLreWinSize();
@@ -161,6 +148,27 @@ public abstract class ProfileSummary {
     }
 
     /**
+     * Calculates and assigns Fo values across the entire cycle profile using
+     * the LRE parameters supplied by the current LRE window within the
+     * encapsulated Profile. An average Fo value is also calculated across the
+     * LRE window, and the fractional difference of each cycle Fo value vs. the
+     * average Fo from the LRE window is set for each Cycle. Note that the
+     * Profile is not modified.
+     *
+     * @param prfSum the ProfileSummary holding the Profile to be processed
+     */
+    private void calcAllFo() {
+        //The Linked Cycle List is traversed & Fo values assigned to each cycle
+        //The Cycle#-Fo Point2D.Double is also initialized 
+        Cycle runner = zeroCycle.getNextCycle();//Start at cycle #1
+        do { //This should provide Fo and FoEmax100 values for all Cycles
+            runner.setFo(LREmath.calcFo(runner.getCycNum(), runner.getFc(),
+                    profile.getDeltaE(), profile.getEmax()));
+            runner = runner.getNextCycle();
+        } while (runner != null);
+    }
+
+    /**
      * Calculates the average Fo and Fo CV derived from the cycles within the
      * LRE window, using the Cycle linked-list within the ProfileSummary. Note
      * the encapsulated Profile is also updated and that the calling function is
@@ -171,18 +179,18 @@ public abstract class ProfileSummary {
     private void calcAverageFo() {
         //The current LRE window is traversed and the average Fo calculated
         double sumFo = 0;
-        ArrayList<Double> oFlist = Lists.newArrayList();//Used to calculate average Fo CV
+        ArrayList<Double> foList = Lists.newArrayList();//Used to calculate average Fo CV
         //The Fo from the cycle previous to the start cycle must be included
         Cycle runner = getLreWindowStartCycle().getPrevCycle(); //First cycle to be included in the average
         for (int i = 0; i < profile.getLreWinSize() + 1; i++) { //Calculates the sum of the LRE window Fo values
-            oFlist.add(runner.getFo());
+            foList.add(runner.getFo());
             sumFo += runner.getFo();
             runner = runner.getNextCycle();
         }
         //Calculate the LRE window average Fo value using the LRE-derived Emax
         double averageFo = (sumFo / (profile.getLreWinSize() + 1));
         //Sets the average Fo CV
-        profile.setAvFoCV(MathFunctions.calcStDev(oFlist) / profile.getAvFo());
+        profile.setAvFoCV(MathFunctions.calcStDev(foList) / profile.getAvFo());
         //Sets the LRE window average Fo value calculated with Emax fixed to 100%
         //Setting the average Fo values will initiate an auto update within both Sample and Calibration Profiles
         profile.setAvFo(averageFo);
@@ -222,7 +230,7 @@ public abstract class ProfileSummary {
     }
 
     /**
-     * Traverses the Cycle linked-list to the first cycle of the LRE window and 
+     * Traverses the Cycle linked-list to the first cycle of the LRE window and
      * returns the corresponding Cycle object.
      *
      * @return the first Cycle of the LRE window or null if a LRE window has not
@@ -238,11 +246,11 @@ public abstract class ProfileSummary {
         }
         return runner;
     }
-    
+
     /**
-     ** Traverses the Cycle linked-list to the last cycle of the LRE window and 
+     ** Traverses the Cycle linked-list to the last cycle of the LRE window and
      * returns the corresponding Cycle object.
-     * 
+     *
      * @return the Cycle corresponding to the last cycle in the LRE window or
      * null if a LRE window has not been found
      */

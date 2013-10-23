@@ -205,12 +205,9 @@ public abstract class Profile extends LreObject {
 
     /**
      * 
-     * @return LRE-derived Emax or -1 if the profile is invalid
+     * @return LRE-derived Emax
      */
     public double getEmax() {
-        if (isExcluded()){
-            return -1;
-        }
         return eMax;
     }
 
