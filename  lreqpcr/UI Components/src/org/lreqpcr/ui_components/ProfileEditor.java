@@ -341,7 +341,6 @@ public class ProfileEditor extends JPanel implements
                 }
             }
             //Changes to the Profile requires the ProfileSummary to be updated
-//            ProfileInitializer.constructProfileSummary(profile);
             prfSum.updateProfileSummary();
             updatePanels();
         }

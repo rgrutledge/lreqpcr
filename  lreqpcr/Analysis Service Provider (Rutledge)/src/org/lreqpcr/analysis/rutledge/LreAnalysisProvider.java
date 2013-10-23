@@ -69,6 +69,7 @@ public class LreAnalysisProvider implements LreAnalysisService {
     public boolean conductAutomatedLreWindowSelection(Profile profile, LreWindowSelectionParameters parameters) {
         this.profile = profile;
         this.parameters = parameters;
+        runner = null;
         //Remove any previous nonlinear regression and LRE-derived parameters
         profile.setLreVariablesToZero();
         //Start with a crude Fb subtraction
@@ -108,13 +109,14 @@ public class LreAnalysisProvider implements LreAnalysisService {
     private void optmzLreWinWithNR() {
         //Go to the first cycle of the LRE window
         runner = prfSum.getLreWindowStartCycle();
-        //Start with a 3 cycle window
-        if (runner.getNextCycle().getNextCycle() == null) {
+        if (runner.getNextCycle() == null) {
             return;//Have reached the last cycle of the profile so the window cannot be expanded
         }
+        //Start with a 3 cycle window
         profile.setLreWinSize(3);
-        //Run up two cycles so that the LRE window size starts at 3 cycles
-        runner = runner.getNextCycle().getNextCycle();
+        prfSum.updateProfileSummary();
+        //Start at the end of the window
+        runner = prfSum.getLreWindowEndCycle();
         //Try to expand the upper region of the window based on the Fo threshold
         //This also limits the top of the LRE window to 95% of Fmax
         double fmaxThreshold = profile.getFmax() * 0.95;
@@ -135,26 +137,12 @@ public class LreAnalysisProvider implements LreAnalysisService {
             if (runner.getNextCycle() == null) {
                 return;//Odd situation in which the end of the profile is reached
             }
-            runner = runner.getNextCycle();
-            fcNext = runner.getNextCycle().getFc();
-            foFrac = runner.getNextCycle().getFoFracFoAv();
-            cycle = runner.getNextCycle().getCycNum();
+            fcNext = runner.getFc();
+            foFrac = runner.getFoFracFoAv();
+            cycle = runner.getCycNum();
             int stop = 1;
         }
     }
-
-    /**
-     * Because updating the profile requires construction of a new runner linked
-     * list, LRE window selection requires that this new runner is set to the
-     * last cycle of the LRE window.
-     */
-//    private void setRunnerToTheEndOfTheLreWindow() {**************************************************************************************
-//        runner = prfSum.getLreWindowStartCycle();
-//        int lreWindowSize = profile.getLreWinSize();
-//        for (int i = runner.getCycNum(); i < lreWindowSize; i++) {
-//            runner = runner.getNextCycle();
-//        }
-//    }
 
     /**
      * Updates a Profile with a new or modified LRE window, which includes
@@ -306,6 +294,7 @@ public class LreAnalysisProvider implements LreAnalysisService {
         conductBaselineCorrection(profile);
         //Update the LRE parameters
         prfSum.updateProfileSummary();
+        int stop = 1;
     }
 
     /**

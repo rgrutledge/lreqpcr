@@ -173,10 +173,7 @@ public class LrePlot extends javax.swing.JPanel {
      */
     private void processModifiedLreWindow() {
         //The Profile has changed so the ProfileSummary needs updating
-        prfSum.updateProfileSummary();//This also updates the Profile
-//        lreAnalService.updateProfile(profile);
-        //The Profile has changed so needs to be saved and the ProfileSummary updated
-//        prfSum = ProfileInitializer.constructProfileSummary(profile);
+        prfSum.updateProfileSummary();//This updates the Profile along with generating a new Cycle linked-list
         db.saveObject(profile);
         updateAvergeProfileIfNeeded();
         universalLookup.fireChangeEvent(PanelMessages.PROFILE_CHANGED);
@@ -262,12 +259,12 @@ public class LrePlot extends javax.swing.JPanel {
         setName("Fc Plot"); // NOI18N
         setPreferredSize(new java.awt.Dimension(350, 200));
 
-        graphTitle.setFont(new java.awt.Font("Tahoma", 1, 12));
+        graphTitle.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         graphTitle.setForeground(new java.awt.Color(204, 0, 51));
         graphTitle.setText("LRE Plot (Ec vs. Fc)");
 
-        resetButton.setFont(new java.awt.Font("Tahoma", 0, 10));
-        resetButton.setText("Reset");
+        resetButton.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        resetButton.setText("Auto");
         resetButton.setToolTipText("Performs an automated LRE window selection");
         resetButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
         resetButton.addActionListener(new java.awt.event.ActionListener() {
@@ -278,35 +275,35 @@ public class LrePlot extends javax.swing.JPanel {
 
         lreParametersPanel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        r2display.setFont(new java.awt.Font("Tahoma", 0, 10));
+        r2display.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         r2display.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         r2display.setText("     ");
 
-        fmaxDisplay.setFont(new java.awt.Font("Tahoma", 0, 10));
+        fmaxDisplay.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         fmaxDisplay.setText("     ");
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel2.setText("Emax:");
         jLabel2.setToolTipText("Maximal amplification efficiency (intercept)");
 
-        maxEdisplay.setFont(new java.awt.Font("Tahoma", 1, 11));
+        maxEdisplay.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         maxEdisplay.setForeground(new java.awt.Color(204, 0, 0));
         maxEdisplay.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         maxEdisplay.setText("    ");
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel1.setText("deltaE:");
         jLabel1.setToolTipText("Loss in cycle efficiency (Ec) per Fc unit (slope)");
 
-        dEdisplay.setFont(new java.awt.Font("Tahoma", 0, 10));
+        dEdisplay.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         dEdisplay.setText("    ");
 
-        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel3.setText("r2:");
         jLabel3.setToolTipText("Correlation coefficent");
 
-        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel4.setText("Fmax:");
 
         javax.swing.GroupLayout lreParametersPanelLayout = new javax.swing.GroupLayout(lreParametersPanel);
@@ -357,7 +354,7 @@ public class LrePlot extends javax.swing.JPanel {
         lowerWindowAdjustPanel.setBackground(new java.awt.Color(204, 255, 255));
 
         addBottom.setBackground(new java.awt.Color(204, 255, 255));
-        addBottom.setFont(new java.awt.Font("Tahoma", 0, 10));
+        addBottom.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         addBottom.setText("+Cycle");
         addBottom.setToolTipText("Add a cycle to the bottom of the LRE window");
         addBottom.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -369,7 +366,7 @@ public class LrePlot extends javax.swing.JPanel {
         });
 
         removeBottom.setBackground(new java.awt.Color(204, 255, 255));
-        removeBottom.setFont(new java.awt.Font("Tahoma", 0, 10));
+        removeBottom.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         removeBottom.setText("-Cycle");
         removeBottom.setToolTipText("Remove a cycle from the bottom of the LRE window");
         removeBottom.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -404,7 +401,7 @@ public class LrePlot extends javax.swing.JPanel {
         upperWindowAdjustPanel.setBackground(new java.awt.Color(204, 255, 255));
 
         addTop.setBackground(new java.awt.Color(204, 255, 255));
-        addTop.setFont(new java.awt.Font("Tahoma", 0, 10));
+        addTop.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         addTop.setText("+Cycle");
         addTop.setToolTipText("Add a cycle to the top of the LRE window");
         addTop.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -416,7 +413,7 @@ public class LrePlot extends javax.swing.JPanel {
         });
 
         removeTop.setBackground(new java.awt.Color(204, 255, 255));
-        removeTop.setFont(new java.awt.Font("Tahoma", 0, 10));
+        removeTop.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         removeTop.setText("-Cycle");
         removeTop.setToolTipText("Remove a cycle from the top of the LRE window");
         removeTop.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -451,18 +448,18 @@ public class LrePlot extends javax.swing.JPanel {
 
         jPanel5.setBackground(new java.awt.Color(204, 255, 255));
 
-        lreWinSizeDisplay.setFont(new java.awt.Font("Tahoma", 0, 10));
+        lreWinSizeDisplay.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         lreWinSizeDisplay.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         lreWinSizeDisplay.setText("      ");
 
-        startCycleDisplay.setFont(new java.awt.Font("Tahoma", 0, 10));
+        startCycleDisplay.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         startCycleDisplay.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         startCycleDisplay.setText("    ");
 
-        startCycleLabel.setFont(new java.awt.Font("Tahoma", 0, 10));
+        startCycleLabel.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         startCycleLabel.setText("Start cycle:");
 
-        winSizeLabel.setFont(new java.awt.Font("Tahoma", 0, 10));
+        winSizeLabel.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         winSizeLabel.setText("Win Size:");
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
@@ -581,8 +578,8 @@ private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
     LreWindowSelectionParameters selectionParameters = l.get(0);
     lreAnalService.conductAutomatedLreWindowSelection(profile, selectionParameters);
-//Profile has been changed and therefore needs to be saved and the ProfileSummary updated
-    prfSum.updateProfileSummary();
+//Profile has been changed and therefore needs to be updated and saved 
+    prfSum.updateProfileSummary();//This updates the Profile
     updateAvergeProfileIfNeeded();
     db.saveObject(profile);
     universalLookup.fireChangeEvent(PanelMessages.PROFILE_CHANGED);
