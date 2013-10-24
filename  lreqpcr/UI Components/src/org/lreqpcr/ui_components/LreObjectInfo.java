@@ -127,8 +127,6 @@ public class LreObjectInfo extends JPanel {
         ampSizeDisplay.setVisible(false);
         tmLabel.setVisible(false);
         tmDisplay.setVisible(false);
-        tmDisplay.setVisible(false);
-        tmLabel.setVisible(false);
         sampleLabel.setVisible(false);
         sampleNameDisplay.setVisible(false);
         nanErrorDisplay.setVisible(false);
@@ -196,13 +194,16 @@ public class LreObjectInfo extends JPanel {
             }
             sampleNameDisplay.setText(profile.getSampleName());
             //Display the average Tm, if available
-            if (profile.getAmpTm() != 0
+            if (profile.getAmpTm() != -1
                     && profile.hasAnLreWindowBeenFound()
                     && !profile.isExcluded()) {
                 //Determine which Tm label to use
                 if (profile instanceof AverageProfile) {
-                    tmLabel.setText("Av. Tm");
-                } else {//Must be a replicate profile
+                    AverageProfile avPrf = (AverageProfile) profile;
+                    if(avPrf.getTheNumberOfActiveReplicateProfiles() > 1){
+                        tmLabel.setText("Av. Tm");
+                    }
+                } else {
                     tmLabel.setText("Tm");
                 }
                 tmLabel.setVisible(true);

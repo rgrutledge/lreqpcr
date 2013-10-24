@@ -83,12 +83,13 @@ public class LreAnalysisProvider implements LreAnalysisService {
         }
 //Use this preliminary LRE window for nonlinear regression analysis 
 //This generates an optimized working Fc dataset and updates the LRE parameters
-        conductNonlinearRegressionAnalysisX10();
+//        conductNonlinearRegressionAnalysisX10();
+        optmzLreWinWithNR();
         if (!testIfRegressionWasSuccessful()) {
             return profile.hasAnLreWindowBeenFound();
         }
         //Repeat optimization of the LRE window but with nonlinear regression 
-        optmzLreWinWithNR();
+        
         return true;
     }
 
@@ -120,9 +121,6 @@ public class LreAnalysisProvider implements LreAnalysisService {
         //Try to expand the upper region of the window based on the Fo threshold
         //This also limits the top of the LRE window to 95% of Fmax
         double fmaxThreshold = profile.getFmax() * 0.95;
-        double fcNext = runner.getNextCycle().getFc();
-        double foFrac = runner.getNextCycle().getFoFracFoAv();
-        int cycle = runner.getNextCycle().getCycNum();
         while (Math.abs(runner.getNextCycle().getFoFracFoAv()) < parameters.getFoThreshold()
                 && runner.getNextCycle().getFc() < fmaxThreshold) {
             //Increase and set the LRE window size by 1 cycle
@@ -134,13 +132,11 @@ public class LreAnalysisProvider implements LreAnalysisService {
             conductNonlinearRegressionAnalysisX10();
             //Must now set the runner to the new last Cycle in the LRE window
             runner = prfSum.getLreWindowEndCycle();
+            //This also makes it unecessary to move to the next cycle as this is already the end of the LRE window
             if (runner.getNextCycle() == null) {
+                profile.setLreVariablesToZero();
                 return;//Odd situation in which the end of the profile is reached
             }
-            fcNext = runner.getFc();
-            foFrac = runner.getFoFracFoAv();
-            cycle = runner.getCycNum();
-            int stop = 1;
         }
     }
 

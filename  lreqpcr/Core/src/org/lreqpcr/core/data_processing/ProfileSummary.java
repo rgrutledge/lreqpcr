@@ -18,6 +18,7 @@ package org.lreqpcr.core.data_processing;
 
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.utilities.LREmath;
 import org.lreqpcr.core.utilities.MathFunctions;
@@ -61,8 +62,16 @@ public abstract class ProfileSummary {
     public void updateProfileSummary() {
         //Create a new Cycle 
         makeCycleList();
-        //Update the LRE parameters within the profile
+        //If an AverageProfile's replicactes are not clustered or it is <10N, it is invalid
         if (profile.hasAnLreWindowBeenFound()) {
+            if(profile instanceof AverageProfile){
+                AverageProfile avPrf = (AverageProfile) profile;
+                if (!avPrf.areTheRepProfilesSufficientlyClustered() 
+                        || avPrf.isTheReplicateAverageNoLessThan10Molecules()){
+                    return;
+                }
+            }
+            //Update the LRE parameters within the profile
             calcLreParameters();
             //Update the cycle Fo
             calcAllFo();
@@ -183,9 +192,14 @@ public abstract class ProfileSummary {
         //The Fo from the cycle previous to the start cycle must be included
         Cycle runner = getLreWindowStartCycle().getPrevCycle(); //First cycle to be included in the average
         for (int i = 0; i < profile.getLreWinSize() + 1; i++) { //Calculates the sum of the LRE window Fo values
-            foList.add(runner.getFo());
+            try {
+                foList.add(runner.getFo());
             sumFo += runner.getFo();
             runner = runner.getNextCycle();
+            } catch (Exception e) {
+                int stop =0;
+            }
+            
         }
         //Calculate the LRE window average Fo value using the LRE-derived Emax
         double averageFo = (sumFo / (profile.getLreWinSize() + 1));

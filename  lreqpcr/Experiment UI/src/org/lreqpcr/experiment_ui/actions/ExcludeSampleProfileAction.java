@@ -74,13 +74,14 @@ class ExcludeSampleProfileAction extends AbstractAction {
 
             //Need to confirm that at least one Profile will remain active
             if (parentAvProfile.getTheNumberOfActiveReplicateProfiles() == 1) {//Only one Profile active
-                String msg = "It appears that there is only one Profile that is active "
-                        + "and thus cannot be excluded. Exclude the average profile instead";
+                String msg = "It appears that there is only one Replicate Profile that is active "
+                        + "and thus cannot be excluded.\n\n"
+                        + "                                           Exclude the Average Profile instead";
                 JOptionPane.showMessageDialog(
                         WindowManager.getDefault().getMainWindow(),
                         msg,
                         "Unable to exclude the "
-                        + "selected Profile", JOptionPane.ERROR_MESSAGE);
+                        + "selected Replicate Profile", JOptionPane.ERROR_MESSAGE);
                 continue;
             }
             //This will force the profile's Run to recalculate its average Fmax
@@ -93,13 +94,14 @@ class ExcludeSampleProfileAction extends AbstractAction {
       //Update the parent Average Sample Profile
             LreNode avSampleProfileLreNode = (LreNode) sampleProfileNodes[0].getParentNode();
             parentAvProfile.setRawFcReadings(ProfileUtilities.generateAverageFcDataset(repProfileList));
-     //This will force a new Fc dataset to be generated from the new raw Fc dataset using cycles 4-9 for Fb determination
-            parentAvProfile.setFcReadings(null);
-     //Reinitialize the Average Profile
-            LreAnalysisService lreAnalysisServide =
-                    Lookup.getDefault().lookup(LreAnalysisService.class);
-    //Now need to identify a new LRE window, which also conducts nonlinear regression analysis
-            lreAnalysisServide.conductAutomatedLreWindowSelection(parentAvProfile, selectionParameters);
+            //Reinitialize the Average Profile
+            //Need to determine if this is a valid average profile
+            if (parentAvProfile.areTheRepProfilesSufficientlyClustered()
+                    && !parentAvProfile.isTheReplicateAverageNoLessThan10Molecules()) {
+                LreAnalysisService lreAnalysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
+                //This removes any preexsisting LRE parameters, and initiates a default LRE window selection
+                lreAnalysisService.conductAutomatedLreWindowSelection(parentAvProfile, selectionParameters);
+            }
             db.saveObject(parentAvProfile);
             //Update the tree
             avSampleProfileLreNode.refreshNodeLabel();
