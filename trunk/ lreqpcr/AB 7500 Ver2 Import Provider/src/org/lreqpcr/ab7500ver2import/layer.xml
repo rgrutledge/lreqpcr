@@ -23,5 +23,8 @@
                 <attr name="position" intvalue="300"/>
             </file>
         </folder>
+        <folder name="Window">
+            <file name="Web_hidden"/>
+        </folder>
     </folder>
 </filesystem>

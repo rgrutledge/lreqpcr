@@ -174,9 +174,7 @@ public class MxpVer3_4ImportProvider extends RunImportService {
         }
 
         //Setup the Run and determine run date
-//        RunImpl run = new RunImpl();
         String runName = mxpExcelImportFile.getName();
-//        RunImportUtilities.importExcelImportFile(run, mxpExcelImportFile);
         runName = runName.substring(0, runName.indexOf("."));
         Date runDate = RunImportUtilities.importExcelDate(date);
 
