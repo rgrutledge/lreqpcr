@@ -219,8 +219,6 @@ public class PlotFc extends javax.swing.JPanel {
         if (profile.getRun() instanceof CalibrationRun) {
             avFmax = profile.getRun().getAverageFmax();
         } else if (profile.getRun().getAverageFmax() == 0) {
-//            profile.getRun().calculateAverageFmax();//This is certainly not necessary*****************************************************
-            if (profile.getRun().getAverageFmax() == 0) {
                 //Most likely due to old dataset in which Fmax was not implemented
                 //Failed average Fmax calculation...likely a very rare event
                 Toolkit.getDefaultToolkit().beep();
@@ -231,9 +229,6 @@ public class PlotFc extends javax.swing.JPanel {
                         JOptionPane.ERROR_MESSAGE);
                 clearPlot();
                 return;
-            } else {
-                avFmax = profile.getRun().getAverageFmax();
-            }
         } else {
             avFmax = profile.getRun().getAverageFmax();
         }

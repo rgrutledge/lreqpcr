@@ -105,7 +105,7 @@ public abstract class Profile extends LreObject {
 
     /**
      *
-     * @return the observed amplicon melting temperature (Tm)
+     * @return the observed amplicon melting temperature (Tm) or -1 if it is not available
      */
     public double getAmpTm() {
         return ampTm;

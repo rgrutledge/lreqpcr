@@ -71,7 +71,7 @@ class IncludeSampleProfileAction extends AbstractAction {
             List<SampleProfile> profileList = parentAvProfile.getReplicateProfileList();
             //This will force the parent Run to recalcualte its average Fmax
             sampleProfile.setExcluded(false);
-             //The average Tm must be updated in the parent AverageSampleProfile
+            //The average Tm must be updated in the parent AverageSampleProfile
             parentAvProfile.calculateAvAmpTm();
             sampleProfileLreNode.refreshNodeLabel();
             db.saveObject(sampleProfile);
@@ -80,8 +80,13 @@ class IncludeSampleProfileAction extends AbstractAction {
             LreNode avSampleProfileLreNode = (LreNode) nodes[0].getParentNode();
             parentAvProfile.setRawFcReadings(ProfileUtilities.generateAverageFcDataset(profileList));
             //Reinitialize the Average Profile
-            LreAnalysisService lreAnalysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
-            lreAnalysisService.conductAutomatedLreWindowSelection(parentAvProfile, selectionParameters);
+            //Need to determine if this is a valid average profile
+            if (parentAvProfile.areTheRepProfilesSufficientlyClustered() 
+                    && !parentAvProfile.isTheReplicateAverageNoLessThan10Molecules()) {
+                LreAnalysisService lreAnalysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
+                //This removes any preexsisting LRE parameters, and initiates a default LRE window selection
+                lreAnalysisService.conductAutomatedLreWindowSelection(parentAvProfile, selectionParameters);
+            }
             db.saveObject(parentAvProfile);
             //Update the tree
             avSampleProfileLreNode.refreshNodeLabel();

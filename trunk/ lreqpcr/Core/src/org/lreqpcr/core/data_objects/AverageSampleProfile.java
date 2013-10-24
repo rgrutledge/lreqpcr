@@ -281,10 +281,10 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
         }
         if (highest != null && lowest != null) {//This should never be false
             if (highest.getMidC() - lowest.getMidC() > replicateScatterTolerance) {
-                setExcluded(true);//***************************An attempt to invalidate the average profile via exclusion***********************
+                //This is an invalide average profile
+                setHasAnLreWindowBeenFound(false);
                 return false;
             } else {
-                setExcluded(false);
                 return true;
             }
         }
