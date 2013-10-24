@@ -197,9 +197,11 @@ public class AB7500Ver2ImportProvider extends RunImportService {
         //Cycle down A1-H12 (96 rows) using Sample Name to denote a profile
         int resultRow = 8;//Starting row in the Result sheet
         int ampRow = 8;//Starting row in the Amplification Data sheet
-        for (int i = 1; i < 97; i++, resultRow++) {
-            //Assume if sample name is blank that this is a blank well
-            if (!resultSheet.getCell(ampliconNameCol, resultRow).getContents().equals("")) {
+        boolean reachedTheBottom = false;
+        while (!reachedTheBottom) {
+//        for (int i = 1; i < 97; i++, resultRow++) {
+            //Assume that if sample name is blank, this is a blank well
+//            if (!resultSheet.getCell(ampliconNameCol, resultRow).getContents().equals("")) {
                 Profile profile = null;
                 //Determine if this is a calibration profile
                 if (resultSheet.getCell(taskCol, resultRow).getContents().equals("STANDARD")) {
@@ -275,7 +277,7 @@ public class AB7500Ver2ImportProvider extends RunImportService {
                 }
 
                 //This is necessary to eliminate empty Fc datasets
-                if (profile.getRawFcReadings() != null) {
+//                if (profile.getRawFcReadings() != null) {
                     if (CalibrationProfile.class.isAssignableFrom(profile.getClass())) {
                         CalibrationProfile calProfile = (CalibrationProfile) profile;
                         calbnProfileList.add(calProfile);
@@ -283,9 +285,16 @@ public class AB7500Ver2ImportProvider extends RunImportService {
                         SampleProfile sampleProfile = (SampleProfile) profile;
                         sampleProfileList.add(sampleProfile);
                     }
-                }
-            }
-        }
+//                }
+//            }//End of If not blank
+//        }//End of if
+                    try {
+                        resultRow++;
+                        resultSheet.getCell(0, resultRow).getContents();
+                    } catch (Exception e) {
+                        reachedTheBottom = true;
+                    }
+        }//End of While
 
         RunImportData importData = new RunImportData(DataImportType.STANDARD, runDate, runName);
         importData.setCalibrationProfileList(calbnProfileList);
