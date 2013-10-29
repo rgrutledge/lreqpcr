@@ -199,9 +199,8 @@ public class AB7500Ver2ImportProvider extends RunImportService {
         int ampRow = 8;//Starting row in the Amplification Data sheet
         boolean reachedTheBottom = false;
         while (!reachedTheBottom) {
-//        for (int i = 1; i < 97; i++, resultRow++) {
             //Assume that if sample name is blank, this is a blank well
-//            if (!resultSheet.getCell(ampliconNameCol, resultRow).getContents().equals("")) {
+            if (!resultSheet.getCell(ampliconNameCol, resultRow).getContents().equals("")) {
                 Profile profile = null;
                 //Determine if this is a calibration profile
                 if (resultSheet.getCell(taskCol, resultRow).getContents().equals("STANDARD")) {
@@ -286,8 +285,7 @@ public class AB7500Ver2ImportProvider extends RunImportService {
                         sampleProfileList.add(sampleProfile);
                     }
 //                }
-//            }//End of If not blank
-//        }//End of if
+            }//End of If not blank
                     try {
                         resultRow++;
                         resultSheet.getCell(0, resultRow).getContents();

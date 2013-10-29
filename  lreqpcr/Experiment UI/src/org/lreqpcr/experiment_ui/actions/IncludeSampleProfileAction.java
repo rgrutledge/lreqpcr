@@ -84,7 +84,7 @@ class IncludeSampleProfileAction extends AbstractAction {
             if (parentAvProfile.areTheRepProfilesSufficientlyClustered() 
                     && !parentAvProfile.isTheReplicateAverageNoLessThan10Molecules()) {
                 LreAnalysisService lreAnalysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
-                //This removes any preexsisting LRE parameters, and initiates a default LRE window selection
+                //This removes any preexsisting LRE parameters, and initiates a new LRE window selection
                 lreAnalysisService.conductAutomatedLreWindowSelection(parentAvProfile, selectionParameters);
             }
             db.saveObject(parentAvProfile);
