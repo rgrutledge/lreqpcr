@@ -24,9 +24,12 @@ import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.CalibrationRun;
+import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.data_objects.RunImpl;
+import org.lreqpcr.core.data_processing.ProfileSummary;
+import org.lreqpcr.core.data_processing.ProfileSummaryImp;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.openide.util.Lookup;
 
@@ -124,30 +127,30 @@ public class UpdateCalbrationDatabase {
      *
      * @param exptDB
      */
-    public static void nonlinearRegressionUpdate(DatabaseServices dbs) {
-        LreAnalysisService lreAnalysisService =
-                Lookup.getDefault().lookup(LreAnalysisService.class);
-        if (!dbs.isDatabaseOpen()) {
+    public static void nonlinearRegressionUpdate(DatabaseServices db) {
+        if (!db.isDatabaseOpen()) {
             return;
         }
+        LreAnalysisService lreAnalysisService =
+                Lookup.getDefault().lookup(LreAnalysisService.class);
         List<AverageProfile> profileList;
-//This is necessary becuase for unknown reasons retrieving AverageProfiles 
-//objects fail for calibration profiles
-        profileList = dbs.getAllObjects(AverageCalibrationProfile.class);
+        profileList = db.getAllObjects(AverageCalibrationProfile.class);
         if (profileList.isEmpty()) {
             return;
         }
+        LreWindowSelectionParameters lreWindowSelectionParameters =
+                            (LreWindowSelectionParameters) db.getAllObjects(LreWindowSelectionParameters.class).get(0);
         for (AverageProfile avProfile : profileList) {
             //Need to update the replicate profiles first in order to test if <10N
             for (Profile profile : avProfile.getReplicateProfileList()) {
-                lreAnalysisService.updateProfile(profile);
-                dbs.saveObject(profile);
+                ProfileSummary prfSum = new ProfileSummaryImp(profile, db);
+                lreAnalysisService.lreWindowSelectionUsingNonlinearRegression(prfSum, lreWindowSelectionParameters);
 
             }
             Profile prf = (Profile) avProfile;
-            lreAnalysisService.updateProfile(prf);
-            dbs.saveObject(prf);
+            ProfileSummary prfSum = new ProfileSummaryImp(prf, db);
+            lreAnalysisService.lreWindowSelectionUsingNonlinearRegression(prfSum, lreWindowSelectionParameters);
         }
-        dbs.commitChanges();
+        db.commitChanges();
     }
 }

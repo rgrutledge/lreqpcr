@@ -144,7 +144,7 @@ public class NumericalTable extends javax.swing.JPanel {
                 nf.setMaximumFractionDigits(2);
                 nf.setMinimumFractionDigits(2);
                 double oF = Double.valueOf(value.toString());
-                setText((value == null) ? "" : nf.format(oF * -100) + "%");
+                setText(nf.format(oF * -100) + "%");
                 if (row < prfSum.getProfile().getLreWinSize() + 3 && row > 1) {
                     cell.setForeground(Color.RED);
                 } else {
@@ -171,7 +171,7 @@ public class NumericalTable extends javax.swing.JPanel {
 
     public void iniNumTable(ProfileSummary prfSum) {
         this.prfSum = prfSum;
-        if (prfSum == null || prfSum.getProfile() == null) {
+        if (prfSum == null) {//****************************** TODO is this necessary???*********************************
             clearTable();
             return;
         }
@@ -190,7 +190,7 @@ public class NumericalTable extends javax.swing.JPanel {
         TableColumn tc4 = tcm.getColumn(3);
         tc4.setCellRenderer(new DiffRender());
         tc4.setPreferredWidth(7);
-        Cycle runner = null;
+        Cycle runner;
         try {
             runner = prfSum.getLreWindowStartCycle().getPrevCycle().getPrevCycle().getPrevCycle();
         } catch (Exception e) {

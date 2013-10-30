@@ -26,6 +26,8 @@ import java.awt.event.ActionEvent;
 import java.util.List;
 import javax.swing.AbstractAction;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
+import org.lreqpcr.core.data_processing.ProfileSummary;
+import org.lreqpcr.core.data_processing.ProfileSummaryImp;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.ui_components.PanelMessages;
@@ -80,8 +82,8 @@ class IncludeCalibrationProfileAction extends AbstractAction {
             parentAvProfile.setFcReadings(null);//Fb will need to be recalculated
             parentAvProfile.setRawFcReadings(ProfileUtilities.generateAverageFcDataset(profileList));
                         //Conduct automated LRE window selection
-            profileIntialization.conductAutomatedLreWindowSelection(parentAvProfile, selectionParameters);
-            db.saveObject(parentAvProfile);
+            ProfileSummary prfSum = new ProfileSummaryImp(parentAvProfile, db);
+            profileIntialization.lreWindowSelectionUsingNonlinearRegression(prfSum, selectionParameters);
 
             //Update the tree
             parentNode.refreshNodeLabel();

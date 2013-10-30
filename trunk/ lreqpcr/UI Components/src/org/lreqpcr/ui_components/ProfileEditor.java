@@ -97,7 +97,7 @@ public class ProfileEditor extends JPanel implements
         clearPanels();
         this.profile = profile;
 //Display and editing of a profile is conducted through the ProfileSummary interface
-        prfSum = new ProfileSummaryImp(profile);
+        prfSum = new ProfileSummaryImp(profile, currentDB);
         if (profile.hasAnLreWindowBeenFound() && !profile.isExcluded()) {
             updatePanels();
         } else {
@@ -140,7 +140,7 @@ public class ProfileEditor extends JPanel implements
     }
 
     private void displayProfile() {
-        plotLRE.iniPlotLREs(prfSum, currentDB);
+        plotLRE.iniPlotLREs(prfSum);
         numericalTable.iniNumTable(prfSum);
         plotFc.iniPlot(prfSum);
         plotFo.iniPlot(prfSum);
@@ -341,7 +341,7 @@ public class ProfileEditor extends JPanel implements
                 }
             }
             //Changes to the Profile requires the ProfileSummary to be updated
-            prfSum.updateProfileSummary();
+            prfSum.update();
             updatePanels();
         }
         if (key == PanelMessages.NEW_DATABASE) {

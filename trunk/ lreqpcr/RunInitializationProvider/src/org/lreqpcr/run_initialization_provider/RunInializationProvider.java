@@ -23,6 +23,8 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.*;
+import org.lreqpcr.core.data_processing.ProfileSummary;
+import org.lreqpcr.core.data_processing.ProfileSummaryImp;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
 import org.lreqpcr.core.utilities.MathFunctions;
@@ -122,7 +124,7 @@ public class RunInializationProvider implements RunInitializationService {
         List<SampleProfile> sampleProfileList = importData.getSampleProfileList();
         List<CalibrationProfile> calibnProfileList = importData.getCalibrationProfileList();
 
-        LreAnalysisService profileInitializer = Lookup.getDefault().lookup(LreAnalysisService.class);
+        LreAnalysisService lreAnalysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
 
 //Process the SampleProfiles if an Experiment database is open
         // TOD ************************ why would the list be null????
@@ -133,7 +135,7 @@ public class RunInializationProvider implements RunInitializationService {
                     sampleRun = new RunImpl();//This is the Run object that will hold the sample profiles
                     sampleRun.setRunDate(runDate);
                     sampleRun.setName(runName);
-                    LreWindowSelectionParameters winSelectionParameters =
+                    LreWindowSelectionParameters parameters =
                             (LreWindowSelectionParameters) experimentDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
                     ExptDbInfo dbInfo = (ExptDbInfo) experimentDB.getAllObjects(ExptDbInfo.class).get(0);
                     double ocf = dbInfo.getOcf();
@@ -149,7 +151,8 @@ public class RunInializationProvider implements RunInitializationService {
                             }
                         }
                         //Initialize the new Profile which will conduct an automated LRE window selection
-                        profileInitializer.conductAutomatedLreWindowSelection(sampleProfile, winSelectionParameters);
+                        ProfileSummary prfSum = new ProfileSummaryImp(sampleProfile, calbnDB);
+                        lreAnalysisService.lreWindowSelectionUsingNonlinearRegression(prfSum, parameters);
                         sampleProfile.setOCF(ocf);
                         experimentDB.saveObject(sampleProfile);
                     }
@@ -158,7 +161,8 @@ public class RunInializationProvider implements RunInitializationService {
                             sampleProfileList,
                             sampleRun,
                             ocf,
-                            winSelectionParameters);
+                            parameters,
+                            experimentDB);
                     experimentDB.saveObject(averageSampleProfileList);
                     sampleRun.setAverageProfileList((ArrayList<AverageProfile>) averageSampleProfileList);
                     //Deactivated due to a bug that can produce long delays during file import
@@ -206,15 +210,16 @@ public class RunInializationProvider implements RunInitializationService {
                                 RunImportUtilities.getAmpliconSize(ampliconDB, profile);
                             }
                         }
-                        profileInitializer.conductAutomatedLreWindowSelection(profile, lreWindowSelectionParameters);
-                        calbnDB.saveObject(profile);
+                        ProfileSummary prfSum = new ProfileSummaryImp(profile, calbnDB);
+                        lreAnalysisService.lreWindowSelectionUsingNonlinearRegression(prfSum, lreWindowSelectionParameters);
                     }
                     //Process the AverageCalibnProfiles
                     List<AverageProfile> averageCalbnProfileList =
                             (List<AverageProfile>) AverageProfileGenerator.averageCalbrationProfileConstruction(
                             calibnProfileList,
                             lreWindowSelectionParameters,
-                            calRun);
+                            calRun,
+                            calbnDB);
                     calbnDB.saveObject(averageCalbnProfileList);
                     calRun.setAverageProfileList((ArrayList<AverageProfile>) averageCalbnProfileList);
                     calRun.calculateAverageOCF();

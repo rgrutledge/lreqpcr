@@ -21,7 +21,10 @@ import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.ExperimentDbInfo;
 import org.lreqpcr.core.data_objects.ExptDbInfo;
+import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
+import org.lreqpcr.core.data_processing.ProfileSummary;
+import org.lreqpcr.core.data_processing.ProfileSummaryImp;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.openide.util.Lookup;
 
@@ -48,37 +51,42 @@ public class ExptDbUpdate {
         exptDB.saveObject(newDbInfo);
         exptDB.deleteObject(oldDbInfo);
     }
-    
+
 //****************This is currently not used*************************************
     /**
-     * Applies nonlinear regression analysis to pre Version 0.9 database files 
+     * Applies nonlinear regression analysis to pre Version 0.9 database files
      *
-     * @param exptDB the Experiment database service maintaining the database file to be processed
+     * @param exptDB the Experiment database service maintaining the database
+     * file to be processed
      */
-    public static void nonlinearRegressionUpdate(DatabaseServices dbs) {
+    public static void nonlinearRegressionUpdate(DatabaseServices exptDB) {
+        List<LreWindowSelectionParameters> l = exptDB.getAllObjects(LreWindowSelectionParameters.class);
+        LreWindowSelectionParameters selectionParameters = l.get(0);
         LreAnalysisService lreAnalysisService =
                 Lookup.getDefault().lookup(LreAnalysisService.class);
-        if (!dbs.isDatabaseOpen()) {
+        if (!exptDB.isDatabaseOpen()) {
             return;
         }
         List<AverageProfile> profileList;
-        profileList = dbs.getAllObjects(AverageProfile.class);
+        profileList = exptDB.getAllObjects(AverageProfile.class);
         if (profileList.isEmpty()) {
             return;
         }
         for (AverageProfile avProfile : profileList) {
             //Need to update the replicate profiles first in order to test if <10N
             for (Profile profile : avProfile.getReplicateProfileList()) {
-                lreAnalysisService.updateProfile(profile);
-                dbs.saveObject(profile);
+                ProfileSummary prfSum = new ProfileSummaryImp(profile, exptDB);
+                lreAnalysisService.lreWindowSelectionUsingNonlinearRegression(prfSum, selectionParameters);
+                exptDB.saveObject(profile);
             }
             if (!avProfile.isTheReplicateAverageNoLessThan10Molecules() && avProfile.areTheRepProfilesSufficientlyClustered()) {
                 //The AverageProfile is valid thus reinitialize it
                 Profile profile = (Profile) avProfile;
-                lreAnalysisService.updateProfile(profile);
-                dbs.saveObject(avProfile);
+                ProfileSummary prfSum = new ProfileSummaryImp(profile, exptDB);
+                lreAnalysisService.lreWindowSelectionUsingNonlinearRegression(prfSum, selectionParameters);
+                exptDB.saveObject(avProfile);
             }
         }
-        dbs.commitChanges();
+        exptDB.commitChanges();
     }
 }

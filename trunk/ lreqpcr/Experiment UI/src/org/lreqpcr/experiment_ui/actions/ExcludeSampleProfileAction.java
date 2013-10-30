@@ -25,6 +25,8 @@ import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.data_objects.SampleProfile;
+import org.lreqpcr.core.data_processing.ProfileSummary;
+import org.lreqpcr.core.data_processing.ProfileSummaryImp;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
@@ -99,10 +101,9 @@ class ExcludeSampleProfileAction extends AbstractAction {
             if (parentAvProfile.areTheRepProfilesSufficientlyClustered()
                     && !parentAvProfile.isTheReplicateAverageNoLessThan10Molecules()) {
                 LreAnalysisService lreAnalysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
-                //This removes any preexsisting LRE parameters, and initiates a default LRE window selection
-                lreAnalysisService.conductAutomatedLreWindowSelection(parentAvProfile, selectionParameters);
+                ProfileSummary prfSum = new ProfileSummaryImp(parentAvProfile, db);
+                lreAnalysisService.lreWindowSelection(prfSum, selectionParameters);
             }
-            db.saveObject(parentAvProfile);
             //Update the tree
             avSampleProfileLreNode.refreshNodeLabel();
             //See if the AverageSample parent node is a Run node

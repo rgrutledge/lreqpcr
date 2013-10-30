@@ -35,6 +35,8 @@ import org.lreqpcr.core.data_objects.DatabaseInfo;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.SampleProfile;
+import org.lreqpcr.core.data_processing.ProfileSummary;
+import org.lreqpcr.core.data_processing.ProfileSummaryImp;
 import org.lreqpcr.core.database_services.DatabaseProvider;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
@@ -269,14 +271,16 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         for (AverageProfile avProfile : profileList) {
             //Need to update the replicate profiles first in order to test if <10N
             for (Profile profile : avProfile.getReplicateProfileList()) {
-                lreAnalysisService.conductAutomatedLreWindowSelection(profile, selectionParameters);
+                ProfileSummary prfSum = new ProfileSummaryImp(profile, currentDB);
+                lreAnalysisService.lreWindowSelectionUsingNonlinearRegression(prfSum, selectionParameters);
                 currentDB.saveObject(profile);
             }
             if (!avProfile.isTheReplicateAverageNoLessThan10Molecules() && avProfile.areTheRepProfilesSufficientlyClustered()) {
                 //The AverageProfile is valid thus reinitialize it
                 Profile profile = (Profile) avProfile;
-                lreAnalysisService.conductAutomatedLreWindowSelection(profile, selectionParameters);
-                currentDB.saveObject(avProfile);
+                ProfileSummary prfSum = new ProfileSummaryImp(profile, currentDB);
+                lreAnalysisService.lreWindowSelectionUsingNonlinearRegression(prfSum, selectionParameters);
+                currentDB.saveObject(avProfile);//*********************************** TODO prfSum should do this????
             }
         }
         currentDB.commitChanges();
