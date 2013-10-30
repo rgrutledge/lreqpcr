@@ -25,6 +25,8 @@ import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.SampleProfile;
+import org.lreqpcr.core.data_processing.ProfileSummary;
+import org.lreqpcr.core.data_processing.ProfileSummaryImp;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
@@ -128,7 +130,8 @@ public class DeleteSampleProfileAction extends AbstractAction {
         LreAnalysisService profileIntialization =
                 Lookup.getDefault().lookup(LreAnalysisService.class);
         //Conduct automated LRE window selection
-        profileIntialization.conductAutomatedLreWindowSelection(avProfile, selectionParameters);
+        ProfileSummary prfSum = new ProfileSummaryImp(avProfile, db);
+        profileIntialization.lreWindowSelection(prfSum, selectionParameters);
         avProfile.calculateAvAmpTm();
         db.saveObject(avProfile);
         //Need to also save the SampeProfile's Run

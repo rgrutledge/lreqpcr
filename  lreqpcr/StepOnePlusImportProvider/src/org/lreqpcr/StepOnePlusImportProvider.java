@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * and open the template in the editor.
  */
-package org.lreqpcr.ab7500ver2import;
+package org.lreqpcr;
 
 import java.awt.Toolkit;
 import java.io.File;
@@ -44,13 +44,13 @@ import org.openide.windows.WindowManager;
  * @author Bob Rutledge
  */
 @ServiceProvider(service = RunImportService.class)
-public class AB7500Ver2ImportProvider extends RunImportService {
+public class StepOnePlusImportProvider extends RunImportService {
 
     @Override
     @SuppressWarnings(value = "unchecked")
     public RunImportData importRunData() {
         //Retrieve the ABI Ver2 export xls file
-        File ver2ExcelImportFile = IOUtilities.openImportExcelFile("ABI7500 Version 2 Data Import");
+        File ver2ExcelImportFile = IOUtilities.openImportExcelFile("StepOnePlus Data Import");
         if (ver2ExcelImportFile == null) {
             return null;
         }

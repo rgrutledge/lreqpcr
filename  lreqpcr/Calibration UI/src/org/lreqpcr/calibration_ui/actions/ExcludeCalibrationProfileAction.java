@@ -27,6 +27,8 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
+import org.lreqpcr.core.data_processing.ProfileSummary;
+import org.lreqpcr.core.data_processing.ProfileSummaryImp;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.ui_components.PanelMessages;
@@ -64,7 +66,7 @@ class ExcludeCalibrationProfileAction extends AbstractAction {
                 return;
             }
         }
-        LreAnalysisService profileIntialization =
+        LreAnalysisService lreAnalysisService =
                 Lookup.getDefault().lookup(LreAnalysisService.class);
         for (Node node : nodes) {
             selectedNode = (LreNode) node;
@@ -88,8 +90,8 @@ class ExcludeCalibrationProfileAction extends AbstractAction {
             parentAvProfile.setFcReadings(null);//Fb will need to be recalculated
             parentAvProfile.setRawFcReadings(ProfileUtilities.generateAverageFcDataset(profileList));
             //Conduct automated LRE window selection
-            profileIntialization.conductAutomatedLreWindowSelection(parentAvProfile, selectionParameters);
-            db.saveObject(parentAvProfile);
+            ProfileSummary prfSum = new ProfileSummaryImp(parentAvProfile, db);
+            lreAnalysisService.lreWindowSelection(prfSum, selectionParameters);
 
             //Update the tree
             parentNode.refreshNodeLabel();

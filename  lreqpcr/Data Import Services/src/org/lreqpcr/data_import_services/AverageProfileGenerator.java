@@ -31,6 +31,9 @@ import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.data_objects.TargetStrandedness;
+import org.lreqpcr.core.data_processing.ProfileSummary;
+import org.lreqpcr.core.data_processing.ProfileSummaryImp;
+import org.lreqpcr.core.database_services.DatabaseServices;
 import org.openide.util.Lookup;
 import org.openide.windows.WindowManager;
 
@@ -58,7 +61,8 @@ public class AverageProfileGenerator {
             List<SampleProfile> profileList,
             Run parentRun,
             double ocf,
-            LreWindowSelectionParameters parameters) {
+            LreWindowSelectionParameters parameters,
+            DatabaseServices db) {
         ArrayList<SampleProfile> profileArray = new ArrayList<SampleProfile>(profileList);
         //Generate new ReplicatSampleProfiles for each replicate profile set within the profile list
         ArrayList<AverageProfile> averageProfileList = new ArrayList<AverageProfile>();
@@ -104,7 +108,7 @@ public class AverageProfileGenerator {
             avSampleProfile.setReplicateProfileList(replicateProfileList);
             avSampleProfile.setRawFcReadings(generateAverageFcDataset(replicateProfileList));
             avSampleProfile.setOCF(ocf);
-            intializeAverageProfile(avSampleProfile, parameters);
+            intializeAverageProfile(avSampleProfile, parameters, db);
             averageProfileList.add(avSampleProfile);
         }
         return averageProfileList;
@@ -126,7 +130,8 @@ public class AverageProfileGenerator {
     public static ArrayList<AverageProfile> averageCalbrationProfileConstruction(
             List<CalibrationProfile> profileList,
             LreWindowSelectionParameters parameters,
-            Run parentRun) {
+            Run parentRun,
+            DatabaseServices db) {
         ArrayList<CalibrationProfile> profileArray = new ArrayList<CalibrationProfile>(profileList);
         //Generate new AverageCalibrationProfile for each replicate profile set within the profile list
         ArrayList<AverageProfile> averageCalbnProfileList =
@@ -179,7 +184,7 @@ public class AverageProfileGenerator {
             avCalbnProfile.setRawFcReadings(generateAverageFcDataset(calibrationProfileList));
             if (avCalbnProfile.getRawFcReadings().length != 0) {
                 //0 indicates that all replicate profiles must be excluded
-                intializeAverageProfile(avCalbnProfile, parameters);
+                intializeAverageProfile(avCalbnProfile, parameters, db);
             }
             averageCalbnProfileList.add(avCalbnProfile);
         }
@@ -238,8 +243,8 @@ public class AverageProfileGenerator {
      * @param parameters
      */
     @SuppressWarnings(value = "unchecked")
-    private static void intializeAverageProfile(AverageProfile averageProfile, LreWindowSelectionParameters parameters) {
-        LreAnalysisService profileIntialization =
+    private static void intializeAverageProfile(AverageProfile averageProfile, LreWindowSelectionParameters parameters, DatabaseServices db) {
+        LreAnalysisService lreAnalysisService =
                 Lookup.getDefault().lookup(LreAnalysisService.class);
         //This is necessary because AverageProfile is an interface
         Profile fooProfile = (Profile) averageProfile;
@@ -247,15 +252,13 @@ public class AverageProfileGenerator {
         fooProfile.setAmpliconName(firstRepProfile.getAmpliconName());
         fooProfile.setAmpliconSize(firstRepProfile.getAmpliconSize());
         fooProfile.setSampleName(firstRepProfile.getSampleName());
-//        fooProfile.setAmpTm(0);//This is unnecessary
         fooProfile.setName(fooProfile.getAmpliconName() + "@" + fooProfile.getSampleName());
-        if (fooProfile.getRawFcReadings().length != 0) {//************************This should never happen!!!!
-            //If the replicate No average is <10 it cannot be initialized
-            AverageProfile avProfile = (AverageProfile) fooProfile;
-            if (!avProfile.isTheReplicateAverageNoLessThan10Molecules() && avProfile.areTheRepProfilesSufficientlyClustered()) {//
-                //Note the the replicate sample profiles have already been initialized
-                profileIntialization.conductAutomatedLreWindowSelection(fooProfile, parameters);
-            }
+        //If the replicate No average is <10 it cannot be initialized
+        AverageProfile avProfile = (AverageProfile) fooProfile;
+        if (!avProfile.isTheReplicateAverageNoLessThan10Molecules() && avProfile.areTheRepProfilesSufficientlyClustered()) {//
+            //Note the the replicate sample profiles have already been initialized
+            ProfileSummary prfSum = new ProfileSummaryImp(fooProfile, db);
+            lreAnalysisService.lreWindowSelectionUsingNonlinearRegression(prfSum, parameters);
         }
         for (Profile profile : averageProfile.getReplicateProfileList()) {
             profile.setParent(fooProfile);

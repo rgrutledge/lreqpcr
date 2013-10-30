@@ -20,50 +20,54 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.Profile;
+import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.utilities.LREmath;
 import org.lreqpcr.core.utilities.MathFunctions;
 
 /**
- * Provides functions required for editing and display of a Profile, which
- * primarily involves processing changes to the LRE window and updating the
+ * Provides functions required for initializing, editing and display of a Profile, which
+ * primarily involves selection of, or processing changes to, the LRE window and updating the
  * associated LRE parameters within the Profile. A central aspect of these
  * functions is utilization of a linked-list of Cycle objects that represents
- * the cycles within the Profile.
+ * the cycles of the amplification profile within the Profile object.
  *
  * @author Bob Rutledge
  */
 public abstract class ProfileSummary {
 
+    private DatabaseServices db;
     private Profile profile;
     private Cycle zeroCycle;
 
-    public ProfileSummary(Profile profile) {
+    /**
+     * 
+     * @param profile the Profile to encapsulate
+     * @param db the database holding the Profile
+     */
+    public ProfileSummary(Profile profile, DatabaseServices db) {
         this.profile = profile;
-        //Expect that this will be necessary during data import
-        if (!profile.hasAnLreWindowBeenFound()) {
-            //LRE parameters are no available
-            makeCycleList();
-        } else {
-            initiateProfileSummary();
-        }
+        this.db = db;
+        initiateProfileSummary();
     }
 
     private void initiateProfileSummary() {
-        updateProfileSummary();
+        update();
     }
 
     /**
      * Reinitializes this ProfileSummary's Cycle linked list, which is necessary
      * whenever the encapsulated Profile is modified. This involves either
-     * changes to the LRE window or changes to the working Fc dataset following
-     * nonlinear regression analysis.
+     * changes to the LRE window or changes to the working Fc dataset. 
+     * <p>
+     * Note that the Profile is also saved to the database from which it was derived. 
      *
      */
-    public void updateProfileSummary() {
+    public void update() {
         //Create a new Cycle 
         makeCycleList();
-        //If an AverageProfile's replicactes are not clustered or it is <10N, it is invalid
+        //If an window is absent nothing else can be done
         if (profile.hasAnLreWindowBeenFound()) {
+//If this is an AverageProfile who's replicates are not clustered or it is <10N, it is invalid
             if(profile instanceof AverageProfile){
                 AverageProfile avPrf = (AverageProfile) profile;
                 if (!avPrf.areTheRepProfilesSufficientlyClustered() 
@@ -71,6 +75,7 @@ public abstract class ProfileSummary {
                     return;
                 }
             }
+            //This is a valid profile with a LRE window, so complete processing
             //Update the LRE parameters within the profile
             calcLreParameters();
             //Update the cycle Fo
@@ -81,11 +86,31 @@ public abstract class ProfileSummary {
             calcPredictedFc();
             //Update C1/2
             profile.setMidC(LREmath.getMidC(profile.getDeltaE(), profile.getEmax(), profile.getAvFo()));
+            db.saveObject(profile);
         }
     }
 
+    /**
+     * 
+     * @return the encapsulated Profile
+     */
     public Profile getProfile() {
         return profile;
+    }
+    
+    /**
+     * 
+     * @return the database holding the encapsulated Profile
+     */
+    public DatabaseServices getDatabase(){
+        return db;
+    }
+    
+    /**
+     * Saves the encapsulated Profile to the database from which is was derived
+     */
+    public void saveProfile(){
+        db.saveObject(profile);
     }
 
     /**
@@ -262,8 +287,7 @@ public abstract class ProfileSummary {
     }
 
     /**
-     ** Traverses the Cycle linked-list to the last cycle of the LRE window and
-     * returns the corresponding Cycle object.
+     * Returns the Cycle object corresponding to the last cycle in the LRE window
      *
      * @return the Cycle corresponding to the last cycle in the LRE window or
      * null if a LRE window has not been found
@@ -273,7 +297,7 @@ public abstract class ProfileSummary {
             return null;
         }
         Cycle runner = zeroCycle;
-        for (int i = 0; i < profile.getStrCycleInt() + profile.getLreWinSize() - 1; i++) {//Accuracy unknown**************************************
+        for (int i = 0; i < profile.getStrCycleInt() + profile.getLreWinSize() - 1; i++) {
             runner = runner.getNextCycle();
         }
         return runner;

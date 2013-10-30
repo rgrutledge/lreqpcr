@@ -28,6 +28,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.*;
+import org.lreqpcr.core.data_processing.ProfileSummary;
+import org.lreqpcr.core.data_processing.ProfileSummaryImp;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
 import org.lreqpcr.core.ui_elements.LabelFactory;
@@ -253,9 +255,9 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
 //>10N but no LRE window found indicates that the LRE window needs to be reiniitialized
                     LreAnalysisService lreAnalysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
                     selectionParameters = (LreWindowSelectionParameters) exptDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
-                    lreAnalysisService.conductAutomatedLreWindowSelection(avProfile, selectionParameters);
+                    ProfileSummary prfSum = new ProfileSummaryImp(avProfile, exptDB);
+                        lreAnalysisService.lreWindowSelectionUsingNonlinearRegression(prfSum, selectionParameters);
                 }
-                exptDB.saveObject(avProfile);
             }
         }
         exptDB.commitChanges();

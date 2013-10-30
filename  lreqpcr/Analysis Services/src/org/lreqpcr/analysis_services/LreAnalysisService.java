@@ -18,7 +18,7 @@
 package org.lreqpcr.analysis_services;
 
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
-import org.lreqpcr.core.data_objects.Profile;
+import org.lreqpcr.core.data_processing.ProfileSummary;
 
 /**
  * Conducts LRE analysis on a supplied Profile.
@@ -30,25 +30,31 @@ public abstract interface LreAnalysisService {
     /**
      * Provides all the functions necessary for automated LRE window selection.
      * <p>
-     * This involves baseline subtraction based on averaging early cycles followed by automated 
-     * LRE window selection using the LreWindowSelectionParameters. 
-     * This should also include nonlinear regression analysis, if this function is available
+     * This involves baseline subtraction using the average Fc of early cycles,
+     * followed by automated LRE window selection using the 
+     * LreWindowSelectionParameters, or default values if none is provided. 
      * ,<p>
-     * Note that the calling function must take responsibility for saving changes to the Profile.
+     * Note that this function also saves the modified to Profile to the 
+     * database from which it is derived via ProfileSummary.update.
      *
-     * @param profile the Profile to initialize
-     * @param parameters the LRE window parameters which cannot be null
-     * @return returns true if an LRE window was found or false if automated LRE window selection failed
+     * @param prfSum the ProfileSummary encapsulating the Profile
+     * @param parameters the LRE window selection parameters
+     * @return 
      */
-    public abstract boolean conductAutomatedLreWindowSelection(Profile profile, LreWindowSelectionParameters parameters);
+    public abstract boolean lreWindowSelection(ProfileSummary prfSum, LreWindowSelectionParameters parameters);
     
     /**
-     * Updates the supplied Profile following changes to the LRE window. This 
-     * should include nonlinear regression analysis if this function is available. 
+     * Provides all the functions necessary for automated LRE window selection 
+     * using using nonlinear regression-derived Fb and Fb-slope. 
+     * LRE window selection using the LreWindowSelectionParameters, or default 
+     * values if none is provided. 
      * <p>
-     * Note that the calling function must take responsibility for saving changes to the Profile.
+     * Note that this function also saves the modified to Profile to the 
+     * database from which it is derived via ProfileSummary.update.
      * 
-     * @param profile the profile to be updated 
-     */ 
-    public abstract boolean updateProfile(Profile profile);
+     * @param prfSum the ProfileSummary encapsulating the Profile to be initialized
+     * @param parameters the LRE window selection parameters or null if default values are to be used
+     * @return returns true if an LRE window was found or false if window selection failed
+     */
+    public abstract boolean lreWindowSelectionUsingNonlinearRegression(ProfileSummary prfSum, LreWindowSelectionParameters parameters);
 }

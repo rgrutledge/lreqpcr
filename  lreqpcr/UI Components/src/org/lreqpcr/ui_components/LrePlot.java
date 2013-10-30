@@ -68,13 +68,13 @@ public class LrePlot extends javax.swing.JPanel {
      * @param prfSum the ProfileSummary holding the Profile that is to be
      * displayed
      */
-    public void iniPlotLREs(ProfileSummary prfSum, DatabaseServices db) {
+    public void iniPlotLREs(ProfileSummary prfSum) {
         if (prfSum == null) {
             profile = null;
             clearPlot();
             return;
         }
-        this.db = db;
+        this.db = prfSum.getDatabase();
         clearPlot = false;
         this.prfSum = prfSum;
         profile = prfSum.getProfile();
@@ -173,14 +173,18 @@ public class LrePlot extends javax.swing.JPanel {
      */
     private void processModifiedLreWindow() {
         //The Profile has changed so the ProfileSummary needs updating
-        prfSum.updateProfileSummary();//This updates the Profile along with generating a new Cycle linked-list
-        db.saveObject(profile);
-        updateAvergeProfileIfNeeded();
+        prfSum.update();//This updates and saves the Profile along with generating a new Cycle linked-list
+        updateParentAverageProfileIfNeeded();
+        db.commitChanges();
         universalLookup.fireChangeEvent(PanelMessages.PROFILE_CHANGED);
     }
 
-    private void updateAvergeProfileIfNeeded() {
-        //The parent AverageSampleProfile No needs to be updated if <10N
+    /**
+     * If this is a replicate sample profile, the parent AverageProfile needs 
+     * to updated if it is less than 10N.
+     */
+    private void updateParentAverageProfileIfNeeded() {
+        //If this is SampleProfile, rhe parent AverageSampleProfile No needs to be updated if <10N
         if (profile instanceof SampleProfile && !(profile instanceof AverageProfile)) {
             AverageSampleProfile avProfile = (AverageSampleProfile) profile.getParent();
             //This function will update the AverageSampleProfile No if it is <10N
@@ -574,15 +578,12 @@ private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     if (profile == null) {
         return;
     }
-//This will force a new LRE window to be selected 
     List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
     LreWindowSelectionParameters selectionParameters = l.get(0);
-    lreAnalService.conductAutomatedLreWindowSelection(profile, selectionParameters);
-//Profile has been changed and therefore needs to be updated and saved 
-    prfSum.updateProfileSummary();//This updates the Profile
-    updateAvergeProfileIfNeeded();
-    db.saveObject(profile);
-    universalLookup.fireChangeEvent(PanelMessages.PROFILE_CHANGED);
+//This will force a new LRE window to be selected
+    profile.setHasAnLreWindowBeenFound(false);
+    lreAnalService.lreWindowSelectionUsingNonlinearRegression(prfSum, selectionParameters);
+    processModifiedLreWindow();
 }//GEN-LAST:event_resetButtonActionPerformed
 
     /**

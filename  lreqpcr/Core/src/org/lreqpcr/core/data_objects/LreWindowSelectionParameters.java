@@ -32,7 +32,8 @@ public class LreWindowSelectionParameters {
     /**
      * Returns he Fo threshold (fraction of the cycle Fo vs the average Fo) beyond which the
      * the next upper cycle will not be added to the LRE window.
-     * @return the Fo threshold
+     * 
+     * @return the user-selected Fo threshold or 6% (default)
      */
     public Double getFoThreshold() {
         return foThreshold;
@@ -41,6 +42,7 @@ public class LreWindowSelectionParameters {
     /**
      * Sets the Fo threshold (fraction of the cycle Fo vs the average Fo) beyond which the
      * the next upper cycle will not be added to the LRE window.
+     * 
      * @param foThreshold the Fo threshold
      */
     public void setFoThreshold(Double foThreshold) {
@@ -48,15 +50,17 @@ public class LreWindowSelectionParameters {
     }
 
     /**
-     * Returns the minimum Fc reading used to set the start cycle of the LRE window.
-     * @return the minimum Fc reading
+     * Returns the user-selected minimum Fc reading used to select the start 
+     * cycle of the LRE window.
+     * 
+     * @return the minimum Fc reading or zero if the user has not selected a minimum Fc
      */
     public Double getMinFc() {
         return minFc;
     }
 
     /**
-     * Sets the minimum Fc reading used to set the start cycle of the LRE window.
+     * Sets the minimum Fc reading used to select the LRE window start cycle.
      * @param minFc the minimum Fc reading
      */
     public void setMinFc(Double minFc) {
