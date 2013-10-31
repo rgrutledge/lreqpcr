@@ -89,9 +89,13 @@ class ExcludeCalibrationProfileAction extends AbstractAction {
             LreNode parentNode = (LreNode) nodes[0].getParentNode();
             parentAvProfile.setFcReadings(null);//Fb will need to be recalculated
             parentAvProfile.setRawFcReadings(ProfileUtilities.generateAverageFcDataset(profileList));
-            //Conduct automated LRE window selection
+            //Conduct a new LRE window selection
+            parentAvProfile.setHasAnLreWindowBeenFound(false);
+            //Reinitialize the LRE window
             ProfileSummary prfSum = new ProfileSummaryImp(parentAvProfile, db);
-            lreAnalysisService.lreWindowSelection(prfSum, selectionParameters);
+            lreAnalysisService.lreWindowInitialization(prfSum, selectionParameters);
+            //Apply nonlinear regression to optimize the LRE window
+            lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, selectionParameters);
 
             //Update the tree
             parentNode.refreshNodeLabel();

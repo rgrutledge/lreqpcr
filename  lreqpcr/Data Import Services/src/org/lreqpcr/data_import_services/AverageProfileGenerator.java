@@ -258,7 +258,7 @@ public class AverageProfileGenerator {
         if (!avProfile.isTheReplicateAverageNoLessThan10Molecules() && avProfile.areTheRepProfilesSufficientlyClustered()) {//
             //Note the the replicate sample profiles have already been initialized
             ProfileSummary prfSum = new ProfileSummaryImp(fooProfile, db);
-            lreAnalysisService.lreWindowSelectionUsingNonlinearRegression(prfSum, parameters);
+            lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, parameters);
         }
         for (Profile profile : averageProfile.getReplicateProfileList()) {
             profile.setParent(fooProfile);

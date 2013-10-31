@@ -152,7 +152,7 @@ public class RunInializationProvider implements RunInitializationService {
                         }
                         //Initialize the new Profile which will conduct an automated LRE window selection
                         ProfileSummary prfSum = new ProfileSummaryImp(sampleProfile, calbnDB);
-                        lreAnalysisService.lreWindowSelectionUsingNonlinearRegression(prfSum, parameters);
+                        lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, parameters);
                         sampleProfile.setOCF(ocf);
                         experimentDB.saveObject(sampleProfile);
                     }
@@ -211,7 +211,7 @@ public class RunInializationProvider implements RunInitializationService {
                             }
                         }
                         ProfileSummary prfSum = new ProfileSummaryImp(profile, calbnDB);
-                        lreAnalysisService.lreWindowSelectionUsingNonlinearRegression(prfSum, lreWindowSelectionParameters);
+                        lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, lreWindowSelectionParameters);
                     }
                     //Process the AverageCalibnProfiles
                     List<AverageProfile> averageCalbnProfileList =

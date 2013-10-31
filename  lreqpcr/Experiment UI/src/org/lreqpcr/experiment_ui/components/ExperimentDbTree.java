@@ -256,7 +256,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
                     LreAnalysisService lreAnalysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
                     selectionParameters = (LreWindowSelectionParameters) exptDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
                     ProfileSummary prfSum = new ProfileSummaryImp(avProfile, exptDB);
-                        lreAnalysisService.lreWindowSelectionUsingNonlinearRegression(prfSum, selectionParameters);
+                        lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, selectionParameters);
                 }
             }
         }

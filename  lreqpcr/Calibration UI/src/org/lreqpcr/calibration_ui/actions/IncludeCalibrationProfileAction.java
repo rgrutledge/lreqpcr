@@ -56,7 +56,7 @@ class IncludeCalibrationProfileAction extends AbstractAction {
         Node[] nodes = mgr.getSelectedNodes();
         LreNode selectedNode = (LreNode) nodes[0];
         db = selectedNode.getDatabaseServices();
-        LreAnalysisService profileIntialization =
+        LreAnalysisService lreAnalysisService =
                 Lookup.getDefault().lookup(LreAnalysisService.class);
         if (db != null) {
             if (db.isDatabaseOpen()) {
@@ -81,9 +81,10 @@ class IncludeCalibrationProfileAction extends AbstractAction {
             LreNode parentNode = (LreNode) nodes[0].getParentNode();
             parentAvProfile.setFcReadings(null);//Fb will need to be recalculated
             parentAvProfile.setRawFcReadings(ProfileUtilities.generateAverageFcDataset(profileList));
-                        //Conduct automated LRE window selection
+            //Reinitialize the LRE window
             ProfileSummary prfSum = new ProfileSummaryImp(parentAvProfile, db);
-            profileIntialization.lreWindowSelectionUsingNonlinearRegression(prfSum, selectionParameters);
+            lreAnalysisService.lreWindowInitialization(prfSum, selectionParameters);
+            lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, selectionParameters);
 
             //Update the tree
             parentNode.refreshNodeLabel();
