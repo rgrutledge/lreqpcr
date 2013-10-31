@@ -35,31 +35,38 @@ public class NonlinearRegressionImplementation {
     
 
     /**
-     * Conducts nonlinear regression reiterated 10 times. Note that this
-     * instantiates a new Cycle linked list, so any calling function utilizing a
-     * runner must reset it.
-     *
-     * Nonlinear regression analysis based on Peter Abeles’s EJML API
-     * (http://code.google.com/p/efficient-java-matrix-library/wiki/LevenbergMarquardtExample)
+     * Generates an optimized working Fc dataset based on nonlinear regression 
+     * derived Fb and Fb-slope without changes to the LRE window. 
      * <p>
-     * Note that this requires that an LRE window has previously been identified
-     * and that the LRE window will not be modified by this function. Note also
-     * that the LRE parameters are updated within the Profile, so the calling
-     * function must take responsibility for saving the modified Profile and for
-     * constructing a new Profile Summary.
-     *
+     * This is achieved by using LRE analysis to derive 
+     * values for Emax, Fmax and Fo that are then feed into the nonlinear 
+     * regression, which in turn derives values for Fb and Fb-slope, These are used to derive a   
+     * new Fc dataset upon which LRE analysis is applied, and the process repeated 10 times.  
+     * An average Fb and Fb-slope are then determined, from which a final optimized working Fc dataset 
+     * is generated. This is followed by a final LRE analysis to determine final values 
+     * for Emax, Fmax and Fo. 
+     * <p>
+     * Note that the Profile must have a valid LRE window and that the LRE window 
+     * is not modified. 
+     * <p> 
+     * Note also that the LRE parameters are updated and the modified Profile 
+     * is saved, and that a new Cycle linked list is instantiated, so any calling 
+     * function utilizing a runner must reset it.
+     * 
+     * @param prfSum the ProfileSummary encapsulating the Profile
      */
-    public void conductNonlinearRegressionAnalysisX10(ProfileSummary prfSum) {
+    public void conductNonlinearRegressionOptimization(ProfileSummary prfSum) {
         NonlinearRegressionServices nrService = Lookup.getDefault().lookup(NonlinearRegressionServices.class);
          profile = prfSum.getProfile();
-//This ensures a clean regression analysis that is not influenced from previous NR analyses 
-//        profile.setLreVariablesToZero();
+         //The profile must have a valid LRE window
+         if (!profile.hasAnLreWindowBeenFound()){
+             return;
+         }
 //Need to trim the profile in order to avoid aberrancies within early cycles and within the plateau phase
         //Exclude the first three cycles
         int firstCycle = 4;//Start at cycle 4        
-//Use the top of the LRE window as the last cycle included in the regression analysis
+//Use the top of the LRE window as the last cycle included in the regression analysis**********
         double[] fcArray = profile.getRawFcReadings();
-//        int lastCycle = profile.getStrCycleInt() + profile.getLreWinSize() - 1;
         int lastCycle = prfSum.getLreWindowEndCycle().getCycNum();
         //LRE windows at the end of the profile can generate an incorrect last cycle
         if (lastCycle > fcArray.length) {
@@ -86,6 +93,7 @@ public class NonlinearRegressionImplementation {
         //Reset the LRE-derived paramaters
         lreDerivedParam = getLreParameters();
         //Run the regression analysis 10 times to determine the average and SD
+//This is necessary due to the poor performance of Peter Abeles’s EJML implementation
         int numberOfIterations = 10;
         ArrayList<Double> emaxArray = new ArrayList<Double>();
         ArrayList<Double> fbArray = new ArrayList<Double>();

@@ -144,12 +144,12 @@ public class UpdateCalbrationDatabase {
             //Need to update the replicate profiles first in order to test if <10N
             for (Profile profile : avProfile.getReplicateProfileList()) {
                 ProfileSummary prfSum = new ProfileSummaryImp(profile, db);
-                lreAnalysisService.lreWindowSelectionUsingNonlinearRegression(prfSum, lreWindowSelectionParameters);
+                lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, lreWindowSelectionParameters);
 
             }
             Profile prf = (Profile) avProfile;
             ProfileSummary prfSum = new ProfileSummaryImp(prf, db);
-            lreAnalysisService.lreWindowSelectionUsingNonlinearRegression(prfSum, lreWindowSelectionParameters);
+            lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, lreWindowSelectionParameters);
         }
         db.commitChanges();
     }

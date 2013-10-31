@@ -51,6 +51,7 @@ public class LrePlot extends javax.swing.JPanel {
     private UniversalLookup universalLookup = UniversalLookup.getDefault();
     private DatabaseServices db;//The database in which the Profile is stored
     private LreAnalysisService lreAnalService = Lookup.getDefault().lookup(LreAnalysisService.class);
+    private LreWindowSelectionParameters selectionParameters;
 
     /**
      * Generates a plot of reaction fluorescence and predicted fluorescence
@@ -75,6 +76,8 @@ public class LrePlot extends javax.swing.JPanel {
             return;
         }
         this.db = prfSum.getDatabase();
+        List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
+        selectionParameters = l.get(0);
         clearPlot = false;
         this.prfSum = prfSum;
         profile = prfSum.getProfile();
@@ -172,19 +175,19 @@ public class LrePlot extends javax.swing.JPanel {
      * This function also assumes that this profile has a valid LRE window.
      */
     private void processModifiedLreWindow() {
+        lreAnalService.lreWindowUpdate(prfSum, selectionParameters);
         //The Profile has changed so the ProfileSummary needs updating
-        prfSum.update();//This updates and saves the Profile along with generating a new Cycle linked-list
         updateParentAverageProfileIfNeeded();
         db.commitChanges();
         universalLookup.fireChangeEvent(PanelMessages.PROFILE_CHANGED);
     }
 
     /**
-     * If this is a replicate sample profile, the parent AverageProfile needs 
-     * to updated if it is less than 10N.
+     * If this is a replicate sample profile, the parent AverageProfile needs to
+     * updated if it is less than 10N.
      */
     private void updateParentAverageProfileIfNeeded() {
-        //If this is SampleProfile, rhe parent AverageSampleProfile No needs to be updated if <10N
+        //If this is SampleProfile, the parent AverageSampleProfile No needs to be updated if <10N
         if (profile instanceof SampleProfile && !(profile instanceof AverageProfile)) {
             AverageSampleProfile avProfile = (AverageSampleProfile) profile.getParent();
             //This function will update the AverageSampleProfile No if it is <10N
@@ -268,8 +271,8 @@ public class LrePlot extends javax.swing.JPanel {
         graphTitle.setText("LRE Plot (Ec vs. Fc)");
 
         resetButton.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        resetButton.setText("Auto");
-        resetButton.setToolTipText("Performs an automated LRE window selection");
+        resetButton.setText("Reset");
+        resetButton.setToolTipText("Reintializes the LRE window");
         resetButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
         resetButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -578,12 +581,14 @@ private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     if (profile == null) {
         return;
     }
-    List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
-    LreWindowSelectionParameters selectionParameters = l.get(0);
-//This will force a new LRE window to be selected
-    profile.setHasAnLreWindowBeenFound(false);
-    lreAnalService.lreWindowSelectionUsingNonlinearRegression(prfSum, selectionParameters);
-    processModifiedLreWindow();
+    //This will force a new LRE window to be selected
+    //Reinitialize the Profile
+    lreAnalService.lreWindowInitialization(prfSum, selectionParameters);
+    //Apply nonlinear regression
+    lreAnalService.lreWindowOptimizationUsingNonlinearRegression(prfSum, selectionParameters);
+    updateParentAverageProfileIfNeeded();
+    db.commitChanges();
+    universalLookup.fireChangeEvent(PanelMessages.PROFILE_CHANGED);
 }//GEN-LAST:event_resetButtonActionPerformed
 
     /**

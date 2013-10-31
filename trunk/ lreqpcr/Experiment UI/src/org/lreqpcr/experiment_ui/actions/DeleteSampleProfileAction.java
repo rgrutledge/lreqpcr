@@ -39,6 +39,7 @@ import org.openide.windows.WindowManager;
 
 /**
  * Deletes the selected SampleProfiles
+ * NOT IMPLEMETED***********************************************
  *
  * @author Bob Rutledge
  */
@@ -129,11 +130,11 @@ public class DeleteSampleProfileAction extends AbstractAction {
         //Reinitialize the Average Profile
         LreAnalysisService profileIntialization =
                 Lookup.getDefault().lookup(LreAnalysisService.class);
-        //Conduct automated LRE window selection
+        //Reinitialize the LRE window
+        avProfile.setHasAnLreWindowBeenFound(false);
         ProfileSummary prfSum = new ProfileSummaryImp(avProfile, db);
-        profileIntialization.lreWindowSelection(prfSum, selectionParameters);
+        profileIntialization.lreWindowOptimizationUsingNonlinearRegression(prfSum, selectionParameters);
         avProfile.calculateAvAmpTm();
-        db.saveObject(avProfile);
         //Need to also save the SampeProfile's Run
         db.saveObject(sampleProfile.getRun());
         db.deleteObject(sampleProfile);

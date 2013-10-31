@@ -549,6 +549,10 @@ public abstract class Profile extends LreObject {
         this.nrFoSD = nrFoSD;
     }
     
+    /**
+     * Resets this Profile to an uninitialized status, removing all previous 
+     * determined LRE parameters, including eliminating the LRE window.
+     */
     public void setLreVariablesToZero(){
         nrEmax = 0;
         nrEmaxSD = 0;

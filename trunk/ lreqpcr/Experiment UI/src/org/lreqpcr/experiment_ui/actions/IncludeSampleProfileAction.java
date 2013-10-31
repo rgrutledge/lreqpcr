@@ -86,8 +86,11 @@ class IncludeSampleProfileAction extends AbstractAction {
             if (parentAvProfile.areTheRepProfilesSufficientlyClustered()
                     && !parentAvProfile.isTheReplicateAverageNoLessThan10Molecules()) {
                 LreAnalysisService lreAnalysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
+                //Reinitialize the LRE window
                 ProfileSummary prfSum = new ProfileSummaryImp(parentAvProfile, db);
-                lreAnalysisService.lreWindowSelectionUsingNonlinearRegression(prfSum, selectionParameters);
+                lreAnalysisService.lreWindowInitialization(prfSum, selectionParameters);
+                //Apply nonlinear regression optimization
+                lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, selectionParameters);
             }
             //Update the tree
             avSampleProfileLreNode.refreshNodeLabel();

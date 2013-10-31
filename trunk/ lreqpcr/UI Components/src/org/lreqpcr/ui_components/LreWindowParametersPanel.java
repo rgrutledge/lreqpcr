@@ -272,15 +272,13 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
             //Need to update the replicate profiles first in order to test if <10N
             for (Profile profile : avProfile.getReplicateProfileList()) {
                 ProfileSummary prfSum = new ProfileSummaryImp(profile, currentDB);
-                lreAnalysisService.lreWindowSelectionUsingNonlinearRegression(prfSum, selectionParameters);
-                currentDB.saveObject(profile);
+                lreAnalysisService.lreWindowSelectionUpdate(prfSum, selectionParameters);
             }
             if (!avProfile.isTheReplicateAverageNoLessThan10Molecules() && avProfile.areTheRepProfilesSufficientlyClustered()) {
                 //The AverageProfile is valid thus reinitialize it
                 Profile profile = (Profile) avProfile;
                 ProfileSummary prfSum = new ProfileSummaryImp(profile, currentDB);
-                lreAnalysisService.lreWindowSelectionUsingNonlinearRegression(prfSum, selectionParameters);
-                currentDB.saveObject(avProfile);//*********************************** TODO prfSum should do this????
+                lreAnalysisService.lreWindowSelectionUpdate(prfSum, selectionParameters);
             }
         }
         currentDB.commitChanges();

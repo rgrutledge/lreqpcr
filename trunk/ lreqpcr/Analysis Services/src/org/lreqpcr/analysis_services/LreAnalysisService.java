@@ -28,33 +28,65 @@ import org.lreqpcr.core.data_processing.ProfileSummary;
 public abstract interface LreAnalysisService {
 
     /**
-     * Provides all the functions necessary for automated LRE window selection.
+     * LRE window selection using a working Fc dataset generated 
+     * from an average Fb derived from the Fc readings within early cycles. 
+     * 
+     * Note that this entails removing any 
+     * previous LRE analysis, so that the Profile can be reinitialized. 
      * <p>
-     * This involves baseline subtraction using the average Fc of early cycles,
-     * followed by automated LRE window selection using the 
-     * LreWindowSelectionParameters, or default values if none is provided. 
+     * This entails automated LRE window selection using the 
+     * LreWindowSelectionParameters. 
      * ,<p>
-     * Note that this function also saves the modified to Profile to the 
+     * Note also that this function must also save the modified to Profile to the 
      * database from which it is derived via ProfileSummary.update.
      *
      * @param prfSum the ProfileSummary encapsulating the Profile
      * @param parameters the LRE window selection parameters
      * @return 
      */
-    public abstract boolean lreWindowSelection(ProfileSummary prfSum, LreWindowSelectionParameters parameters);
+    public abstract boolean lreWindowInitialization(ProfileSummary prfSum, LreWindowSelectionParameters parameters);
     
     /**
-     * Provides all the functions necessary for automated LRE window selection 
-     * using using nonlinear regression-derived Fb and Fb-slope. 
-     * LRE window selection using the LreWindowSelectionParameters, or default 
-     * values if none is provided. 
+     * Provides automated LRE window selection 
+     * using nonlinear regression-derived Fb and Fb-slope to generate an optimized working Fc dataset. 
+     * If a LRE window has not been found, the Profile is reinitialized. 
      * <p>
-     * Note that this function also saves the modified to Profile to the 
-     * database from which it is derived via ProfileSummary.update.
+     * LRE window selection is based on the LreWindowSelectionParameters, or default 
+     * values if none is provided. Note also that this function saves the modified to Profile to the 
+     * database from which it is derived via ProfileSummary.update().
      * 
      * @param prfSum the ProfileSummary encapsulating the Profile to be initialized
      * @param parameters the LRE window selection parameters or null if default values are to be used
      * @return returns true if an LRE window was found or false if window selection failed
      */
-    public abstract boolean lreWindowSelectionUsingNonlinearRegression(ProfileSummary prfSum, LreWindowSelectionParameters parameters);
+    public abstract boolean lreWindowOptimizationUsingNonlinearRegression(ProfileSummary prfSum, LreWindowSelectionParameters parameters);
+    
+    /**
+     * Updates the LRE window based on the assumption that a valid LRE window 
+     * has been identified and that modifying the working Fc dataset via nonlinear regression is unnecessary. 
+     * The primary intent is to process changes to the LRE window or the window selection parameters.
+     * <p>
+     * Note also that this function saves the modified to Profile to the 
+     * database from which it is derived via ProfileSummary.update().
+     * 
+     * @param prfSum the ProfileSummary encapsulating the Profile to be updated
+     * @param parameters the LRE window selection parameters
+     * @return if the update was successful
+     */
+    public abstract boolean lreWindowSelectionUpdate(ProfileSummary prfSum, LreWindowSelectionParameters parameters);
+    
+    /**
+     * Updates the LRE window based on the assumption that a valid LRE window 
+     * has been identified and that nonlinear regression is desired without 
+     * modifying the LRE window. This primary intent is to process changes to 
+     * the LRE window.
+     * <p>
+     * Note also that this function saves the modified to Profile to the 
+     * database from which it is derived via ProfileSummary.update().
+     * 
+     * @param prfSum the ProfileSummary encapsulating the Profile to be updated
+     * @param parameters the LRE window selection parameters
+     * @return whether the LRE window was updated successfully
+     */
+    public abstract boolean lreWindowUpdate(ProfileSummary prfSum, LreWindowSelectionParameters parameters);
 }
