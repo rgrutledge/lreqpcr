@@ -75,7 +75,7 @@ public class LightcyclerRdmlImportProvider extends RunImportService {
 
     @Override
     @SuppressWarnings(value = "unchecked")
-    public RunImportData importRunData() {
+    public RunImportData constructRunImportData() {
         //Retrieve the xml file
         //For development purposes, just use the example RDML file       
 //        File lcRdmlFile = IOUtilities.openXmlFile("Lightcycler XML Data Import");
