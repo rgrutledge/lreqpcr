@@ -48,7 +48,7 @@ public class AB7500Ver2ImportProvider extends RunImportService {
 
     @Override
     @SuppressWarnings(value = "unchecked")
-    public RunImportData importRunData() {
+    public RunImportData constructRunImportData() {
         //Retrieve the ABI Ver2 export xls file
         File ver2ExcelImportFile = IOUtilities.openImportExcelFile("ABI7500 Version 2 Data Import");
         if (ver2ExcelImportFile == null) {

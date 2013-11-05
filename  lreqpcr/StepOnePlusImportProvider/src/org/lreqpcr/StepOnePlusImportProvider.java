@@ -48,7 +48,7 @@ public class StepOnePlusImportProvider extends RunImportService {
 
     @Override
     @SuppressWarnings(value = "unchecked")
-    public RunImportData importRunData() {
+    public RunImportData constructRunImportData() {
         //Retrieve the ABI Ver2 export xls file
         File ver2ExcelImportFile = IOUtilities.openImportExcelFile("StepOnePlus Data Import");
         if (ver2ExcelImportFile == null) {

@@ -31,7 +31,7 @@ public abstract class RunImportService {
     /**
      * 
      * A service provider needs only to generate an RunImportData instance
-     * via implementing the importRunData method.
+     * via implementing the constructRunImportData method.
      * Run initialization and data storage is conducted via the
      * Run Initialization service.
      */
@@ -43,22 +43,22 @@ public abstract class RunImportService {
      * Called from the constructor to start the data import
      */
     public final void importRun() {
-        initializeRun(importRunData());
+        importRun(constructRunImportData());
     }
 
     /**
      * Constructs the RunImportData object
      * 
-     * @return the Run data ready for initialization
+     * @return the Run data ready for importation
      */
-    public abstract RunImportData importRunData();
+    public abstract RunImportData constructRunImportData();
 
     /**
      * Use the RunInitializationService to initialize the Run data. 
      *
      * @param importData the run import data
      */
-    public void initializeRun(RunImportData importData) {
+    public void importRun(RunImportData importData) {
         RunInitializationService initRunService = Lookup.getDefault().lookup(RunInitializationService.class);
         initRunService.intializeRun(importData);
     }
