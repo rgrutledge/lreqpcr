@@ -67,7 +67,7 @@ public class MxpVer3_4ImportProvider extends RunImportService {
 
     @Override
     @SuppressWarnings(value = "unchecked")
-    public RunImportData importRunData() {
+    public RunImportData constructRunImportData() {
         //Retrieve the export xls file
         File mxpExcelImportFile = IOUtilities.openImportExcelFile("MXP3000P Version 3.4 Data Import");
         if (mxpExcelImportFile == null) {

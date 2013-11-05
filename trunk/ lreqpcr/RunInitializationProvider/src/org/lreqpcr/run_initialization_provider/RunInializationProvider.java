@@ -81,7 +81,6 @@ public class RunInializationProvider implements RunInitializationService {
         //to very few types, with the manual data import being rare exceptions
         //Check for the necessary databases for each type of import format
         if (importType == DataImportType.STANDARD) {
-//*************** TO DO should present error dialogs rather than simply returning...BUT is this really necessary?????
             //All three databases will likely be needed
             if (!experimentDB.isDatabaseOpen()) {
                 if (!experimentDatabaseNotOpen()) {
