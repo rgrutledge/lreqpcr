@@ -17,6 +17,7 @@
 package org.lreqpcr.analysis.rutledge;
 
 import java.awt.Toolkit;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
@@ -205,8 +206,10 @@ public class NonlinearRegressionImplementation {
         if (r2 < 0.8 || r2.isNaN() || emaxNR < 0.3) {
             //Error dialog
             Toolkit.getDefaultToolkit().beep();
+            SimpleDateFormat sdf = new SimpleDateFormat("dMMMyy");
             JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
                     "The nonlinear regression analysis has failed for well '"
+                    + sdf.format(profile.getRunDate()) + ": "
                     + profile.getWellLabel() + "'.\n\n"
                     + "LRE analysis will be conducted without baseline-slope correction",
                     "Failed to Apply Nonlinear Regression.",

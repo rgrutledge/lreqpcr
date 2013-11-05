@@ -93,18 +93,21 @@ class IncludeSampleProfileAction extends AbstractAction {
                 lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, selectionParameters);
             }
             //Update the tree
-            LreNode avSampleProfileLreNode = (LreNode) nodes[0].getParentNode();
-            avSampleProfileLreNode.refreshNodeLabel();
-            //Determine if the parent node is a Run node
-            if (avSampleProfileLreNode.getParentNode().getLookup().lookup(Run.class) != null) {
-                //Refresh the Run label to update the average Fmax
-                LreNode runNode = (LreNode) avSampleProfileLreNode.getParentNode();
-                runNode.refreshNodeLabel();
-                db.saveObject(parentAvProfile.getRun());
-            }
-            LreObjectChildren parentChildren = (LreObjectChildren) avSampleProfileLreNode.getChildren();
-            parentChildren.setLreObjectList(profileList);
-            parentChildren.addNotify();
+            //Test to see if the parent node is a run node used in the well view
+            if (sampleProfileLreNode.getParentNode().getLookup().lookup(Run.class) == null) {
+                LreNode avSampleProfileLreNode = (LreNode) nodes[0].getParentNode();
+                avSampleProfileLreNode.refreshNodeLabel();
+                //Determine if the parent node is a Run node
+                if (avSampleProfileLreNode.getParentNode().getLookup().lookup(Run.class) != null) {
+                    //Refresh the Run label to update the average Fmax
+                    LreNode runNode = (LreNode) avSampleProfileLreNode.getParentNode();
+                    runNode.refreshNodeLabel();
+                    db.saveObject(parentAvProfile.getRun());
+                }
+                LreObjectChildren parentChildren = (LreObjectChildren) avSampleProfileLreNode.getChildren();
+                parentChildren.setLreObjectList(profileList);
+                parentChildren.addNotify();
+            }//Else do nothing
         }
         db.commitChanges();
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_INCLUDED);

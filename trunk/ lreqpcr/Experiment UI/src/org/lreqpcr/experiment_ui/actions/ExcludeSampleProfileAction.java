@@ -108,17 +108,21 @@ class ExcludeSampleProfileAction extends AbstractAction {
                 lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, selectionParameters);
             }
             //Update the tree
-            LreNode avSampleProfileLreNode = (LreNode) sampleProfileNodes[0].getParentNode();
-            avSampleProfileLreNode.refreshNodeLabel();
-            //See if the AverageSample parent node is a Run node
-            if (avSampleProfileLreNode.getParentNode().getLookup().lookup(Run.class) != null) {
-                LreNode runLreNode = (LreNode) avSampleProfileLreNode.getParentNode();
-                runLreNode.refreshNodeLabel();
-                db.saveObject(sampleProfile.getRun());
-            }
-            LreObjectChildren parentChildren = (LreObjectChildren) avSampleProfileLreNode.getChildren();
-            parentChildren.setLreObjectList(repProfileList);
-            parentChildren.addNotify();
+            //Test to see if the parent node is a run node used in the well view
+            if (sampleProfileLreNode.getParentNode().getLookup().lookup(Run.class) == null) {
+                //Must be an average profile node      
+                LreNode avSampleProfileLreNode = (LreNode) sampleProfileNodes[0].getParentNode();
+                avSampleProfileLreNode.refreshNodeLabel();
+                //Determine if the AverageSample parent node is a Run node
+                if (avSampleProfileLreNode.getParentNode().getLookup().lookup(Run.class) != null) {
+                    LreNode runLreNode = (LreNode) avSampleProfileLreNode.getParentNode();
+                    runLreNode.refreshNodeLabel();
+                    db.saveObject(sampleProfile.getRun());
+                }
+                LreObjectChildren parentChildren = (LreObjectChildren) avSampleProfileLreNode.getChildren();
+                parentChildren.setLreObjectList(repProfileList);
+                parentChildren.addNotify();
+            }//Else do nothing
         }
         db.commitChanges();
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_EXCLUDED);
