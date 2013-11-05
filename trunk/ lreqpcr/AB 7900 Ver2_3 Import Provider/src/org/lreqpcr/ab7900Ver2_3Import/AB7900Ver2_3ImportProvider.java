@@ -52,7 +52,7 @@ public class AB7900Ver2_3ImportProvider extends RunImportService {
 
     @Override
     @SuppressWarnings(value = "unchecked")
-    public RunImportData importRunData() {
+    public RunImportData constructRunImportData() {
 
         //Retrieve the export xls file
         File ver2_3ExcelImportFile = IOUtilities.openImportExcelFile("AB 7900 Version 2.3 Data Import");

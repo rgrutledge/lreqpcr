@@ -77,7 +77,7 @@ public class LC480ImportProvider extends RunImportService {
     
     @Override
     @SuppressWarnings(value = "unchecked")
-    public RunImportData importRunData() {
+    public RunImportData constructRunImportData() {
         //Instanciate the DOM document
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setIgnoringComments(true);

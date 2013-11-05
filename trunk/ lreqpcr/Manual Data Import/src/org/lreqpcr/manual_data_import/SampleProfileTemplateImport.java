@@ -149,7 +149,7 @@ public class SampleProfileTemplateImport extends RunImportService {
      * @return the Run of Excel type
      */
     @Override
-    public RunImportData importRunData() {
+    public RunImportData constructRunImportData() {
         UniversalLookup uLookup = UniversalLookup.getDefault();
         //Check to see if an Experiment database is open
         if (uLookup.containsKey(DatabaseType.EXPERIMENT)) {

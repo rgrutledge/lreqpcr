@@ -143,7 +143,7 @@ public class ManualCalibrationProfileImport extends RunImportService {
      * @return import data object ready for processing
      */
     @Override
-    public RunImportData importRunData() {
+    public RunImportData constructRunImportData() {
         //Determine if a Calibration database is open
         UniversalLookup uLookup = UniversalLookup.getDefault();
         if (uLookup.containsKey(DatabaseType.CALIBRATION)) {
