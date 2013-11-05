@@ -56,8 +56,6 @@ class IncludeCalibrationProfileAction extends AbstractAction {
         Node[] nodes = mgr.getSelectedNodes();
         LreNode selectedNode = (LreNode) nodes[0];
         db = selectedNode.getDatabaseServices();
-        LreAnalysisService lreAnalysisService =
-                Lookup.getDefault().lookup(LreAnalysisService.class);
         if (db != null) {
             if (db.isDatabaseOpen()) {
                 List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);
@@ -78,15 +76,23 @@ class IncludeCalibrationProfileAction extends AbstractAction {
             db.saveObject(selectedProfile);
 
             //Update the parent Average Sample Profile
-            LreNode parentNode = (LreNode) nodes[0].getParentNode();
-            parentAvProfile.setFcReadings(null);//Fb will need to be recalculated
             parentAvProfile.setRawFcReadings(ProfileUtilities.generateAverageFcDataset(profileList));
+            parentAvProfile.setFcReadings(null);//This is necessary
+
             //Reinitialize the LRE window
-            ProfileSummary prfSum = new ProfileSummaryImp(parentAvProfile, db);
-            lreAnalysisService.lreWindowInitialization(prfSum, selectionParameters);
-            lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, selectionParameters);
+            //Need to determine if this is a valid average profile
+            if (parentAvProfile.areTheRepProfilesSufficientlyClustered()
+                    && !parentAvProfile.isTheReplicateAverageNoLessThan10Molecules()) {
+                LreAnalysisService lreAnalysisService =
+                        Lookup.getDefault().lookup(LreAnalysisService.class);
+                ProfileSummary prfSum = new ProfileSummaryImp(parentAvProfile, db);
+                lreAnalysisService.lreWindowInitialization(prfSum, selectionParameters);
+                //Apply nonlinear regression to optimize the LRE window
+                lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, selectionParameters);
+            }
 
             //Update the tree
+            LreNode parentNode = (LreNode) nodes[0].getParentNode();
             parentNode.refreshNodeLabel();
             LreObjectChildren parentChildren = (LreObjectChildren) parentNode.getChildren();
             parentChildren.setLreObjectList(profileList);

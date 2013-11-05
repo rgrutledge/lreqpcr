@@ -16,52 +16,60 @@
  */
 package org.lreqpcr.analysis.rutledge;
 
+import java.awt.Toolkit;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeMap;
+import javax.swing.JOptionPane;
+import org.lreqpcr.analysis_services.LreAnalysisService;
+import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_processing.ProfileSummary;
 import org.lreqpcr.core.utilities.MathFunctions;
 import org.lreqpcr.nonlinear_regression_services.LreParameters;
 import org.lreqpcr.nonlinear_regression_services.NonlinearRegressionServices;
 import org.openide.util.Lookup;
+import org.openide.windows.WindowManager;
 
 /**
  *
  * @author Bob Rutledge
  */
 public class NonlinearRegressionImplementation {
-    
+
+    private ProfileSummary prfSum;
     private Profile profile;
-    
+    private NonlinearRegressionServices nrService = Lookup.getDefault().lookup(NonlinearRegressionServices.class);
 
     /**
-     * Generates an optimized working Fc dataset based on nonlinear regression 
-     * derived Fb and Fb-slope without changes to the LRE window. 
+     * Generates an optimized working Fc dataset based on nonlinear regression
+     * derived Fb and Fb-slope without changes to the LRE window.
      * <p>
-     * This is achieved by using LRE analysis to derive 
-     * values for Emax, Fmax and Fo that are then feed into the nonlinear 
-     * regression, which in turn derives values for Fb and Fb-slope, These are used to derive a   
-     * new Fc dataset upon which LRE analysis is applied, and the process repeated 10 times.  
-     * An average Fb and Fb-slope are then determined, from which a final optimized working Fc dataset 
-     * is generated. This is followed by a final LRE analysis to determine final values 
-     * for Emax, Fmax and Fo. 
+     * This is achieved by using LRE analysis to derive values for Emax, Fmax
+     * and Fo that are then feed into the nonlinear regression, which in turn
+     * derives values for Fb and Fb-slope, These are used to derive a new Fc
+     * dataset upon which LRE analysis is applied, and the process repeated 10
+     * times. An average Fb and Fb-slope are then determined, from which a final
+     * optimized working Fc dataset is generated. This is followed by a final
+     * LRE analysis to determine final values for Emax, Fmax and Fo.
      * <p>
-     * Note that the Profile must have a valid LRE window and that the LRE window 
-     * is not modified. 
-     * <p> 
-     * Note also that the LRE parameters are updated and the modified Profile 
-     * is saved, and that a new Cycle linked list is instantiated, so any calling 
+     * Note that the Profile must have a valid LRE window and that the LRE
+     * window is not modified.
+     * <p>
+     * Note also that the LRE parameters are updated and the modified Profile is
+     * saved, and that a new Cycle linked list is instantiated, so any calling
      * function utilizing a runner must reset it.
-     * 
+     *
      * @param prfSum the ProfileSummary encapsulating the Profile
      */
-    public void conductNonlinearRegressionOptimization(ProfileSummary prfSum) {
-        NonlinearRegressionServices nrService = Lookup.getDefault().lookup(NonlinearRegressionServices.class);
-         profile = prfSum.getProfile();
-         //The profile must have a valid LRE window
-         if (!profile.hasAnLreWindowBeenFound()){
-             return;
-         }
+    public boolean conductNonlinearRegressionOptimization(ProfileSummary prfSum) {
+        this.prfSum = prfSum;
+        profile = prfSum.getProfile();
+
+        //The profile must have a valid LRE window
+        if (!profile.hasAnLreWindowBeenFound()) {
+            return false;
+        }
 //Need to trim the profile in order to avoid aberrancies within early cycles and within the plateau phase
         //Exclude the first three cycles
         int firstCycle = 4;//Start at cycle 4        
@@ -145,7 +153,7 @@ public class NonlinearRegressionImplementation {
         conductBaselineCorrection();
         //Update the LRE parameters
         prfSum.update();
-        int stop = 1;
+        return testIfRegressionWasSuccessful();
     }
 
     /**
@@ -166,7 +174,7 @@ public class NonlinearRegressionImplementation {
         }
         profile.setFcReadings(processedFcDataset);
     }
-    
+
     /**
      * Retrieves the current LRE parameters from the Profile
      *
@@ -187,5 +195,36 @@ public class NonlinearRegressionImplementation {
         lreDerivedParam.setFo(profile.getAvFo());//Current LRE-derived average Fo
         lreDerivedParam.setFbSlope(profile.getNrFbSlope());//Current Fb slope
         return lreDerivedParam;
+    }
+
+    private boolean testIfRegressionWasSuccessful() {//********************* TODO Design an effective scheme to test for NR success
+//Test if the regression analysis was successful based on the LRE line R2
+        Double r2 = profile.getR2();
+        Double emaxNR = profile.getNrEmax();
+        //Very, very crude approach
+        if (r2 < 0.8 || r2.isNaN() || emaxNR < 0.3) {
+            //Error dialog
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                    "The nonlinear regression analysis has failed for well '"
+                    + profile.getWellLabel() + "'.\n\n"
+                    + "LRE analysis will be conducted without baseline-slope correction",
+                    "Failed to Apply Nonlinear Regression.",
+                    JOptionPane.ERROR_MESSAGE);
+            //Reset the LRE window using Fb
+            profile.setWasNonlinearRegressionSuccessful(false);
+            profile.setNrFb(0);
+            profile.setNrFbSlope(0);
+            LreWindowSelector.substractBackgroundUsingAvFc(profile);
+            //Try to find an LRE window
+            prfSum.update();
+            List<LreWindowSelectionParameters> l = prfSum.getDatabase().getAllObjects(LreWindowSelectionParameters.class);
+            LreWindowSelectionParameters parameters = l.get(0);
+            LreAnalysisService lreAnalService = Lookup.getDefault().lookup(LreAnalysisService.class);
+            lreAnalService.lreWindowInitialization(prfSum, parameters);
+            return false;
+        }
+        profile.setWasNonlinearRegressionSuccessful(true);
+        return true;
     }
 }

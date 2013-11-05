@@ -21,18 +21,12 @@ import javax.swing.JOptionPane;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
-import org.lreqpcr.core.data_processing.Cycle;
 import org.lreqpcr.core.data_processing.ProfileSummary;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.WindowManager;
 
 /**
  * Rutledge implementation of LRE window selection and optimization.
- * <p>
- * As of Sept13 this includes nonlinear regression to generate an estimation of
- * baseline fluorescence that replaces the average Fc of cycles 4-9, in addition
- * to an estimation of baseline slope, both of which are used to generate a
- * working Fc dataset used for LRE analysis.
  *
  * @author Bob Rutledge
  */
@@ -41,7 +35,6 @@ public class LreAnalysisProvider implements LreAnalysisService {
 
     private Profile profile;
     private ProfileSummary prfSum;
-//    private Cycle runner;
     private LreWindowSelectionParameters parameters;
     private NonlinearRegressionImplementation nrAnalysis = new NonlinearRegressionImplementation();
 
@@ -62,7 +55,7 @@ public class LreAnalysisProvider implements LreAnalysisService {
         this.parameters = parameters;
         this.profile = prfSum.getProfile();
         //Reset the Profile to remove any previous LRE or NR analysis derived values
-        profile.setLreVariablesToZero();//*************** TODO review this function and its purpose
+        profile.setLreVariablesToZero();
         //Be sure that the working Fc dataset is derived using an average Fb 
         LreWindowSelector.substractBackgroundUsingAvFc(profile);
         prfSum.update();
@@ -79,15 +72,6 @@ public class LreAnalysisProvider implements LreAnalysisService {
         }
         //Attempt to expand the upper limit of the LRE window
         LreWindowSelector.optimizeLreWindow(prfSum, parameters.getFoThreshold());
-////Use this preliminary LRE window for nonlinear regression analysis 
-////This generates an optimized working Fc dataset and updates the LRE parameters
-////        conductNonlinearRegressionOptimization();
-//        optmzLreWinWithNR();//********************************Not appropriate here************************************
-//        if (!testIfRegressionWasSuccessful()) {
-//            return profile.hasAnLreWindowBeenFound();
-//        }
-//        //Repeat optimization of the LRE window but with nonlinear regression 
-
         return true;
     }
 
@@ -124,7 +108,7 @@ public class LreAnalysisProvider implements LreAnalysisService {
         }
         //Attempt to optimize the window using nonlinear regression
         LreWindowSelector.optimizeLreWindowUsingNR(prfSum, parameters.getFoThreshold());
-        return true;
+        return prfSum.getProfile().didNonlinearRegressionSucceed();
     }
 
     /**
@@ -144,41 +128,14 @@ public class LreAnalysisProvider implements LreAnalysisService {
         if (parameters.getMinFc() != 0) {
             //Resets the window start cycle based on minFc and also resets the window size to 3 cycles
             LreWindowSelector.selectLreStartCycleUsingMinFc(prfSum, parameters.getMinFc());
-        }
-//Attempt to expand the LRE window without nonlinear regression, that is, use the exsist working Fc dataset
+        }//Else, it is assumed that the exsisting start cycle will be used
+//Attempt to expand the LRE window using the exsisting working Fc dataset
         LreWindowSelector.optimizeLreWindowUsingNR(prfSum, parameters.getFoThreshold());
-        return true;
+        return prfSum.getProfile().didNonlinearRegressionSucceed();
     }
     
     public boolean lreWindowUpdate(ProfileSummary prfSum, LreWindowSelectionParameters parameters) {
         nrAnalysis.conductNonlinearRegressionOptimization(prfSum);
-        return true;
-    }
-
-    private boolean testIfRegressionWasSuccessful() {//********************* TODO Design an effective scheme to test for NR success
-//Test if the regression analysis was successful based on the LRE line R2
-        Double r2 = profile.getR2();
-//        Double emax = profile
-        if (r2 < 0.8 || r2.isNaN()) {
-            //Error dialog
-            Toolkit.getDefaultToolkit().beep();
-            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
-                    "The nonlinear regression analysis has failed for well '"
-                    + profile.getWellLabel() + "'.\n\n"
-                    + "LRE analysis will be conducted without baseline-slope correction",
-                    "Failed to Apply Nonlinear Regression.",
-                    JOptionPane.ERROR_MESSAGE);
-            //Reset the LRE window using Fb
-            profile.setWasNonlinearRegressionSuccessful(false);
-            profile.setNrFb(0);
-            profile.setNrFbSlope(0);
-            LreWindowSelector.substractBackgroundUsingAvFc(profile);
-            //Try to find an LRE window
-            prfSum.update();
-            lreWindowInitialization(prfSum, parameters);
-            return false;
-        }
-        profile.setWasNonlinearRegressionSuccessful(true);
-        return true;
+        return prfSum.getProfile().didNonlinearRegressionSucceed();
     }
 }

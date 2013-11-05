@@ -63,6 +63,9 @@ public abstract class ProfileSummary {
      *
      */
     public void update() {
+        if (profile.getFcReadings() == null) {
+            return;
+        }
         //Create a new Cycle 
         makeCycleList();
         //If an window is absent nothing else can be done

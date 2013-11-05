@@ -63,10 +63,12 @@ public class CalbnTreeNodeLabels implements LabelFactory {
         if (calbrnProfile.isExcluded()) {
             if (calbrnProfile instanceof AverageCalibrationProfile) {
                 calbrnProfile.setShortDescription("This Profile has been excluded by the user");
+                return rundate + ": " + profileName + "<PROFILE EXCLUDED>";
             } else {//Must be a CalibrationProfile
-                calbrnProfile.setShortDescription("This Calibration Profile has been excluded by the user and will not be included in the Average Profile");
+                calbrnProfile.setShortDescription("This Calibration Profile has been excluded by the user "
+                        + "and will not be included in the Average Profile");
+                return calbrnProfile.getWellLabel() + ": " + profileName + "<EXCLUDED>";
             }
-            return rundate + ": " + profileName + "<PROFILE EXCLUDED>";
         }
         //Determine what to display for Emax
         String emax;
