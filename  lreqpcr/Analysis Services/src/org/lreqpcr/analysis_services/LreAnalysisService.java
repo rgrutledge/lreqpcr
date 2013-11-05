@@ -21,7 +21,10 @@ import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_processing.ProfileSummary;
 
 /**
- * Conducts LRE analysis on a supplied Profile.
+ * Identifies and optimizes a LRE window within the Profile encapsulated within 
+ * the supplied ProfileSummary. 
+ * <p>
+ * 
  *
  * @author Bob Rutledge
  */
@@ -38,7 +41,7 @@ public abstract interface LreAnalysisService {
      * LreWindowSelectionParameters. 
      * ,<p>
      * Note also that this function must also save the modified to Profile to the 
-     * database from which it is derived via ProfileSummary.update.
+     * database from which it is derived via ProfileSummary.update().
      *
      * @param prfSum the ProfileSummary encapsulating the Profile
      * @param parameters the LRE window selection parameters
@@ -51,8 +54,8 @@ public abstract interface LreAnalysisService {
      * using nonlinear regression-derived Fb and Fb-slope to generate an optimized working Fc dataset. 
      * If a LRE window has not been found, the Profile is reinitialized. 
      * <p>
-     * LRE window selection is based on the LreWindowSelectionParameters, or default 
-     * values if none is provided. Note also that this function saves the modified to Profile to the 
+     * LRE window selection is based on the LreWindowSelectionParameters. 
+     * Note also that this function saves the modified to Profile to the 
      * database from which it is derived via ProfileSummary.update().
      * 
      * @param prfSum the ProfileSummary encapsulating the Profile to be initialized
@@ -63,10 +66,10 @@ public abstract interface LreAnalysisService {
     
     /**
      * Updates the LRE window based on the assumption that a valid LRE window 
-     * has been identified and that modifying the working Fc dataset via nonlinear regression is unnecessary. 
-     * The primary intent is to process changes to the LRE window or the window selection parameters.
+     * has been identified and that modifying the working Fc dataset is unnecessary. 
+     * The primary intent is to process changes to the window selection parameters.
      * <p>
-     * Note also that this function saves the modified to Profile to the 
+     * Note that this function saves the modified to Profile to the 
      * database from which it is derived via ProfileSummary.update().
      * 
      * @param prfSum the ProfileSummary encapsulating the Profile to be updated
@@ -81,7 +84,7 @@ public abstract interface LreAnalysisService {
      * modifying the LRE window. This primary intent is to process changes to 
      * the LRE window.
      * <p>
-     * Note also that this function saves the modified to Profile to the 
+     * Note that this function saves the modified to Profile to the 
      * database from which it is derived via ProfileSummary.update().
      * 
      * @param prfSum the ProfileSummary encapsulating the Profile to be updated

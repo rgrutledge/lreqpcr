@@ -66,8 +66,7 @@ class ExcludeCalibrationProfileAction extends AbstractAction {
                 return;
             }
         }
-        LreAnalysisService lreAnalysisService =
-                Lookup.getDefault().lookup(LreAnalysisService.class);
+        
         for (Node node : nodes) {
             selectedNode = (LreNode) node;
             CalibrationProfile selectedProfile = selectedNode.getLookup().lookup(CalibrationProfile.class);
@@ -86,18 +85,23 @@ class ExcludeCalibrationProfileAction extends AbstractAction {
             db.saveObject(selectedProfile);
 
             //Update the parent Average Sample Profile
-            LreNode parentNode = (LreNode) nodes[0].getParentNode();
-            parentAvProfile.setFcReadings(null);//Fb will need to be recalculated
             parentAvProfile.setRawFcReadings(ProfileUtilities.generateAverageFcDataset(profileList));
-            //Conduct a new LRE window selection
-            parentAvProfile.setHasAnLreWindowBeenFound(false);
+            parentAvProfile.setFcReadings(null);//This is necessary
+            
             //Reinitialize the LRE window
-            ProfileSummary prfSum = new ProfileSummaryImp(parentAvProfile, db);
-            lreAnalysisService.lreWindowInitialization(prfSum, selectionParameters);
-            //Apply nonlinear regression to optimize the LRE window
-            lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, selectionParameters);
+            //Need to determine if this is a valid average profile
+            if (parentAvProfile.areTheRepProfilesSufficientlyClustered()
+                    && !parentAvProfile.isTheReplicateAverageNoLessThan10Molecules()) {
+                LreAnalysisService lreAnalysisService =
+                        Lookup.getDefault().lookup(LreAnalysisService.class);
+                ProfileSummary prfSum = new ProfileSummaryImp(parentAvProfile, db);
+                lreAnalysisService.lreWindowInitialization(prfSum, selectionParameters);
+                //Apply nonlinear regression to optimize the LRE window
+                lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, selectionParameters);
+            }
 
             //Update the tree
+            LreNode parentNode = (LreNode) nodes[0].getParentNode();
             parentNode.refreshNodeLabel();
             LreObjectChildren parentChildren = (LreObjectChildren) parentNode.getChildren();
             parentChildren.setLreObjectList(profileList);

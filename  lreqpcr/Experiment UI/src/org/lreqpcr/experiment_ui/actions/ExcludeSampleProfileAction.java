@@ -94,8 +94,8 @@ class ExcludeSampleProfileAction extends AbstractAction {
             db.saveObject(sampleProfile);
 
             //Update the parent Average Sample Profile
-            LreNode avSampleProfileLreNode = (LreNode) sampleProfileNodes[0].getParentNode();
             parentAvProfile.setRawFcReadings(ProfileUtilities.generateAverageFcDataset(repProfileList));
+            parentAvProfile.setFcReadings(null);//This is necessary
             //Reinitialize the Average Profile
             //Need to determine if this is a valid average profile
             if (parentAvProfile.areTheRepProfilesSufficientlyClustered()
@@ -108,6 +108,7 @@ class ExcludeSampleProfileAction extends AbstractAction {
                 lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, selectionParameters);
             }
             //Update the tree
+            LreNode avSampleProfileLreNode = (LreNode) sampleProfileNodes[0].getParentNode();
             avSampleProfileLreNode.refreshNodeLabel();
             //See if the AverageSample parent node is a Run node
             if (avSampleProfileLreNode.getParentNode().getLookup().lookup(Run.class) != null) {
