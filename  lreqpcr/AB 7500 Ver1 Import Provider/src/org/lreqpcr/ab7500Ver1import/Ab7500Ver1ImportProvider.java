@@ -69,9 +69,9 @@ public class Ab7500Ver1ImportProvider extends RunImportService {
         }
     }
 
-    @Override
     @SuppressWarnings(value = "unchecked")
-    public RunImportData importRunData() {
+    @Override
+    public RunImportData constructRunImportData() {
         //Retrieve the export xls file
         File ver1ExcelImportFile = IOUtilities.openImportExcelFile("AB 7500 Version 1 Data Import");
         if (ver1ExcelImportFile == null) {
