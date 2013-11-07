@@ -137,6 +137,11 @@ public class LreWindowSelector {
         runner = prfSum.getZeroCycle();
         //Run to the cycle with an Fc just > 1/2 Fmax
         while (halfFmax > runner.getFc()) {
+            if (runner.getNextCycle() == null) {
+                //Have reached the end of the profile
+                processFailedProfile(profile);
+                return;
+            }
             runner = runner.getNextCycle();
         }
         //Go back two cycles below 1/2 Fmax, which should be two cycles below C1/2

@@ -27,15 +27,17 @@ import org.lreqpcr.core.data_objects.SampleProfile;
  * Sample and Calibration Profiles. The Run initialization service is
  * then used to complete data import by initializing the profiles, along with
  * generated average profiles and saving the data to the appropriate databases.
+ * <p>
+ * Note that importing of Run data is very crude 
  *
  * @author Bob Rutledge
  */
 public class RunImportData {
 
-    private List<SampleProfile> sampleProfileList;
-    private List<CalibrationProfile> calibrationProfileList;
+    private List<SampleProfile> sampleProfileList;//No run date is set in these profiles
+    private List<CalibrationProfile> calibrationProfileList;//No run date is set in these profiles
     private DataImportType importType;
-    private Date runDate;
+    private Date runDate;// TODO Could simply general a Run object AND set run data in the Profiles
     private String runName;
 
     /**

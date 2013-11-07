@@ -98,7 +98,8 @@ public class ProfileEditor extends JPanel implements
         this.profile = profile;
 //Display and editing of a profile is conducted through the ProfileSummary interface
         prfSum = new ProfileSummaryImp(profile, currentDB);
-        if (profile.hasAnLreWindowBeenFound() && !profile.isExcluded()) {
+//        if (profile.hasAnLreWindowBeenFound() && !profile.isExcluded()) {
+        if (!profile.isExcluded()) {//Allows reset of windowless profiles
             updatePanels();
         } else {
             displayInvalidProfile();
@@ -115,7 +116,7 @@ public class ProfileEditor extends JPanel implements
                 displayProfile();
                 return;
             } else {
-                if (avSampleProfile.isTheReplicateAverageNoLessThan10Molecules() 
+                if (avSampleProfile.isTheReplicateAverageNoLessThan10Molecules()
                         || !avSampleProfile.areTheRepProfilesSufficientlyClustered()) {
                     displayInvalidProfile();
                     //But do not want to display the Fc plot
