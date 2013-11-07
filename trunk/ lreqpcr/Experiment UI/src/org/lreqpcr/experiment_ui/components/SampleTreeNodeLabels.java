@@ -105,6 +105,7 @@ public class SampleTreeNodeLabels implements LabelFactory {
                     df.applyPattern("0.00");
                     profile.setShortDescription("Invlaid Average Profile: replicate profiles are too scattered");
                     double no = avPrf.getReplicatePrfAvNo();
+                    df.applyPattern("###,###");
                     return profileName + ": Replicate Profiles are scattered [avRep= " + df.format(no) + "]";
                 }
             }

@@ -142,6 +142,7 @@ public class RunInializationProvider implements RunInitializationService {
                         displayNoOcfWarning();
                     }
                     for (SampleProfile sampleProfile : sampleProfileList) {
+                        sampleProfile.setRunDate(runDate);
                         if (ampliconDB != null) {
                             if (ampliconDB.isDatabaseOpen()
                                     && !sampleProfile.getAmpliconName().equals("")
@@ -202,6 +203,7 @@ public class RunInializationProvider implements RunInitializationService {
                             (LreWindowSelectionParameters) calbnDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
                     //Process the CalibnProfiles
                     for (Profile profile : calibnProfileList) {
+                        profile.setRunDate(runDate);
                         if (ampliconDB != null) {
                             if (ampliconDB.isDatabaseOpen()
                                     && !profile.getAmpliconName().equals("")
