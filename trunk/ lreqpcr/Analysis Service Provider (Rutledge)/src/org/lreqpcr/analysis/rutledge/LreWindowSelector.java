@@ -154,6 +154,9 @@ public class LreWindowSelector {
      * This method selects the LRE window Start Cycle as the first cycle with an
      * Fc reading above the minimum fluorescence (minFc). Once a start cycle has
      * been found, a default 3 cycle LRE window is then set.
+     * <p>
+     * Note that nonlinear regression is not applied nor is the working Fc 
+     * dataset modified.
      *
      * @param prfSum the ProfileSummary to be processed
      * @param minFc the minimum fluorescence for setting the Start Cycle which
@@ -281,13 +284,15 @@ public class LreWindowSelector {
         prfSum.update();
         NonlinearRegressionImplementation nrAnalysis = new NonlinearRegressionImplementation();
         //Conduct a preliminary NR to stabilize the LRE analysis
+        //Note that this modifies the working Fc dataset
         nrAnalysis.conductNonlinearRegressionOptimization(prfSum);
         //Place a runner at the last cycle of the window
         Cycle runner = prfSum.getLreWindowEndCycle();
         //Try to expand the upper region of the window based on the Fo threshold
         //This also limits the top of the LRE window to 95% of Fmax
         double fmaxThreshold = profile.getFmax() * 0.95;
-        while (Math.abs(runner.getNextCycle().getFoFracFoAv()) < foThreshold
+        try {
+            while (Math.abs(runner.getNextCycle().getFoFracFoAv()) < foThreshold
                 && runner.getNextCycle().getFc() < fmaxThreshold) {
             //Increase and set the LRE window size by 1 cycle
             profile.setLreWinSize(profile.getLreWinSize() + 1);
@@ -304,6 +309,10 @@ public class LreWindowSelector {
                 break;//Odd situation in which the end of the profile is reached
             }
         }
+        } catch (Exception e) {
+            int stop = 0;
+        }
+        
         return true;
 
     }

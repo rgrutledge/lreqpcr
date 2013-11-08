@@ -43,15 +43,15 @@ public class AmpliconChildren extends Children.Keys<Amplicon> {
         AmpliconNode node = new AmpliconNode(Children.LEAF, Lookups.singleton(amplicon), db);
         String s = String.valueOf(amplicon.getEmaxAverage());
         if (s.contentEquals("NaN")) {
-            node.setName(amplicon.getName() + "  (Av. Emax= n.d." + ")");
+            node.setName(amplicon.getName() + "  [Av. Emax= n.d." + "]");
             node.setShortDescription("An average Emax could not be determined");
             return new Node[]{node};
         }
         if (amplicon.getEmaxCV() == 0) {
-            node.setName(amplicon.getName() + "  (Av. Emax= " + df.format(amplicon.getEmaxAverage() * 100) + "%)");
+            node.setName(amplicon.getName() + "  [Av. Emax= " + df.format(amplicon.getEmaxAverage() * 100) + "%]");
         } else {
-            node.setName(amplicon.getName() + "  (Av. Emax= " + df.format(amplicon.getEmaxAverage() * 100)
-                    + " +/-" + df.format(amplicon.getEmaxCV() * 100) + "%)");
+            node.setName(amplicon.getName() + "  [Av. Emax= " + df.format(amplicon.getEmaxAverage() * 100)
+                    + " +/-" + df.format(amplicon.getEmaxCV() * 100) + "%]");
         }
         return new Node[]{node};
     }
