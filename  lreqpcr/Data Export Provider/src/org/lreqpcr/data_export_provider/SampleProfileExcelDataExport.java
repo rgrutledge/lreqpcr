@@ -172,7 +172,7 @@ public class SampleProfileExcelDataExport {
                 sheet.addCell(dateCell);
                 label = new Label(1, row, sampleProfile.getAmpliconName());
                 sheet.addCell(label);
-                label = new Label(2, row, sampleProfile.getSampleName());
+                label = new Label(2, row, sampleProfile.getSampleName(), center);
                 sheet.addCell(label);
                 double no = sampleProfile.getNo();
                 if (no >= 0 && !sampleProfile.isExcluded()) {
@@ -187,7 +187,7 @@ public class SampleProfileExcelDataExport {
                     number = new Number(4, row, sampleProfile.getEmax(), percentFormat);
                     sheet.addCell(number);
                 }
-                if (sampleProfile.getMidC() != -1) {
+                if (!(sampleProfile.getMidC() <= 0)) {
                     number = new Number(5, row, sampleProfile.getMidC(), floatFormat);
                     sheet.addCell(number);
                 }

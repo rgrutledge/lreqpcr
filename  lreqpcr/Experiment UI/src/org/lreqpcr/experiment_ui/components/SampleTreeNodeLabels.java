@@ -42,7 +42,7 @@ public class SampleTreeNodeLabels implements LabelFactory {
         if (member instanceof Run) {
             Run run = (Run) member;
 
-            double runOCF = run.getRunSpecificOCF();//Finding it difficult to display this value
+//            double runOCF = run.getRunSpecificOCF();//Finding it difficult to display this value
             //Place the Run average Fmax into the short description
             df.applyPattern("#0");
             double avFmax = run.getAverageFmax();

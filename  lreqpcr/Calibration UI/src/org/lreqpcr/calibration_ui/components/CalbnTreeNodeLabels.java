@@ -91,7 +91,7 @@ public class CalbnTreeNodeLabels implements LabelFactory {
         df.applyPattern(FormatingUtilities.decimalFormatPattern(calbrnProfile.getOCF()));
         //Determine if Fmax normalization has been set
         if (calbrnProfile.isOcfNormalizedToFmax()) {
-            ocf = " OCF= " + df.format(calbrnProfile.getOCF()) + "*";
+            ocf = " *OCF= " + df.format(calbrnProfile.getOCF());
             calbrnProfile.setShortDescription("The OCF has been normalized to the Run's average Fmax");
         } else {
             ocf = " OCF= " + df.format(calbrnProfile.getOCF());
