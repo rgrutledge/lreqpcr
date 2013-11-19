@@ -341,11 +341,11 @@ public class LreWindowSelector {
         int end = 9;
         int fbWindow = (end - start) + 1;
         //Calculate the average for cycle 4-9
-        for (int i = start; i < end + 1; i++) {
+            for (int i = start; i < end + 1; i++) {
             fb = fb + rawFc[i - 1];//List starts at 0
         }
         fb = fb / fbWindow;
-        profile.setFb(fb);
+        profile.setFb(fb);       
         //Subtract this initial Fb from the raw Fc readings
         double[] fc = new double[rawFc.length];//The background subtracted Fc dataset
         for (int i = 0; i < fc.length; i++) {

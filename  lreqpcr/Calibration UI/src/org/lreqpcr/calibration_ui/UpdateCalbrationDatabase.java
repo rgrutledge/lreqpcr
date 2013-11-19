@@ -24,6 +24,7 @@ import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.CalibrationRun;
+import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.Run;
@@ -62,7 +63,7 @@ public class UpdateCalbrationDatabase {
                 calbnDB.deleteObject(run);
             }
         }
-        //Now need to transfer the raverage calibration profiles into new CalibrationRuns 
+        //Now need to transfer the average calibration profiles into new CalibrationRuns 
         //initialized from the ImplRun held within the average profiles
         List<AverageCalibrationProfile> avCalPrfList = (List<AverageCalibrationProfile>) calbnDB.getAllObjects(AverageCalibrationProfile.class);
         //Set the AverageProfile list in each Run and have Run calculate average Fmax
@@ -123,34 +124,40 @@ public class UpdateCalbrationDatabase {
     }
 
     /**
-     * Applies nonlinear regression analysis
+     * Applies nonlinear regression analysis to pre Version 0.9 database files
      *
-     * @param exptDB
+     * @param calDB the Calibration database service maintaining the database to
+     * be processed
      */
-    public static void nonlinearRegressionUpdate(DatabaseServices db) {
-        if (!db.isDatabaseOpen()) {
+    public static void nonlinearRegressionUpdate(DatabaseServices calDB) {
+        if (!calDB.isDatabaseOpen()) {
             return;
         }
         LreAnalysisService lreAnalysisService =
                 Lookup.getDefault().lookup(LreAnalysisService.class);
         List<AverageProfile> profileList;
-        profileList = db.getAllObjects(AverageCalibrationProfile.class);
+        profileList = calDB.getAllObjects(AverageCalibrationProfile.class);
         if (profileList.isEmpty()) {
             return;
         }
         LreWindowSelectionParameters lreWindowSelectionParameters =
-                            (LreWindowSelectionParameters) db.getAllObjects(LreWindowSelectionParameters.class).get(0);
+                (LreWindowSelectionParameters) calDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
         for (AverageProfile avProfile : profileList) {
             //Need to update the replicate profiles first in order to test if <10N
             for (Profile profile : avProfile.getReplicateProfileList()) {
-                ProfileSummary prfSum = new ProfileSummaryImp(profile, db);
+     //Odd error in the microarray cal DB in which the profile parent is a Run
+                if (!(profile.getParent() instanceof AverageCalibrationProfile)) {
+                    LreObject obj = (LreObject) avProfile;
+                    profile.setParent(obj);
+                }
+                ProfileSummary prfSum = new ProfileSummaryImp(profile, calDB);
                 lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, lreWindowSelectionParameters);
 
             }
             Profile prf = (Profile) avProfile;
-            ProfileSummary prfSum = new ProfileSummaryImp(prf, db);
+            ProfileSummary prfSum = new ProfileSummaryImp(prf, calDB);
             lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, lreWindowSelectionParameters);
         }
-        db.commitChanges();
+        calDB.commitChanges();
     }
 }

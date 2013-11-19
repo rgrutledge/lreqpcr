@@ -333,7 +333,8 @@ public class ProfileEditor extends JPanel implements
             }
 //Note that it is assumed that all necessary data processing has been conducted by the broadcasting function
             selectedNode.refreshNodeLabel();
-            if (!(profile instanceof AverageProfile)) {
+            //Odd error in the Microarray cal DB in which profile parent is a Run
+            if (!(profile instanceof AverageProfile) && profile.getParent() instanceof AverageProfile) {
                 AverageProfile avProfile = (AverageProfile) profile.getParent();
                 if (avProfile.isTheReplicateAverageNoLessThan10Molecules() || !avProfile.areTheRepProfilesSufficientlyClustered()) {
                     //Need to update the AveragProfile parent node labels
