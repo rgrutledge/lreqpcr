@@ -118,9 +118,9 @@ public final class CalibrationTopComponent extends TopComponent
         openLastDBbutton = new javax.swing.JButton();
         closeDBbutton = new javax.swing.JButton();
         exportProfilesButton = new javax.swing.JButton();
+        nrUpdateButton = new javax.swing.JButton();
 
         setMinimumSize(new java.awt.Dimension(430, 770));
-        setPreferredSize(new java.awt.Dimension(430, 770));
 
         calbnTree.setMinimumSize(new java.awt.Dimension(445, 250));
         calbnTree.setPreferredSize(new java.awt.Dimension(445, 250));
@@ -169,6 +169,13 @@ public final class CalibrationTopComponent extends TopComponent
             }
         });
 
+        org.openide.awt.Mnemonics.setLocalizedText(nrUpdateButton, org.openide.util.NbBundle.getMessage(CalibrationTopComponent.class, "CalibrationTopComponent.nrUpdateButton.text")); // NOI18N
+        nrUpdateButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nrUpdateButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -182,9 +189,11 @@ public final class CalibrationTopComponent extends TopComponent
                 .addComponent(newDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(closeDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(142, 142, 142)
+                .addGap(18, 18, 18)
                 .addComponent(exportProfilesButton)
-                .addContainerGap())
+                .addGap(18, 18, 18)
+                .addComponent(nrUpdateButton)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addComponent(calbnTree, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
@@ -199,7 +208,9 @@ public final class CalibrationTopComponent extends TopComponent
                     .addComponent(openDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(newDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(closeDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(exportProfilesButton))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(exportProfilesButton)
+                        .addComponent(nrUpdateButton)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(calbnTree, javax.swing.GroupLayout.DEFAULT_SIZE, 725, Short.MAX_VALUE))
         );
@@ -278,11 +289,18 @@ public final class CalibrationTopComponent extends TopComponent
                     JOptionPane.ERROR_MESSAGE);
         }
 }//GEN-LAST:event_exportProfilesButtonActionPerformed
+
+    private void nrUpdateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nrUpdateButtonActionPerformed
+        UpdateCalbrationDatabase.nonlinearRegressionUpdate(calibrationDB);
+        calbnTree.createTree();
+    }//GEN-LAST:event_nrUpdateButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private org.lreqpcr.calibration_ui.components.CalbnTree calbnTree;
     private javax.swing.JButton closeDBbutton;
     private javax.swing.JButton exportProfilesButton;
     private javax.swing.JButton newDBbutton;
+    private javax.swing.JButton nrUpdateButton;
     private javax.swing.JButton openDBbutton;
     private javax.swing.JButton openLastDBbutton;
     // End of variables declaration//GEN-END:variables

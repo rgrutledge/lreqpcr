@@ -52,7 +52,6 @@ public class ExptDbUpdate {
         exptDB.deleteObject(oldDbInfo);
     }
 
-//****************This is currently not used*************************************
     /**
      * Applies nonlinear regression analysis to pre Version 0.9 database files
      *
