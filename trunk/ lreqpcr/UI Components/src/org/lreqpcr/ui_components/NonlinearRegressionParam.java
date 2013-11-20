@@ -118,22 +118,27 @@ public class NonlinearRegressionParam extends javax.swing.JPanel {
 
         org.openide.awt.Mnemonics.setLocalizedText(foLabel, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.foLabel.text")); // NOI18N
 
+        nrFoDisplay.setFont(new java.awt.Font("Tahoma", 2, 11)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(nrFoDisplay, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.nrFoDisplay.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(emaxLabel, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.emaxLabel.text")); // NOI18N
 
+        nrEmaxDisplay.setFont(new java.awt.Font("Tahoma", 2, 11)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(nrEmaxDisplay, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.nrEmaxDisplay.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(fmaxLabel, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.fmaxLabel.text")); // NOI18N
 
+        nrFmaxDisplay.setFont(new java.awt.Font("Tahoma", 2, 11)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(nrFmaxDisplay, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.nrFmaxDisplay.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(fbLabel, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.fbLabel.text")); // NOI18N
 
+        nrFbDisplay.setForeground(new java.awt.Color(255, 51, 51));
         org.openide.awt.Mnemonics.setLocalizedText(nrFbDisplay, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.nrFbDisplay.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(fbslopeLabel, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.fbslopeLabel.text")); // NOI18N
 
+        nrFbSlopeDisplay.setForeground(new java.awt.Color(255, 51, 51));
         org.openide.awt.Mnemonics.setLocalizedText(nrFbSlopeDisplay, org.openide.util.NbBundle.getMessage(NonlinearRegressionParam.class, "NonlinearRegressionParam.nrFbSlopeDisplay.text")); // NOI18N
 
         failureLabel.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
