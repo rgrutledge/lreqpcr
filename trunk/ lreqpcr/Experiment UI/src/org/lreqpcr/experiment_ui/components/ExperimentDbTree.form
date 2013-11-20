@@ -27,8 +27,15 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
               <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="beanTree" alignment="0" max="32767" attributes="0"/>
-                  <Component id="jPanel1" pref="415" max="32767" attributes="0"/>
+                  <Component id="beanTree" alignment="0" pref="415" max="32767" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="runViewButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="repViewButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jPanel1" pref="267" max="32767" attributes="0"/>
+                  </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -37,7 +44,13 @@
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="runViewButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="repViewButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="beanTree" pref="129" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
@@ -71,17 +84,14 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" attributes="0">
-                  <Component id="runViewButton" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
                   <Component id="ocfLabel" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="ocfDisplay" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="fmaxNormalizeChkBox" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="15" max="32767" attributes="0"/>
-                  <Component id="repViewButton" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -89,11 +99,9 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" attributes="0">
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="runViewButton" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="ocfLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="ocfDisplay" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="fmaxNormalizeChkBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="repViewButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
               </Group>
@@ -101,21 +109,9 @@
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JRadioButton" name="runViewButton">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Run View"/>
-            <Property name="toolTipText" type="java.lang.String" value="Return to viewing Runs"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="runViewButtonActionPerformed"/>
-          </Events>
-          <AuxValues>
-            <AuxValue name="JavaCodeGenerator_SerializeTo" type="java.lang.String" value="ExperimentDbTree_runViewButton"/>
-          </AuxValues>
-        </Component>
         <Component class="javax.swing.JLabel" name="ocfLabel">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Av. OCF="/>
+            <Property name="text" type="java.lang.String" value="OCF="/>
             <Property name="toolTipText" type="java.lang.String" value="Converts fluorescence target quantities to the number of molecules"/>
           </Properties>
         </Component>
@@ -134,15 +130,27 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="fmaxNormalizeChkBoxActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JRadioButton" name="repViewButton">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Well View"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="repViewButtonActionPerformed"/>
-          </Events>
-        </Component>
       </SubComponents>
     </Container>
+    <Component class="javax.swing.JRadioButton" name="runViewButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Run View"/>
+        <Property name="toolTipText" type="java.lang.String" value="Return to viewing Runs"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="runViewButtonActionPerformed"/>
+      </Events>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_SerializeTo" type="java.lang.String" value="ExperimentDbTree_runViewButton"/>
+      </AuxValues>
+    </Component>
+    <Component class="javax.swing.JRadioButton" name="repViewButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Well View"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="repViewButtonActionPerformed"/>
+      </Events>
+    </Component>
   </SubComponents>
 </Form>
