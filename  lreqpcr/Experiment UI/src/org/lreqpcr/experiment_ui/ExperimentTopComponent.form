@@ -36,7 +36,7 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+              <Component id="nrUpdateButton" min="-2" max="-2" attributes="0"/>
               <EmptySpace pref="11" max="32767" attributes="0"/>
           </Group>
           <Component id="experimentDbTree" alignment="0" max="32767" attributes="0"/>
@@ -54,12 +54,12 @@
                           <Component id="closeDBbutton" alignment="0" min="-2" pref="28" max="-2" attributes="1"/>
                           <Component id="openLastDBbutton" alignment="0" min="-2" pref="28" max="-2" attributes="1"/>
                           <Component id="openDBbutton" alignment="0" min="-2" pref="28" max="-2" attributes="1"/>
-                          <Component id="jButton1" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="nrUpdateButton" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="experimentDbTree" pref="537" max="32767" attributes="0"/>
+              <Component id="experimentDbTree" pref="177" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -202,14 +202,14 @@
         </Property>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="jButton1">
+    <Component class="javax.swing.JButton" name="nrUpdateButton">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/lreqpcr/experiment_ui/Bundle.properties" key="ExperimentTopComponent.jButton1.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="org/lreqpcr/experiment_ui/Bundle.properties" key="ExperimentTopComponent.nrUpdateButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="nrUpdateButtonActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>
