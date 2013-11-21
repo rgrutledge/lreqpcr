@@ -68,6 +68,7 @@ public final class CalibrationTopComponent extends TopComponent
     @SuppressWarnings(value = "unchecked")
     public CalibrationTopComponent() {
         initComponents();
+        nrUpdateButton.setVisible(false);//Remove the NR update for public distribution
 //        setName(NbBundle.getMessage(CalibrationTopComponent.class, "CTL_CalibrationTopComponent"));
 //        setToolTipText(NbBundle.getMessage(CalibrationTopComponent.class, "HINT_CalibrationTopComponent"));
 //        setIcon(ImageUtilities.loadImage(ICON_PATH, true));

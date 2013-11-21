@@ -71,6 +71,7 @@ public final class ExperimentTopComponent extends TopComponent
 
     public ExperimentTopComponent() {
         initComponents();
+        nrUpdateButton.setVisible(false);//Remove the NR update for public distribution
 //        setName(NbBundle.getMessage(ExperimentTopComponent.class, "CTL_ExperimentTopComponent"));
 //        setToolTipText(NbBundle.getMessage(ExperimentTopComponent.class, "HINT_ExperimentTopComponent"));
 //        setIcon(ImageUtilities.loadImage(ICON_PATH, true));
@@ -140,7 +141,7 @@ public final class ExperimentTopComponent extends TopComponent
         exportAverageProfileButton = new javax.swing.JButton();
         exportReplicateProfilesButton = new javax.swing.JButton();
         experimentDbTree = new org.lreqpcr.experiment_ui.components.ExperimentDbTree();
-        jButton1 = new javax.swing.JButton();
+        nrUpdateButton = new javax.swing.JButton();
 
         setMinimumSize(new java.awt.Dimension(430, 600));
         setPreferredSize(new java.awt.Dimension(430, 240));
@@ -219,10 +220,10 @@ public final class ExperimentTopComponent extends TopComponent
         experimentDbTree.setMinimumSize(new java.awt.Dimension(310, 170));
         experimentDbTree.setPreferredSize(new java.awt.Dimension(310, 170));
 
-        org.openide.awt.Mnemonics.setLocalizedText(jButton1, org.openide.util.NbBundle.getMessage(ExperimentTopComponent.class, "ExperimentTopComponent.jButton1.text")); // NOI18N
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        org.openide.awt.Mnemonics.setLocalizedText(nrUpdateButton, org.openide.util.NbBundle.getMessage(ExperimentTopComponent.class, "ExperimentTopComponent.nrUpdateButton.text")); // NOI18N
+        nrUpdateButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                nrUpdateButtonActionPerformed(evt);
             }
         });
 
@@ -242,7 +243,7 @@ public final class ExperimentTopComponent extends TopComponent
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton1)
+                .addComponent(nrUpdateButton)
                 .addContainerGap(11, Short.MAX_VALUE))
             .addComponent(experimentDbTree, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
@@ -261,9 +262,9 @@ public final class ExperimentTopComponent extends TopComponent
                             .addComponent(closeDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(openLastDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(openDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton1))))
+                            .addComponent(nrUpdateButton))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(experimentDbTree, javax.swing.GroupLayout.DEFAULT_SIZE, 537, Short.MAX_VALUE)
+                .addComponent(experimentDbTree, javax.swing.GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -328,20 +329,20 @@ public final class ExperimentTopComponent extends TopComponent
         }
     }//GEN-LAST:event_exportReplicateProfilesButtonActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void nrUpdateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nrUpdateButtonActionPerformed
         // TODO add your handling code here:
         ExptDbUpdate.nonlinearRegressionUpdate(experimentDB);
         experimentDbTree.createTree();
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_nrUpdateButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton closeDBbutton;
     private org.lreqpcr.experiment_ui.components.ExperimentDbTree experimentDbTree;
     private javax.swing.JButton exportAverageProfileButton;
     private javax.swing.JButton exportReplicateProfilesButton;
-    private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JButton newDBbutton;
+    private javax.swing.JButton nrUpdateButton;
     private javax.swing.JButton openDBbutton;
     private javax.swing.JButton openLastDBbutton;
     // End of variables declaration//GEN-END:variables
