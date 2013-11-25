@@ -17,7 +17,6 @@
 
 package org.lreqpcr.core.data_objects;
 
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -40,6 +39,8 @@ public abstract class Run extends LreObject {
     private double runSpecificOCF = 0;//Run-specific OCF that only applies to Runs containing SampleProfiles
     protected double averageFmax = 0;//Average Fmax of all replicate profiles
     protected double avFmaxCV = 0;//Average Fmax coefficient of variation 
+    protected double averageEmax = 0;
+    protected double avEmaxCV = 0;
     private String versionNumber;
     
     /**
@@ -143,6 +144,17 @@ public abstract class Run extends LreObject {
         return avFmaxCV;
     }
 
+    public double getAverageEmax() {
+        if(averageEmax == 0){
+            calculateAverageEmax();            
+        }
+        return averageEmax;
+    }
+
+    public double getAvEmaxCV() {
+        return avEmaxCV;
+    }
+
     /**
      * Only applies to Runs containing SampleProfile and provides the 
      * ability to apply a run-specific OCF. This is applicable to Runs that differ 
@@ -189,7 +201,7 @@ public abstract class Run extends LreObject {
      * SampleProfiles for which an LRE window has not been found.
      */
     public void calculateAverageFmax(){
-        ArrayList<Double> fmaxList = Lists.newArrayList();//Used to determine the SD
+        ArrayList<Double> fmaxList = new ArrayList<Double>();//Used to determine the SD
         double fmaxSum = 0;
         int profileCount = 0;
         if (averageProfileList == null){
@@ -213,6 +225,34 @@ public abstract class Run extends LreObject {
             }
         } else {
             averageFmax = 0;
+        }
+    }
+    
+    public void calculateAverageEmax(){
+        ArrayList<Double> emaxList = new ArrayList<Double>();//Used to determine the SD
+        double emaxSum = 0;
+        int profileCount = 0;
+        if (averageProfileList == null){
+            return;
+        }
+        for (AverageProfile avProfile: averageProfileList){
+            for(Profile profile: avProfile.getReplicateProfileList()){
+                if(profile.hasAnLreWindowBeenFound() && !profile.isExcluded()){
+                    emaxSum += profile.getFmax();
+                    profileCount++;
+                    emaxList.add(profile.getFmax());
+                }
+            }
+        }
+        if (profileCount >= 1 && emaxSum > 0){
+            averageEmax = emaxSum/profileCount;
+            if(emaxList.size()>1){
+                avEmaxCV = MathFunctions.calcStDev(emaxList)/averageEmax;
+            }else{
+                avEmaxCV = 0;
+            }
+        } else {
+            averageEmax = 0;
         }
     }
 

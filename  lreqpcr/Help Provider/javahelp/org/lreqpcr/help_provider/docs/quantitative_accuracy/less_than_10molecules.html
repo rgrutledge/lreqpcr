@@ -22,72 +22,102 @@ and open the template in the editor.
     </head>
     <body>
         <h1 align="center">The &lt;10 Target Molecule Problem</h1>
-		<p align="left">Note the data presented here was taken from:<br>
+		<p align="left">Note the data presented here was taken from:
 		Rutledge RG, Stewart D (2010) Assessing the performance capabilities of 
 		LRE-based assays for absolute quantitative real-time PCR. PLoS ONE 5: 
 		e9731. </p>
+		<p align="left">Note also that the third LRE Overview video provided on the LRE qPCR website (<font color="#FF0000">sites.google.com/site/lreqpcr</font>) 
+		presents a more detailed discussion of these datasets, along with how Poisson distribution 
+		can be used to conduct absolute quantification. </p>
 		<p><b>Scattering of replicate profiles<br>
-		</b>In contrast to most samples which produce replicate profiles that are 
-		highly clustered, samples containing &lt;10 target molecules can produce 
-		highly scattered replicate profiles. This is an example of a low abundance transcription that produced 
-		replicate profile scattered over a two cycle region, which is predicted 
-		by LRE quantification to range from 1-6 molecules, with an average of 
-		4.0 molecules per <font face="Times New Roman">µ</font>l. :</p>
+		</b>In contrast to most samples which produce closely clustered replicate profiles, samples containing &lt;10 target molecules can produce 
+		highly scattered replicate profiles. This is an example of a low 
+		abundance transcript that produced replicate profiles scattered over a 
+		two cycle region:</p>
 		<p align="center">
 		<b>Production of highly scattered profiles at low target concentrations</b><br>
 		<img border="0" src="images/fus_undiluted.gif" width="394" height="516"></p>
-		<p>Although this 
-		large range of predicted target quantities suggest that quantitative 
+		<p>LRE generated quantities (No) ranging from 1-6 molecules, with an 
+		average of 4.0 molecules per <font face="Times New Roman">µ</font>l. 
+		Although this suggests that quantitative 
 		accuracy has been compromised, Poisson distribution provides an 
 		alternative explanation:</p>
 		<p align="center">&nbsp;<img border="0" src="images/poisson_distribution_graph.gif" width="532" height="372"></p>
-		<p>This illustrates that at very low target quantities the frequency of 
+		<p>Poisson distribution dictates that at very low target quantities the frequency of 
 		aliquots (Y-axis) that will contain a specific number of target 
 		molecules (X-axis) can vary considerably, and that this variance is 
 		dependent on the target concentration (Z-axis). Poisson distribution 
-		further predicts that at target concentrations below about 0.5 molecules 
+		further predicts that for target concentrations below 0.5 molecules 
 		per aliquot, the vast majority of aliquots will contain either one or 
 		zero target molecules.</p>
-		<p>The highly scattered FUS cDNA replicate profiles shown above are thus 
-		consistent with that predicted by Poisson distribution. Diluting the 
-		sample 10X (i.e. to a predicted 0.4 N/<font face="Times New Roman">µ</font>l) 
+		<p>The highly scattered replicate profiles shown above are thus 
+		consistent with that predicted by Poisson distribution. Furthermore, diluting the 
+		sample 10X to a predicted 0.4 N/<font face="Times New Roman">µ</font>l, 
 		also produced replicate reactions that are consistent with that 
-		predicted by Poisson distribution: </p>
+		predicted by Poisson distribution. That is, aliquots contain either no 
+		target molecules (0 N) or a single target molecule (1 N): </p>
 		<p align="center">
 		<b>Profile clustering is restored for single molecule amplifications<br>
 		</b>
 		<img border="0" src="images/fus_10Xdiluted.gif" width="390" height="445"></p>
-		<p>Note that the four nil reactions are predicted to be a result of 0 N 
-		aliquots, which in the absence of non-specific amplification products 
-		will fail to produce an amplification product. Furthermore, the 
-		predicted target quantity of 0.5 N/<font face="Times New Roman">µ</font>l 
-		(four molecules in eight aliquots = 4/8 = 0.5 per aliquot) is very close 
-		to the predicted 0.4 N per aliquot shown above<font face="Times New Roman">, 
-		indicating that quantitative accuracy was maintained down to a single 
-		target molecule. While a detailed overview is beyond the scope of this 
-		discussion, working with single molecule amplifications provides an 
-		absolute landmark for real-time qPCR, in that it defines quantitative 
-		scale without the need to apply an external quantitative standard. A 
-		similar example is presented in the <a href="lda_overview.html">LDA 
-		Overview</a>.</font></p>
-		<p>The <b>&lt;10 molecule problem</b> thus consists of two phenomenon that impact 
-		LRE quantification. The first is that extensive scattering of amplification profiles 
-		can dramatically compromise the ability to 
-		generate an accurate&nbsp;<a href="../glossary/glossary.html#Average_Profile">average profile</a>. 
+		<p><b>Nil reactions are diagnostic of a key landmark for absolute 
+		quantification: zero<br>
+		</b>An important principle arising from absolute quantification 
+		that is somewhat counter intuitive for conventional real-time qPCR 
+		methods, is 
+		that nil reactions are generated by zero molecule aliquots, rather than loss of 
+		quantitative capability at low target quantities, due, for example, by 
+		catastrophic enzymatic failure, or some other limitation of real-time 
+		qPCR. In fact, the tight clustering of 1 N profiles counters such a presumption, instead 
+		being indicative of the extraordinary precision that can be achieved 
+		with real-time qPCR. </p>
+		<p>Quantitative accuracy can be further assessed by &quot;counting 
+		molecules&quot;; that is, these profiles predict a total of four target 
+		molecules within eight aliquots, predicting an average concentration of 
+		0.5 N per aliquot. This agrees closely to the LRE predicted 
+		quantity of 4.0 N per aliquot within the undiluted sample. This also 
+		illustrates another important principle of absolute quantification, 
+		which is that nil reactions (0 N) must be included into target quantity 
+		determination. </p>
+		<p>While a detailed overview is beyond the scope of this 
+		discussion, working with single molecule profiles also provides 
+		additional tools for assessing assay performance and quantitative 
+		accuracy, in part because it allows quantitative 
+		scale to be defined without the need to apply an external quantitative standard. An example is presented in the <a href="lda_overview.html">LDA 
+		Overview</a> that describes the ability to conduct absolute 
+		quantification independent of the optical and kinetic parameters of 
+		real-time qPCR, which is also the foundation upon which digital 
+		PCR is based.</p>
+		<p><b>The&nbsp; &lt;10 molecule problem<br>
+		</b>These examples illustrate two key phenomenon that impact 
+		LRE quantification when working with target quantities below 10 
+		molecules. The first is that extensive scattering of amplification profiles 
+		precludes the ability to generate an
+		<a href="../glossary/glossary.html#Average_Profile">average profile</a>. 
 		The second is the necessity of averaging target quantities generated by 
-		individual replicate profiles in order to accurately determine target quantity. 
-		Importantly,this must include zero molecule aliquots, characterized by 
-		failure of an amplification reaction to generate a profile.&nbsp; </p>
-		<p>When a target quantity of &lt;10 molecules is encountered, the LRE 
-		Analyzer will report target quantity as an average of that derived from 
-		the replicate profiles. This is indicated within the average profile 
-		label by presenting the target quantity in brackets: </p>
+		individual replicate profiles, including nil reactions, in order to accurately determine target quantity.&nbsp; </p>
+		<p>Thus, when a target quantity of &lt;10 molecules is encountered, the LRE 
+		Analyzer will report target quantity as an average of the replicate profiles, 
+		as indicated within the average profile node 
+		label: </p>
 		<p align="center">
-		<img border="0" src="images/below_10_molecules_labeling.gif" width="274" height="90"> </p>
-    	<p>The third LRE Overview video provided on the LRE qPCR website (<font color="#FF0000">sites.google.com/site/lreqpcr</font>) 
-		provides a detail discussion of Poisson distribution and how absolute 
-		quantification can be conducted based on the frequency of nil reactions. </p>
+		&nbsp;<img border="0" src="images/below_10_molecules_labeling.gif" width="294" height="55"></p>
 		<p>See also:<br>
 		<a href="assessing_accuracy.html">Assessing of Quantitative Accuracy</a></p>
+    	<p>&nbsp;</p>
+		<p>&nbsp;</p>
+		<p>&nbsp;</p>
+		<p>&nbsp;</p>
+		<p>&nbsp;</p>
+		<p>&nbsp;</p>
+		<p>&nbsp;</p>
+		<p>&nbsp;</p>
+		<p>&nbsp;</p>
+		<p>&nbsp;</p>
+		<p>&nbsp;</p>
+		<p>&nbsp;</p>
+		<p>&nbsp;</p>
+		<p>&nbsp;</p>
+		<p>&nbsp;</p>
     </body>
 </html>
