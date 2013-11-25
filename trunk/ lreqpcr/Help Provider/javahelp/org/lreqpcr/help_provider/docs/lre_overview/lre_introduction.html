@@ -24,8 +24,9 @@ and open the template in the editor.
         <h1 align="center">An Introduction to LRE</h1>
 		<p>Linear regression of efficiency (LRE) originated from recognition 
 		that real-time qPCR could be greatly simplified through the application 
-		of sigmoidal mathematics, including the ability to conduct absolute qPCR without the need to construct standard curves. The following 
-		provides an overview of how LRE was developed based on the concepts 
+		of sigmoidal modelling, that in turn allows absolute qPCR to be 
+		conducted without the need to construct standard curves. The following 
+		provides an overview of how LRE was developed, based on the concepts 
 		introduced by <a href="lre_literature.html">Rutledge and 
 		Stewart (2008a)</a>.</p>
 		<p>Real-time PCR was developed from the ability to monitor amplicon DNA quantity using some form of 
@@ -45,7 +46,7 @@ and open the template in the editor.
 		<p>LRE expands the capabilities of qPCR by extending data analysis 
 		beyond profile position. This was accomplished by 
 		first determining the amplification efficiency produced during each 
-		cycle, based on the increase in amplicon DNA relative to the amount 
+		cycle within the central region of the profile, based on the increase in amplicon DNA relative to the amount 
 		present at the beginning of the cycle. This of course is 
 		the amount of amplicon present at the end of the previous cycle, referred to as F<sub>C-1</sub>:</p>
 		<p align="center">
@@ -73,10 +74,10 @@ and open the template in the editor.
 		<p align="center">
 		<img border="0" src="images/LRE_linear_equation.gif" width="184" height="27"></p>
 		<p align="left">
-		Referred to as &quot;LRE Analysis&quot;, this generates values for amplification efficiency (E<sub>max</sub>), 
+		Referred to as &quot;linear regression of efficiency&quot; or LRE, this generates values for amplification efficiency (E<sub>max</sub>), 
 		determined from the Y-intercept, and the rate of loss in amplification 
 		efficiency (ΔE), determined from the slope. Note also that the plateau phase 
-		of a profile is described as the maximal fluorescence (F<sub>max</sub>), 
+		of a profile is defined as the maximal fluorescence (F<sub>max</sub>), 
 		which corresponds to the X-intercept within the LRE plot, and can be 
 		calculated using the equation:</p>
 		<p align="center"><b>X-intercept<br>
@@ -85,7 +86,7 @@ and open the template in the editor.
 		<p align="left">
 		The cycles included into the 
 		linear regression analysis are taken from the central region of a profile, which avoids 
-		distortions caused by low reaction fluorescence in the earliest cycles, and aberrations associated with cycles within the upper 
+		distortions caused by low reaction fluorescence generated during early cycles, and aberrations associated with cycles within the upper 
 		region. This central region is referred as the &quot;LRE 
 		window&quot;, which is denoted by red circles within the LRE 
 		and F<sub>C</sub> plots:</p>
@@ -96,18 +97,14 @@ and open the template in the editor.
 		<p align="left">&nbsp;</p>
 		<p align="left">In addition to generating a linear representation of PCR 
 		amplification, adapting the classic Boltzmann sigmoid 
-		function to PCR amplification, generated a derivative that can be used to determine target quantity 
-		directly from a cycle&#39;s F<sub>C</sub> reading
-		<a href="lre_literature.html">
-		(Rutledge and Stewart 2008a)</a>. This generates the third parameter 
-		defining a cycle, which is the predicted target quantity expressed in 
-		fluorescence units: </p>
+		function to PCR, generated a derivative that can be used to determine target quantity 
+		directly from a cycle&#39;s F<sub>C</sub> reading: </p>
 		<p align="center">
 		<img border="0" src="images/Fo_equation.gif" width="230" height="73"></p>
 		<p align="left">
-		This can be visually displayed in what is called the &quot;F<sub>0</sub> 
-		Plot&quot;, in which the F<sub>0</sub> 
-		is plotted against F<sub>C</sub> with the cycles within the LRE window 
+		This generates the third parameter defining a cycle, which is the 
+		predicted target quantity expressed in fluorescence unit, which is visually displayed in what is called the &quot;F<sub>0</sub> 
+		Plot&quot;, with the cycles within the LRE window 
 		denoted by red circles:</p>
 		<p align="center"><b>The F<sub>0</sub> Plot<br>
 		</b><img border="0" src="images/fo_plot.gif" width="331" height="108"></p>
@@ -131,7 +128,7 @@ and open the template in the editor.
 		<p align="left">As described in more detail in the
 		<a href="../lre_window_selection/lre_window_selection_overview.html">LRE 
 		Window Selection</a> section, it is important to exclude such aberrant 
-		cycles from the LRE analysis, as they can generate quantitative errors. </p>
+		cycles from the LRE analysis, as they generate quantitative errors. </p>
 		<p align="left">As described in the
 		<a href="../optical_calibration/optical_calibration_overview.html">
 		Optical Calibration</a> overview, the final step is to convert the average F<sub>0</sub> 
@@ -159,5 +156,17 @@ and open the template in the editor.
 		<a href="../lre_adjust/lre_adjust_options.html">Adjusting LRE Analysis</a><br>
 		<a href="../getting_started/implementing_lre_assays.html">Implementing 
 		LRE-based assays</a></p>
+    	<p align="left">&nbsp;</p>
+		<p align="left">&nbsp;</p>
+		<p align="left">&nbsp;</p>
+		<p align="left">&nbsp;</p>
+		<p align="left">&nbsp;</p>
+		<p align="left">&nbsp;</p>
+		<p align="left">&nbsp;</p>
+		<p align="left">&nbsp;</p>
+		<p align="left">&nbsp;</p>
+		<p align="left">&nbsp;</p>
+		<p align="left">&nbsp;</p>
+		<p align="left">&nbsp;</p>
     </body>
 </html>

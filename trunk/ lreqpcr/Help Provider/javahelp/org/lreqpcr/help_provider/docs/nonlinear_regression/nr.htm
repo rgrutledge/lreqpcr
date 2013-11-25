@@ -1,0 +1,74 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-ca">
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>New Page 1</title>
+<style type="text/css">
+.auto-style1 {
+	text-align: center;
+}
+.auto-style2 {
+	border-width: 0px;
+}
+.auto-style3 {
+	background-color: #FFFF00;
+}
+</style>
+</head>
+
+<body>
+
+<h1 align="center">Nonlinear Regression Overview</h1>
+
+<p>Integration of nonlinear regression analysis into the LRE Analyzer provides 
+effective solutions for two major limitations that can compromise both the 
+robustness and accuracy of LRE qPCR. </p>
+<p>The first is determining fluorescence background (Fb), which is subtracted 
+from the raw fluorescence readings in order to generate the fluorescence dataset 
+needed for analysis. Historically, Fb is determined by averaging the 
+fluorescence readings from the earliest cycles of a profile, before amplicon DNA 
+becomes detectable, a region generally referred to as the baseline. </p>
+<p>While this approach is generally effective, even relatively small errors in 
+Fb determination can generate significant quantitative errors for LRE-based 
+qPCR, a situation exacerbated by the propensity of artefacts to be generated 
+within the first few cycles of a profile.</p>
+<p>The second is referred to as baseline drifting, in which the baseline has a 
+slope, either positive or negative. This too has long been known to compromise 
+the quantitative accuracy of LRE-base qPCR, although until recently, it had been 
+assumed to be rare and amplicon-specific, both of which have subsequently been 
+proven to be wrong. </p>
+<p>Nonlinear regression analysis, also commonly referred to as &quot;curve fitting&quot;, 
+provides a potential solution to both of this issues, through its ability to 
+provide estimates for Fb and Fb-slope. Nevertheless, an earlier study had shown 
+that artefacts within the plateau phase greatly complicates effective 
+application of nonlinear regression to qPCR (<a href="../lre_overview/lre_literature.html#SCF">Rutledge 
+2004</a>). </p>
+<p>A simple and surprisingly effective solution was to combine LRE analysis with 
+nonlinear regression, in which the LRE window is used to define the upper limit 
+of the cycles included in the nonlinear regression analysis. This effectively 
+allows cycles within the plateau phase to be excluded from the nonlinear 
+regression analysis. </p>
+<p>Further information about integrating nonlinear regression is provided in the
+<a href="../editor_panel/profile_editor_window.html#NR Panel">nonlinear 
+regression panel</a> section.</p>
+<p>Those interested in a more detailed description of how nonlinear regression 
+was implemented should contact the author via RGRutledge@gmail.com.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

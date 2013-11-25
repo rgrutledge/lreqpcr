@@ -50,8 +50,9 @@ and open the template in the editor.
     <mapID target="calibration-database-window" url="explorer_panel/calibration_database_window.html"/>
     <mapID target="amplicon-database-window" url="explorer_panel/amplicon_database_window.html"/>
     <mapID target="lre-adjust-overview" url="lre_adjust/lre_adjust_options.html"/>
-    <mapID target="fmax-normalization" url="lre_adjust/fmax_normalization.htm"/>
-    <mapID target="emax-normalization" url="lre_adjust/high_emax.html"/>
+    <mapID target="fmax-normalization" url="fmax_normalize/fmax_normalization.htm"/>
+<!--Nonlinear Regression-->
+    <mapID target="nonlinear-regression" url="nonlinear_regression/nr.htm"/>
 <!--Getting Started    -->
     <mapID target="getting-started" url="getting_started/getting_started.html"/>
     <mapID target="program-intro" url="getting_started/lre_analyzer_intro.html"/>
