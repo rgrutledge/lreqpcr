@@ -35,6 +35,7 @@ import org.lreqpcr.ui_components.PanelMessages;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
+import org.openide.windows.WindowManager;
 
 /**
  * Only one Profile can be excluded at one time.
@@ -76,7 +77,7 @@ class ExcludeCalibrationProfileAction extends AbstractAction {
             if (parentAvProfile.getTheNumberOfActiveReplicateProfiles() < 2) {//Only one Profile active
                 String msg = "It appears that there is only one Profile that is active "
                         + "and thus cannot be excluded.";
-                JOptionPane.showMessageDialog(null, msg, "Unable to exclude the "
+                JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Unable to exclude the "
                         + "selected Profile", JOptionPane.ERROR_MESSAGE);
                 return;
             }

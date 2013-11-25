@@ -275,7 +275,7 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
                 }
             }
         }
-        if (replicateScatterTolerance == 0) {//Profile predates scatter tolerance
+        if (replicateScatterTolerance == 0) {//Profile predates scatter tolerance testing
             replicateScatterTolerance = 0.7;//Default value at the time of first implementation
             //Future versions should included the ability for the user to set the scatter tolerance
         }

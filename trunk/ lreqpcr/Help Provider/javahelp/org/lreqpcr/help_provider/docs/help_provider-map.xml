@@ -29,6 +29,7 @@ and open the template in the editor.
 <!--Data Import    -->
     <mapID target="data-import-overview" url="data_import/data_import_overview.html"/>
     <mapID target="ab7500ver2" url="data_import/ab7500ver2.html"/>
+    <mapID target="abstepone" url="data_import/absteponever2.html"/>
     <mapID target="ab7500ver1" url="data_import/ab7500ver1.html"/>
     <mapID target="mxpVer4" url="data_import/mxpVer4.html"/>
     <mapID target="sample-template" url="data_import/sampleprofile_template_import.html"/>
@@ -67,6 +68,7 @@ and open the template in the editor.
     <mapID target="ab7500-fast-ramping" url="issues/ab7500_fast_ramping.html"/>
     <mapID target="rox-normalization" url="issues/rox_normalization.html"/>
     <mapID target="baseline-drifting" url="issues/baseline_drifting.html"/>
+    <mapID target="profile-scattering" url="issues/profile_scattering.html"/>
 <!--LRE Overview    -->
     <mapID target="lre-introduction" url="lre_overview/lre_introduction.html"/>
     <mapID target="lre-literature" url="lre_overview/lre_literature.html"/>

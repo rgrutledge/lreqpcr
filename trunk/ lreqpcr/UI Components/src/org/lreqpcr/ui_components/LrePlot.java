@@ -137,13 +137,7 @@ public class LrePlot extends javax.swing.JPanel {
     }
 
     public void clearPlot() {
-        if (profile != null) {
-            if (!profile.hasAnLreWindowBeenFound()) {
-                graphTitle.setText("LRE Plot (Ec vs. Fc)/n" + "AN LRE WINDOW WAS NOT FOUND");
-            }
-        } else {
-            graphTitle.setText("LRE Plot (Ec vs. Fc)");
-        }
+        graphTitle.setText("LRE Plot (Ec vs. Fc)");
         profile = null;
         lreWinSizeDisplay.setText("");
         maxEdisplay.setText("");

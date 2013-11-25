@@ -88,7 +88,7 @@
                   <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
                   <Component id="ocfLabel" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="ocfDisplay" min="-2" max="-2" attributes="0"/>
+                  <Component id="ocfDisplay" max="32767" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="fmaxNormalizeChkBox" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="32767" attributes="0"/>
