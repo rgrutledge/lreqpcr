@@ -55,6 +55,17 @@ public class DeleteAverageCalibrationProfileAction extends AbstractAction {
         Node[] nodes = mgr.getSelectedNodes();
         LreNode lreNode = (LreNode) nodes[0];
         db = lreNode.getDatabaseServices();
+        List<AverageProfile> avPrfList = db.getAllObjects(AverageProfile.class);
+        if (avPrfList.size()<2){
+            String msg = "It appears that the database contains only one\n"
+                    + " Average Calibration Profile\n"
+                    + "...Please delete the Run instead";
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                    msg, 
+                    "Cannot delete this Average Profile",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         if (db != null) {
             if (db.isDatabaseOpen()) {
                 List<LreWindowSelectionParameters> l = db.getAllObjects(LreWindowSelectionParameters.class);

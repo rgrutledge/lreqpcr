@@ -17,11 +17,11 @@
                 <attr name="originalFile" stringvalue="Actions/Tools/org-lreqpcr-ab7500ver2import-Ab7500Ver2Action.instance"/>
                 <attr name="position" intvalue="300"/>
             </file>
-            <file name="org-lreqpcr-ab7500ver2import-Ab7500Ver2.shadow">
+<!--            <file name="org-lreqpcr-ab7500ver2import-Ab7500Ver2.shadow">
                 <attr name="originalFile" stringvalue="Actions/Tools/org-lreqpcr-ab7500ver2import-Ab7500Ver2Action.instance"/>
                 <attr name="displayName" stringvalue="StepOnePlus"/>
                 <attr name="position" intvalue="300"/>
-            </file>
+            </file>-->
         </folder>
         <folder name="Window">
             <file name="Web_hidden"/>

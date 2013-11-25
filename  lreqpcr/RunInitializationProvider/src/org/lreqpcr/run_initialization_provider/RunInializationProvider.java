@@ -327,10 +327,13 @@ public class RunInializationProvider implements RunInitializationService {
         String msg = "This appears to be a new experiment database for\n"
                    + "which an optical calibration factor (OCF) has not\n"
                    + "yet been entered.\n\n"
-                   + "Please note that it will be necessary to manually\n"
+                   + "Please note that it is necessary to manually\n"
                    + "enter an OCF in order to allow target quantities\n"
-                   + "to be calculated. See Help for additional information\n"
-                   + "about optical calibration.";
+                   + "to be calculated. \n\n"
+                   + "However, also note that 5% of Fmax can be used\n"
+                   + "as a crude estimate of OCF.\n\n"
+                   + "See Help for additional information.\n";
+                
                 JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "An OCF has not been entered",
                         JOptionPane.WARNING_MESSAGE);
     }

@@ -479,7 +479,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         df.applyPattern("#0.0%");
         double avCV = calcReplicateFoCV();
         if (!(avCV <= 0)) {
-            avReplCvDisplay.setText(df.format(avCV));
+            avReplCvDisplay.setText("±" + df.format(avCV));
         } else {
             if (avCV == 0) {
                 avReplCvDisplay.setText("Too few replicates");
