@@ -21,10 +21,27 @@ and open the template in the editor.
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     </head>
     <body>
-        <h1 align="center">Optical Calibration Overview</h1>
-		<p>See also <a href="generating_an_ocf.html">Generating an OCF</a> and
+        <h1 align="center">Optical Calibration</h1>
+		<p>Also see <a href="generating_an_ocf.html">Generating an OCF</a> and
 		<a href="run_specific_ocf.html">Applying a Run-Specific OCF</a></p>
-		<p>One of the distinctive aspects of LRE quantification is that target 
+		<p>As described below, the LRE Analyzer relies on an &quot;optical 
+		calibration factor&quot; or OCF for establishing absolute scale. When a new 
+		experiment database is first created, the OCF is set to zero so that 
+		target quantity cannot be determined:</p>
+		<p align="center">
+		<img border="0" src="images/ocf1.gif" width="425" height="216"></p>
+		<p align="left">It is thus necessary to manually enter a value into the 
+		OCF display box followed by return:</p>
+		<p align="center">
+		<img border="0" src="images/ocf2.gif" width="424" height="215"></p>
+		<p align="left">In this case, the OCF was determined using lambda gDNA 
+		as a quantitative standard (see the calibration demonstration database), 
+		the data from which was processed within the
+		<a href="../explorer_panel/calibration_database_window.html">calibration 
+		database window</a>. However, the <a href="generating_an_ocf.html">Generating an OCF</a> 
+		section describes alternative methods which can be used.</p>
+		<p align="left"><b>Optical Calibration Overview<br>
+		</b>One of the distinctive aspects of LRE quantification is that target 
 		quantities are determined in fluorescence units (F<sub>0</sub>). 
 		This provides&nbsp;the opportunity to apply an approach used by a 
 		conventional fluorescence assay for quantifying DNA, in which sample 
