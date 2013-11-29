@@ -137,7 +137,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
     @SuppressWarnings(value = "unchecked")
     //A new experiment database has been opened
     public void createTree() {
-        setCursor(waitCursor);
+//        setCursor(waitCursor);
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.CLEAR_PROFILE_EDITOR);
         runViewButton.setSelected(true);
         if (!exptDB.isDatabaseOpen()) {
@@ -232,6 +232,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
     @SuppressWarnings(value = "unchecked")
     private void resetToNewOcf() {
         setCursor(waitCursor);
+//        getCursor()
         if (!exptDB.isDatabaseOpen()) {
             setCursor(defaultCursor);
             return;
