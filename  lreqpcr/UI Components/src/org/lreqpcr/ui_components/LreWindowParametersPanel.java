@@ -308,7 +308,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                 df.applyPattern(FormatingUtilities.decimalFormatPattern(currentMinFc));
                 minFcDisplay.setText(df.format(currentMinFc));
             } else {
-                minFcDisplay.setText("Two cycles below C1/2");
+                minFcDisplay.setText("One cycle below C1/2");
             }
             double currentFoThr = selectionParameters.getFoThreshold();
         if (currentFoThr != 0) {
@@ -534,8 +534,6 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                         //This should never happen
                         clearPanel();
                     } else {
-//                        minFc = selectionParameters.getMinFc();
-//                        foThreshold = selectionParameters.getFoThreshold();
                         updateDisplay();
                     }
                 } else {
