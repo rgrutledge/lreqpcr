@@ -16,6 +16,8 @@
  */
 package org.lreqpcr.run_initialization_provider;
 
+import java.awt.Cursor;
+import java.awt.Frame;
 import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.Date;
@@ -72,6 +74,7 @@ public class RunInializationProvider implements RunInitializationService {
      */
     @SuppressWarnings(value = "unchecked")
     public void intializeRun(RunImportData importData) {
+        
         if (importData == null) {
             //Run import has been cancelled
             return;
@@ -118,6 +121,8 @@ public class RunInializationProvider implements RunInitializationService {
             }
         }
 
+        Frame f = WindowManager.getDefault().getMainWindow();
+        f.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         Date runDate = importData.getRunDate();
         String runName = importData.getRunName();
         List<SampleProfile> sampleProfileList = importData.getSampleProfileList();
