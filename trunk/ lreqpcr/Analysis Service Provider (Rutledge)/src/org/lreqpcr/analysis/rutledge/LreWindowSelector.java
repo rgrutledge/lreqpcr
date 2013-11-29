@@ -37,7 +37,7 @@ public class LreWindowSelector {
      * The start cycle is set to the first cycle in which the LRE plot r2 value
      * derived from a window encompassing the two preceeding and two following
      * Cycles (5 cycles total), is above the r2 tolerance of 0.95. The start
-     * cycle is the adjusted to two cycles below half of Fmax (~=C1/2),
+     * cycle is the adjusted to two cycles below C1/2,
      * generating an LRE window in the lower region of the Profle.
      * <p>
      * The LRE window size is then set to 3 cycles.
@@ -123,20 +123,26 @@ public class LreWindowSelector {
                 return;
             }
             runner = runner.getNextCycle(); //Advances to the next cycle
-        }//End of while statement
+        }//End of finding an initial start cycle based on scanning
 /*-------Note that an LRE window must have been found in order to reach this point--------*/
+        
+        
         //However, an AverageProfile could be invalid due to profile scattering or <10N but still reach here...
         //Need an estimate of 1/2 Fmax
-        optimizeLreWindow(prfSum, foThreshold);
-        double halfFmax = (profile.getEmax() / -profile.getDeltaE()) / 2;
-        if (Double.isNaN(halfFmax) || Double.isInfinite(halfFmax) || halfFmax <= 0) {
-            processFailedProfile(profile);
-            return;
-        }
+//        optimizeLreWindow(prfSum, foThreshold);
+//        double halfFmax = (profile.getEmax() / -profile.getDeltaE()) / 2;
+//        if (Double.isNaN(halfFmax) || Double.isInfinite(halfFmax) || halfFmax <= 0) {
+        
+//            processFailedProfile(profile);
+//            return;
+//        }
         //Reinstantiate the runner, needed in part because the prfSum has been updated
         runner = prfSum.getZeroCycle();
-        //Run to the cycle with an Fc just > 1/2 Fmax
-        while (halfFmax > runner.getFc()) {
+        //This assumes that a vaild C1/2 has been found 
+        //Testing has shown that C1/2 determination is extremely robust, no matter where or how small the LRE window is!!!!!!
+        //Run to one cycle above C1/2
+//        int midCycle = Math.round(profile.getMidC());
+        while (runner.getCycNum() < profile.getMidC()) {
             if (runner.getNextCycle() == null) {
                 //Have reached the end of the profile
                 processFailedProfile(profile);
@@ -144,7 +150,7 @@ public class LreWindowSelector {
             }
             runner = runner.getNextCycle();
         }
-        //Go back two cycles below 1/2 Fmax, which should be two cycles below C1/2
+        //Go back two cycles, i.e. one cycle below C1/2
         runner = runner.getPrevCycle().getPrevCycle();
         profile.setStrCycleInt(runner.getCycNum());
         prfSum.update();
