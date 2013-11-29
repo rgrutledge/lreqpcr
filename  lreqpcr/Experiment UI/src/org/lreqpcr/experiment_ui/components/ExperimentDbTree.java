@@ -16,6 +16,7 @@
  */
 package org.lreqpcr.experiment_ui.components;
 
+import java.awt.Cursor;
 import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -73,7 +74,8 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
     private Lookup.Result nodeResult;
     protected LreNode selectedNode;
     private boolean repView = false;
-//    private Message statusLineMessage;
+    private Cursor waitCursor = new Cursor(Cursor.WAIT_CURSOR);
+    private Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
 
     /**
      * Creates new form ExperimentDbTree
@@ -135,6 +137,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
     @SuppressWarnings(value = "unchecked")
     //A new experiment database has been opened
     public void createTree() {
+        setCursor(waitCursor);
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.CLEAR_PROFILE_EDITOR);
         runViewButton.setSelected(true);
         if (!exptDB.isDatabaseOpen()) {
@@ -143,6 +146,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
             mgr.setRootContext(root);
             ocfDisplay.setText("");
             fmaxNormalizeChkBox.setSelected(false);
+            setCursor(defaultCursor);
             return;
         }
         //Check if ExperimentDbInfo requires conversion to the new ExptDbInfo which extends DatabaseInfo
@@ -177,8 +181,8 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
         root.setDatabaseService(exptDB);
         root.setDisplayName(displayName);
         root.setShortDescription(dbFile.getAbsolutePath());
-//        statusLineMessage = StatusDisplayer.getDefault().setStatusText(dbFile.getAbsolutePath(), 1);
         mgr.setRootContext(root);
+        setCursor(defaultCursor);
     }//End of create tree
 
     /**
@@ -227,7 +231,9 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
 
     @SuppressWarnings(value = "unchecked")
     private void resetToNewOcf() {
+        setCursor(waitCursor);
         if (!exptDB.isDatabaseOpen()) {
+            setCursor(defaultCursor);
             return;
         }
         List<Profile> avSampleProfileList =
@@ -256,7 +262,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
                     LreAnalysisService lreAnalysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
                     selectionParameters = (LreWindowSelectionParameters) exptDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
                     ProfileSummary prfSum = new ProfileSummaryImp(avProfile, exptDB);
-                        lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, selectionParameters);
+                    lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, selectionParameters);
                 }
             }
         }
@@ -293,7 +299,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
         ocfLabel.setText("OCF=");
         ocfLabel.setToolTipText("Converts fluorescence target quantities to the number of molecules");
 
-        ocfDisplay.setColumns(8);
+        ocfDisplay.setColumns(10);
         ocfDisplay.setToolTipText("Manually enter an OCF value that will be applied to all profiles");
 
         fmaxNormalizeChkBox.setText("Fmax Normalize");
@@ -309,22 +315,22 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(31, 31, 31)
+                .addGap(19, 19, 19)
                 .addComponent(ocfLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(ocfDisplay)
+                .addComponent(ocfDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(fmaxNormalizeChkBox)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(ocfLabel)
                     .addComponent(ocfDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(fmaxNormalizeChkBox))
-                .addGap(1, 1, 1))
+                    .addComponent(fmaxNormalizeChkBox)))
         );
 
         runViewButton.setText("Run View");
@@ -383,6 +389,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
             fmaxNormalizeChkBox.setSelected(false);
             return;
         }
+        setCursor(waitCursor);
         //Note that this is applied to all profiles in the database
         List<Run> runList = exptDB.getAllObjects(Run.class);
         for (Run run : runList) {
@@ -452,7 +459,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
                     df.applyPattern(FormatingUtilities.decimalFormatPattern(rsOCF));
                     ocfDisplay.setText(df.format(rsOCF));
                 } else {
-                    ocfLabel.setText("Av. OCF=");
+                    ocfLabel.setText("OCF=");
                     ocfLabel.setToolTipText("Average OCF");
                     ocfDisplay.setEditable(true);
                     df.applyPattern(FormatingUtilities.decimalFormatPattern(ocf));

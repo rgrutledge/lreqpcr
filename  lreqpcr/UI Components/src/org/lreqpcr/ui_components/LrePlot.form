@@ -82,7 +82,7 @@
                       <Component id="resetButton" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace pref="260" max="32767" attributes="0"/>
+                      <EmptySpace pref="261" max="32767" attributes="0"/>
                       <Component id="lreParametersPanel" min="-2" max="-2" attributes="1"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
@@ -254,7 +254,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Tahoma" size="10" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="deltaE:"/>
+            <Property name="text" type="java.lang.String" value="&#x394;E:"/>
             <Property name="toolTipText" type="java.lang.String" value="Loss in cycle efficiency (Ec) per Fc unit (slope)"/>
           </Properties>
         </Component>

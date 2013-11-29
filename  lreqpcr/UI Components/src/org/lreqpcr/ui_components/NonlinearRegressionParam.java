@@ -88,6 +88,7 @@ public class NonlinearRegressionParam extends javax.swing.JPanel {
         nrFbDisplay.setText("");
         fbslopeLabel.setVisible(false);
         nrFbSlopeDisplay.setText("");
+        failureLabel.setVisible(false);
     }
 
     /**

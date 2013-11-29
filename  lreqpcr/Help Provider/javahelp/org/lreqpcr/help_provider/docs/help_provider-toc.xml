@@ -39,6 +39,8 @@ and open the template in the editor.
             <tocitem text="Sorting Panels" target="sorting-panel-overview"/>
         </tocitem>
           
+        <tocitem text="Implementing LRE-based Assays" target="implementing-lre"/>
+          
         <tocitem  text="LRE Overview" target="lre-introduction">
             <tocitem text="LRE Window Selection" target="lre-window-selection-overview">
                 <tocitem text="What is the LRE Window?" target="lre-window-definition"/>
@@ -68,7 +70,6 @@ and open the template in the editor.
         
         <tocitem text="Data Export" target="data-export-overview"/>
         
-        <tocitem text="Implementing LRE-based Assays" target="implementing-lre"/>
 <!--        <tocitem text="Advanced Topics" target="advanced-topics-overview">
             <tocitem text="Assay Design" target="assay-design-overview">
                 <tocitem text="Primer Design" target="primer-design"/>

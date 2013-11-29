@@ -151,7 +151,7 @@ public class RunInializationProvider implements RunInitializationService {
                             }
                         }
                         //Initialize the new Profile which will conduct an automated LRE window selection
-                        ProfileSummary prfSum = new ProfileSummaryImp(sampleProfile, calbnDB);
+                        ProfileSummary prfSum = new ProfileSummaryImp(sampleProfile, experimentDB);
                         lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, parameters);
                         sampleProfile.setOCF(ocf);
                         experimentDB.saveObject(sampleProfile);
@@ -330,8 +330,8 @@ public class RunInializationProvider implements RunInitializationService {
                    + "Please note that it is necessary to manually\n"
                    + "enter an OCF in order to allow target quantities\n"
                    + "to be calculated. \n\n"
-                   + "However, also note that 5% of Fmax can be used\n"
-                   + "as a crude estimate of OCF.\n\n"
+                   + "However, also note that 5% of the run's average\n"
+                   + "Fmax can be used as a crude estimate of OCF.\n\n"
                    + "See Help for additional information.\n";
                 
                 JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "An OCF has not been entered",

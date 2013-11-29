@@ -293,7 +293,7 @@ public class LrePlot extends javax.swing.JPanel {
         maxEdisplay.setText("    ");
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jLabel1.setText("deltaE:");
+        jLabel1.setText("ΔE:");
         jLabel1.setToolTipText("Loss in cycle efficiency (Ec) per Fc unit (slope)");
 
         dEdisplay.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
@@ -506,7 +506,7 @@ public class LrePlot extends javax.swing.JPanel {
                         .addGap(77, 77, 77)
                         .addComponent(resetButton))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap(260, Short.MAX_VALUE)
+                        .addContainerGap(261, Short.MAX_VALUE)
                         .addComponent(lreParametersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(101, 101, 101)

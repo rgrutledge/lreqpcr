@@ -17,6 +17,7 @@
 package org.lreqpcr.ui_components;
 
 import com.google.common.collect.Lists;
+import java.awt.Cursor;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
@@ -57,8 +58,8 @@ import org.openide.windows.WindowManager;
 public class LreWindowParametersPanel extends javax.swing.JPanel implements UniversalLookupListener, PropertyChangeListener {
 
     private KeyAdapter keyAdapter;
-    private Double minFc;//Can be set to zero to reset to automated StartCycle selection
-    private Double foThreshold = 0d;
+//    private Double minFc;//Can be set to zero to reset to automated StartCycle selection
+//    private Double foThreshold = 0d;
     private DecimalFormat df = new DecimalFormat();
     private DatabaseServices currentDB;//Experiment or Calibration database
     private DatabaseInfo dbInfo;
@@ -67,6 +68,8 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
             Lookup.getDefault().lookup(LreAnalysisService.class);
     private UniversalLookup universalLookup = UniversalLookup.getDefault();
     private double averageFmax;
+    private Cursor waitCursor = new Cursor(Cursor.WAIT_CURSOR);
+    private Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
 
     /**
      * Displays and processes changes to the LRE window selection parameters.
@@ -94,6 +97,12 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
             @SuppressWarnings(value = "unchecked")
             public void keyReleased(KeyEvent e) {
                 if (e.getKeyCode() == 10) {//"Return" key
+//                    WindowManager.getDefault().getMainWindow().setCursor(waitCursor);
+                    if (currentDB == null){
+                        clearPanel();
+                        return;
+                    }
+                    setCursor(waitCursor);
                     if (e.getComponent().equals(minFcDisplay)) {
                         double newMinFc;//Signifies that an acceptable value has not been found
                         //Reset minFcDisplay
@@ -109,14 +118,14 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                             }//Else the newMinFc has a valid value
                         } else {
                             //Must be a blank entry
-                            //This signals that first cycle below C1/2 is to be used for minFc (default)
+                            //This signals that a cycle below C1/2 is to be used for minFc (default)
                             newMinFc = 0;
                         }
                         //Process the newMinFc value
                         if (newMinFc != -1) {//-1 signifies that the current minFc is not to be changed
-                            minFc = newMinFc;
                             //Set the new value
-                            selectionParameters.setMinFc(minFc);
+                            selectionParameters.setMinFc(newMinFc);
+                            currentDB.saveObject(selectionParameters);
                             //Now reset
                             resetSelectionParameters();
                         } else {//Display the previous minFc value
@@ -153,13 +162,15 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                             updateDisplay();
                         }
                         if (newFoThreshold > 0) {
-                            foThreshold = newFoThreshold;
                             //A vailid Fo threshold was entered, so store it
-                            selectionParameters.setFoThreshold(foThreshold);
+                            selectionParameters.setFoThreshold(newFoThreshold);
+                            currentDB.saveObject(selectionParameters);
                             //Now reset
                             resetSelectionParameters();
                         }
                     }
+//                    WindowManager.getDefault().getMainWindow().setCursor(waitCursor);
+                    setCursor(defaultCursor);
                 }
             }
         };
@@ -234,7 +245,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
     }
 
     private void resetSelectionParameters() {
-        currentDB.saveObject(selectionParameters);
+        setCursor(waitCursor);
         reinitializeAllProfiles();
         updateDisplay();
         //Clear the profile editor display
@@ -246,6 +257,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION) {
             universalLookup.fireChangeEvent(PanelMessages.UPDATE_CALIBRATION_PANELS);
         }
+        setCursor(defaultCursor);
     }
 
     @SuppressWarnings("unchecked")
@@ -253,9 +265,10 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         if (!currentDB.isDatabaseOpen()) {
             return;
         }
-        if (foThreshold <= 0) {
+        if (selectionParameters.getFoThreshold() <= 0) {
             return;
         }
+//        setCursor(waitCursor);
         List<AverageProfile> profileList;
 //This is necessary becuase for unknown reasons retrieving AverageProfiles 
 //objects fail for calibration profiles
@@ -282,22 +295,27 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
             }
         }
         currentDB.commitChanges();
+//        setCursor(defaultCursor);
     }
 
     private void updateDisplay() {
-        if (selectionParameters != null) {
-            if (minFc != null && minFc != 0) {
-                df.applyPattern(FormatingUtilities.decimalFormatPattern(minFc));
-                minFcDisplay.setText(df.format(minFc));
+        if (selectionParameters == null){
+            clearPanel();
+            return;
+        }
+        double currentMinFc = selectionParameters.getMinFc();
+            if (currentMinFc != 0) {
+                df.applyPattern(FormatingUtilities.decimalFormatPattern(currentMinFc));
+                minFcDisplay.setText(df.format(currentMinFc));
             } else {
                 minFcDisplay.setText("Two cycles below C1/2");
             }
-        }
-        if (foThreshold != null) {
-            df.applyPattern("#.0%");
-            foThresholdDisplay.setText(df.format(foThreshold));
+            double currentFoThr = selectionParameters.getFoThreshold();
+        if (currentFoThr != 0) {
+            df.applyPattern("0.0%");
+            foThresholdDisplay.setText(df.format(currentFoThr));
         } else {
-            foThresholdDisplay.setText("ERROR");//This absolutely should never happen...
+            foThresholdDisplay.setText("");//This absolutely should never happen...
         }
         avReplCvDisplay.setText("");
     }
@@ -516,8 +534,8 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                         //This should never happen
                         clearPanel();
                     } else {
-                        minFc = selectionParameters.getMinFc();
-                        foThreshold = selectionParameters.getFoThreshold();
+//                        minFc = selectionParameters.getMinFc();
+//                        foThreshold = selectionParameters.getFoThreshold();
                         updateDisplay();
                     }
                 } else {
@@ -552,12 +570,10 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                         if (selectionParameters == null) {
                             clearPanel();
                         } else {
-                            minFc = selectionParameters.getMinFc();
-                            foThreshold = selectionParameters.getFoThreshold();
                             updateDisplay();
                         }
                     } else {
-//                        currentDB = null;
+                        selectionParameters = null;
                         clearPanel();
                     }
                 }

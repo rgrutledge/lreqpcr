@@ -37,7 +37,7 @@
                 <attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
                 <attr name="position" intvalue="250"/>
             </file>
-            <folder name="Manual Data Enrty">
+            <folder name="Manual Data Entry">
                 <attr name="org-lreqpcr-manual_data_import-CalibrationProfileImportTemplateAction.shadow/org-lreqpcr-manual_data_import-SampleProfileImportTemplateCreationAction.shadow" boolvalue="true"/>
                 <attr name="org-lreqpcr-manual_data_import-CalibrationProfileManualImportAction.shadow/org-lreqpcr-manual_data_import-SampleProfileManualEntryAction.shadow" boolvalue="true"/>
                 <attr name="org-lreqpcr-manual_data_import-SampleProfileImportTemplateCreationAction-separatorAfter.instance/org-lreqpcr-manual_data_import-CalibrationProfileManualImportAction.shadow" boolvalue="true"/>
