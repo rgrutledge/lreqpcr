@@ -99,7 +99,7 @@ public class LreAnalysisProvider implements LreAnalysisService {
         this.parameters = parameters;
         //Determine if a valid LRE window has been established
         if (!profile.hasAnLreWindowBeenFound()) {
-            //Need to reinitialize the LRE window
+            //Try to reinitialize the LRE window
             lreWindowInitialization(prfSum, parameters);
             if (!profile.hasAnLreWindowBeenFound()) {
                 //If a window has not been found, abort

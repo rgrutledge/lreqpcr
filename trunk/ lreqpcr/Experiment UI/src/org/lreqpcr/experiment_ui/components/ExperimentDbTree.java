@@ -137,7 +137,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
     @SuppressWarnings(value = "unchecked")
     //A new experiment database has been opened
     public void createTree() {
-//        setCursor(waitCursor);
+        setWaitCursor();
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.CLEAR_PROFILE_EDITOR);
         runViewButton.setSelected(true);
         if (!exptDB.isDatabaseOpen()) {
@@ -146,7 +146,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
             mgr.setRootContext(root);
             ocfDisplay.setText("");
             fmaxNormalizeChkBox.setSelected(false);
-            setCursor(defaultCursor);
+            setDefaultCursor();
             return;
         }
         //Check if ExperimentDbInfo requires conversion to the new ExptDbInfo which extends DatabaseInfo
@@ -231,10 +231,10 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
 
     @SuppressWarnings(value = "unchecked")
     private void resetToNewOcf() {
-        setCursor(waitCursor);
+        setWaitCursor();
 //        getCursor()
         if (!exptDB.isDatabaseOpen()) {
-            setCursor(defaultCursor);
+            setDefaultCursor();
             return;
         }
         List<Profile> avSampleProfileList =
@@ -269,6 +269,14 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
         }
         exptDB.commitChanges();
         createTree();
+    }
+    
+    public void setWaitCursor(){
+        setCursor(waitCursor);
+    }
+    
+    public void setDefaultCursor(){
+        setCursor(defaultCursor);
     }
 
     /**

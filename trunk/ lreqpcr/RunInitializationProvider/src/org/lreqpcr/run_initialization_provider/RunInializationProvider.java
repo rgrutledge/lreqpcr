@@ -79,6 +79,7 @@ public class RunInializationProvider implements RunInitializationService {
             //Run import has been cancelled
             return;
         }
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_WAIT_CURSOR);
         importType = importData.getImportType();
         //This is obviously inefficient, but it is expected that data import will be limited
         //to very few types, with the manual data import being rare exceptions
@@ -120,9 +121,6 @@ public class RunInializationProvider implements RunInitializationService {
                 return;
             }
         }
-
-        Frame f = WindowManager.getDefault().getMainWindow();
-        f.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         Date runDate = importData.getRunDate();
         String runName = importData.getRunName();
         List<SampleProfile> sampleProfileList = importData.getSampleProfileList();
