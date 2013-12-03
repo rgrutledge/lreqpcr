@@ -22,6 +22,7 @@ package org.lreqpcr.ui_components;
  * @author Bob Rutledge
  */
 public enum PanelMessages {
+    SET_WAIT_CURSOR,
     CALBN_TC_SELECTED,
     EXPT_TC_SELECTED,
     NEW_RUN_IMPORTED,

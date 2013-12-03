@@ -342,7 +342,7 @@ public class ProfileEditor extends JPanel implements
                 }
             }
             //Changes to the Profile requires the ProfileSummary to be updated
-            prfSum.update();
+//            prfSum.update();
             updatePanels();
         }
         if (key == PanelMessages.NEW_DATABASE) {

@@ -69,6 +69,8 @@ public final class ExperimentTopComponent extends TopComponent
     private DatabaseServices experimentDB;
     private final Result<SampleNode> sampleNodeResult;
     private final Result<AmpliconNode> ampliconNodeResult;
+    private Cursor waitCursor = new Cursor(Cursor.WAIT_CURSOR);
+    private Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
 
     public ExperimentTopComponent() {
         initComponents();
@@ -104,6 +106,7 @@ public final class ExperimentTopComponent extends TopComponent
         UniversalLookup.getDefault().addListner(PanelMessages.NEW_RUN_IMPORTED, this);
         UniversalLookup.getDefault().addListner(PanelMessages.UPDATE_EXPERIMENT_PANELS, this);
         UniversalLookup.getDefault().addListner(PanelMessages.PROFILE_DELETED, this);
+        UniversalLookup.getDefault().addListner(PanelMessages.SET_WAIT_CURSOR, this);
     }
 
     private ArrayList<Run> getSelectedRuns() {
@@ -271,6 +274,7 @@ public final class ExperimentTopComponent extends TopComponent
     }// </editor-fold>//GEN-END:initComponents
 
     private void openDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openDBbuttonActionPerformed
+        setCursor(waitCursor);
         if (experimentDB.openUserSelectDatabaseFile()) {
             experimentDbTree.createTree();
             UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, experimentDB);
@@ -280,9 +284,11 @@ public final class ExperimentTopComponent extends TopComponent
             setDisplayName(dbFileName.substring(0, length - 4));
             setToolTipText(experimentDB.getDatabaseFile().getName());
         }//If a new file was not opened, do nothing
+        setCursor(defaultCursor);
     }//GEN-LAST:event_openDBbuttonActionPerformed
 
     private void newDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newDBbuttonActionPerformed
+        setCursor(waitCursor);
         if (experimentDB.createNewDatabaseFile()) {
             experimentDbTree.createTree();
             UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, experimentDB);
@@ -292,9 +298,11 @@ public final class ExperimentTopComponent extends TopComponent
             setDisplayName(dbFileName.substring(0, length - 4));
             setToolTipText(experimentDB.getDatabaseFile().getName());
         }//False if the action was cancelled, so do nothing
+        setCursor(defaultCursor);
     }//GEN-LAST:event_newDBbuttonActionPerformed
 
     private void openLastDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openLastDBbuttonActionPerformed
+        setCursor(waitCursor);
         if (experimentDB.openLastDatabaseFile()) {
             experimentDbTree.createTree();
             UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, experimentDB);
@@ -304,9 +312,11 @@ public final class ExperimentTopComponent extends TopComponent
             setDisplayName(dbFileName.substring(0, length - 4));
             setToolTipText(experimentDB.getDatabaseFile().getName());
         }//If a new file was not opened, do nothing
+        setCursor(defaultCursor);
     }//GEN-LAST:event_openLastDBbuttonActionPerformed
 
     private void closeDBbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeDBbuttonActionPerformed
+        setCursor(waitCursor);
         if (experimentDB.closeDatabase()) {
             experimentDbTree.createTree();
             UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, null);
@@ -314,6 +324,7 @@ public final class ExperimentTopComponent extends TopComponent
             setDisplayName("Experiment DB");
             setToolTipText("Experiment DB Explorer");
         }
+        setCursor(defaultCursor);
     }//GEN-LAST:event_closeDBbuttonActionPerformed
 
     private void exportAverageProfileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportAverageProfileButtonActionPerformed
@@ -331,9 +342,10 @@ public final class ExperimentTopComponent extends TopComponent
     }//GEN-LAST:event_exportReplicateProfilesButtonActionPerformed
 
     private void nrUpdateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nrUpdateButtonActionPerformed
-        // TODO add your handling code here:
+        setCursor(waitCursor);
         ExptDbUpdate.nonlinearRegressionUpdate(experimentDB);
         experimentDbTree.createTree();
+        setCursor(defaultCursor);
     }//GEN-LAST:event_nrUpdateButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -463,6 +475,7 @@ public final class ExperimentTopComponent extends TopComponent
 
     public void universalLookupChangeEvent(Object key) {
         if (key == PanelMessages.NEW_RUN_IMPORTED) {
+            setCursor(defaultCursor);
             experimentDbTree.createTree();
             Run newRun = (Run) UniversalLookup.getDefault().getAll(key).get(0);
             //Open the tree to the new Run node
@@ -479,6 +492,9 @@ public final class ExperimentTopComponent extends TopComponent
         if (key == PanelMessages.PROFILE_DELETED) {
 //            experimentDbTree.displayTotalNumberOfProfilesInTheDatabase();
             experimentDbTree.createTree();//This allows profiles deleted from a sorted list to reset to Run View
+        }
+        if (key == PanelMessages.SET_WAIT_CURSOR){
+            experimentDbTree.setWaitCursor();
         }
     }
 }
