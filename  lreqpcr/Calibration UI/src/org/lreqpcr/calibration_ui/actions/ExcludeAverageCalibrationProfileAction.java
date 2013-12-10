@@ -24,7 +24,7 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.utilities.UniversalLookup;
-import org.lreqpcr.ui_components.PanelMessages;
+import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 

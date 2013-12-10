@@ -38,7 +38,7 @@ import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.utilities.FormatingUtilities;
 import org.lreqpcr.core.utilities.MathFunctions;
 import org.lreqpcr.core.utilities.UniversalLookup;
-import org.lreqpcr.ui_components.PanelMessages;
+import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.AbstractNode;

@@ -16,8 +16,6 @@
  */
 package org.lreqpcr.run_initialization_provider;
 
-import java.awt.Cursor;
-import java.awt.Frame;
 import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,7 +34,7 @@ import org.lreqpcr.data_import_services.DataImportType;
 import org.lreqpcr.data_import_services.RunImportData;
 import org.lreqpcr.data_import_services.RunImportUtilities;
 import org.lreqpcr.data_import_services.RunInitializationService;
-import org.lreqpcr.ui_components.PanelMessages;
+import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.WindowManager;
@@ -88,16 +86,19 @@ public class RunInializationProvider implements RunInitializationService {
             //All three databases will likely be needed
             if (!experimentDB.isDatabaseOpen()) {
                 if (!experimentDatabaseNotOpen()) {
+                    UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_DEFAULT_CURSOR);
                     return;
                 }
             }
             if (!calbnDB.isDatabaseOpen()) {
                 if (!calibrationDatabaseNotOpen()) {
+                    UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_DEFAULT_CURSOR);
                     return;
                 }
             }
             if (!ampliconDB.isDatabaseOpen()) {
                 if (!ampliconDatabaseNotOpen()) {
+                    UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_DEFAULT_CURSOR);
                     return;
                 }
             }
@@ -109,6 +110,7 @@ public class RunInializationProvider implements RunInitializationService {
                         + "Data import will be terminated.";
                 JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Experiment database not open",
                         JOptionPane.ERROR_MESSAGE);
+                UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_DEFAULT_CURSOR);
                 return;
             }
         }
@@ -118,6 +120,7 @@ public class RunInializationProvider implements RunInitializationService {
                         + "Data import will be terminated.";
                 JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "No Calibration database is open",
                         JOptionPane.ERROR_MESSAGE);
+                UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_DEFAULT_CURSOR);
                 return;
             }
         }
@@ -143,6 +146,7 @@ public class RunInializationProvider implements RunInitializationService {
                     double ocf = dbInfo.getOcf();
                     if (ocf == 0){
                         displayNoOcfWarning();
+                        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_WAIT_CURSOR);
                     }
                     for (SampleProfile sampleProfile : sampleProfileList) {
                         sampleProfile.setRunDate(runDate);
@@ -155,7 +159,7 @@ public class RunInializationProvider implements RunInitializationService {
                         }
                         //Initialize the new Profile which will conduct an automated LRE window selection
                         ProfileSummary prfSum = new ProfileSummaryImp(sampleProfile, experimentDB);
-                        lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, parameters);
+                        lreAnalysisService.optimizeLreWindowUsingNonlinearRegression(prfSum, parameters);
                         sampleProfile.setOCF(ocf);
                         experimentDB.saveObject(sampleProfile);
                     }
@@ -215,7 +219,7 @@ public class RunInializationProvider implements RunInitializationService {
                             }
                         }
                         ProfileSummary prfSum = new ProfileSummaryImp(profile, calbnDB);
-                        lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, lreWindowSelectionParameters);
+                        lreAnalysisService.optimizeLreWindowUsingNonlinearRegression(prfSum, lreWindowSelectionParameters);
                     }
                     //Process the AverageCalibnProfiles
                     List<AverageProfile> averageCalbnProfileList =
@@ -253,6 +257,7 @@ public class RunInializationProvider implements RunInitializationService {
                 }
             }
         }//End of calibration profile processing
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_DEFAULT_CURSOR);
     }//End of initialize run
     //Determine the avFmax across all profiles and set this within the Calibration Run
 

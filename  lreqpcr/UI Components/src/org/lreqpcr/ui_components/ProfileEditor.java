@@ -16,6 +16,8 @@
  */
 package org.lreqpcr.ui_components;
 
+import java.awt.Cursor;
+import org.lreqpcr.core.ui_elements.PanelMessages;
 import java.awt.Toolkit;
 import java.util.Collection;
 import java.util.List;
@@ -54,6 +56,8 @@ public class ProfileEditor extends JPanel implements
     private DatabaseServices currentDB;
     private Lookup.Result nodeResult;
     private UniversalLookup universalLookup;
+    private Cursor waitCursor = new Cursor(Cursor.WAIT_CURSOR);
+    private Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
 
     /**
      * Creates new form ProfileView
@@ -73,6 +77,8 @@ public class ProfileEditor extends JPanel implements
         universalLookup.addListner(PanelMessages.PROFILE_CHANGED, this);
         universalLookup.addListner(PanelMessages.CALBN_TC_SELECTED, this);
         universalLookup.addListner(PanelMessages.EXPT_TC_SELECTED, this);
+        universalLookup.addListner(PanelMessages.SET_DEFAULT_CURSOR, this);
+        universalLookup.addListner(PanelMessages.SET_WAIT_CURSOR, this);
         nodeResult = Utilities.actionsGlobalContext().lookupResult(LreNode.class);
         nodeResult.allItems();
         nodeResult.addLookupListener(this);
@@ -362,6 +368,12 @@ public class ProfileEditor extends JPanel implements
                 }
                 clearPanels();
             }
+        }
+        if (key == PanelMessages.SET_WAIT_CURSOR){
+            setCursor(waitCursor);
+        }
+        if (key == PanelMessages.SET_DEFAULT_CURSOR){
+            setCursor(defaultCursor);
         }
     }
 

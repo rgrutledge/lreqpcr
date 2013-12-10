@@ -31,7 +31,7 @@ import org.lreqpcr.core.data_processing.ProfileSummary;
 import org.lreqpcr.core.data_processing.ProfileSummaryImp;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.utilities.UniversalLookup;
-import org.lreqpcr.ui_components.PanelMessages;
+import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
@@ -98,7 +98,7 @@ class ExcludeCalibrationProfileAction extends AbstractAction {
                 ProfileSummary prfSum = new ProfileSummaryImp(parentAvProfile, db);
                 lreAnalysisService.lreWindowInitialization(prfSum, selectionParameters);
                 //Apply nonlinear regression to optimize the LRE window
-                lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, selectionParameters);
+                lreAnalysisService.optimizeLreWindowUsingNonlinearRegression(prfSum, selectionParameters);
             }
 
             //Update the tree

@@ -39,7 +39,7 @@ import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.utilities.FormatingUtilities;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.experiment_ui.actions.ExperimentTreeNodeActions;
-import org.lreqpcr.ui_components.PanelMessages;
+import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.AbstractNode;
@@ -74,8 +74,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
     private Lookup.Result nodeResult;
     protected LreNode selectedNode;
     private boolean repView = false;
-    private Cursor waitCursor = new Cursor(Cursor.WAIT_CURSOR);
-    private Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
+
 
     /**
      * Creates new form ExperimentDbTree
@@ -94,6 +93,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
                     return;
                 }
                 if (e.getKeyCode() == 10) {//"Return" key
+                    UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_WAIT_CURSOR);
                     //Remove any commas
                     String userSuppliedOcf = ocfDisplay.getText();
                     while (userSuppliedOcf.contains(",")) {
@@ -115,6 +115,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
                                 JOptionPane.ERROR_MESSAGE);
                     }
                 }
+                UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_DEFAULT_CURSOR);
             }
         });
         nodeResult = Utilities.actionsGlobalContext().lookupResult(LreNode.class);
@@ -137,7 +138,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
     @SuppressWarnings(value = "unchecked")
     //A new experiment database has been opened
     public void createTree() {
-        setWaitCursor();
+       
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.CLEAR_PROFILE_EDITOR);
         runViewButton.setSelected(true);
         if (!exptDB.isDatabaseOpen()) {
@@ -146,7 +147,6 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
             mgr.setRootContext(root);
             ocfDisplay.setText("");
             fmaxNormalizeChkBox.setSelected(false);
-            setDefaultCursor();
             return;
         }
         //Check if ExperimentDbInfo requires conversion to the new ExptDbInfo which extends DatabaseInfo
@@ -156,6 +156,10 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
         if (l.isEmpty()) {
             ExptDbUpdate.exptDbConversion086(exptDB);
         }
+//         if (getCursor().getType() == Cursor.DEFAULT_CURSOR){
+//             UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_WAIT_CURSOR);
+//         }
+        
         exptDbInfo = (ExptDbInfo) exptDB.getAllObjects(ExptDbInfo.class).get(0);
         selectionParameters = (LreWindowSelectionParameters) exptDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
         fmaxNormalizeChkBox.setSelected(exptDbInfo.isTargetQuantityNormalizedToFmax());
@@ -182,7 +186,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
         root.setDisplayName(displayName);
         root.setShortDescription(dbFile.getAbsolutePath());
         mgr.setRootContext(root);
-        setCursor(defaultCursor);
+//        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_DEFAULT_CURSOR);
     }//End of create tree
 
     /**
@@ -231,10 +235,9 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
 
     @SuppressWarnings(value = "unchecked")
     private void resetToNewOcf() {
-        setWaitCursor();
+//        setWaitCursor();
 //        getCursor()
         if (!exptDB.isDatabaseOpen()) {
-            setDefaultCursor();
             return;
         }
         List<Profile> avSampleProfileList =
@@ -263,7 +266,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
                     LreAnalysisService lreAnalysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
                     selectionParameters = (LreWindowSelectionParameters) exptDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
                     ProfileSummary prfSum = new ProfileSummaryImp(avProfile, exptDB);
-                    lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, selectionParameters);
+                    lreAnalysisService.optimizeLreWindowUsingNonlinearRegression(prfSum, selectionParameters);
                 }
             }
         }
@@ -271,14 +274,6 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
         createTree();
     }
     
-    public void setWaitCursor(){
-        setCursor(waitCursor);
-    }
-    
-    public void setDefaultCursor(){
-        setCursor(defaultCursor);
-    }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -398,7 +393,6 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
             fmaxNormalizeChkBox.setSelected(false);
             return;
         }
-        setCursor(waitCursor);
         //Note that this is applied to all profiles in the database
         List<Run> runList = exptDB.getAllObjects(Run.class);
         for (Run run : runList) {

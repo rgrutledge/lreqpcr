@@ -16,14 +16,11 @@
  */
 package org.lreqpcr.analysis.rutledge;
 
-import java.awt.Toolkit;
-import javax.swing.JOptionPane;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_processing.ProfileSummary;
 import org.openide.util.lookup.ServiceProvider;
-import org.openide.windows.WindowManager;
 
 /**
  * Rutledge implementation of LRE window selection and optimization.
@@ -42,13 +39,17 @@ public class LreAnalysisProvider implements LreAnalysisService {
     }
 
     /**
-     * This method selects a LRE window using a working Fc dataset derived from 
-     * a Fb determined from the average of cycles 4-9. All previous LRE parameters 
-     * are also reset to zero. 
+     * Provides automated LRE window selection 
+     * using nonlinear regression-derived Fb and Fb-slope to generate an optimized working Fc dataset. 
+     * If a LRE window has not been found, the Profile is reinitialized before 
+     * attempting nonlinear regression analysis.
+     * <p>
+     * LRE window selection is based on the LreWindowSelectionParameters. 
+     * Note also that this function saves the modified Profile via ProfileSummary.update().
      *
      * @param profile
      * @param parameters LRE window selection parameters
-     * @return whether a LRE window was found
+     * @return true if an LRE window was found or false if window selection failed
      */
     public boolean lreWindowInitialization(ProfileSummary prfSum, LreWindowSelectionParameters parameters) {
         this.prfSum = prfSum;
@@ -71,7 +72,7 @@ public class LreAnalysisProvider implements LreAnalysisService {
             return false;
         }
         //Attempt to expand the upper limit of the LRE window
-        LreWindowSelector.optimizeLreWindow(prfSum, parameters.getFoThreshold());
+        LreWindowSelector.expandLreWindowWithoutNR(prfSum, parameters.getFoThreshold());
         return true;
     }
 
@@ -94,7 +95,7 @@ public class LreAnalysisProvider implements LreAnalysisService {
      *
      *
      */
-    public boolean lreWindowOptimizationUsingNonlinearRegression(ProfileSummary prfSum, LreWindowSelectionParameters parameters) {
+    public boolean optimizeLreWindowUsingNonlinearRegression(ProfileSummary prfSum, LreWindowSelectionParameters parameters) {
         profile = prfSum.getProfile();
         this.parameters = parameters;
         //Determine if a valid LRE window has been established
@@ -119,7 +120,6 @@ public class LreAnalysisProvider implements LreAnalysisService {
      * @return 
      */
     public boolean lreWindowSelectionUpdate(ProfileSummary prfSum, LreWindowSelectionParameters parameters) {
-        //What would invalid a profile? No window is key
         //A valid LRE window must be present
         if (!prfSum.getProfile().hasAnLreWindowBeenFound()) {
             return false;
@@ -128,16 +128,16 @@ public class LreAnalysisProvider implements LreAnalysisService {
         
         //Determine if a new start cycle is required, else use the exsisting default start cycle
         if (parameters.getMinFc() != 0) {
-            //Resets the window start cycle based on minFc and also resets the window size to 3 cycles
+ //Resets the window start cycle based on minFc and also resets the window size to 3 cycles
             LreWindowSelector.selectLreStartCycleUsingMinFc(prfSum, parameters.getMinFc());
         }//Else, it is assumed that the exsisting start cycle will be used
 //Attempt to expand the LRE window using the exsisting working Fc dataset and without NR
-        LreWindowSelector.optimizeLreWindow(prfSum, parameters.getFoThreshold());
+        LreWindowSelector.expandLreWindowWithoutNR(prfSum, parameters.getFoThreshold());
         return prfSum.getProfile().hasAnLreWindowBeenFound();
     }
     
-    public boolean lreWindowUpdate(ProfileSummary prfSum, LreWindowSelectionParameters parameters) {
-        nrAnalysis.conductNonlinearRegressionOptimization(prfSum);
+    public boolean lreWindowUpdateUsingNR(ProfileSummary prfSum, LreWindowSelectionParameters parameters) {
+        nrAnalysis.lreWindowUpdateUsingNR(prfSum);
         return prfSum.getProfile().didNonlinearRegressionSucceed();
     }
 }
