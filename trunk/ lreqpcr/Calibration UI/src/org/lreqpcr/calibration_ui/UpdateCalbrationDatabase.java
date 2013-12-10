@@ -151,12 +151,12 @@ public class UpdateCalbrationDatabase {
                     profile.setParent(obj);
                 }
                 ProfileSummary prfSum = new ProfileSummaryImp(profile, calDB);
-                lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, lreWindowSelectionParameters);
+                lreAnalysisService.optimizeLreWindowUsingNonlinearRegression(prfSum, lreWindowSelectionParameters);
 
             }
             Profile prf = (Profile) avProfile;
             ProfileSummary prfSum = new ProfileSummaryImp(prf, calDB);
-            lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, lreWindowSelectionParameters);
+            lreAnalysisService.optimizeLreWindowUsingNonlinearRegression(prfSum, lreWindowSelectionParameters);
         }
         calDB.commitChanges();
     }

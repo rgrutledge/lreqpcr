@@ -15,7 +15,7 @@
  * and open the template in the editor.
  */
 
-package org.lreqpcr.ui_components;
+package org.lreqpcr.core.ui_elements;
 
 /**
  *
@@ -23,6 +23,7 @@ package org.lreqpcr.ui_components;
  */
 public enum PanelMessages {
     SET_WAIT_CURSOR,
+    SET_DEFAULT_CURSOR,
     CALBN_TC_SELECTED,
     EXPT_TC_SELECTED,
     NEW_RUN_IMPORTED,

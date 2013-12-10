@@ -16,6 +16,7 @@
  */
 package org.lreqpcr.ui_components;
 
+import org.lreqpcr.core.ui_elements.PanelMessages;
 import java.awt.*;
 import java.awt.geom.*;
 import java.text.DecimalFormat;
@@ -105,14 +106,16 @@ public class LrePlot extends javax.swing.JPanel {
         }
         lreWinSizeDisplay.setText(String.valueOf(profile.getLreWinSize()));
         startCycleDisplay.setText(String.valueOf(profile.getStrCycleInt()));
-        dEdisplay.setText(dfE.format(profile.getDeltaE()));
-        df.applyPattern("##.0");
-        maxEdisplay.setText(df.format(profile.getEmax() * 100) + "%");
-        df.applyPattern("0.0000");
-        r2display.setText(df.format(profile.getR2()));
-        Double fmax = profile.getEmax() / (-1 * profile.getDeltaE());
-        df.applyPattern(FormatingUtilities.decimalFormatPattern(fmax));
-        fmaxDisplay.setText(df.format(fmax));
+        if (profile.getEmax() > 0) {
+            dEdisplay.setText(dfE.format(profile.getDeltaE()));
+            df.applyPattern("##.0");
+            maxEdisplay.setText(df.format(profile.getEmax() * 100) + "%");
+            df.applyPattern("0.0000");
+            r2display.setText(df.format(profile.getR2()));
+            Double fmax = profile.getEmax() / (-1 * profile.getDeltaE());
+            df.applyPattern(FormatingUtilities.decimalFormatPattern(fmax));
+            fmaxDisplay.setText(df.format(fmax));
+        }
         startCycleLabel.setVisible(true);
         winSizeLabel.setVisible(true);
         lreParametersPanel.setVisible(true);
@@ -169,8 +172,7 @@ public class LrePlot extends javax.swing.JPanel {
      * This function also assumes that this profile has a valid LRE window.
      */
     private void processModifiedLreWindow() {
-        lreAnalService.lreWindowUpdate(prfSum, selectionParameters);
-        //The Profile has changed so the ProfileSummary needs updating
+        lreAnalService.lreWindowUpdateUsingNR(prfSum, selectionParameters);
         updateParentAverageProfileIfNeeded();
         db.commitChanges();
         universalLookup.fireChangeEvent(PanelMessages.PROFILE_CHANGED);
@@ -544,7 +546,7 @@ public class LrePlot extends javax.swing.JPanel {
 
     private void addTopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addTopActionPerformed
         addTop.setSelected(false);
-        if (profile == null) {
+        if (profile == null || prfSum.getLreWindowEndCycle().getNextCycle() == null) {
             return;
         }
         profile.setLreWinSize(profile.getLreWinSize() + 1);
@@ -579,7 +581,7 @@ private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     //Reinitialize the Profile
     lreAnalService.lreWindowInitialization(prfSum, selectionParameters);
     //Apply nonlinear regression
-    lreAnalService.lreWindowOptimizationUsingNonlinearRegression(prfSum, selectionParameters);
+    lreAnalService.optimizeLreWindowUsingNonlinearRegression(prfSum, selectionParameters);
     updateParentAverageProfileIfNeeded();
     db.commitChanges();
     universalLookup.fireChangeEvent(PanelMessages.PROFILE_CHANGED);

@@ -16,6 +16,7 @@
  */
 package org.lreqpcr.ui_components;
 
+import org.lreqpcr.core.ui_elements.PanelMessages;
 import com.google.common.collect.Lists;
 import java.awt.Cursor;
 import java.awt.Toolkit;
@@ -97,12 +98,11 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
             @SuppressWarnings(value = "unchecked")
             public void keyReleased(KeyEvent e) {
                 if (e.getKeyCode() == 10) {//"Return" key
-//                    WindowManager.getDefault().getMainWindow().setCursor(waitCursor);
-                    if (currentDB == null){
+                    if (currentDB == null) {
                         clearPanel();
                         return;
                     }
-                    setCursor(waitCursor);
+                    UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_WAIT_CURSOR);
                     if (e.getComponent().equals(minFcDisplay)) {
                         double newMinFc;//Signifies that an acceptable value has not been found
                         //Reset minFcDisplay
@@ -127,7 +127,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                             selectionParameters.setMinFc(newMinFc);
                             currentDB.saveObject(selectionParameters);
                             //Now reset
-                            resetSelectionParameters();
+                            resetMinFc();
                         } else {//Display the previous minFc value
                             updateDisplay();
                         }
@@ -165,13 +165,12 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                             //A vailid Fo threshold was entered, so store it
                             selectionParameters.setFoThreshold(newFoThreshold);
                             currentDB.saveObject(selectionParameters);
-                            //Now reset
-                            resetSelectionParameters();
+                            //Now reset the Fo threshold
+                            resetFoThreshold();
                         }
                     }
-//                    WindowManager.getDefault().getMainWindow().setCursor(waitCursor);
-                    setCursor(defaultCursor);
                 }
+                UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_DEFAULT_CURSOR);
             }
         };
     }
@@ -211,11 +210,11 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         if (newMinFmax <= 0) {
             return false;
         }
-//Uses the average Fmax to provide scale for determiing is the newMinFc is acceptable
+//Uses the average Fmax to provide scale for determiing if the newMinFc is acceptable
         //Average Fmax across all runs is calculated by the Experiment panel Tree 
         //everytime a new profile database is opened
         //This is a quickfix for Calibration databases as they yet do not have avFmax implemented
-        // TODO implement average Fmax for calibration databases
+        // TODO implement average Fmax for calibration databases********************************************************************************
         if (dbInfo.getAvRunFmax() == 0) {
             return true;
         }
@@ -244,9 +243,66 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         return true;
     }
 
-    private void resetSelectionParameters() {
-        setCursor(waitCursor);
-        reinitializeAllProfiles();
+    /**
+     * Resetting the Fo threshold only requires that the top of the LRE window 
+     * be reset, so that the start cycle is not modified. 
+     */
+    @SuppressWarnings("unchecked")
+    private void resetFoThreshold() {
+        List<AverageProfile> profileList = retrieveAllAverageProfiles();
+        if (profileList.isEmpty()) {
+            return;
+        }
+        for (AverageProfile avProfile : profileList) {
+            //Need to update the replicate profiles first in order to test if this is a valid AverageProfile
+            for (Profile profile : avProfile.getReplicateProfileList()) {
+                //Use the existing start cycle
+                ProfileSummary prfSum = new ProfileSummaryImp(profile, currentDB);
+                lreAnalysisService.lreWindowUpdateUsingNR(prfSum, selectionParameters);
+            }
+            if (!avProfile.isTheReplicateAverageNoLessThan10Molecules() && avProfile.areTheRepProfilesSufficientlyClustered()) {
+                //The AverageProfile is valid thus reinitialize it
+                //Use the exsiting start cycle
+                Profile profile = (Profile) avProfile;
+                ProfileSummary prfSum = new ProfileSummaryImp(profile, currentDB);
+                lreAnalysisService.lreWindowUpdateUsingNR(prfSum, selectionParameters);
+            }
+            currentDB.commitChanges();
+            broadcastUpdate();
+        }
+    }
+    
+    /**
+     * Setting a new minFc requires that the LRE window be reinitialized.
+     */
+    @SuppressWarnings("unchecked")
+    private void resetMinFc(){
+        List<AverageProfile> profileList = retrieveAllAverageProfiles();
+        if (profileList.isEmpty()) {
+            return;
+        }
+        for (AverageProfile avProfile : profileList) {
+            //Need to update the replicate profiles first in order to test if this is a valid AverageProfile
+            for (Profile profile : avProfile.getReplicateProfileList()) {
+                //Force a new start cycle to be identified
+                profile.setHasAnLreWindowBeenFound(false);
+                ProfileSummary prfSum = new ProfileSummaryImp(profile, currentDB);
+                lreAnalysisService.optimizeLreWindowUsingNonlinearRegression(prfSum, selectionParameters);
+            }
+            if (!avProfile.isTheReplicateAverageNoLessThan10Molecules() && avProfile.areTheRepProfilesSufficientlyClustered()) {
+                //The AverageProfile is valid thus reinitialize it
+                Profile profile = (Profile) avProfile;
+                //Force a new start cycle to be identified
+                profile.setHasAnLreWindowBeenFound(false);
+                ProfileSummary prfSum = new ProfileSummaryImp(profile, currentDB);
+                lreAnalysisService.optimizeLreWindowUsingNonlinearRegression(prfSum, selectionParameters);
+            }
+            currentDB.commitChanges();
+            broadcastUpdate();
+        }
+    }
+
+    private void broadcastUpdate() {
         updateDisplay();
         //Clear the profile editor display
         universalLookup.fireChangeEvent(PanelMessages.CLEAR_PROFILE_EDITOR);
@@ -257,18 +313,12 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION) {
             universalLookup.fireChangeEvent(PanelMessages.UPDATE_CALIBRATION_PANELS);
         }
-        setCursor(defaultCursor);
     }
 
-    @SuppressWarnings("unchecked")
-    private void reinitializeAllProfiles() {
+    private List<AverageProfile> retrieveAllAverageProfiles() {
         if (!currentDB.isDatabaseOpen()) {
-            return;
+            return null;
         }
-        if (selectionParameters.getFoThreshold() <= 0) {
-            return;
-        }
-//        setCursor(waitCursor);
         List<AverageProfile> profileList;
 //This is necessary becuase for unknown reasons retrieving AverageProfiles 
 //objects fail for calibration profiles
@@ -277,40 +327,23 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
         } else {
             profileList = currentDB.getAllObjects(AverageProfile.class);
         }
-
-        if (profileList.isEmpty()) {
-            return;
-        }
-        for (AverageProfile avProfile : profileList) {
-            //Need to update the replicate profiles first in order to test if <10N
-            for (Profile profile : avProfile.getReplicateProfileList()) {
-                ProfileSummary prfSum = new ProfileSummaryImp(profile, currentDB);
-                lreAnalysisService.lreWindowSelectionUpdate(prfSum, selectionParameters);
-            }
-            if (!avProfile.isTheReplicateAverageNoLessThan10Molecules() && avProfile.areTheRepProfilesSufficientlyClustered()) {
-                //The AverageProfile is valid thus reinitialize it
-                Profile profile = (Profile) avProfile;
-                ProfileSummary prfSum = new ProfileSummaryImp(profile, currentDB);
-                lreAnalysisService.lreWindowSelectionUpdate(prfSum, selectionParameters);
-            }
-        }
-        currentDB.commitChanges();
-//        setCursor(defaultCursor);
+        return profileList;
     }
 
     private void updateDisplay() {
-        if (selectionParameters == null){
+        if (selectionParameters == null) {
             clearPanel();
             return;
         }
         double currentMinFc = selectionParameters.getMinFc();
-            if (currentMinFc != 0) {
-                df.applyPattern(FormatingUtilities.decimalFormatPattern(currentMinFc));
-                minFcDisplay.setText(df.format(currentMinFc));
-            } else {
-                minFcDisplay.setText("One cycle below C1/2");
-            }
-            double currentFoThr = selectionParameters.getFoThreshold();
+        //0 minFc designates that the start cycle defaults to one or two cycles below C1/2
+        if (currentMinFc != 0) {
+            df.applyPattern(FormatingUtilities.decimalFormatPattern(currentMinFc));
+            minFcDisplay.setText(df.format(currentMinFc));
+        } else {
+            minFcDisplay.setText("One cycle below C1/2");
+        }
+        double currentFoThr = selectionParameters.getFoThreshold();
         if (currentFoThr != 0) {
             df.applyPattern("0.0%");
             foThresholdDisplay.setText(df.format(currentFoThr));

@@ -16,6 +16,7 @@
  */
 package org.lreqpcr.ui_components;
 
+import org.lreqpcr.core.ui_elements.PanelMessages;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.text.DecimalFormat;
@@ -443,6 +444,7 @@ public class LreObjectInfo extends JPanel {
         selectedNode.refreshNodeLabel();
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_CHANGED);
     }//GEN-LAST:event_ssDNAcheckBox1ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel ampLabel;
     private javax.swing.JTextField ampNameDisplay;

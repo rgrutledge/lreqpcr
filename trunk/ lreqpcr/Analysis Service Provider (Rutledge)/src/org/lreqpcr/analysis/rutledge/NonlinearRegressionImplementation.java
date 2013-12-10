@@ -63,7 +63,7 @@ public class NonlinearRegressionImplementation {
      *
      * @param prfSum the ProfileSummary encapsulating the Profile
      */
-    public boolean conductNonlinearRegressionOptimization(ProfileSummary prfSum) {
+    public boolean lreWindowUpdateUsingNR(ProfileSummary prfSum) {
         this.prfSum = prfSum;
         profile = prfSum.getProfile();
 
@@ -103,7 +103,7 @@ public class NonlinearRegressionImplementation {
         lreDerivedParam = getLreParameters();
         //Run the regression analysis 10 times to determine the average and SD
 //This is necessary due to the poor performance of Peter Abeles’s EJML implementation
-        int numberOfIterations = 10;
+        int numberOfIterations = 3;
         ArrayList<Double> emaxArray = new ArrayList<Double>();
         ArrayList<Double> fbArray = new ArrayList<Double>();
         ArrayList<Double> foArray = new ArrayList<Double>();

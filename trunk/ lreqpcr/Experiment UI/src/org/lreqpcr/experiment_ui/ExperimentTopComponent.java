@@ -37,7 +37,7 @@ import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.core.utilities.UniversalLookupListener;
 import org.lreqpcr.data_export_services.DataExportServices;
 import org.lreqpcr.experiment_ui.components.ExptDbUpdate;
-import org.lreqpcr.ui_components.PanelMessages;
+import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
@@ -107,6 +107,7 @@ public final class ExperimentTopComponent extends TopComponent
         UniversalLookup.getDefault().addListner(PanelMessages.UPDATE_EXPERIMENT_PANELS, this);
         UniversalLookup.getDefault().addListner(PanelMessages.PROFILE_DELETED, this);
         UniversalLookup.getDefault().addListner(PanelMessages.SET_WAIT_CURSOR, this);
+        UniversalLookup.getDefault().addListner(PanelMessages.SET_DEFAULT_CURSOR, this);
     }
 
     private ArrayList<Run> getSelectedRuns() {
@@ -328,17 +329,21 @@ public final class ExperimentTopComponent extends TopComponent
     }//GEN-LAST:event_closeDBbuttonActionPerformed
 
     private void exportAverageProfileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportAverageProfileButtonActionPerformed
+        setCursor(waitCursor);
         ArrayList<Run> runList = getSelectedRuns();
         if (runList != null) {
             Lookup.getDefault().lookup(DataExportServices.class).exportAverageSampleProfilesFromRuns(runList);
         }
+        setCursor(defaultCursor);
     }//GEN-LAST:event_exportAverageProfileButtonActionPerformed
 
     private void exportReplicateProfilesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportReplicateProfilesButtonActionPerformed
+        setCursor(waitCursor);
         ArrayList<Run> runList = getSelectedRuns();
         if (runList != null) {
             Lookup.getDefault().lookup(DataExportServices.class).exportReplicateSampleProfilesFromRuns(runList);
         }
+        setCursor(defaultCursor);
     }//GEN-LAST:event_exportReplicateProfilesButtonActionPerformed
 
     private void nrUpdateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nrUpdateButtonActionPerformed
@@ -475,7 +480,7 @@ public final class ExperimentTopComponent extends TopComponent
 
     public void universalLookupChangeEvent(Object key) {
         if (key == PanelMessages.NEW_RUN_IMPORTED) {
-            setCursor(defaultCursor);
+//            setCursor(defaultCursor);
             experimentDbTree.createTree();
             Run newRun = (Run) UniversalLookup.getDefault().getAll(key).get(0);
             //Open the tree to the new Run node
@@ -494,7 +499,10 @@ public final class ExperimentTopComponent extends TopComponent
             experimentDbTree.createTree();//This allows profiles deleted from a sorted list to reset to Run View
         }
         if (key == PanelMessages.SET_WAIT_CURSOR){
-            experimentDbTree.setWaitCursor();
+            setCursor(waitCursor);
+        }
+        if (key == PanelMessages.SET_DEFAULT_CURSOR){
+            setCursor(defaultCursor);
         }
     }
 }

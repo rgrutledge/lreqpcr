@@ -31,7 +31,7 @@ import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
 import org.lreqpcr.core.utilities.UniversalLookup;
-import org.lreqpcr.ui_components.PanelMessages;
+import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
@@ -133,7 +133,7 @@ public class DeleteSampleProfileAction extends AbstractAction {
         //Reinitialize the LRE window
         avProfile.setHasAnLreWindowBeenFound(false);
         ProfileSummary prfSum = new ProfileSummaryImp(avProfile, db);
-        profileIntialization.lreWindowOptimizationUsingNonlinearRegression(prfSum, selectionParameters);
+        profileIntialization.optimizeLreWindowUsingNonlinearRegression(prfSum, selectionParameters);
         avProfile.calculateAvAmpTm();
         //Need to also save the SampeProfile's Run
         db.saveObject(sampleProfile.getRun());

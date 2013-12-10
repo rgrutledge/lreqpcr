@@ -32,7 +32,7 @@ import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
 import org.lreqpcr.core.utilities.ProfileUtilities;
 import org.lreqpcr.core.utilities.UniversalLookup;
-import org.lreqpcr.ui_components.PanelMessages;
+import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
@@ -105,7 +105,7 @@ class ExcludeSampleProfileAction extends AbstractAction {
                 ProfileSummary prfSum = new ProfileSummaryImp(parentAvProfile, db);
                 lreAnalysisService.lreWindowInitialization(prfSum, selectionParameters);
                 //Apply nonlinear regression optimization
-                lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, selectionParameters);
+                lreAnalysisService.optimizeLreWindowUsingNonlinearRegression(prfSum, selectionParameters);
             }
             //Update the tree
             //Test to see if the parent node is a run node used in the well view

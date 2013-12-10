@@ -16,6 +16,7 @@
  */
 package org.lreqpcr.ui_components;
 
+import org.lreqpcr.core.ui_elements.PanelMessages;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Collection;

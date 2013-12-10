@@ -75,14 +75,14 @@ public class ExptDbUpdate {
             //Need to update the replicate profiles first in order to test if <10N
             for (Profile profile : avProfile.getReplicateProfileList()) {
                 ProfileSummary prfSum = new ProfileSummaryImp(profile, exptDB);
-                lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, selectionParameters);
+                lreAnalysisService.optimizeLreWindowUsingNonlinearRegression(prfSum, selectionParameters);
                 exptDB.saveObject(profile);
             }
             if (!avProfile.isTheReplicateAverageNoLessThan10Molecules() && avProfile.areTheRepProfilesSufficientlyClustered()) {
                 //The AverageProfile is valid thus reinitialize it
                 Profile profile = (Profile) avProfile;
                 ProfileSummary prfSum = new ProfileSummaryImp(profile, exptDB);
-                lreAnalysisService.lreWindowOptimizationUsingNonlinearRegression(prfSum, selectionParameters);
+                lreAnalysisService.optimizeLreWindowUsingNonlinearRegression(prfSum, selectionParameters);
                 exptDB.saveObject(avProfile);
             }
         }
