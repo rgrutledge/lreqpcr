@@ -18,7 +18,6 @@ package org.lreqpcr.ui_components;
 
 import org.lreqpcr.core.ui_elements.PanelMessages;
 import com.google.common.collect.Lists;
-import java.awt.Cursor;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
@@ -69,8 +68,6 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
             Lookup.getDefault().lookup(LreAnalysisService.class);
     private UniversalLookup universalLookup = UniversalLookup.getDefault();
     private double averageFmax;
-    private Cursor waitCursor = new Cursor(Cursor.WAIT_CURSOR);
-    private Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
 
     /**
      * Displays and processes changes to the LRE window selection parameters.

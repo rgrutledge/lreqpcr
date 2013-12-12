@@ -39,6 +39,7 @@ import org.lreqpcr.core.utilities.FormatingUtilities;
 import org.lreqpcr.core.utilities.MathFunctions;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.core.ui_elements.PanelMessages;
+import org.lreqpcr.nonlinear_regression_services.NonlinearRegressionUtilities;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.AbstractNode;
@@ -88,15 +89,12 @@ public class CalbnTree extends JPanel {
             fmaxNrmzBox.setSelected(false);
             return;
         }
-        List<AverageCalibrationProfile> avCalPrfList =
-                (List<AverageCalibrationProfile>) calbnDB.getAllObjects(AverageCalibrationProfile.class);
-        if (!avCalPrfList.isEmpty()) {
-            //Check if this version is too old to process, i.e. lacks a Run
-            if (avCalPrfList.get(0).getRun() == null) {
+        List<CalibrationDbInfo> infoDbList = (List<CalibrationDbInfo>) calbnDB.getAllObjects(CalibrationDbInfo.class);
+        if (infoDbList.isEmpty()) {
                 JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
                         "The selected calibration database is incompatible\n"
-                        + " with this version of the LRE Analyzer",
-                        "Unable to process this calibration database",
+                        + " with this version of the LRE Analyzer.",
+                        "Unable to load this calibration database",
                         JOptionPane.ERROR_MESSAGE);
                 AbstractNode root = new AbstractNode(Children.LEAF);
                 root.setName("No CalbnDB is open");
@@ -105,24 +103,13 @@ public class CalbnTree extends JPanel {
                 calbnDB.closeDatabase();
                 return;
             }
-        }
-        List<CalibrationDbInfo> l = calbnDB.getAllObjects(CalibrationDbInfo.class);
-        //Check if CalibrationDbInfo is present in the database
-        //If not this must be an unconverted database
-        if (l.isEmpty()) {
-            //Assumes no Emax or Fmax normalization has been applied, 
-            //but this most certainly does not mattter
-            calDbInfo = new CalibrationDbInfo();
-            calbnDB.saveObject(calDbInfo);
-            //Must be an old, unconverted database
-            //For back compatablity, mainly for Fc plot, set the Run average Fmax
-            UpdateCalbrationDatabase.updateCalibrationProfiles(calbnDB);
-        } else {
-            calDbInfo = l.get(0);
+        calDbInfo = infoDbList.get(0);
+        if (calDbInfo.getVerionNumber() == 0){//Version number == 0 signifies pre 0.9.3
+             UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_WAIT_CURSOR);
+             NonlinearRegressionUtilities.applyNonlinearRegression(calbnDB);
+             UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_DEFAULT_CURSOR);
         }
         fmaxNrmzBox.setSelected(calDbInfo.isOcfNormalizedToFmax());
-        //Setup the tree with CalbrationDbInfo in root
-        //Retrieval all Calibration Runs from the database
         List<CalibrationRun> runList = (List<CalibrationRun>) calbnDB.getAllObjects(CalibrationRun.class);
         RunNodesWithAvCalChildren calRootChildren = new RunNodesWithAvCalChildren(mgr, calbnDB, runList, nodeActionFactory, nodeLabelFactory);
         LreNode root = new LreNode(calRootChildren, Lookups.singleton(calDbInfo), new Action[]{});

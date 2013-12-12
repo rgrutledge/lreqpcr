@@ -36,8 +36,8 @@ public class CalbnTreeNodeActions implements LreActionFactory {
         Action[] actions = new Action[]{
             new ExcludeAverageCalibrationProfileAction(mgr),
             new IncludeAverageCalibrationProfileAction(mgr),
-            null,
-            new DeleteAverageCalibrationProfileAction(mgr),
+//            null,
+//            new DeleteAverageCalibrationProfileAction(mgr),//This generates a runtime exception
         };
         actionMap.put("AverageCalibrationProfile", actions);
         //Calbn Profile actions

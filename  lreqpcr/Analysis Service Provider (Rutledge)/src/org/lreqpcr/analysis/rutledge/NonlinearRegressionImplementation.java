@@ -210,7 +210,7 @@ public class NonlinearRegressionImplementation {
             JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
                     "The nonlinear regression analysis has failed for well '"
                     + sdf.format(profile.getRunDate()) + ": "
-                    + profile.getWellLabel() + "'.\n\n"
+                    + profile.getWellLabel() + "'.\n"
                     + "LRE analysis will be conducted without baseline-slope correction",
                     "Failed to Apply Nonlinear Regression.",
                     JOptionPane.ERROR_MESSAGE);

@@ -30,7 +30,6 @@ public class AverageCalibrationProfile extends CalibrationProfile implements Ave
 
     private List<CalibrationProfile> lambdaProfileList;
     private double avTm = 0;
-    private boolean isTragetQuantityNormalizedToFmax = false;
 
     /**
      * An average calibration file constructed from the replicate calibration

@@ -16,7 +16,6 @@
  */
 package org.lreqpcr.experiment_ui.components;
 
-import java.awt.Cursor;
 import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -40,6 +39,7 @@ import org.lreqpcr.core.utilities.FormatingUtilities;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.experiment_ui.actions.ExperimentTreeNodeActions;
 import org.lreqpcr.core.ui_elements.PanelMessages;
+import org.lreqpcr.nonlinear_regression_services.NonlinearRegressionUtilities;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.AbstractNode;
@@ -73,8 +73,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
     private DecimalFormat df = new DecimalFormat();
     private Lookup.Result nodeResult;
     protected LreNode selectedNode;
-    private boolean repView = false;
-
+    private boolean replicatProfileView = false;
 
     /**
      * Creates new form ExperimentDbTree
@@ -82,6 +81,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
     public ExperimentDbTree() {
         initComponents();
         runViewButton.setSelected(true);
+        //Processes user entered OCF
         ocfDisplay.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -138,7 +138,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
     @SuppressWarnings(value = "unchecked")
     //A new experiment database has been opened
     public void createTree() {
-       
+
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.CLEAR_PROFILE_EDITOR);
         runViewButton.setSelected(true);
         if (!exptDB.isDatabaseOpen()) {
@@ -154,13 +154,38 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
         //for databases containing Profiles as of 0.8.6
         List l = exptDB.getAllObjects(ExptDbInfo.class);
         if (l.isEmpty()) {
-            ExptDbUpdate.exptDbConversion086(exptDB);
+            //Test if this database predates the new ExptDbInfo
+            List list = exptDB.getAllObjects(ExperimentDbInfo.class);
+            if (!list.isEmpty()) {
+                //Determine if this database predates Run average Fmax
+                List list2 = exptDB.getAllObjects(Profile.class);
+                Profile prf = (Profile) list2.get(0);
+                if(prf.getRun() == null){
+                    displayIncompatilityMessage();
+                    return;
+                }
+                ExperimentDbInfo oldDbInfo = (ExperimentDbInfo) exptDB.getAllObjects(ExperimentDbInfo.class).get(0);
+                exptDbInfo = new ExptDbInfo();
+                //Signify that NR has not been applied
+                exptDbInfo.setVersionNumber(0);
+                //Copy all values into the newDbInfo
+                exptDbInfo.setOcf(oldDbInfo.getOcf());
+                exptDbInfo.setIsTargetQuantityNormalizedToFmax(oldDbInfo.isTargetQuantityNormalizedToFax());
+                exptDB.saveObject(exptDbInfo);
+                exptDB.deleteObject(oldDbInfo);
+            } else {
+                displayIncompatilityMessage();
+                return;
+            }
+        } else {//A new ExptDbInfo is present so set it. 
+            exptDbInfo = (ExptDbInfo) l.get(0);
         }
-//         if (getCursor().getType() == Cursor.DEFAULT_CURSOR){
-//             UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_WAIT_CURSOR);
-//         }
-        
-        exptDbInfo = (ExptDbInfo) exptDB.getAllObjects(ExptDbInfo.class).get(0);
+//Test if this database predates nonlinear regression by testing the version number, which was inmplemented at the same time as NR
+        if (exptDbInfo.getVerionNumber() == 0) {//Version number == 0 signifies pre NR, i.e. pre 0.9
+            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_WAIT_CURSOR);
+            NonlinearRegressionUtilities.applyNonlinearRegression(exptDB);
+            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_DEFAULT_CURSOR);
+        }
         selectionParameters = (LreWindowSelectionParameters) exptDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
         fmaxNormalizeChkBox.setSelected(exptDbInfo.isTargetQuantityNormalizedToFmax());
         File dbFile = exptDB.getDatabaseFile();
@@ -170,12 +195,10 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
         ocf = exptDbInfo.getOcf();
         df.applyPattern(FormatingUtilities.decimalFormatPattern(ocf));
         ocfDisplay.setText(df.format(ocf));
-        //Calculate the average Run Fmax, which could reduce performance for larget databases
-        //This is clearly a lazy and dirty method
         //Retrieval all Runs from the database
         LreNode root;
         List<? extends Run> runList = (List<? extends Run>) exptDB.getAllObjects(Run.class);
-        if (!repView) {
+        if (!replicatProfileView) {
             root = new LreNode(new RunNodesWithAvSampleProfileChildren(mgr, exptDB, runList, nodeActionFactory,
                     runNodeLabelFactory), Lookups.singleton(exptDbInfo), new Action[]{});
         } else {
@@ -188,6 +211,18 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
         mgr.setRootContext(root);
 //        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_DEFAULT_CURSOR);
     }//End of create tree
+    
+    private void displayIncompatilityMessage(){
+        JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                        "The selected experiment database is incompatible\n"
+                        + " with this version of the LRE Analyzer.",
+                        "Unable to load database",
+                        JOptionPane.ERROR_MESSAGE);
+                AbstractNode root = new AbstractNode(Children.LEAF);
+                root.setName("No Expt DB is open");
+                mgr.setRootContext(root);
+                exptDB.closeDatabase();
+    }
 
     /**
      * Creates a tree displaying all AverageSampleProfiles generated by the
@@ -273,7 +308,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
         exptDB.commitChanges();
         createTree();
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -330,7 +365,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
+                .addGap(0, 1, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(ocfLabel)
                     .addComponent(ocfDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -377,8 +412,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
                         .addComponent(runViewButton)
                         .addComponent(repViewButton)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(beanTree, javax.swing.GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(beanTree, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -417,10 +451,10 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
 
     private void repViewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_repViewButtonActionPerformed
         if (repViewButton.isSelected()) {
-            repView = true;
+            replicatProfileView = true;
             createTree();
         } else {
-            repView = false;
+            replicatProfileView = false;
             createTree();
         }
     }//GEN-LAST:event_repViewButtonActionPerformed

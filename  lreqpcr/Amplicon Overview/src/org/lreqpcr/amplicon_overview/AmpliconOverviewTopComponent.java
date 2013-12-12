@@ -161,12 +161,14 @@ public final class AmpliconOverviewTopComponent extends TopComponent
             for (int i = 0; i < ampliconNameAverageProfileList.size(); i++) {
                 //Ignore the replicate profiles, i.e. this is based only on AverageSampleProfiles
                 Profile profile = (Profile) ampliconNameAverageProfileList.get(i);
+                AverageProfile avPrf = (AverageProfile) ampliconNameAverageProfileList.get(i);
                 //If the profile is exclucded, do not include it
                 if (!profile.isExcluded()
                         //Check if a profile is present i.e. not flat
-                        && profile.hasAnLreWindowBeenFound()) {
+                        && profile.hasAnLreWindowBeenFound()
+                        && avPrf.areTheRepProfilesSufficientlyClustered()) {
                     if (dbType == DatabaseType.EXPERIMENT) {
-                        AverageSampleProfile sampleProfile = (AverageSampleProfile) profile;
+                        AverageSampleProfile sampleProfile = (AverageSampleProfile) avPrf;
                         //Only includd AverageSampleProfiles with >10 molecules
                         if (!sampleProfile.isTheReplicateAverageNoLessThan10Molecules()) {
                             emaxArrayList.add(profile.getEmax());

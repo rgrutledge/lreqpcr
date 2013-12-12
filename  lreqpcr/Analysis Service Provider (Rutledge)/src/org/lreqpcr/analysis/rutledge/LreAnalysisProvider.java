@@ -112,30 +112,6 @@ public class LreAnalysisProvider implements LreAnalysisService {
         return prfSum.getProfile().didNonlinearRegressionSucceed();
     }
 
-    /**
-     * Note that the working Fc dataset must not be modified. 
-     * 
-     * @param prfSum
-     * @param parameters
-     * @return 
-     */
-    public boolean lreWindowSelectionUpdate(ProfileSummary prfSum, LreWindowSelectionParameters parameters) {
-        //A valid LRE window must be present
-        if (!prfSum.getProfile().hasAnLreWindowBeenFound()) {
-            return false;
-        }
-        //Determine if NR has been applied for back compatability
-        
-        //Determine if a new start cycle is required, else use the exsisting default start cycle
-        if (parameters.getMinFc() != 0) {
- //Resets the window start cycle based on minFc and also resets the window size to 3 cycles
-            LreWindowSelector.selectLreStartCycleUsingMinFc(prfSum, parameters.getMinFc());
-        }//Else, it is assumed that the exsisting start cycle will be used
-//Attempt to expand the LRE window using the exsisting working Fc dataset and without NR
-        LreWindowSelector.expandLreWindowWithoutNR(prfSum, parameters.getFoThreshold());
-        return prfSum.getProfile().hasAnLreWindowBeenFound();
-    }
-    
     public boolean lreWindowUpdateUsingNR(ProfileSummary prfSum, LreWindowSelectionParameters parameters) {
         nrAnalysis.lreWindowUpdateUsingNR(prfSum);
         return prfSum.getProfile().didNonlinearRegressionSucceed();
