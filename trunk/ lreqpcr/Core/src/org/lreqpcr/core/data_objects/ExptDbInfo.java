@@ -16,17 +16,18 @@
  */
 package org.lreqpcr.core.data_objects;
 
-import java.util.List;
-import org.lreqpcr.core.database_services.DatabaseServices;
-
 /**
  *
  * @author Bob Rutledge
  */
 public class ExptDbInfo extends DatabaseInfo {
 
-    private double ocf = 0;//The average OCF derived from the corresponding Calibration database
+    private double ocf;//The average OCF derived from the corresponding Calibration database
     private boolean isTargetQuantityNormalizedToFmax;
+
+    public ExptDbInfo() {
+        setVersionNumber(0.93);
+    }
 
     /**
      * This user-specified OCF used to determine target quantity over an entire
@@ -55,10 +56,22 @@ public class ExptDbInfo extends DatabaseInfo {
         this.ocf = ocf;
     }
 
+    /**
+     * Normalization to the Run's average Fmax corrects for well to well 
+     * differences in optical calibration.
+     * 
+     * @return whether the target quantity is adjusted to the Run's average Fmax 
+     */
     public boolean isTargetQuantityNormalizedToFmax() {
         return isTargetQuantityNormalizedToFmax;
     }
 
+    /**
+     * Normalization to the Run's average Fmax corrects for well to well 
+     * differences in optical calibration.
+     * 
+     * @param isTargetQuantityNormalizedToFmax 
+     */
     public void setIsTargetQuantityNormalizedToFmax(boolean isTargetQuantityNormalizedToFmax) {
         this.isTargetQuantityNormalizedToFmax = isTargetQuantityNormalizedToFmax;
     }

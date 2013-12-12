@@ -16,7 +16,6 @@
  */
 package org.lreqpcr.nonlinear_regression_services;
 
-import java.util.Map;
 import java.util.TreeMap;
 
 /**

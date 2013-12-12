@@ -36,7 +36,6 @@ import org.lreqpcr.core.ui_elements.SampleNode;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.core.utilities.UniversalLookupListener;
 import org.lreqpcr.data_export_services.DataExportServices;
-import org.lreqpcr.experiment_ui.components.ExptDbUpdate;
 import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.explorer.ExplorerManager;
@@ -74,7 +73,6 @@ public final class ExperimentTopComponent extends TopComponent
 
     public ExperimentTopComponent() {
         initComponents();
-        nrUpdateButton.setVisible(false);//Remove the NR update for public distribution
 //        setName(NbBundle.getMessage(ExperimentTopComponent.class, "CTL_ExperimentTopComponent"));
 //        setToolTipText(NbBundle.getMessage(ExperimentTopComponent.class, "HINT_ExperimentTopComponent"));
 //        setIcon(ImageUtilities.loadImage(ICON_PATH, true));
@@ -87,13 +85,11 @@ public final class ExperimentTopComponent extends TopComponent
         setName("Experiment DB");
         setToolTipText("Experiment DB Explorer");
         associateLookup(ExplorerUtils.createLookup(mgr, this.getActionMap()));
-        initServices();
         ampliconNodeResult = Utilities.actionsGlobalContext().lookupResult(AmpliconNode.class);
         ampliconNodeResult.allItems();
-        ampliconNodeResult.addLookupListener(this);
         sampleNodeResult = Utilities.actionsGlobalContext().lookupResult(SampleNode.class);
         sampleNodeResult.allItems();
-        sampleNodeResult.addLookupListener(this);
+        initServices();
         experimentDbTree.initTreeView(mgr, experimentDB);
     }
 
@@ -108,6 +104,8 @@ public final class ExperimentTopComponent extends TopComponent
         UniversalLookup.getDefault().addListner(PanelMessages.PROFILE_DELETED, this);
         UniversalLookup.getDefault().addListner(PanelMessages.SET_WAIT_CURSOR, this);
         UniversalLookup.getDefault().addListner(PanelMessages.SET_DEFAULT_CURSOR, this);
+        ampliconNodeResult.addLookupListener(this);
+        sampleNodeResult.addLookupListener(this);
     }
 
     private ArrayList<Run> getSelectedRuns() {
@@ -146,7 +144,6 @@ public final class ExperimentTopComponent extends TopComponent
         exportAverageProfileButton = new javax.swing.JButton();
         exportReplicateProfilesButton = new javax.swing.JButton();
         experimentDbTree = new org.lreqpcr.experiment_ui.components.ExperimentDbTree();
-        nrUpdateButton = new javax.swing.JButton();
 
         setMinimumSize(new java.awt.Dimension(430, 600));
         setPreferredSize(new java.awt.Dimension(430, 240));
@@ -225,13 +222,6 @@ public final class ExperimentTopComponent extends TopComponent
         experimentDbTree.setMinimumSize(new java.awt.Dimension(310, 170));
         experimentDbTree.setPreferredSize(new java.awt.Dimension(310, 170));
 
-        org.openide.awt.Mnemonics.setLocalizedText(nrUpdateButton, org.openide.util.NbBundle.getMessage(ExperimentTopComponent.class, "ExperimentTopComponent.nrUpdateButton.text")); // NOI18N
-        nrUpdateButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nrUpdateButtonActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -247,9 +237,7 @@ public final class ExperimentTopComponent extends TopComponent
                 .addComponent(closeDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(nrUpdateButton)
-                .addContainerGap(11, Short.MAX_VALUE))
+                .addContainerGap(106, Short.MAX_VALUE))
             .addComponent(experimentDbTree, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
@@ -266,10 +254,9 @@ public final class ExperimentTopComponent extends TopComponent
                             .addComponent(newDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(closeDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(openLastDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(openDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(nrUpdateButton))))
+                            .addComponent(openDBbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(experimentDbTree, javax.swing.GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE)
+                .addComponent(experimentDbTree, javax.swing.GroupLayout.DEFAULT_SIZE, 537, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -280,6 +267,10 @@ public final class ExperimentTopComponent extends TopComponent
             experimentDbTree.createTree();
             UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_DATABASE, experimentDB);
             UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_DATABASE);
+            if (!experimentDB.isDatabaseOpen()){
+                setCursor(defaultCursor);
+                return;//This occurs when attemptin to open an incompatable database version
+            }
             String dbFileName = experimentDB.getDatabaseFile().getName();
             int length = dbFileName.length();
             setDisplayName(dbFileName.substring(0, length - 4));
@@ -346,13 +337,6 @@ public final class ExperimentTopComponent extends TopComponent
         setCursor(defaultCursor);
     }//GEN-LAST:event_exportReplicateProfilesButtonActionPerformed
 
-    private void nrUpdateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nrUpdateButtonActionPerformed
-        setCursor(waitCursor);
-        ExptDbUpdate.nonlinearRegressionUpdate(experimentDB);
-        experimentDbTree.createTree();
-        setCursor(defaultCursor);
-    }//GEN-LAST:event_nrUpdateButtonActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton closeDBbutton;
     private org.lreqpcr.experiment_ui.components.ExperimentDbTree experimentDbTree;
@@ -360,7 +344,6 @@ public final class ExperimentTopComponent extends TopComponent
     private javax.swing.JButton exportReplicateProfilesButton;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JButton newDBbutton;
-    private javax.swing.JButton nrUpdateButton;
     private javax.swing.JButton openDBbutton;
     private javax.swing.JButton openLastDBbutton;
     // End of variables declaration//GEN-END:variables
