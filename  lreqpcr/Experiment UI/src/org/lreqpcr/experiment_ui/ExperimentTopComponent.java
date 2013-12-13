@@ -99,7 +99,8 @@ public final class ExperimentTopComponent extends TopComponent
         if (experimentDB != null) {
             UniversalLookup.getDefault().add(DatabaseType.EXPERIMENT, experimentDB);
         }
-        UniversalLookup.getDefault().addListner(PanelMessages.NEW_RUN_IMPORTED, this);
+        UniversalLookup.getDefault().addListner(PanelMessages.RUN_IMPORTED, this);
+        UniversalLookup.getDefault().addListner(PanelMessages.RUN_DELETED, this);
         UniversalLookup.getDefault().addListner(PanelMessages.UPDATE_EXPERIMENT_PANELS, this);
         UniversalLookup.getDefault().addListner(PanelMessages.PROFILE_DELETED, this);
         UniversalLookup.getDefault().addListner(PanelMessages.SET_WAIT_CURSOR, this);
@@ -462,7 +463,7 @@ public final class ExperimentTopComponent extends TopComponent
     }
 
     public void universalLookupChangeEvent(Object key) {
-        if (key == PanelMessages.NEW_RUN_IMPORTED) {
+        if (key == PanelMessages.RUN_IMPORTED) {
 //            setCursor(defaultCursor);
             experimentDbTree.createTree();
             Run newRun = (Run) UniversalLookup.getDefault().getAll(key).get(0);
@@ -471,15 +472,11 @@ public final class ExperimentTopComponent extends TopComponent
             LreNode newRunNode = (LreNode) children.findChild(newRun.getName());
             mgr.setExploredContext(newRunNode);
         }
-        if (key == PanelMessages.UPDATE_EXPERIMENT_PANELS) {
+        if (key == PanelMessages.UPDATE_EXPERIMENT_PANELS
+                || key == PanelMessages.NEW_DATABASE
+                || key == PanelMessages.PROFILE_DELETED
+                || key == PanelMessages.RUN_DELETED) {
             experimentDbTree.createTree();
-        }
-        if (key == PanelMessages.NEW_DATABASE) {
-            experimentDbTree.createTree();
-        }
-        if (key == PanelMessages.PROFILE_DELETED) {
-//            experimentDbTree.displayTotalNumberOfProfilesInTheDatabase();
-            experimentDbTree.createTree();//This allows profiles deleted from a sorted list to reset to Run View
         }
         if (key == PanelMessages.SET_WAIT_CURSOR){
             setCursor(waitCursor);

@@ -24,7 +24,6 @@ import java.util.List;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import org.lreqpcr.calibration_ui.UpdateCalbrationDatabase;
 import org.lreqpcr.calibration_ui.actions.CalbnTreeNodeActions;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageProfile;
@@ -91,23 +90,31 @@ public class CalbnTree extends JPanel {
         }
         List<CalibrationDbInfo> infoDbList = (List<CalibrationDbInfo>) calbnDB.getAllObjects(CalibrationDbInfo.class);
         if (infoDbList.isEmpty()) {
-                JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
-                        "The selected calibration database is incompatible\n"
-                        + " with this version of the LRE Analyzer.",
-                        "Unable to load this calibration database",
-                        JOptionPane.ERROR_MESSAGE);
-                AbstractNode root = new AbstractNode(Children.LEAF);
-                root.setName("No CalbnDB is open");
-                mgr.setRootContext(root);
-                avProfileOCFdisplay.setText("");
-                calbnDB.closeDatabase();
-                return;
-            }
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                    "The selected calibration database is incompatible\n"
+                    + " with this version of the LRE Analyzer.",
+                    "Unable to load this calibration database",
+                    JOptionPane.ERROR_MESSAGE);
+            AbstractNode root = new AbstractNode(Children.LEAF);
+            root.setName("No CalbnDB is open");
+            mgr.setRootContext(root);
+            avProfileOCFdisplay.setText("");
+            calbnDB.closeDatabase();
+            return;
+        }
         calDbInfo = infoDbList.get(0);
-        if (calDbInfo.getVerionNumber() == 0){//Version number == 0 signifies pre 0.9.3
-             UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_WAIT_CURSOR);
-             NonlinearRegressionUtilities.applyNonlinearRegression(calbnDB);
-             UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_DEFAULT_CURSOR);
+        if (calDbInfo.getVerionNumber() == 0) {//Version number == 0 signifies pre 0.9.3
+            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_WAIT_CURSOR);
+            //Convert to the new version
+            CalibrationDbInfo newCalDbInfo = new CalibrationDbInfo();
+            //Copy all values into the newDbInfo
+            newCalDbInfo.setAvRunFmax(calDbInfo.getAvRunFmax());
+            newCalDbInfo.setAvRunFmaxCV(calDbInfo.getAvRunFmaxCV());
+            newCalDbInfo.setIsOcfNormalizedToFmax(calDbInfo.isOcfNormalizedToFmax());
+            calbnDB.saveObject(newCalDbInfo);
+            calbnDB.deleteObject(calDbInfo);
+            NonlinearRegressionUtilities.applyNonlinearRegression(calbnDB);
+            UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_DEFAULT_CURSOR);
         }
         fmaxNrmzBox.setSelected(calDbInfo.isOcfNormalizedToFmax());
         List<CalibrationRun> runList = (List<CalibrationRun>) calbnDB.getAllObjects(CalibrationRun.class);
@@ -291,34 +298,34 @@ public class CalbnTree extends JPanel {
     }//GEN-LAST:event_runViewButtonActionPerformed
     @SuppressWarnings("unchecked")
     private void fmaxNrmzBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fmaxNrmzBoxActionPerformed
-    boolean arg = fmaxNrmzBox.isSelected();
-    if (!calbnDB.isDatabaseOpen()) {
-        fmaxNrmzBox.setSelected(false);
-        return;
-    }
-    //Note that this is applied to all profiles in the database
-    List<CalibrationRun> runList = calbnDB.getAllObjects(CalibrationRun.class);
-    for (CalibrationRun run : runList) {
-        for (AverageProfile avPrf : run.getAverageProfileList()) {
-            AverageCalibrationProfile avCalPrf = (AverageCalibrationProfile) avPrf;
-            avCalPrf.setIsOcfNormalizedToFmax(arg);
-            calbnDB.saveObject(avCalPrf);
-            run.calculateAverageOCF();
-            calbnDB.saveObject(run);
-            for (CalibrationProfile prf : avCalPrf.getReplicateProfileList()) {
-                prf.setIsOcfNormalizedToFmax(arg);
-                //There is no need to reinitiaze the profiles because 
-                //normalization DOES NOT CHANGE the Fo
-                calbnDB.saveObject(prf);
-            }
+        boolean arg = fmaxNrmzBox.isSelected();
+        if (!calbnDB.isDatabaseOpen()) {
+            fmaxNrmzBox.setSelected(false);
+            return;
         }
-    }//End of Run for loop
-    calDbInfo.setIsOcfNormalizedToFmax(arg);
-    calbnDB.saveObject(calDbInfo);
-    calbnDB.commitChanges();
-    calcAverageOCF();
-    createTree();
-    UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_CALIBRATION_PANELS);
+        //Note that this is applied to all profiles in the database
+        List<CalibrationRun> runList = calbnDB.getAllObjects(CalibrationRun.class);
+        for (CalibrationRun run : runList) {
+            for (AverageProfile avPrf : run.getAverageProfileList()) {
+                AverageCalibrationProfile avCalPrf = (AverageCalibrationProfile) avPrf;
+                avCalPrf.setIsOcfNormalizedToFmax(arg);
+                calbnDB.saveObject(avCalPrf);
+                run.calculateAverageOCF();
+                calbnDB.saveObject(run);
+                for (CalibrationProfile prf : avCalPrf.getReplicateProfileList()) {
+                    prf.setIsOcfNormalizedToFmax(arg);
+                    //There is no need to reinitiaze the profiles because 
+                    //normalization DOES NOT CHANGE the Fo
+                    calbnDB.saveObject(prf);
+                }
+            }
+        }//End of Run for loop
+        calDbInfo.setIsOcfNormalizedToFmax(arg);
+        calbnDB.saveObject(calDbInfo);
+        calbnDB.commitChanges();
+        calcAverageOCF();
+        createTree();
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_CALIBRATION_PANELS);
     }//GEN-LAST:event_fmaxNrmzBoxActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField avProfileOCFdisplay;

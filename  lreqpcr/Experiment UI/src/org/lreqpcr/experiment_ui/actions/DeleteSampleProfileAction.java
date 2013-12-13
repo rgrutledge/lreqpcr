@@ -39,7 +39,6 @@ import org.openide.windows.WindowManager;
 
 /**
  * Deletes the selected SampleProfiles
- * NOT IMPLEMETED***********************************************
  *
  * @author Bob Rutledge
  */

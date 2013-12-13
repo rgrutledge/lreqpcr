@@ -99,6 +99,6 @@ class IncludeCalibrationProfileAction extends AbstractAction {
             parentChildren.addNotify();
         }
         db.commitChanges();
-        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_EXCLUDED);
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_INCLUDED);
     }
 }
