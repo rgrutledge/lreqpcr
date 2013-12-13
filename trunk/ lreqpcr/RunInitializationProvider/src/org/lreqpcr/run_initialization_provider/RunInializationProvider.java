@@ -192,9 +192,9 @@ public class RunInializationProvider implements RunInitializationService {
                     experimentDB.saveObject(sampleRun);
                     experimentDB.commitChanges();
                     //This allows access to the newly imported Run
-                    UniversalLookup.getDefault().addSingleton(PanelMessages.NEW_RUN_IMPORTED, sampleRun);
+                    UniversalLookup.getDefault().addSingleton(PanelMessages.RUN_IMPORTED, sampleRun);
                     //Broadcast that a new Run has been added to the Experiment database
-                    UniversalLookup.getDefault().fireChangeEvent(PanelMessages.NEW_RUN_IMPORTED);
+                    UniversalLookup.getDefault().fireChangeEvent(PanelMessages.RUN_IMPORTED);
                 }
             }
         }//End of sample profile processing

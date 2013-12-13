@@ -89,7 +89,7 @@ public final class SampleOverviewTopComponent extends TopComponent
         WindowManager.getDefault().getRegistry().addPropertyChangeListener(this);
         UniversalLookup.getDefault().addListner(PanelMessages.RUN_VIEW_SELECTED, this);
         UniversalLookup.getDefault().addListner(PanelMessages.NEW_DATABASE, this);
-        UniversalLookup.getDefault().addListner(PanelMessages.NEW_RUN_IMPORTED, this);
+        UniversalLookup.getDefault().addListner(PanelMessages.RUN_IMPORTED, this);
         UniversalLookup.getDefault().addListner(PanelMessages.PROFILE_DELETED, this);
     }
 
@@ -462,7 +462,7 @@ public final class SampleOverviewTopComponent extends TopComponent
                 return;
             }
         }
-        if (key == PanelMessages.PROFILE_DELETED || key == PanelMessages.NEW_RUN_IMPORTED) {//Profile deleted or a new Run has been imported
+        if (key == PanelMessages.PROFILE_DELETED || key == PanelMessages.RUN_IMPORTED) {//Profile deleted or a new Run has been imported
             createTree();//Not sure if this will be slow when large numbers of profiles are present in the database
         }
     }
