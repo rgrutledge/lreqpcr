@@ -58,6 +58,7 @@ public class SampleTreeNodeLabels implements LabelFactory {
                 run.setShortDescription("Run-specific OCF = " + rso);
             }
             if (run.getAvFmaxCV() != 0) {
+                df.applyPattern("0.0");
                 String cv = df.format(run.getAvFmaxCV() * 100);
                 return RSO + sdf.format(run.getRunDate()) + "-" + member.getName() + "  [Av Fmax: " + avFmaxString + " ±" + cv + "%]";
             } else {

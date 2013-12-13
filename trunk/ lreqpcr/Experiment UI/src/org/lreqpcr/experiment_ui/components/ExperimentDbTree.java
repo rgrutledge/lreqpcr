@@ -160,29 +160,40 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
                 //Determine if this database predates Run average Fmax
                 List list2 = exptDB.getAllObjects(Profile.class);
                 Profile prf = (Profile) list2.get(0);
-                if(prf.getRun() == null){
+                if (prf.getRun() == null) {
                     displayIncompatilityMessage();
                     return;
                 }
                 ExperimentDbInfo oldDbInfo = (ExperimentDbInfo) exptDB.getAllObjects(ExperimentDbInfo.class).get(0);
                 exptDbInfo = new ExptDbInfo();
-                //Signify that NR has not been applied
-                exptDbInfo.setVersionNumber(0);
                 //Copy all values into the newDbInfo
                 exptDbInfo.setOcf(oldDbInfo.getOcf());
                 exptDbInfo.setIsTargetQuantityNormalizedToFmax(oldDbInfo.isTargetQuantityNormalizedToFax());
                 exptDB.saveObject(exptDbInfo);
                 exptDB.deleteObject(oldDbInfo);
+                //Need to conduct NR
+                UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_WAIT_CURSOR);
+                NonlinearRegressionUtilities.applyNonlinearRegression(exptDB);
+                UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_DEFAULT_CURSOR);
             } else {
                 displayIncompatilityMessage();
                 return;
             }
-        } else {//A new ExptDbInfo is present so set it. 
+        } else {//An ExptDbInfo is present so set it. 
             exptDbInfo = (ExptDbInfo) l.get(0);
         }
 //Test if this database predates nonlinear regression by testing the version number, which was inmplemented at the same time as NR
         if (exptDbInfo.getVerionNumber() == 0) {//Version number == 0 signifies pre NR, i.e. pre 0.9
             UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_WAIT_CURSOR);
+            //Convert to the new version
+            ExptDbInfo newExptDbInfo = new ExptDbInfo();
+            //Copy all values into the newDbInfo
+            newExptDbInfo.setAvRunFmax(exptDbInfo.getAvRunFmax());
+            newExptDbInfo.setAvRunFmaxCV(exptDbInfo.getAvRunFmaxCV());
+            newExptDbInfo.setOcf(exptDbInfo.getOcf());
+            newExptDbInfo.setIsTargetQuantityNormalizedToFmax(exptDbInfo.isTargetQuantityNormalizedToFmax());
+            exptDB.saveObject(newExptDbInfo);
+            exptDB.deleteObject(exptDbInfo);
             NonlinearRegressionUtilities.applyNonlinearRegression(exptDB);
             UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_DEFAULT_CURSOR);
         }
@@ -211,17 +222,20 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
         mgr.setRootContext(root);
 //        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_DEFAULT_CURSOR);
     }//End of create tree
-    
-    private void displayIncompatilityMessage(){
+
+    private void convertToCurrentVersion() {
+    }
+
+    private void displayIncompatilityMessage() {
         JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
-                        "The selected experiment database is incompatible\n"
-                        + " with this version of the LRE Analyzer.",
-                        "Unable to load database",
-                        JOptionPane.ERROR_MESSAGE);
-                AbstractNode root = new AbstractNode(Children.LEAF);
-                root.setName("No Expt DB is open");
-                mgr.setRootContext(root);
-                exptDB.closeDatabase();
+                "The selected experiment database is incompatible\n"
+                + " with this version of the LRE Analyzer.",
+                "Unable to load database",
+                JOptionPane.ERROR_MESSAGE);
+        AbstractNode root = new AbstractNode(Children.LEAF);
+        root.setName("No Expt DB is open");
+        mgr.setRootContext(root);
+        exptDB.closeDatabase();
     }
 
     /**
@@ -270,8 +284,6 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
 
     @SuppressWarnings(value = "unchecked")
     private void resetToNewOcf() {
-//        setWaitCursor();
-//        getCursor()
         if (!exptDB.isDatabaseOpen()) {
             return;
         }

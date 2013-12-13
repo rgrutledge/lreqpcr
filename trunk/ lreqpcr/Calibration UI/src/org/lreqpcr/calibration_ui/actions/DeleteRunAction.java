@@ -84,5 +84,6 @@ public class DeleteRunAction extends AbstractAction {
         children.setLreObjectList((List<? extends LreObject>) db.getAllObjects(RunImpl.class));
         children.addNotify();
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_CALIBRATION_PANELS);
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.RUN_DELETED);
     }
 }

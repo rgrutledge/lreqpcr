@@ -22,7 +22,6 @@ import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.DatabaseInfo;
-import org.lreqpcr.core.data_objects.ExptDbInfo;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_processing.ProfileSummary;
@@ -65,11 +64,6 @@ public class NonlinearRegressionUtilities {
         LreWindowSelectionParameters selectionParameters = l.get(0);
         //Check to see if the DatabaseInfo has the current version number
         List info = profileDb.getAllObjects(DatabaseInfo.class);
-        DatabaseInfo dbInfo = (DatabaseInfo) info.get(0);
-        if (dbInfo.getVerionNumber() == 0) {
-            dbInfo.setVersionNumber(0.93);
-            profileDb.saveObject(dbInfo);
-        }
         LreAnalysisService lreAnalysisService =
                 Lookup.getDefault().lookup(LreAnalysisService.class);
         List<AverageProfile> profileList;
@@ -99,12 +93,4 @@ public class NonlinearRegressionUtilities {
         }
         profileDb.commitChanges();
     }
-//    private static ExptDbInfo updateExptDbInfo(ExptDbInfo oldDbInfo) {
-//        ExptDbInfo newDbInfo = new ExptDbInfo();
-//        newDbInfo.setAvRunFmax(oldDbInfo.getAvRunFmax());
-//        newDbInfo.setAvRunFmaxCV(oldDbInfo.getAvRunFmaxCV());
-//        newDbInfo.setIsTargetQuantityNormalizedToFmax(oldDbInfo.isTargetQuantityNormalizedToFmax());
-//        newDbInfo.setOcf(oldDbInfo.getOcf());
-//        return newDbInfo;
-//    }
 }
