@@ -26,7 +26,7 @@ public class ExptDbInfo extends DatabaseInfo {
     private boolean isTargetQuantityNormalizedToFmax;
 
     public ExptDbInfo() {
-        setVersionNumber(0.93);
+        super();
     }
 
     /**

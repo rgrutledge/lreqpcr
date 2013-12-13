@@ -25,18 +25,12 @@ package org.lreqpcr.core.data_objects;
 public abstract class DatabaseInfo extends LreObject {
     private  double versionNumber;//e.g. 0.93 == 0.9.3
     private double avRunFmax;//The average Fmax derived by averageing the Run Fmax average across all of the Runs in the database
-    private double avRunFmaxCV;//The CV for the average Fmax values derived from multiple Runs
-    //    private boolean isTargetQuantityNormalizedToFmax;
-    
-    /**
-     * Program version number with the last period removed (e.g. 0.93 == 0.9.3)
-     * 
-     * @param versionNumber the version number with the last period removed
-     * @since version 0.9.3
-     */
-    public void setVersionNumber(double versionNumber) {
-        this.versionNumber = versionNumber;
+    private double avRunFmaxCV;//The CV for the average Fmax values derived from multiple Runs    
+
+    public DatabaseInfo() {
+       versionNumber = 0.93;
     }
+
     
     /**
      * Program version number with the last period removed (e.g. 0.93 == 0.9.3)
