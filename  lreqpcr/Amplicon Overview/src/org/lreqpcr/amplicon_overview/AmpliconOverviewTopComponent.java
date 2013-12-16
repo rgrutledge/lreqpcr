@@ -159,7 +159,7 @@ public final class AmpliconOverviewTopComponent extends TopComponent
             List ampliconNameAverageProfileList = currentDB.retrieveUsingFieldValue(AverageProfile.class, "ampliconName", ampName);
             //Compile a list of all Emax values
             ArrayList<Double> emaxArrayList = new ArrayList<Double>();
-            //Generate an average and CV for this Emax values in this list
+            //Generate an Emax average and CV for this list
             double emaxTotal = 0;
             for (int i = 0; i < ampliconNameAverageProfileList.size(); i++) {
                 //Ignore the replicate profiles, i.e. this is based only on AverageSampleProfiles
@@ -309,7 +309,6 @@ public final class AmpliconOverviewTopComponent extends TopComponent
         exportProfilePanel = new javax.swing.JPanel();
         exportAvProfileButton = new javax.swing.JButton();
         exportRepPrfsButton = new javax.swing.JButton();
-        resetTreeButton = new javax.swing.JButton();
 
         exportProfilePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(AmpliconOverviewTopComponent.class, "AmpliconOverviewTopComponent.exportProfilePanel.border.title"))); // NOI18N
 
@@ -348,13 +347,6 @@ public final class AmpliconOverviewTopComponent extends TopComponent
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        org.openide.awt.Mnemonics.setLocalizedText(resetTreeButton, org.openide.util.NbBundle.getMessage(AmpliconOverviewTopComponent.class, "AmpliconOverviewTopComponent.resetTreeButton.text")); // NOI18N
-        resetTreeButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                resetTreeButtonActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -364,19 +356,14 @@ public final class AmpliconOverviewTopComponent extends TopComponent
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(ampliconTree, javax.swing.GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(resetTreeButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(exportProfilePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(exportProfilePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(resetTreeButton)))
+                .addComponent(exportProfilePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(ampliconTree, javax.swing.GroupLayout.DEFAULT_SIZE, 789, Short.MAX_VALUE)
                 .addContainerGap())
@@ -421,15 +408,11 @@ public final class AmpliconOverviewTopComponent extends TopComponent
         }
     }//GEN-LAST:event_exportRepPrfsButtonActionPerformed
 
-    private void resetTreeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetTreeButtonActionPerformed
-        createTree();
-    }//GEN-LAST:event_resetTreeButtonActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane ampliconTree;
     private javax.swing.JButton exportAvProfileButton;
     private javax.swing.JPanel exportProfilePanel;
     private javax.swing.JButton exportRepPrfsButton;
-    private javax.swing.JButton resetTreeButton;
     // End of variables declaration//GEN-END:variables
 
     /**

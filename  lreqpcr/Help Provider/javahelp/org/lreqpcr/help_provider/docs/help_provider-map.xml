@@ -18,6 +18,9 @@ and open the template in the editor.
 <!DOCTYPE map PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp Map Version 2.0//EN" "http://java.sun.com/products/javahelp/map_2_0.dtd">
 <map version="2.0">
     <mapID target="About LRE Analyzer" url="about_lre_analyzer.html"/>
+<!--Acknowledgments      -->
+    <mapID target="acknowledgements" url="acknowledgements.html"/>
+<!--</mapID <>-->
 <!--Amplicon database    -->
     <mapID target="amplicon-overview" url="amplicon/amplicon_overview.html"/>
     <mapID target="amplicon-editing" url="amplicon/amplicon_editing.html"/>
