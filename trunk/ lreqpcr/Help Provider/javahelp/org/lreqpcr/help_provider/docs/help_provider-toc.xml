@@ -99,7 +99,8 @@ and open the template in the editor.
         
             <!--<tocitem text="Uninstalling the Program" target="uninstalling"/>-->
             <!--        <tocitem text="Revision Overview" target="revision-overview"/>-->
-            <tocitem text="Literature" target="lre-literature"/>
             <tocitem text="Glossary" target="glossary"/>
+            <tocitem text="Literature" target="lre-literature"/>
+            <tocitem text="Acknowledgements" target="acknowledgements"
         </tocitem>
 </toc>
