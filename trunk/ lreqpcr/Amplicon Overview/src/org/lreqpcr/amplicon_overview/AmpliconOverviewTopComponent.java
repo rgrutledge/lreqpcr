@@ -82,7 +82,7 @@ public final class AmpliconOverviewTopComponent extends TopComponent
         putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.FALSE);
-        setName("Sorted by Amplicon");
+        setName("Sort by Amplicon");
         associateLookup(ExplorerUtils.createLookup(mgr, this.getActionMap()));
         iniServices();
     }
