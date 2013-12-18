@@ -83,7 +83,7 @@ public final class SampleOverviewTopComponent extends TopComponent
         putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.FALSE);
 
-        setName("Sorted by Sample");
+        setName("Sort by Sample");
         associateLookup(ExplorerUtils.createLookup(mgr, this.getActionMap()));
         //Listens to changes in TC window selection
         WindowManager.getDefault().getRegistry().addPropertyChangeListener(this);
