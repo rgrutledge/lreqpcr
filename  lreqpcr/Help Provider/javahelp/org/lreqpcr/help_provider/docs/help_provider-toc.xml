@@ -84,7 +84,7 @@ and open the template in the editor.
             <tocitem text="Developing Performance Benchmarks" target="developing-performance-benchmarks"/>
             <tocitem text="Monitoring Assay Performance" target="monitoring-assay-performance"/>
             <tocitem text="Optical Precision" target="optical-precision-overview"/>
-            <tocitem text=">10 Molecule Problem" target="less-than-10molecules"/>
+            <tocitem text="<10 Molecule Problem" target="less-than-10molecules"/>
             <tocitem text="Replicate Profile Scattering" target="profile-scattering"/>
             <tocitem text="Assessing Quantitative Accuracy" target="assessing-accuracy"/>
             <tocitem text="LDA Overview" target="lda-overview"/>
