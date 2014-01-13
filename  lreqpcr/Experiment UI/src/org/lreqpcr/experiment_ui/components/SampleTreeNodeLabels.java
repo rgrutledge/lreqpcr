@@ -85,24 +85,24 @@ public class SampleTreeNodeLabels implements LabelFactory {
 
             if (profile instanceof AverageSampleProfile) {
                 AverageSampleProfile avPrf = (AverageSampleProfile) profile;
-                if (!(avPrf.getOCF() > 0)){
+                if (!(avPrf.getOCF() > 0)) {
                     //The averge profile cannot be initialized...so there is no Emax or No values
                     profile.setShortDescription("Invalid Average Profile: OCF has not been entered");
                     return profileName + "  <No OCF>";
                 }
                 if (avPrf.getAmpliconSize() == 0) {
-                profile.setShortDescription("Invalid Average Profile: an amplicon size is unknown");
-                return profileName + "n.d.<Amplicon Size Unknown> ";
-            }
+                    profile.setShortDescription("Invalid Average Profile: an amplicon size is unknown");
+                    return profileName + "n.d.<Amplicon Size Unknown> ";
+                }
                 //This assumes that excluded profiles would not reach to this point
                 if (avPrf.isTheReplicateAverageNoLessThan10Molecules()) {
-    //This average profile is invalid, so No is inherented from the average replicate No
+                    //This average profile is invalid, so No is inherented from the average replicate No
                     df.applyPattern("0.00");
                     profile.setShortDescription("Invalid Average Profile: replicate profile average is less than 10 molecules");
                     double no = avPrf.getReplicatePrfAvNo();
                     return profileName + "  <10N  [avRep= " + df.format(no) + "]";
                 }
-                if (!avPrf.areTheRepProfilesSufficientlyClustered()){
+                if (!avPrf.areTheRepProfilesSufficientlyClustered()) {
                     df.applyPattern("0.00");
                     profile.setShortDescription("Invlaid Average Profile: replicate profiles are too scattered");
                     double no = avPrf.getReplicatePrfAvNo();
@@ -112,10 +112,8 @@ public class SampleTreeNodeLabels implements LabelFactory {
             }
             String emax;
             String no;
-            String wellLabel;
-            if (profile instanceof AverageProfile) {
-                wellLabel = "";
-            } else {//Must be a replicate SampleProfile
+            String wellLabel = "";
+            if (profile.getWellLabel() != null && !(profile instanceof AverageSampleProfile)) {
                 wellLabel = profile.getWellLabel() + ": ";
             }
             //Determine what to display for Emax

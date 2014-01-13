@@ -132,9 +132,7 @@ public class RunInializationProvider implements RunInitializationService {
         LreAnalysisService lreAnalysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
 
 //Process the SampleProfiles if an Experiment database is open
-        // TOD ************************ why would the list be null????
         if (sampleProfileList != null) {
-//******************************BUT should not the DataImportType not deal with this????
             if (!sampleProfileList.isEmpty()) {//A manual Calibration Profile import type does not have an empty SampleProfile list
                 if (experimentDB.isDatabaseOpen()) {//******Again has this not been check already at the beginning of the function???
                     sampleRun = new RunImpl();//This is the Run object that will hold the sample profiles
