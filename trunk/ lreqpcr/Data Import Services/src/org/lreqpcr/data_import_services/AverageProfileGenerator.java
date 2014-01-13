@@ -176,7 +176,7 @@ public class AverageProfileGenerator {
             avCalbnProfile.setRun(parentRun);//This also sets the Run data and the parent to this run
             avCalbnProfile.setRunDate(parentRun.getRunDate());
             CalibrationProfile firstCalibrationProfile = calibrationProfileList.get(0);
-//LamdaMass is required for initializing mo and must be converted back to pg as it is stored as ng in CalibrationProfile
+//LamdaMass is required for initializing mo and must be converted back to fg as it is stored as ng in CalibrationProfile
             avCalbnProfile.setLambdaMass(firstCalibrationProfile.getLambdaMass() * 1000000);
             //This initializes mo and OCF
             avCalbnProfile.setAmpliconSize(firstCalibrationProfile.getAmpliconSize());

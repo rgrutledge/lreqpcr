@@ -24,6 +24,7 @@ import org.openide.util.Exceptions;
 
 public final class CalibrationProfileImportTemplateAction implements ActionListener {
 
+    @Override
     public void actionPerformed(ActionEvent e) {
         try {
             ManualCalibrationProfileImport.createCalbnProfileTemplate();

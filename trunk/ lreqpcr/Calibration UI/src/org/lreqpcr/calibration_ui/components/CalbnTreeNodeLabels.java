@@ -72,10 +72,8 @@ public class CalbnTreeNodeLabels implements LabelFactory {
         }
         //Determine what to display for Emax
         String emax;
-        String wellLabel;
-        if (calbrnProfile instanceof AverageProfile){
-            wellLabel = "";
-        }else{//Must be a CalibrationProfile replicate
+        String wellLabel = "";
+        if (!(calbrnProfile instanceof AverageProfile) && calbrnProfile.getWellLabel() != null) {
             wellLabel = calbrnProfile.getWellLabel() + ": ";
         }
         if (!calbrnProfile.hasAnLreWindowBeenFound()) {

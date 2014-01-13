@@ -1,17 +1,16 @@
 /**
- * Copyright (C) 2013   Bob Rutledge
+ * Copyright (C) 2013 Bob Rutledge
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details. You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>
  * and open the template in the editor.
  */
 package org.lreqpcr.ab7500ver2import;
@@ -74,7 +73,7 @@ public class AB7500Ver2ImportProvider extends RunImportService {
         Sheet ampDataSheet = null;
         resultSheet = workbook.getSheet("Results");
         ampDataSheet = workbook.getSheet("Amplification Data");
-        if (resultSheet == null || ampDataSheet == null){
+        if (resultSheet == null || ampDataSheet == null) {
             String msg = "Either the \"Results\" or \"Amplification Data\" "
                     + "worksheet was not present or has been renamed.\n"
                     + "Data import will be terminated.";
@@ -275,23 +274,20 @@ public class AB7500Ver2ImportProvider extends RunImportService {
                     profile.setRawFcReadings(fcArray);
                 }
 
-                //This is necessary to eliminate empty Fc datasets
-//                if (profile.getRawFcReadings() != null) {
-                    if (CalibrationProfile.class.isAssignableFrom(profile.getClass())) {
-                        CalibrationProfile calProfile = (CalibrationProfile) profile;
-                        calbnProfileList.add(calProfile);
-                    } else {
-                        SampleProfile sampleProfile = (SampleProfile) profile;
-                        sampleProfileList.add(sampleProfile);
-                    }
-//                }
-            }//End of If not blank
-                    try {
-                        resultRow++;
-                        resultSheet.getCell(0, resultRow).getContents();
-                    } catch (Exception e) {
-                        reachedTheBottom = true;
-                    }
+                if (CalibrationProfile.class.isAssignableFrom(profile.getClass())) {
+                    CalibrationProfile calProfile = (CalibrationProfile) profile;
+                    calbnProfileList.add(calProfile);
+                } else {
+                    SampleProfile sampleProfile = (SampleProfile) profile;
+                    sampleProfileList.add(sampleProfile);
+                }
+            }
+            try {
+                resultRow++;
+                resultSheet.getCell(0, resultRow).getContents();
+            } catch (Exception e) {
+                reachedTheBottom = true;
+            }
         }//End of While
 
         RunImportData importData = new RunImportData(DataImportType.STANDARD, runDate, runName);

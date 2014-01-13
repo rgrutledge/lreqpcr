@@ -35,7 +35,6 @@ public class CalibrationProfile extends Profile {
     private double lambdaMass;//The mass of the lamdba gDNA in nanograms
     private double mo;//Mo calculated from the lambdaMass
     private double ocf;//OCF calculated using the LRE-derived Emax
-    private double ocfEmax100;//OCF calculated using Emax fixed to 100%
     private double ocfCF = 0;//OCF calculated using the curve fitting Fo
     private boolean isOcfNormalizedToFmax;//Normalize the OCF to the Run's average Fmax
 
@@ -61,10 +60,10 @@ public class CalibrationProfile extends Profile {
 
     /**
      * Sets the quantity of the lambda standard that was amplified. Note that it
-     * is imperative that the provided mass is expressed in picograms of lambda
+     * is imperative that the provided mass is expressed in femtograms of lambda
      * genomic DNA.
      *
-     * @param lambdaMass picograms of lambda gDNA used to generate this
+     * @param lambdaMass femtograms of lambda gDNA used to generate this
      * calibration profile
      */
     public void setLambdaMass(double lambdaMass) {
