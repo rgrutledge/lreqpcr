@@ -68,6 +68,8 @@ public class CalibrationProfile extends Profile {
      */
     public void setLambdaMass(double lambdaMass) {
         this.lambdaMass = lambdaMass / 1000000;//converted to nanograms
+        mo = (lambdaMass * getAmpliconSize()) / 48502;//Mo for OCF determination expressed in nanograms
+        updateCalibrationProfile();
     }
 
 //Override all setters for all paramaters that change No values in order to recalculate

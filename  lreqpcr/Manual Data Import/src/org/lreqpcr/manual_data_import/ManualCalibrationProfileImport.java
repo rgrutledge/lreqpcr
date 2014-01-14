@@ -90,41 +90,40 @@ public class ManualCalibrationProfileImport extends RunImportService {
             centerUnderline.setBorder(Border.BOTTOM, BorderLineStyle.DOUBLE, Colour.BLACK);
             //Construct the sheet
             WritableSheet sheet = workbook.createSheet("LRE Calibration Template", 0);
-            Label label = new Label(1, 0, "Run Date, Amplicon Name, Amplicon Size and fg lambda must be provided for each Fc dataset ");
+            Label label = new Label(4, 0, "Note that Run Date, Amplicon Name, Amplicon Size and fg lambda must be provided for each Fc dataset.");
             sheet.addCell(label);
-            label = new Label(1, 1, "Run Date:", boldRight);
+            label = new Label(4, 1, "Run Name, Well Label and Amplicon Tm are optional.");
             sheet.addCell(label);
-            label = new Label(1, 2, "Amplicon Name:", boldRight);
+            label = new Label(1, 0, "Run Date:", boldRight);
             sheet.addCell(label);
-            label = new Label(1, 3, "Amplicon Size:", boldRight);
+            label = new Label(1, 1, "Run Name (optnl):", boldRight);
             sheet.addCell(label);
-            label = new Label(1, 4, "Lambda gDNA (fg):", boldRight);
+            label = new Label(1, 2, "Well Label (optnl):", boldRight);
             sheet.addCell(label);
-            label = new Label(1, 5, "Cycle", centerUnderline);
+            label = new Label(1, 3, "Amplicon Name:", boldRight);
             sheet.addCell(label);
-            label = new Label(2, 5, "Fc", centerUnderline);
+            label = new Label(1, 4, "Amplicon Size:", boldRight);
             sheet.addCell(label);
-            label = new Label(3, 5, "Fc", centerUnderline);
+            label = new Label(1, 5, "Lambda gDNA (fg):", boldRight);
             sheet.addCell(label);
-            label = new Label(4, 5, "Fc", centerUnderline);
+            label = new Label(1, 6, "Amplicon Tm(optnl):", boldRight);
             sheet.addCell(label);
-            label = new Label(5, 5, "etc.", centerUnderline);
-            sheet.addCell(label);
-            label = new Label(1, 6, "1", center);
-            sheet.addCell(label);
-            label = new Label(1, 7, "2", center);
-            sheet.addCell(label);
-            label = new Label(1, 8, "3", center);
-            sheet.addCell(label);
-            label = new Label(1, 9, "etc.", center);
+            label = new Label(1, 7, "Cycle", centerUnderline);
             sheet.addCell(label);
             Date now = Calendar.getInstance().getTime();
             DateFormat customDateFormat = new DateFormat("ddMMMyy");
             WritableCellFormat dateFormat = new WritableCellFormat(customDateFormat);
             dateFormat.setAlignment(Alignment.CENTRE);
-            DateTime dateCell = new DateTime(2, 1, now, dateFormat);
+            DateTime dateCell = new DateTime(2, 0, now, dateFormat);
             sheet.addCell(dateCell);
-            //That's it!!!!!
+            for (int i = 1; i < 183; i++) {
+                label = new Label(i + 1, 7, "", centerUnderline);
+                sheet.addCell(label);
+            }
+            for (int i = 1; i < 71; i++) {
+                label = new Label(1, i + 7, String.valueOf(i), center);
+                sheet.addCell(label);
+            }
             workbook.write();
             workbook.close();
 
@@ -133,8 +132,6 @@ public class ManualCalibrationProfileImport extends RunImportService {
                 desktop = Desktop.getDesktop();
                 desktop.open(selectedFile);
             }
-        } else {
-            //TODO present an error dialog
         }
     }
 
@@ -152,7 +149,8 @@ public class ManualCalibrationProfileImport extends RunImportService {
             if (!calbnDB.isDatabaseOpen()) {
                 String msg = "A Calibration database is not open. \n"
                         + "Data import will be terminated.";
-                JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Calibration database not open",
+                JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                        msg, "Calibration database not open",
                         JOptionPane.ERROR_MESSAGE);
                 return null;
             }
@@ -162,7 +160,8 @@ public class ManualCalibrationProfileImport extends RunImportService {
         if (excelImportFile == null) {
             Toolkit.getDefaultToolkit().beep();
             String msg = "The Calibration Excel data import file could not be opened.";
-            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Unable to open the Calibration import datafile",
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                    msg, "Unable to open the Calibration import datafile",
                     JOptionPane.ERROR_MESSAGE);
             return null;
         }
@@ -177,28 +176,29 @@ public class ManualCalibrationProfileImport extends RunImportService {
         if (workbook == null) {
             Toolkit.getDefaultToolkit().beep();
             String msg = "The selected file (" + excelImportFile.getName() + " could not be opened";
-            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Unable to open the selected file " + excelImportFile.getName(), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg,
+                    "Unable to open the selected file " + excelImportFile.getName(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
         Sheet sheet = workbook.getSheet(0);
         //Check if this is an LRE Calibration Template sheet
         if (sheet.getName().compareTo("LRE Calibration Template") != 0) {
             Toolkit.getDefaultToolkit().beep();
-            String msg = "This appears not to be a calibration template file. Note "
-                    + "that a Calibration Profile import template can be created using the \'Manual Data Entry\' menu item";
-            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Unable to import data " + excelImportFile.getName(), JOptionPane.ERROR_MESSAGE);
+            String msg = "Based on the worksheet name, this does not appear to be a calibration profile template file.\n"
+                    + "Note that an empty calibration profile import template can be created within the\n\'Manual Data Entry\' menu item";
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
+                    msg, "Invalid calibration profile import template",
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
-        int colCount = sheet.getColumns();
-        int rowCount = sheet.getRows();
-        int col = 2;//Start column
+
         DateCell date;
         try {
-            date = (DateCell) sheet.getCell(col, 1);
+            date = (DateCell) sheet.getCell(2, 0);
         } catch (Exception e) {
             Toolkit.getDefaultToolkit().beep();
             String msg = "The Run Date appears to be invalid. Manually enter "
-                    + "the run date in the Calibration template import sheet (C2), "
+                    + "the run date C1),\n"
                     + "save the file, and try importing the xls file again.";
             JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg,
                     "Invalid Run Date", JOptionPane.ERROR_MESSAGE);
@@ -209,27 +209,33 @@ public class ManualCalibrationProfileImport extends RunImportService {
         List<CalibrationProfile> calbnProfileList = new ArrayList<CalibrationProfile>();
         NumberFormat numFormat = NumberFormat.getInstance();
         Date runDate = RunImportUtilities.importExcelDate(date);
+        String runName = (sheet.getCell(2, 1).getContents());
 
+        int colCount = sheet.getColumns();
+        int rowCount = sheet.getRows();
+        int col = 2;//Start column
         while (col < colCount && sheet.getCell(col, 2).getType() != CellType.EMPTY) {
             CalibrationProfile calbnProfile = new CalibrationProfile();
-            calbnProfile.setAmpliconName(sheet.getCell(col, 2).getContents());
-            calbnProfile.setSampleName(sheet.getCell(col, 4).getContents() + " fg");
+            calbnProfile.setWellLabel(sheet.getCell(col, 2).getContents());
+            calbnProfile.setAmpliconName(sheet.getCell(col, 3).getContents());
+            calbnProfile.setSampleName(sheet.getCell(col, 5).getContents() + " fg");
             try {
                 //NumberFormat needed to prevent locale differences in numbers (e.g. comma vs period)
-                Number value = numFormat.parse(sheet.getCell(col, 4).getContents());
+                Number value = numFormat.parse(sheet.getCell(col, 5).getContents());
                 calbnProfile.setLambdaMass(value.doubleValue());
             } catch (Exception e) {
                 calbnProfile.setLambdaMass(0.0);
             }
             try {
-                calbnProfile.setAmpliconSize(Integer.valueOf(sheet.getCell(col, 3).getContents()));
+                calbnProfile.setAmpliconSize(Integer.valueOf(sheet.getCell(col, 4).getContents()));
             } catch (NumberFormatException e) {
 //Do nothing... Run intialization service will try to retrieve Amplicon size if an Amplicon database is open
             }
+            calbnProfile.setAmpTm(Double.valueOf(sheet.getCell(col, 6).getContents()));
             DecimalFormat df = new DecimalFormat("###,###");
             calbnProfile.setName(calbnProfile.getAmpliconName() + "-" + df.format(calbnProfile.getLambdaMass() * 1000000));
             //Move down the column to collect Fc readings until null cell is reached
-            int row = 6;
+            int row = 8;
             ArrayList<Double> fcReadings = new ArrayList<Double>();
             while (row < rowCount && sheet.getCell(col, row).getType() != CellType.EMPTY) {
                 try {
@@ -250,7 +256,7 @@ public class ManualCalibrationProfileImport extends RunImportService {
         }
         workbook.close();
 
-        RunImportData importData = new RunImportData(DataImportType.MANUAL_CALIBRATION_PROFILE, runDate, "");
+        RunImportData importData = new RunImportData(DataImportType.MANUAL_CALIBRATION_PROFILE, runDate, runName);
         importData.setCalibrationProfileList(calbnProfileList);
         return importData;
     }

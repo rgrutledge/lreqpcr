@@ -227,9 +227,6 @@ public class AverageProfileGenerator {
                             msg,
                             "Data Emport Error",
                             JOptionPane.ERROR_MESSAGE);
-                    // TODO Do something with this...low priority
-//                    throw new Exception();
-//                    return null;
                 }
                 averageFcDataset[i] = fcSum / fcMap.size();
             }
@@ -246,6 +243,7 @@ public class AverageProfileGenerator {
      */
     @SuppressWarnings(value = "unchecked")
     private static void intializeAverageProfile(AverageProfile averageProfile, LreWindowSelectionParameters parameters, DatabaseServices db) {
+        averageProfile.calculateAvAmpTm();
         LreAnalysisService lreAnalysisService =
                 Lookup.getDefault().lookup(LreAnalysisService.class);
         //This is necessary because AverageProfile is an interface

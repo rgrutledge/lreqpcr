@@ -207,9 +207,8 @@ public class LreObjectInfo extends JPanel {
                 } else {
                     tmLabel.setText("Tm");
                 }
-                tmLabel.setVisible(true);
-                //Display the Tm
                 tmDisplay.setText(df.format(profile.getAmpTm()) + " °C");
+                tmLabel.setVisible(true);
                 tmDisplay.setVisible(true);
             }
         } else {//This memeber is not a Profile

@@ -8,33 +8,38 @@
 <body>
 
 <h1 align="center"><font face="Arial">Calibration profile import using an Excel template</font></h1>
-<p><font face="Arial">Note that this template has a limit of 182 Fc datasets and 
-does not allow Ct and Ft values to be imported; well position and amplicon Tm 
-are also not imported. Also note that sample profiles must be imported using the
+<p><font face="Arial">Note that Excel 2003 has a limit of 182 Fc datasets and 
+that the template does not allow Ct and Ft values to be imported. Note also that sample profiles must be imported using the
 <a href="sampleprofile_template_import.html">sample profile template</a>.</font></p>
-<p><font face="Arial">To open an empty Excel template, go to the Import menu and 
-select &quot;Create a Calibration Profile Import Template&quot;. A file dialog box will 
+<p><font face="Arial">To open an empty Excel sample template, go to the Import / 
+Manual Data Entry / Create a Calibration Import Template. A file dialog box will 
 appear asking for a name and a location for the resulting Excel file. Once a 
-file has be created, Excel should automatically open to display the 
-calibration profile import template:</font></p>
-<p align="center"><img border="0" src="images/calbnp1.gif"></p>
-<p><font face="Arial">Enter the Run date in C2, if the default date is not 
+file has be designated, Excel should automatically open to display an empty 
+calibration import template. Here is an example taken from the demonstration 
+calibration database:</font></p>
+<p align="center">
+<img border="0" src="images/calibration_template.gif" width="293" height="229"></p>
+<p><font face="Arial">Enter the Run date in C1, if the default date is not 
 correct. Note that although 
 the Run date and F<sub>C</sub> readings cannot be changed following data import, all of the other values can be 
 manually edited within the program. Note also that if the amplicon 
 size is left blank, the program will attempt to retrieve the amplicon size from 
 the amplicon database, assuming it is open. If not, the amplicon size will be 
 set to zero. </font></p>
-<p><font face="Arial">Each profile F<sub>C</sub> dataset is entered vertically starting at C7, along 
-with the amplicon name, amplicon size and sample name in rows 3-5 respectively 
-for each F<sub>C</sub> dataset. This should be the raw fluorescence readings 
+<p><font face="Arial">Each profile F<sub>C</sub> dataset is entered vertically starting at C9, 
+and should be the raw fluorescence readings 
 (i.e. not background subtracted). Nevertheless, the program will accept 
-background subtracted F<sub>C</sub> datasets if this is deemed necessary.</font></p>
+background subtracted F<sub>C</sub> datasets if this is necessary.</font></p>
 <p><font face="Arial">The default strandedness of the target is double stranded, 
 and it is assumed that the standard is lambda gDNA.</font></p>
 <p><font face="Arial">SAVE THE FILE.</font></p>
 <p><font face="Arial">To initiate data import go to the Import menu and select 
 &quot;Manually Import Calibration Profiles&quot;.</font></p>
+
+<p><font face="Arial">Note that Excel workbooks containing the demonstration 
+database Fc datasets (included with the demonstration database files) are valid 
+import files, and thus provide examples of how these templates function . </font>
+</p>
 
 </body>
 

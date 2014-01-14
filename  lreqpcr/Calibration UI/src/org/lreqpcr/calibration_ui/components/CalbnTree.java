@@ -344,7 +344,7 @@ public class CalbnTree extends JPanel {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {
-            CalFcExport.createSampleProfileImportTemplate(calbnDB);
+            CalFcExport.exportCalibrationProfileFcReadings(calbnDB);
         } catch (WriteException ex) {
             Exceptions.printStackTrace(ex);
         } catch (IOException ex) {
