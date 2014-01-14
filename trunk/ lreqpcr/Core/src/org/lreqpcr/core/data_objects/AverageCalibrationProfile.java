@@ -125,6 +125,11 @@ public class AverageCalibrationProfile extends CalibrationProfile implements Ave
         return avTm;
     }
 
+    @Override
+    public double getAmpTm() {
+        return calculateAvAmpTm(); //To change body of generated methods, choose Tools | Templates.
+    }
+
     public boolean areTheRepProfilesSufficientlyClustered() {
         return true;
     }

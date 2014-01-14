@@ -486,7 +486,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {
-            FcExport.exportSampleProfileFcReadings(exptDB);
+            SampleFcExport.exportSampleProfileFcReadings(exptDB);
         } catch (WriteException ex) {
             Exceptions.printStackTrace(ex);
         } catch (IOException ex) {

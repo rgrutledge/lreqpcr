@@ -89,16 +89,15 @@ public class SampleProfileTemplateImport extends RunImportService {
             centerUnderline.setBorder(Border.BOTTOM, BorderLineStyle.DOUBLE, Colour.BLACK);
             //Construct the sheet
             WritableSheet sheet = workbook.createSheet("LRE Sample Template", 0);
-            Label label = new Label(1, 0, "Run Date(required):", boldRight);
+            Label label = new Label(1, 0, "Run Date:", boldRight);
             sheet.addCell(label);
-            label = new Label(1, 1, "Run Name:", boldRight);
+            label = new Label(1, 1, "Run Name (optnl):", boldRight);
             sheet.addCell(label);
-            label = new Label(2, 1, "Run 1");
+            label = new Label(4, 0, "Note that Amplicon Name, Amplicon Size and Sample Name must be provided for each Fc dataset.");
             sheet.addCell(label);
-            label = new Label(1, 2, "Profile Name(optnl):", boldRight);
+            label = new Label(4, 1, "Run Name, Well Label and Amplicon Tm are optional.");
             sheet.addCell(label);
-            label = new Label(4, 0, "Note that Amplicon Name, Amplicon Size and Sample Name must be provided for each Fc dataset."
-                    + " Profile Name is optional.");
+            label = new Label(1, 2, "Well Label (optnl):", boldRight);
             sheet.addCell(label);
             label = new Label(1, 3, "Amplicon Name:", boldRight);
             sheet.addCell(label);
@@ -108,18 +107,15 @@ public class SampleProfileTemplateImport extends RunImportService {
             sheet.addCell(label);
             label = new Label(1, 6, "Is Target dsDNA:", boldRight);
             sheet.addCell(label);
-            label = new Label(1, 7, "Paste Fc datasets starting with cell C10 ");
+            label = new Label(1, 7, "Amplicon Tm(optnl):", boldRight);
             sheet.addCell(label);
+
             label = new Label(1, 8, "Cycle", centerUnderline);
             sheet.addCell(label);
             for (int i = 1; i < 183; i++) {
-                label = new Label(i + 1, 8, "Fc" + String.valueOf(i), centerUnderline);
+                label = new Label(i + 1, 8, "", centerUnderline);
                 sheet.addCell(label);
             }
-            label = new Label(184, 8, "Do Not paste data beyond this point");
-            sheet.addCell(label);
-            label = new Label(2, 9, "Paste Here", leftYellow);
-            sheet.addCell(label);
             for (int i = 1; i < 71; i++) {
                 label = new Label(1, i + 8, String.valueOf(i), center);
                 sheet.addCell(label);
@@ -134,11 +130,11 @@ public class SampleProfileTemplateImport extends RunImportService {
             workbook.write();
             workbook.close();
 
-            Desktop desktop = null;
+            Desktop desktop;
             if (Desktop.isDesktopSupported()) {
                 desktop = Desktop.getDesktop();
+                desktop.open(selectedFile);
             }
-            desktop.open(selectedFile);
         }
     }
 
@@ -188,20 +184,20 @@ public class SampleProfileTemplateImport extends RunImportService {
         Sheet sheet = workbook.getSheet(0);
         //Check if this is an LRE Template sheet
         if (sheet.getName().compareTo("LRE Sample Template") != 0) {
-            String msg = "This appears not to be a Sample Profile import template. \nNote "
-                    + "that an empty Sample Profile import template can be created within the \'Manual Data Entry\' menu item";
-            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Invalid Sample Profile import template",
+            String msg = "Based on the worksheet name, this does not appear to be a sample profile import template.\n"
+                    + "Note that an empty sample profile import template can be created within the \n \'Manual Data Entry\' menu item";
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Invalid sample profile import template.",
                     JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
         DateCell date;
         try {
-            date = date = (DateCell) sheet.getCell(2, 0);
+            date = (DateCell) sheet.getCell(2, 0);
         } catch (Exception e) {
-            String msg = "The Run Date appears to be invalid. Manually replace "
-                    + "the run date in the Results sheet (B8), "
-                    + "save the file, and try importing the xls file again.";
+            String msg = "The Run Date appears to be invalid. Manually enter "
+                    + "the run date (C1),\n"
+                    + "save the file, and try importing the file again.";
             JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg,
                     "Invalid Run Date", JOptionPane.ERROR_MESSAGE);
             return null;
@@ -217,11 +213,9 @@ public class SampleProfileTemplateImport extends RunImportService {
         int colCount = sheet.getColumns();
         int rowCount = sheet.getRows();
         int col = 2;//Start column
-        int wellNumber = 1;//Used to preserve ordering of the profiles
         while (col < colCount && sheet.getCell(col, 3).getType() != CellType.EMPTY) {
             SampleProfile profile = new SampleProfile();
-            profile.setWellNumber(wellNumber);
-            profile.setName(sheet.getCell(col, 2).getContents());
+            profile.setWellLabel(sheet.getCell(col, 2).getContents());
             profile.setAmpliconName(sheet.getCell(col, 3).getContents());
             try {
                 profile.setAmpliconSize(Integer.valueOf(sheet.getCell(col, 4).getContents()));
@@ -236,10 +230,7 @@ public class SampleProfileTemplateImport extends RunImportService {
             } else {
                 profile.setTargetStrandedness(TargetStrandedness.SINGLESTRANDED);
             }
-            //If Profile name is empty, generate a name based on amp and sample names
-            if (profile.getName().equals("")) {
-                profile.setName(profile.getAmpliconName() + " @ " + profile.getSampleName());
-            }
+            profile.setAmpTm(Double.valueOf(sheet.getCell(col, 7).getContents()));
             //Move down the column to collect Fc readings until null cell reached
             int row = 9;
             ArrayList<Double> fcReadings = new ArrayList<Double>();
@@ -259,7 +250,6 @@ public class SampleProfileTemplateImport extends RunImportService {
             profile.setRawFcReadings(d);
             sampleProfileList.add(profile);
             col++;
-            wellNumber++;
         }
         workbook.close();
 
