@@ -77,6 +77,7 @@ public class CalbnTree extends JPanel {
         calbnDB = db;
         nodeActionFactory = new CalbnTreeNodeActions(mgr);
         nodeLabelFactory = new CalbnTreeNodeLabels();
+        jButton1.setVisible(false);
         createTree();
     }
 
