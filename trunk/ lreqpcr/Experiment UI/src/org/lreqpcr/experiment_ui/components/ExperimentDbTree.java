@@ -132,6 +132,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
         //Note the the db does not have a database file open yet as this is called during component construction
         nodeActionFactory = new ExperimentTreeNodeActions(mgr);
         runNodeLabelFactory = new SampleTreeNodeLabels();
+        jButton1.setVisible(false);
         createTree();
     }
 
