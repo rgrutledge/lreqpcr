@@ -85,7 +85,9 @@ public class SampleTreeNodeLabels implements LabelFactory {
 
             if (profile instanceof AverageSampleProfile) {
                 AverageSampleProfile avPrf = (AverageSampleProfile) profile;
-                if (!(avPrf.getOCF() > 0)) {
+                if (!(avPrf.getOCF() > 0) 
+                        && avPrf.areTheRepProfilesSufficientlyClustered()
+                        && !avPrf.isTheReplicateAverageNoLessThan10Molecules()) {
                     //The averge profile cannot be initialized...so there is no Emax or No values
                     profile.setShortDescription("Invalid Average Profile: OCF has not been entered");
                     return profileName + "  <No OCF>";
