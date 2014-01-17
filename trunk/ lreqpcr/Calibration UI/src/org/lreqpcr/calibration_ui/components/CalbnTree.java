@@ -186,7 +186,7 @@ public class CalbnTree extends JPanel {
         dfCV.applyPattern("0.0");
         for (AverageCalibrationProfile avProfile : avCalProfileList) {
             //Display the curve fitting derived OCF..OFF
-            if (!avProfile.isExcluded()) {
+            if (!avProfile.isExcluded() && avProfile.getOCF() != Double.POSITIVE_INFINITY) {
                 ocfSum += avProfile.getOCF();
                 ocfArray.add(avProfile.getOCF());
             }

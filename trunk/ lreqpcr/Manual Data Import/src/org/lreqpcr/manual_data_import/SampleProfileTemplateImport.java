@@ -230,7 +230,13 @@ public class SampleProfileTemplateImport extends RunImportService {
             } else {
                 profile.setTargetStrandedness(TargetStrandedness.SINGLESTRANDED);
             }
-            profile.setAmpTm(Double.valueOf(sheet.getCell(col, 7).getContents()));
+            if (!sheet.getCell(col, 6).getContents().equals("")) {
+                try {
+                    profile.setAmpTm(Double.valueOf(sheet.getCell(col, 7).getContents()));
+                } catch (Exception e) {
+                }
+            }
+//            profile.setAmpTm(Double.valueOf(sheet.getCell(col, 7).getContents()));
             //Move down the column to collect Fc readings until null cell reached
             int row = 9;
             ArrayList<Double> fcReadings = new ArrayList<Double>();

@@ -231,7 +231,12 @@ public class ManualCalibrationProfileImport extends RunImportService {
             } catch (NumberFormatException e) {
 //Do nothing... Run intialization service will try to retrieve Amplicon size if an Amplicon database is open
             }
-            calbnProfile.setAmpTm(Double.valueOf(sheet.getCell(col, 6).getContents()));
+            if (!sheet.getCell(col, 6).getContents().equals("")) {
+                try {
+                    calbnProfile.setAmpTm(Double.valueOf(sheet.getCell(col, 6).getContents()));
+                } catch (Exception e) {
+                }
+            }
             DecimalFormat df = new DecimalFormat("###,###");
             calbnProfile.setName(calbnProfile.getAmpliconName() + "-" + df.format(calbnProfile.getLambdaMass() * 1000000));
             //Move down the column to collect Fc readings until null cell is reached
