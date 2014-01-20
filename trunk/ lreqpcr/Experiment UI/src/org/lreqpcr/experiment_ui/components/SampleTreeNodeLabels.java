@@ -18,7 +18,6 @@ package org.lreqpcr.experiment_ui.components;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.data_objects.Profile;
