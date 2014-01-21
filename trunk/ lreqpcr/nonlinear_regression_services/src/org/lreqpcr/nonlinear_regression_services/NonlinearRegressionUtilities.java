@@ -21,7 +21,6 @@ import java.util.List;
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageProfile;
-import org.lreqpcr.core.data_objects.DatabaseInfo;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_processing.ProfileSummary;
@@ -63,7 +62,6 @@ public class NonlinearRegressionUtilities {
         }
         LreWindowSelectionParameters selectionParameters = l.get(0);
         //Check to see if the DatabaseInfo has the current version number
-        List info = profileDb.getAllObjects(DatabaseInfo.class);
         LreAnalysisService lreAnalysisService =
                 Lookup.getDefault().lookup(LreAnalysisService.class);
         List<AverageProfile> profileList;

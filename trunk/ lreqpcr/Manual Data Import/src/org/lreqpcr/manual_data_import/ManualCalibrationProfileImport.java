@@ -120,6 +120,8 @@ public class ManualCalibrationProfileImport extends RunImportService {
                 label = new Label(i + 1, 7, "", centerUnderline);
                 sheet.addCell(label);
             }
+            label = new Label(184, 7, "Do Not paste data beyond this point");
+            sheet.addCell(label);
             for (int i = 1; i < 71; i++) {
                 label = new Label(1, i + 7, String.valueOf(i), center);
                 sheet.addCell(label);

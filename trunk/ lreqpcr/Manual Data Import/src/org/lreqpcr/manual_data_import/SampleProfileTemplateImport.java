@@ -116,6 +116,8 @@ public class SampleProfileTemplateImport extends RunImportService {
                 label = new Label(i + 1, 8, "", centerUnderline);
                 sheet.addCell(label);
             }
+            label = new Label(184, 8, "Do Not paste data beyond this point");
+            sheet.addCell(label);
             for (int i = 1; i < 71; i++) {
                 label = new Label(1, i + 8, String.valueOf(i), center);
                 sheet.addCell(label);
