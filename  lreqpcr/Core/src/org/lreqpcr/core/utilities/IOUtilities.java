@@ -171,7 +171,7 @@ public class IOUtilities {
      */
     public static File openImportExcelFile(String title) {
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                "Excel workbook", "xls");
+                "Excel workbook", "xls", "xlsx");
         return createFileChooser(title, filter);
     }
     
