@@ -86,10 +86,12 @@ public class DeleteSampleProfileAction extends AbstractAction {
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.WARNING_MESSAGE);
             if (n == JOptionPane.YES_OPTION) {
+                UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_WAIT_CURSOR);
                 for (Node node : nodes) {
                     SampleProfile profile = node.getLookup().lookup(SampleProfile.class);
                     deleteProfile(profile);
                 }
+                UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_DEFAULT_CURSOR);
             }
         }
         //Update the tree

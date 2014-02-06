@@ -71,6 +71,7 @@ public class DeleteAverageSampleProfileAction extends AbstractAction {
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.WARNING_MESSAGE);
             if (n == JOptionPane.YES_OPTION) {
+                UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_WAIT_CURSOR);
                 for (Node node : nodes) {
                     AverageSampleProfile profile = node.getLookup().lookup(AverageSampleProfile.class);
                     deleteProfile(profile);
@@ -85,6 +86,7 @@ public class DeleteAverageSampleProfileAction extends AbstractAction {
         parentChildren.setLreObjectList((List<? extends LreObject>) db.getChildren(parentLreObject, parentLreObject.getChildClass()));
         parentChildren.addNotify();
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.PROFILE_DELETED);
+        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_DEFAULT_CURSOR);
     }
 
     @SuppressWarnings("unchecked")

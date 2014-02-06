@@ -71,12 +71,14 @@ public class DeleteRunAction extends AbstractAction {
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.WARNING_MESSAGE);
             if (n == JOptionPane.YES_OPTION) {
+                UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_WAIT_CURSOR);
                 for (Node node : nodes) {
                     LreObject o = node.getLookup().lookup(LreObject.class);
                     Run run = (Run) o;
                     db.deleteObject(run);
                     db.commitChanges();
                 }
+                UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_DEFAULT_CURSOR);
             }
         }
         //Reset the tree
