@@ -251,18 +251,18 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
             return;
         }
         for (AverageProfile avProfile : profileList) {
-            //Need to update the replicate profiles first in order to test if this is a valid AverageProfile
+//Need to update the replicate profiles first in order to test if this is a valid AverageProfile
             for (Profile profile : avProfile.getReplicateProfileList()) {
                 //Use the existing start cycle
                 ProfileSummary prfSum = new ProfileSummaryImp(profile, currentDB);
-                lreAnalysisService.lreWindowUpdateUsingNR(prfSum, selectionParameters);
+                lreAnalysisService.optimizeLreWindowUsingNonlinearRegression(prfSum, selectionParameters);
             }
             if (!avProfile.isTheReplicateAverageNoLessThan10Molecules() && avProfile.areTheRepProfilesSufficientlyClustered()) {
                 //The AverageProfile is valid thus reinitialize it
                 //Use the exsiting start cycle
                 Profile profile = (Profile) avProfile;
                 ProfileSummary prfSum = new ProfileSummaryImp(profile, currentDB);
-                lreAnalysisService.lreWindowUpdateUsingNR(prfSum, selectionParameters);
+                lreAnalysisService.optimizeLreWindowUsingNonlinearRegression(prfSum, selectionParameters);
             }
             currentDB.commitChanges();
             broadcastUpdate();

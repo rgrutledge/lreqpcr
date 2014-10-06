@@ -38,26 +38,14 @@ public class LreAnalysisProvider implements LreAnalysisService {
     public LreAnalysisProvider() {
     }
 
-    /**
-     * Provides automated LRE window selection 
-     * using nonlinear regression-derived Fb and Fb-slope to generate an optimized working Fc dataset. 
-     * If a LRE window has not been found, the Profile is reinitialized before 
-     * attempting nonlinear regression analysis.
-     * <p>
-     * LRE window selection is based on the LreWindowSelectionParameters. 
-     * Note also that this function saves the modified Profile via ProfileSummary.update().
-     *
-     * @param profile
-     * @param parameters LRE window selection parameters
-     * @return true if an LRE window was found or false if window selection failed
-     */
     public boolean lreWindowInitialization(ProfileSummary prfSum, LreWindowSelectionParameters parameters) {
         this.prfSum = prfSum;
         this.parameters = parameters;
         this.profile = prfSum.getProfile();
         //Reset the Profile to remove any previous LRE or NR analysis derived values
         profile.setLreVariablesToZero();
-        //Be sure that the working Fc dataset is derived using an average Fb 
+        //Be sure that the working Fc dataset is derived using an average Fb; 
+        //that is, to reverse any NR modification of the Fc dataset
         LreWindowSelector.substractBackgroundUsingAvFc(profile);
         prfSum.update();
         //Selecting a start cycle also removes any previously determined LRE parameters
@@ -69,32 +57,19 @@ public class LreAnalysisProvider implements LreAnalysisService {
         }
         if (!profile.hasAnLreWindowBeenFound()) {
 //Failed to find a window, thus return as updating the LRE parameters is irrelevant
+            prfSum.update();
             return false;
         }
         //Attempt to expand the upper limit of the LRE window
         LreWindowSelector.expandLreWindowWithoutNR(prfSum, parameters.getFoThreshold());
-        return true;
+        prfSum.update();
+        if (!profile.hasAnLreWindowBeenFound()) {
+            return false;
+        }else {
+            return true;
+        }
     }
 
-    /**
-     * Expands the upper boundary of the LRE window. This is based upon the
-     * difference between the average Fo determined from the cycles within the
-     * LRE window and the Fo value derived from the first cycle immediately
-     * above the LRE window. If this difference is smaller than the Fo
-     * threshold, this next cycle is added to the LRE window, and the analysis
-     * repeated.
-     * <p>
-     * Note that the upper limit of this expansion is limited to the cycle Fc
-     * less than 95% of Fmax, eliminating the possibility of including plateau
-     * phase cycles into the LRE window.
-     * <p>
-     * Note also that nonlinear regression is used to determine Fb and Fb-slope,
-     * from which a new working Fc dataset is derived, a process that is
-     * repeated following each increase in the LRE window size.
-     *
-     *
-     *
-     */
     public boolean optimizeLreWindowUsingNonlinearRegression(ProfileSummary prfSum, LreWindowSelectionParameters parameters) {
         profile = prfSum.getProfile();
         this.parameters = parameters;
@@ -104,16 +79,19 @@ public class LreAnalysisProvider implements LreAnalysisService {
             lreWindowInitialization(prfSum, parameters);
             if (!profile.hasAnLreWindowBeenFound()) {
                 //If a window has not been found, abort
+                prfSum.update();
                 return false;
             }
         }
         //Attempt to optimize the window using nonlinear regression
         LreWindowSelector.optimizeLreWindowUsingNR(prfSum, parameters.getFoThreshold());
+        prfSum.update();
         return prfSum.getProfile().didNonlinearRegressionSucceed();
     }
-
-    public boolean lreWindowUpdateUsingNR(ProfileSummary prfSum, LreWindowSelectionParameters parameters) {
-        nrAnalysis.lreWindowUpdateUsingNR(prfSum);
+    
+    public boolean lreWindowUpdateUsingNR(ProfileSummary prfSum) {
+        nrAnalysis.generateOptimizedFcDatasetUsingNonliearRegression(prfSum);
+        prfSum.update();
         return prfSum.getProfile().didNonlinearRegressionSucceed();
     }
 }

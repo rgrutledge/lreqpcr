@@ -172,7 +172,7 @@ public class LrePlot extends javax.swing.JPanel {
      * This function also assumes that this profile has a valid LRE window.
      */
     private void processModifiedLreWindow() {
-        lreAnalService.lreWindowUpdateUsingNR(prfSum, selectionParameters);
+        lreAnalService.lreWindowUpdateUsingNR(prfSum);
         updateParentAverageProfileIfNeeded();
         db.commitChanges();
         universalLookup.fireChangeEvent(PanelMessages.PROFILE_CHANGED);
