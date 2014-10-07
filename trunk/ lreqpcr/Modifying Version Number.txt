@@ -12,5 +12,5 @@ branding/modules/org-netbeans-core-windows.jar/org/netbeans/core/windows/view/ui
 
 Go to nbproject project.properties and platform.properties and change version number.
 
-Change the version number in Databaseinfo.java
+Change the version number in Databaseinfo.java in core/data_objects
 
