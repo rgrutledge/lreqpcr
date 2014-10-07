@@ -28,11 +28,11 @@ public abstract class DatabaseInfo extends LreObject {
     private double avRunFmaxCV;//The CV for the average Fmax values derived from multiple Runs    
 
     public DatabaseInfo() {
-       versionNumber = 0.98;
+       versionNumber = 0.99;
     }
 
     /**
-     * Program version number with the last period removed (e.g. 0.93 == 0.9.3)
+     * Program version number with the last period removed (e.g. 0.93 == 0.9.3 or 0.910 == 0.9.10)
      * 
      * @since version 0.9.3
      * @return the version number

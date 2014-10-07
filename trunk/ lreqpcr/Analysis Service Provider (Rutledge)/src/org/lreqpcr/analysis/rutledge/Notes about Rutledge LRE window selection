@@ -8,9 +8,18 @@ Generally used for initializing new profiles, this process is multi stage.
 to calculate LRE parameters for every cycle. Each cycle is then examined using 
 a R2 threshold (0.4) chosen imperially to hopefully identify a valid LRE 
 window. This also includes a minimum Emax of 40% which was found to greatly reduce 
-selection of false windows. 
+selection of false windows. Importantly, the central outcome of this is selection 
+of a start cycle with a default LRE window size of 3 cycles
 
-2. 
+2. Optimization of the LRE window via increasing its size. Once a start cycle has 
+been selected, an attempt increase the size of the LRE window is conducted, based 
+on comparing the Fo value derived from the next cycle above the last cycle of the 
+LRE window, to the Fo threshold. If smaller, this cycle is added to the LRE window.
+If greater, the optimization is halted. 
+
+3. Application of nonlinear regression analysis, with the primary objective of 
+correcting for any baseline drifting, which has been found to be a problem with 
+both of our 7500 instruments.
 
 Nonlinear Regression Analysis
 

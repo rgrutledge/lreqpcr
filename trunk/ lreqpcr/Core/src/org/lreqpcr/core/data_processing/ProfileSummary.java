@@ -290,10 +290,11 @@ public abstract class ProfileSummary {
     }
 
     /**
-     * Returns the Cycle object corresponding to the last cycle in the LRE window
+     * Returns the Cycle object corresponding to the last cycle in the LRE window 
+     * or null if it could be be retrieved. 
      *
      * @return the Cycle corresponding to the last cycle in the LRE window or
-     * null if a LRE window has not been found
+     * null if it could not be retrieved.
      */
     public Cycle getLreWindowEndCycle() {
         if (!profile.hasAnLreWindowBeenFound()) {

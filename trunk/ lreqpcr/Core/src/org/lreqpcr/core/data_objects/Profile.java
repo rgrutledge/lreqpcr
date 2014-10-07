@@ -44,7 +44,7 @@ public abstract class Profile extends LreObject {
     // TODO fcReadings should be stored in a HashMap in order to preserve cycle number
     private double[] fcReadings; //Processed Fc readings corrected for fluorescence background and baseline slope
     private double fb;//Average fluorescence background derived directly from the raw Fc readings
-    private boolean hasAnLreWindowBeenFound;//Is this a flat profile or has any abberrancy that dissallows an LRE window to be located
+    private boolean hasAnLreWindowBeenFound = false;//Is this a flat profile or has any abberrancy that dissallows an LRE window to be located
     private boolean didNonlinearRegressionSucceed;
     private int strCycleInt; //LRE window start cycle
     private int lreWinSize; //LRE window size
