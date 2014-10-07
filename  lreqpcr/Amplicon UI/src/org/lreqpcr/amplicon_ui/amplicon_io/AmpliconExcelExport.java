@@ -75,7 +75,7 @@ public class AmpliconExcelExport {
             label = new Label(7, 0, "Notes", centerUnderline);
             sheet.addCell(label);
             int row = 1;//Starting row
-            //This is necessary because DB4O lists cannot be sorted via Collections.sort
+            //This is necessary bec int row = 1;//Starting rowause DB4O lists cannot be sorted via Collections.sort
             List<Amplicon> ampList = new ArrayList<Amplicon>(ampliconDB.getAllObjects(Amplicon.class));
             Collections.sort(ampList);
             for (Amplicon amp : ampList){

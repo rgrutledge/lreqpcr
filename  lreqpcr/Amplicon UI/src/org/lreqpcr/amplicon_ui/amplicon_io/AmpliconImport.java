@@ -27,7 +27,7 @@ import org.lreqpcr.core.data_objects.AmpliconImpl;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.utilities.IOUtilities;
 import org.lreqpcr.core.utilities.UniversalLookup;
-import org.lreqpcr.ui_components.PanelMessages;
+import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.openide.util.Exceptions;
 import org.openide.windows.WindowManager;
 

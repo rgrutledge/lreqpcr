@@ -39,7 +39,7 @@ import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.core.utilities.UniversalLookupListener;
-import org.lreqpcr.ui_components.PanelMessages;
+import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
