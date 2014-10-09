@@ -109,17 +109,11 @@ public class LreWindowSelector {
         
         //Reinitialize the runner and start at cycle 3
         runner = prfSum.getZeroCycle().getNextCycle().getNextCycle().getNextCycle();         
-        if (profile.getWellLabel().equalsIgnoreCase("F4")){
-            int stopHere = 0;
-        }
         //Limit the analysis to 3 cycles before the end of the profile
         while (!profile.hasAnLreWindowBeenFound() && runner.getNextCycle().getNextCycle().getNextCycle() != null) {
 //Test for the minimum r2 >r2 tolerance across 1 cycle before and after the target cycle
 //Testing Emax was found to greatly increase the accuracy of the analysis in ver 0.8.5
             //LRE Parameters [slope, intercept, r2]
-            if (runner.getNextCycle() == null){
-            int stopHere = 0;
-        }
             if (runner.getPrevCycle().getCycLREparam()[2] > r2Tolerance
                     && runner.getCycLREparam()[2] > r2Tolerance
                     && runner.getNextCycle().getCycLREparam()[2] > r2Tolerance
