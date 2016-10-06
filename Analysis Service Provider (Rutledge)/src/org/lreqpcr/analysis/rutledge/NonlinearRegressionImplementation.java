@@ -16,12 +16,10 @@
  */
 package org.lreqpcr.analysis.rutledge;
 
-import java.awt.Toolkit;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
-import javax.swing.JOptionPane;
+
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
@@ -30,7 +28,6 @@ import org.lreqpcr.core.utilities.MathFunctions;
 import org.lreqpcr.nonlinear_regression_services.LreParameters;
 import org.lreqpcr.nonlinear_regression_services.NonlinearRegressionServices;
 import org.openide.util.Lookup;
-import org.openide.windows.WindowManager;
 
 /**
  *
@@ -43,16 +40,16 @@ public class NonlinearRegressionImplementation {
     private NonlinearRegressionServices nrService = Lookup.getDefault().lookup(NonlinearRegressionServices.class);
 
     /**
-     * Generates an optimized working Fc dataset via nonlinear regression 
+     * Generates an optimized working Fc dataset via nonlinear regression
      * to derived Fb and Fb-slope using the current LRE window.
      * <p>
-     * Nonlinear regression is conducted using Emax, Fmax and Fo derived from 
-     * the current LRE window, from WHICH values for Fb and Fb-slope are determined. 
-     * These are then used to calculate a new working Fc dataset, followed by 
-     * recalculation of the LRE parameters. This process repeated 3 times from which  
+     * Nonlinear regression is conducted using Emax, Fmax and Fo derived from
+     * the current LRE window, from WHICH values for Fb and Fb-slope are determined.
+     * These are then used to calculate a new working Fc dataset, followed by
+     * recalculation of the LRE parameters. This process repeated 3 times from which
      * an average Fb and Fb-slope are then determined and a final
      * optimized working Fc dataset generated. This is followed by a final
-     * recalculation of the LRE parameters to determine final values for Emax, Fmax and Fo. 
+     * recalculation of the LRE parameters to determine final values for Emax, Fmax and Fo.
      * THIS DOES THIS INCLUDE ANY MODIFICATION TO THE LRE WINDOW.
      * <p>
      * Note also that the LRE parameters are updated and the modified Profile is
@@ -72,18 +69,18 @@ public class NonlinearRegressionImplementation {
         }
 //Need to trim the profile in order to avoid aberrancies within early cycles and within the plateau phase
         //Exclude the first three cycles
-        int firstCycle = 4;//Start at cycle 4        
+        int firstCycle = 4;//Start at cycle 4
 //Use the top of the LRE window as the last cycle included in the regression analysis******THIS IS VERY IMPORTANT
         double[] fcArray = profile.getRawFcReadings();
         int lastCycle = 0;
         if (prfSum.getLreWindowEndCycle() != null){
-            lastCycle = prfSum.getLreWindowEndCycle().getCycNum();
+            lastCycle = prfSum.getLreWindowEndCycle().getCycleNumber();
         }else{
             return false;
         }
         int numberOfCycles = lastCycle - firstCycle + 1;
         //Construct the trimmed Fc dataset TreeMap<cycle number, Fc reading>
-        TreeMap<Integer, Double> profileMap = new TreeMap<Integer, Double>();
+        TreeMap<Integer, Double> profileMap = new TreeMap<>();
         for (int i = 0; i < numberOfCycles; i++) {
             profileMap.put(firstCycle + i, fcArray[firstCycle - 1 + i]);
         }
@@ -104,11 +101,11 @@ public class NonlinearRegressionImplementation {
         //Run the regression analysis 10 times to determine the average and SD
 //This is necessary due to the poor performance of Peter Abeles’s EJML implementation
         int numberOfIterations = 3;
-        ArrayList<Double> emaxArray = new ArrayList<Double>();
-        ArrayList<Double> fbArray = new ArrayList<Double>();
-        ArrayList<Double> foArray = new ArrayList<Double>();
-        ArrayList<Double> fmaxArray = new ArrayList<Double>();
-        ArrayList<Double> fbSlopeArray = new ArrayList<Double>();
+        ArrayList<Double> emaxArray = new ArrayList<>();
+        ArrayList<Double> fbArray = new ArrayList<>();
+        ArrayList<Double> foArray = new ArrayList<>();
+        ArrayList<Double> fmaxArray = new ArrayList<>();
+        ArrayList<Double> fbSlopeArray = new ArrayList<>();
         double emaxSum = 0;
         double fbSum = 0;
         double foSum = 0;
@@ -137,7 +134,7 @@ public class NonlinearRegressionImplementation {
             //Retrieve the new LRE parameters
             lreDerivedParam = getLreParameters();
         }
-//Set the average for each parameter into the Profile 
+        //Set the average for each parameter into the Profile
 //This allows the final recalculation of the LRE parameters based on the average Fb and Fb-slope
         profile.setNrEmax(emaxSum / numberOfIterations);
         profile.setNrFb(fbSum / numberOfIterations);
@@ -183,7 +180,7 @@ public class NonlinearRegressionImplementation {
      * @return
      */
     private LreParameters getLreParameters() {
-        //Setup the initial parameters 
+        //Setup the initial parameters
         LreParameters lreDerivedParam = new LreParameters();
 //Testing indicates that if Fb=0 the NR fails
         if (profile.getNrFb() == 0) {
@@ -198,7 +195,7 @@ public class NonlinearRegressionImplementation {
         return lreDerivedParam;
     }
 
-    private boolean testIfRegressionWasSuccessful() {//**** TODO Design a more effective scheme to test for NR success   
+    private boolean testIfRegressionWasSuccessful() {//**** TODO Design a more effective scheme to test for NR success
 //Test if the regression analysis was successful based on the LRE line R2
         Double r2 = profile.getR2();
         Double emaxNR = profile.getNrEmax();

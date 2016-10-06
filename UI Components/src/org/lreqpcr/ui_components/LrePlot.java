@@ -16,16 +16,28 @@
  */
 package org.lreqpcr.ui_components;
 
-import org.lreqpcr.core.ui_elements.PanelMessages;
-import java.awt.*;
-import java.awt.geom.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
+
 import org.lreqpcr.analysis_services.LreAnalysisService;
-import org.lreqpcr.core.data_objects.*;
-import org.lreqpcr.core.data_processing.*;
+import org.lreqpcr.core.data_objects.AverageProfile;
+import org.lreqpcr.core.data_objects.AverageSampleProfile;
+import org.lreqpcr.core.data_objects.CalibrationProfile;
+import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
+import org.lreqpcr.core.data_objects.Profile;
+import org.lreqpcr.core.data_objects.SampleProfile;
+import org.lreqpcr.core.data_processing.Cycle;
+import org.lreqpcr.core.data_processing.ProfileSummary;
 import org.lreqpcr.core.database_services.DatabaseServices;
+import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.lreqpcr.core.utilities.FormatingUtilities;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.openide.util.Lookup;
@@ -130,8 +142,8 @@ public class LrePlot extends javax.swing.JPanel {
         }
         runner = prfSum.getZeroCycle();
         while (runner.getNextCycle() != null) {
-            if (xMaxVal < runner.getFc()) {
-                xMaxVal = runner.getFc();
+            if (xMaxVal < runner.getCurrentCycleFluorescence()) {
+                xMaxVal = runner.getCurrentCycleFluorescence();
             }
             runner = runner.getNextCycle();
         }
@@ -642,18 +654,18 @@ private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
                 return;
             }
             //Run to 5 cycles below the LRE window
-            if (runner == null || runner.getPrevCycle() == null) {
+            if (runner == null || runner.getPreviousCycle() == null) {
                 return;
             }
             for (int i = 0; i < 7; i++) {
-                if (runner.getPrevCycle() == null) {
+                if (runner.getPreviousCycle() == null) {
                     return;
                 }
-                runner = runner.getPrevCycle();
+                runner = runner.getPreviousCycle();
             }
             while (runner.getNextCycle() != null) {
-                x = xMin + (runner.getFc() * xScalingFactor);
-                y = yMax - (runner.getEc() * yScalingFactor);
+                x = xMin + (runner.getCurrentCycleFluorescence() * xScalingFactor);
+                y = yMax - (runner.getCycleEfficiency() * yScalingFactor);
                 Ellipse2D.Double pt = new Ellipse2D.Double(x + 0.13 * ptSize, y + 0.03 * ptSize, ptSize * 0.32, ptSize * 0.3);
                 g2.fill(pt);
                 runner = runner.getNextCycle();
@@ -664,8 +676,8 @@ private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
                 return;
             }
             for (int i = 0; i < profile.getLreWinSize(); i++) {
-                x = xMin + (runner.getFc() * xScalingFactor);
-                y = yMax - (runner.getEc() * yScalingFactor);
+                x = xMin + (runner.getCurrentCycleFluorescence() * xScalingFactor);
+                y = yMax - (runner.getCycleEfficiency() * yScalingFactor);
                 Ellipse2D.Double pt1 = new Ellipse2D.Double(x - (ptSize * 0.25), y - (ptSize * 0.25), ptSize, ptSize); //XY offset = 25% of ptSize
                 g2.setColor(Color.RED);
                 g2.draw(pt1);//Circle designating this point is within the LRE window

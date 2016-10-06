@@ -25,7 +25,9 @@ import java.awt.Toolkit;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.text.DecimalFormat;
+
 import javax.swing.JOptionPane;
+
 import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.data_objects.CalibrationRun;
 import org.lreqpcr.core.data_objects.Profile;
@@ -275,12 +277,12 @@ public class PlotFc extends javax.swing.JPanel {
                 runner = runner.getNextCycle();
             }
             double yFmax = avFmax * scalingFactorY * (0.65);
-            double xMin = runner.getCycNum() * scalingFactorX;
+            double xMin = runner.getCycleNumber() * scalingFactorX;
             //Run to the end of the profile
             while (runner.getNextCycle() != null) {
                 runner = runner.getNextCycle();
             }
-            double xMax = runner.getCycNum() * scalingFactorX;
+            double xMax = runner.getCycleNumber() * scalingFactorX;
             Line2D.Double avFmaxLine = new Line2D.Double(xMin, yFmax, xMax, yFmax);
             g2.draw(avFmaxLine);
             //Go back to cycle 1
@@ -289,8 +291,8 @@ public class PlotFc extends javax.swing.JPanel {
             if (!profile.hasAnLreWindowBeenFound() || profile.isExcluded()) {
                 clearFbLabels();
                 do {
-                    double x = (runner.getCycNum() * scalingFactorX) - offsetX;
-                    double y = height - (runner.getFc() * scalingFactorY) - offsetY;
+                    double x = (runner.getCycleNumber() * scalingFactorX) - offsetX;
+                    double y = height - (runner.getCurrentCycleFluorescence() * scalingFactorY) - offsetY;
                     Ellipse2D.Double pt = new Ellipse2D.Double(x + 0.08 * ptSize, y + 0.08 * ptSize, ptSize * 0.32, ptSize * 0.32); //XY offset = 25% of ptSize
                     g2.setColor(Color.RED);
                     g2.fill(pt); //Actual Fc
@@ -299,9 +301,11 @@ public class PlotFc extends javax.swing.JPanel {
                 return;
             }
             do {
-                double x = (runner.getCycNum() * scalingFactorX) - offsetX;
-                double y = height - (runner.getFc() * scalingFactorY * fmaxScalingFactor) - offsetY;
-                double yPrd = height - (runner.getPredFc() * scalingFactorY * fmaxScalingFactor) - offsetY;
+                double x = (runner.getCycleNumber() * scalingFactorX) - offsetX;
+                double y =
+                    height - (runner.getCurrentCycleFluorescence() * scalingFactorY * fmaxScalingFactor) - offsetY;
+                double yPrd =
+                    height - (runner.getPredictedCyclecFluorescence() * scalingFactorY * fmaxScalingFactor) - offsetY;
                 Ellipse2D.Double pt1 = new Ellipse2D.Double(x - ptSize * 0.25, yPrd - ptSize * 0.25, ptSize, ptSize); //XY offset = 25% of ptSize
                 g2.setColor(Color.BLACK);
                 g2.draw(pt1); //Predicted Fc
@@ -311,15 +315,17 @@ public class PlotFc extends javax.swing.JPanel {
                 runner = runner.getNextCycle();
             } while (runner != null);
             //Red circles demark LRE window cycles
-            if (strCycle.getPrevCycle() == null) {
+            if (strCycle.getPreviousCycle() == null) {
                 clearPlot();
                 return;
             }
-            runner = strCycle.getPrevCycle();
+            runner = strCycle.getPreviousCycle();
             g2.setColor(Color.RED);
-            for (int i = 0; i < lreWinSize + 1; i++) { //Draw red circles specifying the Fc values included within the LRE window
-                double x = (runner.getCycNum() * scalingFactorX) - offsetX;
-                double y = height - (runner.getPredFc() * scalingFactorY * fmaxScalingFactor) - offsetY;
+            for (int i = 0; i < lreWinSize + 1; i++) { //Draw red circles specifying the Fc values included within
+                // the LRE window
+                double x = (runner.getCycleNumber() * scalingFactorX) - offsetX;
+                double y =
+                    height - (runner.getPredictedCyclecFluorescence() * scalingFactorY * fmaxScalingFactor) - offsetY;
                 Ellipse2D.Double pt1 = new Ellipse2D.Double(x - ptSize * 0.25, y - ptSize * 0.25, ptSize, ptSize); //XY offset = 25% of ptSize
                 g2.draw(pt1); //Predicted Fc within the LRE window
                 runner = runner.getNextCycle();

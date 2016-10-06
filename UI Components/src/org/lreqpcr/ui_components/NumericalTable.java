@@ -17,17 +17,19 @@
 
 package org.lreqpcr.ui_components;
 
-import org.lreqpcr.core.data_processing.Cycle;
-import org.lreqpcr.core.data_processing.ProfileSummary;
 import java.awt.Color;
 import java.awt.Component;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+
+import org.lreqpcr.core.data_processing.Cycle;
+import org.lreqpcr.core.data_processing.ProfileSummary;
 
 /**
  *
@@ -192,7 +194,7 @@ public class NumericalTable extends javax.swing.JPanel {
         tc4.setPreferredWidth(7);
         Cycle runner;
         try {
-            runner = prfSum.getLreWindowStartCycle().getPrevCycle().getPrevCycle().getPrevCycle();
+            runner = prfSum.getLreWindowStartCycle().getPreviousCycle().getPreviousCycle().getPreviousCycle();
         } catch (Exception e) {
             return;
         }
@@ -200,13 +202,13 @@ public class NumericalTable extends javax.swing.JPanel {
             clearTable();
             return;
         }
-        if(runner.getCycNum() == 0) {
+        if (runner.getCycleNumber() == 0) {
                 runner = runner.getNextCycle();
             }
         for(int i=0; i<11; i++){
-            numTable.setValueAt(runner.getCycNum(), i, 0);
-            numTable.setValueAt(runner.getFc(), i, 1);
-            numTable.setValueAt(runner.getEc(), i, 2);
+            numTable.setValueAt(runner.getCycleNumber(), i, 0);
+            numTable.setValueAt(runner.getCurrentCycleFluorescence(), i, 1);
+            numTable.setValueAt(runner.getCycleEfficiency(), i, 2);
             numTable.setValueAt(runner.getFoFracFoAv(), i, 3);
             if(runner.getNextCycle() == null){
                 return;

@@ -37,10 +37,10 @@ public class LreWindowSelector {
      * The start cycle is set to the first cycle in which the LRE plot r2 value
      * derived from a window encompassing the two preceeding and two following
      * Cycles (5 cycles total), is above the r2 tolerance of 0.95. The start
-     * cycle is then adjusted to one cycle below C1/2, the LRE window size is 
+     * cycle is then adjusted to one cycle below C1/2, the LRE window size is
      * set to 3 cycles, generating an LRE window in the lower region of the Profle.
      * <p>
-     * This window is unoptimized but does signify that the profile is valid. 
+     * This window is unoptimized but does signify that the profile is valid.
      * Note however, an ongoing
      * issue has been partial profiles in which the LRE window falls close to
      * last cycle in the profile, which has the potential to invalid the LRE
@@ -71,27 +71,27 @@ public class LreWindowSelector {
         }
         //Start at cycle 2
         Cycle runner = prfSum.getZeroCycle().getNextCycle().getNextCycle();
-        
-        //For each Cycle across the profile, calculate LRE parameters using the 
+
+        //For each Cycle across the profile, calculate LRE parameters using the
         //two previous and two following cycles, that is, a five cycle LRE window
         while (runner.getNextCycle().getNextCycle() != null) {
             double[][] fcEcArray = new double[2][5];
-            fcEcArray[0][0] = runner.getPrevCycle().getPrevCycle().getFc();
-            fcEcArray[1][0] = runner.getPrevCycle().getPrevCycle().getEc();
-            fcEcArray[0][1] = runner.getPrevCycle().getFc();
-            fcEcArray[1][1] = runner.getPrevCycle().getEc();
-            fcEcArray[0][2] = runner.getFc();
-            fcEcArray[1][2] = runner.getEc();
-            fcEcArray[0][3] = runner.getNextCycle().getFc();
-            fcEcArray[1][3] = runner.getNextCycle().getEc();
-            fcEcArray[0][4] = runner.getNextCycle().getNextCycle().getFc();
-            fcEcArray[1][4] = runner.getNextCycle().getNextCycle().getEc();
+            fcEcArray[0][0] = runner.getPreviousCycle().getPreviousCycle().getCurrentCycleFluorescence();
+            fcEcArray[1][0] = runner.getPreviousCycle().getPreviousCycle().getCycleEfficiency();
+            fcEcArray[0][1] = runner.getPreviousCycle().getCurrentCycleFluorescence();
+            fcEcArray[1][1] = runner.getPreviousCycle().getCycleEfficiency();
+            fcEcArray[0][2] = runner.getCurrentCycleFluorescence();
+            fcEcArray[1][2] = runner.getCycleEfficiency();
+            fcEcArray[0][3] = runner.getNextCycle().getCurrentCycleFluorescence();
+            fcEcArray[1][3] = runner.getNextCycle().getCycleEfficiency();
+            fcEcArray[0][4] = runner.getNextCycle().getNextCycle().getCurrentCycleFluorescence();
+            fcEcArray[1][4] = runner.getNextCycle().getNextCycle().getCycleEfficiency();
 
             //Calc cycle LRE paramaters [dE, Emax, r2]
             double[] regressionValues;
             runner.setCycLREparam(MathFunctions.linearRegressionAnalysis(fcEcArray));
-            int cycNum = runner.getCycNum();
-            double fc = runner.getFc();
+            int cycNum = runner.getCycleNumber();
+            double fc = runner.getCurrentCycleFluorescence();
             regressionValues = runner.getCycLREparam();
             //Calculate Fo
             runner.setFo(LREmath.calcFo(
@@ -102,24 +102,24 @@ public class LreWindowSelector {
             //Go to the next cycle
             runner = runner.getNextCycle();
         }
-        
+
         /*-----Find a start cycle based on the Cycle LRE r2-----*/
-        //Attempt to find a valid LRE window by examing the LRE r2 of 3 
+        //Attempt to find a valid LRE window by examing the LRE r2 of 3
         //contiguous cycles, and if the Emax of the central cycle is above 40%.
-        
+
         //Reinitialize the runner and start at cycle 3
-        runner = prfSum.getZeroCycle().getNextCycle().getNextCycle().getNextCycle();         
+        runner = prfSum.getZeroCycle().getNextCycle().getNextCycle().getNextCycle();
         //Limit the analysis to 3 cycles before the end of the profile
         while (!profile.hasAnLreWindowBeenFound() && runner.getNextCycle().getNextCycle().getNextCycle() != null) {
 //Test for the minimum r2 >r2 tolerance across 1 cycle before and after the target cycle
 //Testing Emax was found to greatly increase the accuracy of the analysis in ver 0.8.5
             //LRE Parameters [slope, intercept, r2]
-            if (runner.getPrevCycle().getCycLREparam()[2] > r2Tolerance
+            if (runner.getPreviousCycle().getCycLREparam()[2] > r2Tolerance
                     && runner.getCycLREparam()[2] > r2Tolerance
                     && runner.getNextCycle().getCycLREparam()[2] > r2Tolerance
                     && runner.getCycLREparam()[1] > emaxThreshold) {
                 //A candidate start cycle has been identified
-                profile.setStrCycleInt(runner.getCycNum());
+                profile.setStrCycleInt(runner.getCycleNumber());
                 //Set the LRE window size to the default
                 profile.setLreWinSize(defaultLREwinSize);
      //Must update but need to first indicate that a LRE window has been found
@@ -127,7 +127,7 @@ public class LreWindowSelector {
  //Note that updating reinstantiates the Cycle linked-list, invaliding the current runner
                  prfSum.update();
 //While an LRE window may have been found, it could be too close to the end of the profile if this is an incomplete profile
-//Incomplete profiles can generate invalid C1/2 values, causing the next step to fail 
+                //Incomplete profiles can generate invalid C1/2 values, causing the next step to fail
                 if (profile.getFcReadings().length - profile.getMidC() < 3) {
                     //Abdandon the profile; harsh but partial profiles are likely useless anyway
                     processFailedProfile(profile);
@@ -145,29 +145,29 @@ public class LreWindowSelector {
             processFailedProfile(profile);
             return;
         }
-        
+
         /*Next step is to optimize the LRE window*/
         //Note that an LRE window must have been found in order to reach this point
         //However, an AverageProfile could be invalid due to profile scattering or <10N but still reach here...not sure if this is likely
-        //This assumes that a vaild C1/2 has been generated 
+        //This assumes that a vaild C1/2 has been generated
 //Testing has shown that C1/2 determination is robust at this early stage
-        
+
         //Set start cycle to the one cycle below C1/2
         //Casting to an integer always rounds down
         profile.setStrCycleInt((int) profile.getMidC());
         prfSum.update();
-        
+
         //1Oct14: not sure what the advantage of using 1/2 Fmax...
         //So I have deactivated it but it should be tested
-        
-//        //Now reset the start cycle to the first cycle below 1/2 Fmax to stabilize
+
+        //        //Now reset the start cycle to the first cycle below 1/2 Fmax to stabilize
 //        double midF = ((profile.getEmax() / profile.getDeltaE() * -1)) / 2;
 //        runner = prfSum.getZeroCycle().getNextCycle();
-//        while (runner.getFc() < midF) {
+        //        while (runner.getCurrentCycleFluorescence() < midF) {
 //            runner = runner.getNextCycle();
 //        }
-//        runner = runner.getPrevCycle();
-//        profile.setStrCycleInt(runner.getCycNum());
+        //        runner = runner.getPreviousCycle();
+        //        profile.setStrCycleInt(runner.getCycleNumber());
 //        prfSum.update();
 //        //Test to see if the start cycle is above C1/2, which can occur when it is close to C1/2
 //        double diff = profile.getMidC() - profile.getStrCycleInt();
@@ -184,7 +184,7 @@ public class LreWindowSelector {
      * been found, a default 3 cycle LRE window is then set.
      * <p>
      * Note that nonlinear regression is not applied nor is the working Fc
-     * dataset modified and that changes to the Profile are saved to the corresponding 
+     * dataset modified and that changes to the Profile are saved to the corresponding
      * database via ProfileSummary.update().
      *
      * @param prfSum the ProfileSummary to be processed
@@ -198,7 +198,7 @@ public class LreWindowSelector {
         }
         Profile profile = prfSum.getProfile();
         //Must determine if a LRE window exsists
-//This is needed to avoid artifacts generated by late partial profiles which reach min Fc     
+        //This is needed to avoid artifacts generated by late partial profiles which reach min Fc
         if (!profile.hasAnLreWindowBeenFound()) {
             selectLreStartCycleViaScanning(prfSum);
             if (!profile.hasAnLreWindowBeenFound()) {
@@ -211,7 +211,7 @@ public class LreWindowSelector {
         Cycle cycZero = prfSum.getZeroCycle();
         //Run to the first cycle above the minFc and set it as the start cycle
         Cycle runner = cycZero.getNextCycle().getNextCycle(); //Go to cycle 2
-        while (runner.getFc() < minFc) {
+        while (runner.getCurrentCycleFluorescence() < minFc) {
             //Need at least 2 additional cycles to set window size to 3
             if (runner.getNextCycle() == null
                     || runner.getNextCycle().getNextCycle() == null) {
@@ -225,7 +225,7 @@ public class LreWindowSelector {
             runner = runner.getNextCycle();
         }
 //The start cycle is set to the next cycle, because minFc should be applied to the denominator of Ec
-        profile.setStrCycleInt(runner.getNextCycle().getCycNum());
+        profile.setStrCycleInt(runner.getNextCycle().getCycleNumber());
         profile.setLreWinSize(3);
         prfSum.update();
     }
@@ -249,7 +249,7 @@ public class LreWindowSelector {
      * @param prfSum the ProfileSummary to be processed
      * @param foThreshold the Fo threshold used to determine whether the next
      * cycle should be included into the LRE window
-     * @return returns true if a LRE window was optimized or false if 
+     * @return returns true if a LRE window was optimized or false if
      * optimization failed
      */
     public static boolean expandLreWindowWithoutNR(ProfileSummary prfSum, Double foThreshold) {
@@ -274,7 +274,7 @@ public class LreWindowSelector {
         //This also limits it to 95% of Fmax
         double fmaxThreshold = profile.getFmax() * 0.95;
         while (Math.abs(runner.getNextCycle().getFoFracFoAv()) < foThreshold
-                && runner.getNextCycle().getFc() < fmaxThreshold) {
+            && runner.getNextCycle().getCurrentCycleFluorescence() < fmaxThreshold) {
             //Increase and set the LRE window size by 1 cycle
             profile.setLreWinSize(profile.getLreWinSize() + 1);
             prfSum.update();//This instantiates a new Cycle list and saves the Profile
@@ -335,7 +335,7 @@ public class LreWindowSelector {
         //This also limits the top of the LRE window to 95% of Fmax
         double fmaxThreshold = profile.getFmax() * 0.95;
         while (Math.abs(runner.getNextCycle().getFoFracFoAv()) < foThreshold
-                && runner.getNextCycle().getFc() < fmaxThreshold) {
+            && runner.getNextCycle().getCurrentCycleFluorescence() < fmaxThreshold) {
             //Increase and set the LRE window size by 1 cycle
             profile.setLreWinSize(profile.getLreWinSize() + 1);
             //Need to conduct nonlinear regression analysis

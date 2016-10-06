@@ -16,13 +16,15 @@
  */
 package org.lreqpcr.core.data_processing;
 
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
+
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.utilities.LREmath;
 import org.lreqpcr.core.utilities.MathFunctions;
+
+import com.google.common.collect.Lists;
 
 /**
  * Provides functions required for initializing, editing and display of a Profile, which
@@ -40,7 +42,7 @@ public abstract class ProfileSummary {
     private Cycle zeroCycle;
 
     /**
-     * 
+     *
      * @param profile the Profile to encapsulate
      * @param db the database holding the Profile
      */
@@ -57,23 +59,23 @@ public abstract class ProfileSummary {
     /**
      * Reinitializes this ProfileSummary's Cycle linked list, which is necessary
      * whenever the encapsulated Profile is modified. This involves either
-     * changes to the LRE window or changes to the working Fc dataset. 
+     * changes to the LRE window or changes to the working Fc dataset.
      * <p>
-     * Note that the Profile is also saved to the database from which it was derived. 
+     * Note that the Profile is also saved to the database from which it was derived.
      *
      */
     public void update() {
         if (profile.getFcReadings() == null) {
             return;
         }
-        //Create a new Cycle 
+        //Create a new Cycle
         makeCycleList();
         //If an window is absent nothing else can be done
         if (profile.hasAnLreWindowBeenFound()) {
 //If this is an AverageProfile who's replicates are not clustered or it is <10N, it is invalid
             if(profile instanceof AverageProfile){
                 AverageProfile avPrf = (AverageProfile) profile;
-                if (!avPrf.areTheRepProfilesSufficientlyClustered() 
+                if (!avPrf.areTheRepProfilesSufficientlyClustered()
                         || avPrf.isTheReplicateAverageNoLessThan10Molecules()){
                     return;
                 }
@@ -94,21 +96,21 @@ public abstract class ProfileSummary {
     }
 
     /**
-     * 
+     *
      * @return the encapsulated Profile
      */
     public Profile getProfile() {
         return profile;
     }
-    
+
     /**
-     * 
+     *
      * @return the database holding the encapsulated Profile
      */
     public DatabaseServices getDatabase(){
         return db;
     }
-    
+
     /**
      * Saves the encapsulated Profile to the database from which is was derived
      */
@@ -156,11 +158,11 @@ public abstract class ProfileSummary {
         double[][] lreWinPts = new double[2][winSize];
         for (int i = 0; i < winSize; i++) {
             try {
-                lreWinPts[0][i] = runner.getFc();
+                lreWinPts[0][i] = runner.getCurrentCycleFluorescence();
             } catch (Exception e) {
                 return;
             }
-            lreWinPts[1][i] = runner.getEc();
+            lreWinPts[1][i] = runner.getCycleEfficiency();
             runner = runner.getNextCycle();
         }
         //Calculates and transfers the LRE parameters to the Profile
@@ -170,13 +172,13 @@ public abstract class ProfileSummary {
         profile.setR2(regressionValues[2]);
         //Gather the LRE window Fc and predicted Fc
         //Start at the cycle immediately preceeding the start cycle
-        runner = getLreWindowStartCycle().getPrevCycle();
+        runner = getLreWindowStartCycle().getPreviousCycle();
         double[][] winFcpFc = new double[2][winSize + 1];
         //Transverse the LRE window Fc values to construct the Fc-pFc list
         try {
             for (int i = 0; i < winSize + 1; i++) {
-                winFcpFc[0][i] = runner.getFc();
-                winFcpFc[1][i] = runner.getPredFc();
+                winFcpFc[0][i] = runner.getCurrentCycleFluorescence();
+                winFcpFc[1][i] = runner.getPredictedCyclecFluorescence();
                 runner = runner.getNextCycle();
             }
         } catch (Exception e) {
@@ -196,10 +198,10 @@ public abstract class ProfileSummary {
      */
     private void calcAllFo() {
         //The Linked Cycle List is traversed & Fo values assigned to each cycle
-        //The Cycle#-Fo Point2D.Double is also initialized 
+        //The Cycle#-Fo Point2D.Double is also initialized
         Cycle runner = zeroCycle.getNextCycle();//Start at cycle #1
         do { //This should provide Fo and FoEmax100 values for all Cycles
-            runner.setFo(LREmath.calcFo(runner.getCycNum(), runner.getFc(),
+            runner.setFo(LREmath.calcFo(runner.getCycleNumber(), runner.getCurrentCycleFluorescence(),
                     profile.getDeltaE(), profile.getEmax()));
             runner = runner.getNextCycle();
         } while (runner != null);
@@ -218,7 +220,7 @@ public abstract class ProfileSummary {
         double sumFo = 0;
         ArrayList<Double> foList = Lists.newArrayList();//Used to calculate average Fo CV
         //The Fo from the cycle previous to the start cycle must be included
-        Cycle runner = getLreWindowStartCycle().getPrevCycle(); //First cycle to be included in the average
+        Cycle runner = getLreWindowStartCycle().getPreviousCycle(); //First cycle to be included in the average
         for (int i = 0; i < profile.getLreWinSize() + 1; i++) { //Calculates the sum of the LRE window Fo values
             try {
                 foList.add(runner.getFo());
@@ -227,7 +229,7 @@ public abstract class ProfileSummary {
             } catch (Exception e) {
                 int stop =0;
             }
-            
+
         }
         //Calculate the LRE window average Fo value using the LRE-derived Emax
         double averageFo = (sumFo / (profile.getLreWinSize() + 1));
@@ -254,7 +256,7 @@ public abstract class ProfileSummary {
 //The cycle linked-list is traversed & predicted Fc values assigned to each cycle
         Cycle runner = getZeroCycle().getNextCycle();//Goto cycle #1
         do {
-            runner.setPredFc(LREmath.calcPrdFc(runner.getCycNum(), profile.getDeltaE(),
+            runner.setPredictedFluorescence(LREmath.calcPrdFc(runner.getCycleNumber(), profile.getDeltaE(),
                     profile.getEmax(), profile.getAvFo()));
             runner = runner.getNextCycle();
         } while (runner != null);
@@ -290,8 +292,8 @@ public abstract class ProfileSummary {
     }
 
     /**
-     * Returns the Cycle object corresponding to the last cycle in the LRE window 
-     * or null if it could be be retrieved. 
+     * Returns the Cycle object corresponding to the last cycle in the LRE window
+     * or null if it could be be retrieved.
      *
      * @return the Cycle corresponding to the last cycle in the LRE window or
      * null if it could not be retrieved.

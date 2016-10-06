@@ -16,9 +16,14 @@
  */
 package org.lreqpcr.ui_components;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.geom.Ellipse2D;
 import java.text.DecimalFormat;
+
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_processing.Cycle;
 import org.lreqpcr.core.data_processing.ProfileSummary;
@@ -40,7 +45,7 @@ public class PlotFo extends javax.swing.JPanel {
     private DecimalFormat dfE = new DecimalFormat("0.00E0");
     private boolean clearPlot;
 
-    /** 
+    /**
      * Generates a plot of cycle fluorescence and predicted fluorescence
      * versus cycle number
      */
@@ -101,14 +106,14 @@ public class PlotFo extends javax.swing.JPanel {
         if (runner == null) {
             return;
         }
-        xMaxVal = runner.getFc(); //Set the initial maximum X value
+        xMaxVal = runner.getCurrentCycleFluorescence(); //Set the initial maximum X value
         /*Prepare the Fo points for plotting*/
         for (int i = 1; i < 5; i++) { //Maximum 4 cycles beyond the LRE window
             runner = runner.getNextCycle();
             if (runner == null) {
                 break;
             }
-            double nextFc = runner.getFc();
+            double nextFc = runner.getCurrentCycleFluorescence();
             double nextFo = runner.getFo();
             if (nextFo > 0) {
                 if (nextFo / winAvFo < 5) { //Maximum 500% increase
@@ -224,7 +229,7 @@ public class PlotFo extends javax.swing.JPanel {
         double yOffset = height * 0.05; //5% top border
         double ptSize = 16;
         if (prfSum != null) {
-            if (prfSum.getLreWindowStartCycle() == null || prfSum.getLreWindowStartCycle().getCycNum() == 0) {
+            if (prfSum.getLreWindowStartCycle() == null || prfSum.getLreWindowStartCycle().getCycleNumber() == 0) {
                 clearPlot();
                 return;
             }
@@ -235,13 +240,13 @@ public class PlotFo extends javax.swing.JPanel {
                     clearPlot();
                     return;
                 }
-                runner = runner.getPrevCycle();
+                runner = runner.getPreviousCycle();
             }
             for (int i = 0; i < 15; i++) {
                 if (runner == null) {
                     break;
                 }
-                double x = (runner.getFc() * xScalingFactor) + xOffset;
+                double x = (runner.getCurrentCycleFluorescence() * xScalingFactor) + xOffset;
                 double y = height - ((runner.getFo() * yScalingFactor) - yOffset);
                 Ellipse2D.Double pt = new Ellipse2D.Double(x + 0.08 * ptSize, y + 0.08 * ptSize, ptSize * 0.32, ptSize * 0.32); //XY offset = 25% of ptSize to center the ellispe
                 g2.fill(pt);
@@ -249,12 +254,12 @@ public class PlotFo extends javax.swing.JPanel {
             }
             g2.setColor(Color.RED);
             //Draw red circles specifying the cycles included within the LRE window
-            runner = prfSum.getLreWindowStartCycle().getPrevCycle();
+            runner = prfSum.getLreWindowStartCycle().getPreviousCycle();
             if (runner == null) {
                 return;
             }
             for (int i = 1; i < profile.getLreWinSize() + 2; i++) {
-                double x = (runner.getFc() * xScalingFactor) + xOffset;
+                double x = (runner.getCurrentCycleFluorescence() * xScalingFactor) + xOffset;
                 double y = height - ((runner.getFo() * yScalingFactor) - yOffset);
                 Ellipse2D.Double pt1 = new Ellipse2D.Double(x - ptSize * 0.25, y - ptSize * 0.25, ptSize, ptSize); //XY offset = 25% of ptSize
                 g2.draw(pt1); //Predicted Fc within the LRE window

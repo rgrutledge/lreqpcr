@@ -18,100 +18,85 @@
 package org.lreqpcr.core.data_processing;
 
 /**
- * Abstract class representing the cycles within a Profile via a linked-list that 
+ * Abstract class representing the cycles within a Profile via a linked-list that
  * allows analysis and display of the Profile. This in turn allows data retrieval
  * by transversing the Cycle linked-list.
- * 
+ *
  * @author Bob Rutledge
  */
 public abstract class Cycle {
 
-    private int cycNum; //The cycle number
+    /**
+     * The cycle number
+     */
+    private int cycleNumber;
     private Cycle nextCycle;
-    private Cycle prevCycle;
-    private double fc; //The fluorescence reading for this Cycle
-    private double ec; //Cycle efficiency derived by dividing the Fc by the previous cycle Fc
-    private double fo; //Fc to Fo conversion based on the current LRE window settings
-    private double pFc; //Predicted Fc based on the current LRE window settings
-    private double oFfracFoAv;//The fractional difference between Fo and the average Fo
-    private double[] cycLREparam;//Linear regression values [slope, intercept, r2]
-
+    private Cycle previousCycle;
     /**
-     * 
-     *@param cycleNumber the cycle number of this Cycle
-     *@param fluorReading the fluorescence reading from this Cycle (Fc)
-     *@param previousCycle the previous Cycle
+     * The fluorescence reading for this Cycle
      */
-    public Cycle(int cycleNumber, double fluorReading, Cycle previousCycle) {
-        cycNum = cycleNumber; //The cycle number
-        fc = fluorReading; //The Fc reading
-        prevCycle = previousCycle; //Pointer to the previous cycle{
-        //Skip cycle 0 and 1
-        //First cycle has no Fc-1; Ec is left at zero (default value)
-        //Calculate and sets the cycle efficiency Ec
-        if(cycNum != 0 && cycleNumber !=1){ec = (fc/prevCycle.fc)-1;}
+    private double currentCycleFluorescence;
+    /**
+     * Cycle efficiency derived by dividing the Fc by the previous cycle Fc
+     */
+    private double cycleEfficiency;
+    /**
+     * Fc to Fo conversion based on the current LRE window settings
+     */
+    private double fo;
+    /**
+     * Predicted Fc based on the current LRE window settings
+     */
+    private double predictedCycleFluorescence;
+    /**
+     * The fractional difference between Fo and the average Fo
+     */
+    private double oFfracFoAv;
+    /**
+     * Linear regression values [slope, intercept, r2]
+     */
+    private double[] cycLREparam;
+
+    public Cycle(int cycleNumber, double fluorescenceReading, Cycle previousCycle) {
+        this.cycleNumber = cycleNumber;
+        currentCycleFluorescence = fluorescenceReading;
+        this.previousCycle = previousCycle;
+        // Skip cycle 0 and 1
+        // First cycle has no Fc-1; Ec is left at zero (default value)
+        // Calculate and sets the cycle efficiency Ec
+        if (this.cycleNumber != 0 && cycleNumber != 1) {
+            cycleEfficiency = (currentCycleFluorescence / this.previousCycle.currentCycleFluorescence) - 1;
+        }
     }
 
-    /**
-     * Returns the cycle efficiency, Ec.
-     * @return the cycle efficiency
-     */
-    public double getEc() {
-        return ec;
+    public double getCycleEfficiency() {
+        return cycleEfficiency;
     }
 
-    /**
-     * Set the cycle efficiency Ec.
-     * @param ec the cycle efficiency
-     */
-    public void setEc(double ec) {
-        this.ec = ec;
+    public void setCycleEfficiency(double cycleEfficiency) {
+        this.cycleEfficiency = cycleEfficiency;
     }
 
-    /**
-     * Returns the cycle fluorescence (Fc).
-     * @return the cycle fluorescence
-     */
-    public double getFc() {
-        return fc;
+    public double getCurrentCycleFluorescence() {
+        return currentCycleFluorescence;
     }
 
-    /**
-     * Sets the cycle fluorescence (Fc).
-     * @param fc the cycle fluorescence
-     */
-    public void setFc(double fc) {
-        this.fc = fc;
+    public void setCurrentCycleFluorescence(double currentCycleFluorescence) {
+        this.currentCycleFluorescence = currentCycleFluorescence;
     }
 
-    /**
-     * Returns the cycle number. 
-     * @return the cycle number
-     */
-    public int getCycNum() {
-        return cycNum;
+    public int getCycleNumber() {
+        return cycleNumber;
     }
 
-    /**
-     * Sets the cycle number 
-     * @param cycNum the cycle number
-     */
-    public void setCycNum(int cycNum) {
-        this.cycNum = cycNum;
+    public void setCycleNumber(int cycleNumber) {
+        this.cycleNumber = cycleNumber;
     }
 
-    /**
-     * Return the next cycle object, or null if none exists.
-     * @return the next Cycle object
-     */
     public Cycle getNextCycle() {
         return nextCycle;
     }
 
-    /**
-     * Sets the next cycle object.
-     * @param nextCycle the next Cycle object
-     */
     public void setNextCycle(Cycle nextCycle) {
         this.nextCycle = nextCycle;
     }
@@ -127,50 +112,36 @@ public abstract class Cycle {
     }
 
     /**
-     * Target quantity in fluorescence units (Fo) is calculated using 
+     * Target quantity in fluorescence units (Fo) is calculated using
      * the deltaE, Emax and average Fo.
-     * 
-     * @param fo the Fo predicted for this cycle
+     *
+     * @param fo
+     *     the Fo predicted for this cycle
      */
     public void setFo(double fo) {
         this.fo = fo;
     }
 
-    /**
-     * Returns the predicted cycle fluorescence (pFc).
-     * @return the predicted Fc for this cycle
-     */
-    public double getPredFc() {
-        return pFc;
+    public double getPredictedCyclecFluorescence() {
+        return predictedCycleFluorescence;
+    }
+
+    public void setPredictedFluorescence(double pFc) {
+        this.predictedCycleFluorescence = pFc;
+    }
+
+    public Cycle getPreviousCycle() {
+        return previousCycle;
+    }
+
+    public void setPreviousCycle(Cycle previousCycle) {
+        this.previousCycle = previousCycle;
     }
 
     /**
-     * Sets the predicted cycle fluorescence (pFc).
-     * @param pFc the predicted Fc for this cycle
-     */
-    public void setPredFc(double pFc) {
-        this.pFc = pFc;
-    }
-
-    /**
-     * Returns the previous Cycle object
-     * @return the previous cycle object
-     */
-    public Cycle getPrevCycle() {
-        return prevCycle;
-    }
-
-    /**
-     * Sets the previous Cycle object.
-     * @param prevCycle the previous cycle object
-     */
-    public void setPrevCycle(Cycle prevCycle) {
-        this.prevCycle = prevCycle;
-    }
-
-    /**
-     * Returns the fractional difference between in this cycle's Fo and the average Fo 
+     * Returns the fractional difference between in this cycle's Fo and the average Fo
      * derived from the LRE window.
+     *
      * @return the fractional Fo difference i
      */
     public double getFoFracFoAv() {
@@ -178,9 +149,11 @@ public abstract class Cycle {
     }
 
     /**
-     * Sets the fractional difference between in this cycle's Fo and the average Fo 
+     * Sets the fractional difference between in this cycle's Fo and the average Fo
      * derived from the LRE window.
-     * @param oFfracFoAv the fractional Fo difference 
+     *
+     * @param oFfracFoAv
+     *     the fractional Fo difference
      */
     public void setFoFracFoAv(double oFfracFoAv) {
         this.oFfracFoAv = oFfracFoAv;
@@ -188,6 +161,7 @@ public abstract class Cycle {
 
     /**
      * Returns the linear regression parameters for this cycle [slope, intercept, r2].
+     *
      * @return the linear regression parameters for this cycle [slope, intercept, r2]
      */
     public double[] getCycLREparam() {
@@ -196,8 +170,9 @@ public abstract class Cycle {
 
     /**
      * Sets the the LRE linear regression parameters for this cycle [slope, intercept, r2].
-     * 
-     * @param cycLREparam the LRE linear regression parameters for this cycle [slope, intercept, r2]
+     *
+     * @param cycLREparam
+     *     the LRE linear regression parameters for this cycle [slope, intercept, r2]
      */
     public void setCycLREparam(double[] cycLREparam) {
         this.cycLREparam = cycLREparam;
