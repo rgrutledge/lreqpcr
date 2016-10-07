@@ -26,7 +26,7 @@ import java.util.Date;
  *
  * @author Bob Rutledge
  */
-public abstract class Profile extends LreObject {
+public class Profile extends LreObject {
 
     //Profile creation parameters
     /**
