@@ -195,7 +195,7 @@ public class LreObjectInfo extends JPanel {
             }
             sampleNameDisplay.setText(profile.getSampleName());
             //Display the average Tm, if available
-            if (profile.getAmpTm() != -1
+            if (profile.getAmpliconTm() != -1
                     && profile.hasAnLreWindowBeenFound()
                     && !profile.isExcluded()) {
                 //Determine which Tm label to use
@@ -207,7 +207,7 @@ public class LreObjectInfo extends JPanel {
                 } else {
                     tmLabel.setText("Tm");
                 }
-                tmDisplay.setText(df.format(profile.getAmpTm()) + " °C");
+                tmDisplay.setText(df.format(profile.getAmpliconTm()) + " °C");
                 tmLabel.setVisible(true);
                 tmDisplay.setVisible(true);
             }

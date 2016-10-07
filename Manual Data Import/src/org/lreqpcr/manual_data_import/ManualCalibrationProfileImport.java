@@ -26,7 +26,21 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
 import javax.swing.JOptionPane;
+
+import org.lreqpcr.core.data_objects.CalibrationProfile;
+import org.lreqpcr.core.database_services.DatabaseServices;
+import org.lreqpcr.core.database_services.DatabaseType;
+import org.lreqpcr.core.utilities.IOUtilities;
+import org.lreqpcr.core.utilities.UniversalLookup;
+import org.lreqpcr.data_import_services.DataImportType;
+import org.lreqpcr.data_import_services.RunImportData;
+import org.lreqpcr.data_import_services.RunImportService;
+import org.lreqpcr.data_import_services.RunImportUtilities;
+import org.openide.util.Exceptions;
+import org.openide.windows.WindowManager;
+
 import jxl.CellType;
 import jxl.DateCell;
 import jxl.Sheet;
@@ -44,17 +58,6 @@ import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
-import org.lreqpcr.core.data_objects.*;
-import org.lreqpcr.core.database_services.DatabaseServices;
-import org.lreqpcr.core.database_services.DatabaseType;
-import org.lreqpcr.core.utilities.IOUtilities;
-import org.lreqpcr.core.utilities.UniversalLookup;
-import org.lreqpcr.data_import_services.DataImportType;
-import org.lreqpcr.data_import_services.RunImportData;
-import org.lreqpcr.data_import_services.RunImportService;
-import org.lreqpcr.data_import_services.RunImportUtilities;
-import org.openide.util.Exceptions;
-import org.openide.windows.WindowManager;
 
 /**
  *
@@ -208,7 +211,7 @@ public class ManualCalibrationProfileImport extends RunImportService {
         }
 
         //Import the data
-        List<CalibrationProfile> calbnProfileList = new ArrayList<CalibrationProfile>();
+        List<CalibrationProfile> calbnProfileList = new ArrayList<>();
         NumberFormat numFormat = NumberFormat.getInstance();
         Date runDate = RunImportUtilities.importExcelDate(date);
         String runName = (sheet.getCell(2, 1).getContents());
@@ -235,7 +238,7 @@ public class ManualCalibrationProfileImport extends RunImportService {
             }
             if (!sheet.getCell(col, 6).getContents().equals("")) {
                 try {
-                    calbnProfile.setAmpTm(Double.valueOf(sheet.getCell(col, 6).getContents()));
+                    calbnProfile.setAmpliconTm(Double.valueOf(sheet.getCell(col, 6).getContents()));
                 } catch (Exception e) {
                 }
             }
@@ -243,7 +246,7 @@ public class ManualCalibrationProfileImport extends RunImportService {
             calbnProfile.setName(calbnProfile.getAmpliconName() + "-" + df.format(calbnProfile.getLambdaMass() * 1000000));
             //Move down the column to collect Fc readings until null cell is reached
             int row = 8;
-            ArrayList<Double> fcReadings = new ArrayList<Double>();
+            ArrayList<Double> fcReadings = new ArrayList<>();
             while (row < rowCount && sheet.getCell(col, row).getType() != CellType.EMPTY) {
                 try {
                     //NumberFormat needed to prevent locale differences in numbers (e.g. comma vs period)

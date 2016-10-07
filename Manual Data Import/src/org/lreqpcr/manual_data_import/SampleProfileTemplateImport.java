@@ -24,7 +24,23 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
 import javax.swing.JOptionPane;
+
+import org.lreqpcr.core.data_objects.CalibrationProfile;
+import org.lreqpcr.core.data_objects.SampleProfile;
+import org.lreqpcr.core.data_objects.TargetStrandedness;
+import org.lreqpcr.core.database_services.DatabaseServices;
+import org.lreqpcr.core.database_services.DatabaseType;
+import org.lreqpcr.core.utilities.IOUtilities;
+import org.lreqpcr.core.utilities.UniversalLookup;
+import org.lreqpcr.data_import_services.DataImportType;
+import org.lreqpcr.data_import_services.RunImportData;
+import org.lreqpcr.data_import_services.RunImportService;
+import org.lreqpcr.data_import_services.RunImportUtilities;
+import org.openide.util.Exceptions;
+import org.openide.windows.WindowManager;
+
 import jxl.CellType;
 import jxl.DateCell;
 import jxl.Sheet;
@@ -42,19 +58,6 @@ import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
-import org.lreqpcr.core.data_objects.CalibrationProfile;
-import org.lreqpcr.core.data_objects.SampleProfile;
-import org.lreqpcr.core.data_objects.TargetStrandedness;
-import org.lreqpcr.core.database_services.DatabaseServices;
-import org.lreqpcr.core.database_services.DatabaseType;
-import org.lreqpcr.core.utilities.IOUtilities;
-import org.lreqpcr.core.utilities.UniversalLookup;
-import org.lreqpcr.data_import_services.DataImportType;
-import org.lreqpcr.data_import_services.RunImportData;
-import org.lreqpcr.data_import_services.RunImportService;
-import org.lreqpcr.data_import_services.RunImportUtilities;
-import org.openide.util.Exceptions;
-import org.openide.windows.WindowManager;
 
 /**
  *
@@ -208,8 +211,8 @@ public class SampleProfileTemplateImport extends RunImportService {
         Date runDate = RunImportUtilities.importExcelDate(date);
 
         //Import the data
-        List<SampleProfile> sampleProfileList = new ArrayList<SampleProfile>();
-        List<CalibrationProfile> calbnProfileList = new ArrayList<CalibrationProfile>();//Empty
+        List<SampleProfile> sampleProfileList = new ArrayList<>();
+        List<CalibrationProfile> calbnProfileList = new ArrayList<>();//Empty
         NumberFormat numFormat = NumberFormat.getInstance();
 
         int colCount = sheet.getColumns();
@@ -234,14 +237,14 @@ public class SampleProfileTemplateImport extends RunImportService {
             }
             if (!sheet.getCell(col, 6).getContents().equals("")) {
                 try {
-                    profile.setAmpTm(Double.valueOf(sheet.getCell(col, 7).getContents()));
+                    profile.setAmpliconTm(Double.valueOf(sheet.getCell(col, 7).getContents()));
                 } catch (Exception e) {
                 }
             }
-//            profile.setAmpTm(Double.valueOf(sheet.getCell(col, 7).getContents()));
+            //            profile.setAmpliconTm(Double.valueOf(sheet.getCell(col, 7).getContents()));
             //Move down the column to collect Fc readings until null cell reached
             int row = 9;
-            ArrayList<Double> fcReadings = new ArrayList<Double>();
+            ArrayList<Double> fcReadings = new ArrayList<>();
             while (row < rowCount && sheet.getCell(col, row).getType() != CellType.EMPTY) {
                 try {
                     //NumberFormat needed to prevent locale differences in numbers (e.g. comma vs period)

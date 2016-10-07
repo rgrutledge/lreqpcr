@@ -25,20 +25,31 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+
 import javax.swing.JOptionPane;
-import jxl.Workbook;
-import jxl.format.Alignment;
-import jxl.format.Border;
-import jxl.format.BorderLineStyle;
-import jxl.format.Colour;
-import jxl.write.*;
-import jxl.write.Number;
-import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
+
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.utilities.FormatingUtilities;
 import org.lreqpcr.core.utilities.IOUtilities;
 import org.openide.windows.WindowManager;
+
+import jxl.Workbook;
+import jxl.format.Alignment;
+import jxl.format.Border;
+import jxl.format.BorderLineStyle;
+import jxl.format.Colour;
+import jxl.write.DateFormat;
+import jxl.write.DateTime;
+import jxl.write.Label;
+import jxl.write.Number;
+import jxl.write.NumberFormat;
+import jxl.write.NumberFormats;
+import jxl.write.WritableCellFormat;
+import jxl.write.WritableFont;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
+import jxl.write.WriteException;
 
 /**
  *
@@ -101,7 +112,7 @@ public class CalibrationProfileExcelDataExport {
 
         int pageCounter = 0;
         //This is to sort the resulting worksheets
-        List<String> nameArray = new ArrayList<String>(groupList.keySet());
+        List<String> nameArray = new ArrayList<>(groupList.keySet());
         Collections.sort(nameArray);
         for (String pageName : nameArray) {
 //Test whether the run name is >30 characters as this can create identical page names
@@ -213,8 +224,8 @@ public class CalibrationProfileExcelDataExport {
                 sheet.addCell(number);
                 number = new Number(8, row, calibrationProfile.getAmpliconSize(), integerFormat);
                 sheet.addCell(number);
-                if (calibrationProfile.getAmpTm() != 0) {
-                    number = new Number(9, row, calibrationProfile.getAmpTm(), floatFormat);
+                if (calibrationProfile.getAmpliconTm() != 0) {
+                    number = new Number(9, row, calibrationProfile.getAmpliconTm(), floatFormat);
                     sheet.addCell(number);
                 }
                 if (calibrationProfile instanceof AverageProfile) {

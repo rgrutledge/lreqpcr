@@ -226,19 +226,19 @@ public class AB7500Ver2ImportProvider extends RunImportService {
 
                 if (ctCol != columnAbsent) {
                     try {
-                        profile.setCt(Double.parseDouble(resultSheet.getCell(ctCol, resultRow).getContents()));
+                        profile.setCycleThreshold(Double.parseDouble(resultSheet.getCell(ctCol, resultRow).getContents()));
                     } catch (Exception e) {
                     }
                 }
                 if (ftCol != columnAbsent) {
                     try {
-                        profile.setFt(Double.parseDouble(resultSheet.getCell(ftCol, resultRow).getContents()));
+                        profile.setFluorescenceThreshold(Double.parseDouble(resultSheet.getCell(ftCol, resultRow).getContents()));
                     } catch (Exception e) {
                     }
                 }
                 if (tmCol != columnAbsent) {
                     try {
-                        profile.setAmpTm(Double.parseDouble(resultSheet.getCell(tmCol, resultRow).getContents()));
+                        profile.setAmpliconTm(Double.parseDouble(resultSheet.getCell(tmCol, resultRow).getContents()));
                     } catch (Exception e) {
                     }
                 }

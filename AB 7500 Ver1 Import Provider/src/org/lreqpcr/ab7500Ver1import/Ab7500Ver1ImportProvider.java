@@ -16,36 +16,41 @@
  */
 package org.lreqpcr.ab7500Ver1import;
 
-import java.net.URL;
-import org.lreqpcr.core.data_objects.*;
-import org.lreqpcr.data_import_services.RunImportUtilities;
-import org.lreqpcr.core.data_objects.SampleProfile;
-import org.lreqpcr.core.utilities.IOUtilities;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
 import javax.swing.JOptionPane;
+
+import org.lreqpcr.core.data_objects.CalibrationProfile;
+import org.lreqpcr.core.data_objects.Profile;
+import org.lreqpcr.core.data_objects.SampleProfile;
+import org.lreqpcr.core.data_objects.TargetStrandedness;
+import org.lreqpcr.core.utilities.IOUtilities;
+import org.lreqpcr.data_import_services.DataImportType;
+import org.lreqpcr.data_import_services.RunImportData;
+import org.lreqpcr.data_import_services.RunImportService;
+import org.lreqpcr.data_import_services.RunImportUtilities;
+import org.openide.util.Exceptions;
+import org.openide.util.lookup.ServiceProvider;
+import org.openide.windows.WindowManager;
+
 import jxl.DateCell;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
-import org.lreqpcr.data_import_services.DataImportType;
-import org.lreqpcr.data_import_services.RunImportData;
-import org.lreqpcr.data_import_services.RunImportService;
-import org.openide.util.Exceptions;
-import org.openide.util.lookup.ServiceProvider;
-import org.openide.windows.WindowManager;
 
 /**
  * This is an early attempt to decouple import service providers which can be
  * implemented individually via META-INF.services. This would generate a list
  * of available import services.
- * 
+ *
  * @author Bob Rutledge
  */
 @ServiceProvider(service = RunImportService.class)
@@ -127,8 +132,8 @@ public class Ab7500Ver1ImportProvider extends RunImportService {
         Date runDate = RunImportUtilities.importExcelDate(date);
 
         //Import the data
-        ArrayList<SampleProfile> sampleProfileList = new ArrayList<SampleProfile>();
-        ArrayList<CalibrationProfile> calbnProfileList = new ArrayList<CalibrationProfile>();
+        ArrayList<SampleProfile> sampleProfileList = new ArrayList<>();
+        ArrayList<CalibrationProfile> calbnProfileList = new ArrayList<>();
         //Determine the strandedness of the Targets
         TargetStrandedness targetStrandedness = RunImportUtilities.isTheTargetSingleStranded();
         NumberFormat numFormat = NumberFormat.getInstance();
@@ -165,14 +170,14 @@ public class Ab7500Ver1ImportProvider extends RunImportService {
             }
             profile.setName(profile.getAmpliconName() + "@" + profile.getSampleName());
             try {
-                profile.setAmpTm(Double.valueOf(resultSheet.getCell(10, resultRow).getContents()));
+                profile.setAmpliconTm(Double.valueOf(resultSheet.getCell(10, resultRow).getContents()));
             } catch (Exception e) {
             }
 
             //Retrieve and store the Fc dataset
             //This assumes that the dRn rows always correlate exactly with the Results rows
             //Retrieve the raw Fc readings (Rn)
-            ArrayList<Double> fcDataSet = new ArrayList<Double>();
+            ArrayList<Double> fcDataSet = new ArrayList<>();
             for (int j = 3; j < dRnColCount; j++) {
                 try {
                     //NumberFormat needed to prevent locale differences in numbers (e.g. comma vs period)

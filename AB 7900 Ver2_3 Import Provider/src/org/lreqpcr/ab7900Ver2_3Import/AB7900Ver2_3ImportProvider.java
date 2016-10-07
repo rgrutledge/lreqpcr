@@ -41,10 +41,10 @@ import org.openide.windows.WindowManager;
 /**
  * AB 7900 Version 2.3 data import
  * In this version, no well labels are provided which must be
- * translated from the well number. Also the data structure 
- * is fixed so there is no need to check for the presence of 
+ * translated from the well number. Also the data structure
+ * is fixed so there is no need to check for the presence of
  * specific columns, unlike the 7500 data import
- * 
+ *
  * @author Bob Rutledge
  */
 @ServiceProvider(service = RunImportService.class)
@@ -183,11 +183,11 @@ public class AB7900Ver2_3ImportProvider extends RunImportService {
             profile.setName(profile.getSampleName() + "@" + profile.getAmpliconName());
 
             try {
-                profile.setCt(Double.parseDouble(resultSheet.getCell(5, resultRow).getContents()));
+                profile.setCycleThreshold(Double.parseDouble(resultSheet.getCell(5, resultRow).getContents()));
             } catch (Exception e) {
             }
             try {
-                profile.setFt(Double.parseDouble(resultSheet.getCell(16, resultRow).getContents()));
+                profile.setFluorescenceThreshold(Double.parseDouble(resultSheet.getCell(16, resultRow).getContents()));
             } catch (Exception e) {
             }
             //Tm is not exported!!!

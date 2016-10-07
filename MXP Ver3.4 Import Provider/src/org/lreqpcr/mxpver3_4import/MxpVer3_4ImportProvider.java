@@ -25,12 +25,13 @@ import java.net.URL;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
 import javax.swing.JOptionPane;
-import jxl.DateCell;
-import jxl.Sheet;
-import jxl.Workbook;
-import jxl.read.biff.BiffException;
-import org.lreqpcr.core.data_objects.*;
+
+import org.lreqpcr.core.data_objects.CalibrationProfile;
+import org.lreqpcr.core.data_objects.Profile;
+import org.lreqpcr.core.data_objects.SampleProfile;
+import org.lreqpcr.core.data_objects.TargetStrandedness;
 import org.lreqpcr.core.utilities.IOUtilities;
 import org.lreqpcr.data_import_services.DataImportType;
 import org.lreqpcr.data_import_services.RunImportData;
@@ -39,6 +40,11 @@ import org.lreqpcr.data_import_services.RunImportUtilities;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.WindowManager;
+
+import jxl.DateCell;
+import jxl.Sheet;
+import jxl.Workbook;
+import jxl.read.biff.BiffException;
 
 /**
  *
@@ -179,8 +185,8 @@ public class MxpVer3_4ImportProvider extends RunImportService {
         Date runDate = RunImportUtilities.importExcelDate(date);
 
         //Import the data
-        ArrayList<SampleProfile> sampleProfileList = new ArrayList<SampleProfile>();
-        ArrayList<CalibrationProfile> calbnProfileList = new ArrayList<CalibrationProfile>();
+        ArrayList<SampleProfile> sampleProfileList = new ArrayList<>();
+        ArrayList<CalibrationProfile> calbnProfileList = new ArrayList<>();
         //Determine the strandedness of the Targets
         TargetStrandedness targetStrandedness = RunImportUtilities.isTheTargetSingleStranded();
         NumberFormat numFormat = NumberFormat.getInstance();
@@ -224,25 +230,26 @@ public class MxpVer3_4ImportProvider extends RunImportService {
             profile.setName(profile.getAmpliconName() + "@" + profile.getSampleName());
             if (ctCol != columnAbsent) {
                 try {
-                    profile.setCt(Double.parseDouble(reportSheet.getCell(ctCol, reportRow).getContents()));
+                    profile.setCycleThreshold(Double.parseDouble(reportSheet.getCell(ctCol, reportRow).getContents()));
                 } catch (Exception e) {
                 }
             }
             if (ftCol != columnAbsent) {
                 try {
-                    profile.setFt(Double.parseDouble(reportSheet.getCell(ftCol, reportRow).getContents()));
+                    profile.setFluorescenceThreshold(Double.parseDouble(reportSheet.getCell(ftCol, reportRow)
+                        .getContents()));
                 } catch (Exception e) {
                 }
             }
             if (tmCol != columnAbsent) {
                 try {
-                    profile.setAmpTm(Double.parseDouble(reportSheet.getCell(tmCol, reportRow).getContents()));
+                    profile.setAmpliconTm(Double.parseDouble(reportSheet.getCell(tmCol, reportRow).getContents()));
                 } catch (Exception e) {
                 }
             }
             reportRow++;
             //Retrieve and store the Fc dataset
-            ArrayList<Double> fcDataSet = new ArrayList<Double>();
+            ArrayList<Double> fcDataSet = new ArrayList<>();
             //This assumes identical order of the wells in the report and the chart sheet
             if (!reachedTheBottom) {
                 fcRead:

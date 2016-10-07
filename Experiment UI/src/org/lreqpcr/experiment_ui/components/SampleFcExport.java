@@ -9,9 +9,16 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import org.lreqpcr.core.data_objects.AverageProfile;
+import org.lreqpcr.core.data_objects.Profile;
+import org.lreqpcr.core.data_objects.Run;
+import org.lreqpcr.core.data_objects.TargetStrandedness;
+import org.lreqpcr.core.database_services.DatabaseServices;
+import org.lreqpcr.core.utilities.IOUtilities;
+
 import jxl.Workbook;
 import jxl.format.Alignment;
 import jxl.format.Border;
@@ -20,20 +27,12 @@ import jxl.format.Colour;
 import jxl.write.DateFormat;
 import jxl.write.DateTime;
 import jxl.write.Label;
+import jxl.write.Number;
 import jxl.write.WritableCellFormat;
 import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
-import jxl.write.Number;
-import org.lreqpcr.core.data_objects.AverageProfile;
-import org.lreqpcr.core.data_objects.AverageSampleProfile;
-import org.lreqpcr.core.data_objects.Profile;
-import org.lreqpcr.core.data_objects.Run;
-import org.lreqpcr.core.data_objects.SampleProfile;
-import org.lreqpcr.core.data_objects.TargetStrandedness;
-import org.lreqpcr.core.database_services.DatabaseServices;
-import org.lreqpcr.core.utilities.IOUtilities;
 
 /**
  *
@@ -62,7 +61,7 @@ public class SampleFcExport {
             centerUnderline.setBorder(Border.BOTTOM, BorderLineStyle.DOUBLE, Colour.BLACK);
 
             //Export based on Run with each run within a worksheet
-            List<Run> runList = new ArrayList<Run>(exptDB.getAllObjects(Run.class));
+            List<Run> runList = new ArrayList<>(exptDB.getAllObjects(Run.class));
             int runNum = 0;
             for (Run run : runList) {
                 //Construct the sheet
@@ -140,8 +139,8 @@ public class SampleFcExport {
                         label = new Label(col, row, dsDNA, center);
                         sheet.addCell(label);
                         row++;
-                        if (prf.getAmpTm() != 0.0d) {
-                            number = new jxl.write.Number(col, row, prf.getAmpTm());
+                        if (prf.getAmpliconTm() != 0.0d) {
+                            number = new jxl.write.Number(col, row, prf.getAmpliconTm());
                             sheet.addCell(number);
                         }
                         row++;

@@ -73,7 +73,7 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
                 continue;//Do nothing
             } else {
                 if (repProfile.hasAnLreWindowBeenFound()) {
-                    tmSum += repProfile.getAmpTm();
+                    tmSum += repProfile.getAmpliconTm();
                     counter++;
                 }
             }
@@ -87,7 +87,7 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
     }
 
     @Override
-    public double getAmpTm() {
+    public double getAmpliconTm() {
         return calculateAvAmpTm();
     }
 
@@ -235,7 +235,7 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
      * Determines whether the replicate profiles are sufficiently clustered to
      * generate a valid Fc dataset that was used to create this average profile.
      * If sufficient clustering is not apparent, the target quantity reverts to
-     * the average replicate No and the Profile is excluded. If true, the 
+     * the average replicate No and the Profile is excluded. If true, the
      * isExcluded is set to false.
      *
      * @return whether this is a valid average profile

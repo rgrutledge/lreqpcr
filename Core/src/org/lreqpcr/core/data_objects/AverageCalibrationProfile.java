@@ -70,10 +70,10 @@ public class AverageCalibrationProfile extends CalibrationProfile implements Ave
     }
 
     /**
-     * Sorted by date. 
-     * 
+     * Sorted by date.
+     *
      * @param o
-     * @return 
+     * @return
      */
     @Override
     public int compareTo(Object o) {
@@ -112,8 +112,9 @@ public class AverageCalibrationProfile extends CalibrationProfile implements Ave
         for (CalibrationProfile calProfile : lambdaProfileList) {
             if (!calProfile.isExcluded()
                     && calProfile.hasAnLreWindowBeenFound()
-                    && calProfile.getAmpTm() != 0) {
-                tmSum += calProfile.getAmpTm();
+                && calProfile.getAmpliconTm() != 0)
+            {
+                tmSum += calProfile.getAmpliconTm();
                 counter++;
             }
             if (counter != 0) {
@@ -126,7 +127,7 @@ public class AverageCalibrationProfile extends CalibrationProfile implements Ave
     }
 
     @Override
-    public double getAmpTm() {
+    public double getAmpliconTm() {
         return calculateAvAmpTm(); //To change body of generated methods, choose Tools | Templates.
     }
 
