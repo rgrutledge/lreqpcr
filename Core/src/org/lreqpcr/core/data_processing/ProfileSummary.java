@@ -131,10 +131,10 @@ public abstract class ProfileSummary {
             return;
         }
         double[] fc = profile.getFcReadings();
-        zeroCycle = new CycleImp(0, 0, null); //Zero cycle does not have a previous cycle
+        zeroCycle = new Cycle(0, 0, null); //Zero cycle does not have a previous cycle
         Cycle prevCycle = zeroCycle; //Prepares for initialization of the link list construction
         for (int i = 0; i < fc.length; i++) { //Link list construction
-            Cycle cycle = new CycleImp(i + 1, fc[i], prevCycle); //Sets the previous cycle pointer in Cycle constructor
+            Cycle cycle = new Cycle(i + 1, fc[i], prevCycle); //Sets the previous cycle pointer in Cycle constructor
             prevCycle.setNextCycle(cycle); //Sets the nextCycle pointer within the previous cycle object
             prevCycle = cycle; //Move to the next Cycle
         }
