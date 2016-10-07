@@ -63,14 +63,6 @@ public abstract class Profile extends LreObject {
     private double nrFbSD, nrFbSlopeSD, nrEmaxSD, nrFmaxSD, nrFoSD;
 
     /**
-     *
-     * @param run the Run from which the Profile was generated. Note that Run
-     * date is retrieved from the provided Run.
-     */
-    public Profile() {
-    }
-
-    /**
      * Also sets the parent to the Run and the run date retrieved from the Run.
      *
      * @param run
@@ -204,7 +196,7 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * 
+     *
      * @return LRE-derived Emax
      */
     public double getEmax() {
@@ -216,7 +208,7 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * 
+     *
      * @return LRE-derived Fmax or -1 if the profile is invalid
      */
     public double getFmax() {
@@ -264,7 +256,7 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * 
+     *
      * @return the LRE-derived C1/2 or -1 if the profile is invalid
      */
     public double getMidC() {
@@ -418,7 +410,7 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * Indicates whether nonlinear regression analysis was successful 
+     * Indicates whether nonlinear regression analysis was successful
      * @return false if nonlinear regression has not been applied
      */
     public boolean didNonlinearRegressionSucceed() {
@@ -430,7 +422,7 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * 
+     *
      * @return nonlinear regression-derived baseline fluorescence
      */
     public double getNrFb() {
@@ -446,7 +438,7 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * 
+     *
      * @return nonlinear regression-derived baseline slope
      */
     public double getNrFbSlope() {
@@ -454,7 +446,7 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * 
+     *
      * @param nrFbSlope nonlinear regression-derived baseline slope
      */
     public void setNrFbSlope(double nrFbSlope) {
@@ -462,7 +454,7 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * 
+     *
      * @return nonlinear regression-derived Emax
      */
     public double getNrEmax() {
@@ -470,7 +462,7 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * 
+     *
      * @param nrEmax nonlinear regression-derived Emax
      */
     public void setNrEmax(double nrEmax) {
@@ -478,7 +470,7 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * 
+     *
      * @return nonlinear regression-derived Fmax
      */
     public double getNrFmax() {
@@ -486,7 +478,7 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * 
+     *
      * @param nrFmax nonlinear regression-derived Fmax
      */
     public void setNrFmax(double nrFmax) {
@@ -494,7 +486,7 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * 
+     *
      * @return nonlinear regression-derived Fo
      */
     public double getNrFo() {
@@ -502,7 +494,7 @@ public abstract class Profile extends LreObject {
     }
 
     /**
-     * 
+     *
      * @param nrFo nonlinear regression-derived Fo
      */
     public void setNrFo(double nrFo) {
@@ -548,9 +540,9 @@ public abstract class Profile extends LreObject {
     public void setNrFoSD(double nrFoSD) {
         this.nrFoSD = nrFoSD;
     }
-    
+
     /**
-     * Resets this Profile to an uninitialized status, removing all previous 
+     * Resets this Profile to an uninitialized status, removing all previous
      * determined LRE parameters, including eliminating the LRE window.
      */
     public void setLreVariablesToZero(){
