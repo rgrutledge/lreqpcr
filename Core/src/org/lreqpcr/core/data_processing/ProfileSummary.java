@@ -42,9 +42,10 @@ public abstract class ProfileSummary {
     private Cycle zeroCycle;
 
     /**
-     *
-     * @param profile the Profile to encapsulate
-     * @param db the database holding the Profile
+     * @param profile
+     *     the Profile to encapsulate
+     * @param db
+     *     the database holding the Profile
      */
     public ProfileSummary(Profile profile, DatabaseServices db) {
         this.profile = profile;
@@ -62,7 +63,6 @@ public abstract class ProfileSummary {
      * changes to the LRE window or changes to the working Fc dataset.
      * <p>
      * Note that the Profile is also saved to the database from which it was derived.
-     *
      */
     public void update() {
         if (profile.getFcReadings() == null) {
@@ -72,11 +72,12 @@ public abstract class ProfileSummary {
         makeCycleList();
         //If an window is absent nothing else can be done
         if (profile.hasAnLreWindowBeenFound()) {
-//If this is an AverageProfile who's replicates are not clustered or it is <10N, it is invalid
-            if(profile instanceof AverageProfile){
-                AverageProfile avPrf = (AverageProfile) profile;
-                if (!avPrf.areTheRepProfilesSufficientlyClustered()
-                        || avPrf.isTheReplicateAverageNoLessThan10Molecules()){
+            //If this is an AverageProfile who's replicates are not clustered or it is <10N, it is invalid
+            if (profile instanceof AverageProfile) {
+                AverageProfile avPrf = (AverageProfile)profile;
+                if (!avPrf.areTheRepProfilesSufficientlyClustered() ||
+                    avPrf.isTheReplicateAverageNoLessThan10Molecules())
+                {
                     return;
                 }
             }
@@ -96,34 +97,10 @@ public abstract class ProfileSummary {
     }
 
     /**
-     *
-     * @return the encapsulated Profile
-     */
-    public Profile getProfile() {
-        return profile;
-    }
-
-    /**
-     *
-     * @return the database holding the encapsulated Profile
-     */
-    public DatabaseServices getDatabase(){
-        return db;
-    }
-
-    /**
-     * Saves the encapsulated Profile to the database from which is was derived
-     */
-    public void saveProfile(){
-        db.saveObject(profile);
-    }
-
-    /**
      * Constructs a Cycle linked-list for a Profile that is used for display and
      * editing of the cycles within the amplification profile. Note that no
      * additional analysis is conducted other than to generate the link list in
      * which the Fc readings are set for each cycle.
-     *
      */
     private void makeCycleList() {
         if (profile.getFcReadings() == null) {
@@ -145,8 +122,6 @@ public abstract class ProfileSummary {
      * Note that the calling function is responsible for saving the modified
      * Profile. The ProfileSummary is also updated to allow display of the
      * modified Profile.
-     *
-     * @param prfSum the ProfileSummary holding the Profile to be processed
      */
     private void calcLreParameters() {
         if (profile.isExcluded() || !profile.hasAnLreWindowBeenFound()) {//Invalid profile
@@ -159,7 +134,8 @@ public abstract class ProfileSummary {
         for (int i = 0; i < winSize; i++) {
             try {
                 lreWinPts[0][i] = runner.getCurrentCycleFluorescence();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 return;
             }
             lreWinPts[1][i] = runner.getCycleEfficiency();
@@ -181,7 +157,8 @@ public abstract class ProfileSummary {
                 winFcpFc[1][i] = runner.getPredictedCyclecFluorescence();
                 runner = runner.getNextCycle();
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             //Not sure if this is necessary
         }
     }
@@ -193,8 +170,6 @@ public abstract class ProfileSummary {
      * LRE window, and the fractional difference of each cycle Fo value vs. the
      * average Fo from the LRE window is set for each Cycle. Note that the
      * Profile is not modified.
-     *
-     * @param prfSum the ProfileSummary holding the Profile to be processed
      */
     private void calcAllFo() {
         //The Linked Cycle List is traversed & Fo values assigned to each cycle
@@ -202,7 +177,7 @@ public abstract class ProfileSummary {
         Cycle runner = zeroCycle.getNextCycle();//Start at cycle #1
         do { //This should provide Fo and FoEmax100 values for all Cycles
             runner.setFo(LREmath.calcFo(runner.getCycleNumber(), runner.getCurrentCycleFluorescence(),
-                    profile.getDeltaE(), profile.getEmax()));
+                profile.getDeltaE(), profile.getEmax()));
             runner = runner.getNextCycle();
         } while (runner != null);
     }
@@ -212,8 +187,6 @@ public abstract class ProfileSummary {
      * LRE window, using the Cycle linked-list within the ProfileSummary. Note
      * the encapsulated Profile is also updated and that the calling function is
      * responsibility to save the modified profile.
-     *
-     * @param prfSum the ProfileSummary holding the Profile to be processed
      */
     private void calcAverageFo() {
         //The current LRE window is traversed and the average Fo calculated
@@ -224,12 +197,12 @@ public abstract class ProfileSummary {
         for (int i = 0; i < profile.getLreWinSize() + 1; i++) { //Calculates the sum of the LRE window Fo values
             try {
                 foList.add(runner.getFo());
-            sumFo += runner.getFo();
-            runner = runner.getNextCycle();
-            } catch (Exception e) {
-                int stop =0;
+                sumFo += runner.getFo();
+                runner = runner.getNextCycle();
             }
-
+            catch (Exception e) {
+                int stop = 0;
+            }
         }
         //Calculate the LRE window average Fo value using the LRE-derived Emax
         double averageFo = (sumFo / (profile.getLreWinSize() + 1));
@@ -240,7 +213,8 @@ public abstract class ProfileSummary {
         profile.setAvFo(averageFo);
         //Goto to cycle 1
         runner = zeroCycle.getNextCycle();
-//Sets the fractional difference between Fo and the averageFo across the entire profile using the LRE derived Emax
+        //Sets the fractional difference between Fo and the averageFo across the entire profile using the LRE derived
+        // Emax
         while (runner.getNextCycle() != null) {
             runner.setFoFracFoAv(1 - (runner.getFo() / profile.getAvFo()));
             runner = runner.getNextCycle();
@@ -253,24 +227,13 @@ public abstract class ProfileSummary {
      * Profile is not modified.
      */
     private void calcPredictedFc() {
-//The cycle linked-list is traversed & predicted Fc values assigned to each cycle
+        //The cycle linked-list is traversed & predicted Fc values assigned to each cycle
         Cycle runner = getZeroCycle().getNextCycle();//Goto cycle #1
         do {
             runner.setPredictedFluorescence(LREmath.calcPrdFc(runner.getCycleNumber(), profile.getDeltaE(),
-                    profile.getEmax(), profile.getAvFo()));
+                profile.getEmax(), profile.getAvFo()));
             runner = runner.getNextCycle();
         } while (runner != null);
-    }
-
-    /**
-     *
-     *
-     * @return the zero cycle, that is, the header of the Cycle linked list,
-     * from which individual cycles within the amplification profile can be
-     * accessed.
-     */
-    public Cycle getZeroCycle() {
-        return zeroCycle;
     }
 
     /**
@@ -289,6 +252,36 @@ public abstract class ProfileSummary {
             runner = runner.getNextCycle();
         }
         return runner;
+    }
+
+    /**
+     * @return the zero cycle, that is, the header of the Cycle linked list,
+     * from which individual cycles within the amplification profile can be
+     * accessed.
+     */
+    public Cycle getZeroCycle() {
+        return zeroCycle;
+    }
+
+    /**
+     * @return the encapsulated Profile
+     */
+    public Profile getProfile() {
+        return profile;
+    }
+
+    /**
+     * @return the database holding the encapsulated Profile
+     */
+    public DatabaseServices getDatabase() {
+        return db;
+    }
+
+    /**
+     * Saves the encapsulated Profile to the database from which is was derived
+     */
+    public void saveProfile() {
+        db.saveObject(profile);
     }
 
     /**
