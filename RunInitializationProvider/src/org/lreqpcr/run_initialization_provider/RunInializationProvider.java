@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2013  Bob Rutledge
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -20,13 +20,26 @@ import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import javax.swing.JOptionPane;
+
 import org.lreqpcr.analysis_services.LreAnalysisService;
-import org.lreqpcr.core.data_objects.*;
+import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
+import org.lreqpcr.core.data_objects.AverageProfile;
+import org.lreqpcr.core.data_objects.AverageSampleProfile;
+import org.lreqpcr.core.data_objects.CalibrationDbInfo;
+import org.lreqpcr.core.data_objects.CalibrationProfile;
+import org.lreqpcr.core.data_objects.CalibrationRun;
+import org.lreqpcr.core.data_objects.ExptDbInfo;
+import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
+import org.lreqpcr.core.data_objects.Profile;
+import org.lreqpcr.core.data_objects.Run;
+import org.lreqpcr.core.data_objects.RunImpl;
+import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.data_processing.ProfileSummary;
-import org.lreqpcr.core.data_processing.ProfileSummaryImp;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
+import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.lreqpcr.core.utilities.MathFunctions;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.data_import_services.AverageProfileGenerator;
@@ -34,7 +47,6 @@ import org.lreqpcr.data_import_services.DataImportType;
 import org.lreqpcr.data_import_services.RunImportData;
 import org.lreqpcr.data_import_services.RunImportUtilities;
 import org.lreqpcr.data_import_services.RunInitializationService;
-import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.WindowManager;
@@ -59,7 +71,7 @@ public class RunInializationProvider implements RunInitializationService {
     public RunInializationProvider() {
         //Retrieve the databases
         //This assumes that only one database file is open for each database type
-        //Thus the first entry is the active database for each 
+        //Thus the first entry is the active database for each
         experimentDB = (DatabaseServices) uLookup.getAll(DatabaseType.EXPERIMENT).get(0);
         calbnDB = (DatabaseServices) uLookup.getAll(DatabaseType.CALIBRATION).get(0);
         ampliconDB = (DatabaseServices) uLookup.getAll(DatabaseType.AMPLICON).get(0);
@@ -72,7 +84,7 @@ public class RunInializationProvider implements RunInitializationService {
      */
     @SuppressWarnings(value = "unchecked")
     public void intializeRun(RunImportData importData) {
-        
+
         if (importData == null) {
             //Run import has been cancelled
             return;
@@ -156,7 +168,7 @@ public class RunInializationProvider implements RunInitializationService {
                             }
                         }
                         //Initialize the new Profile which will conduct an automated LRE window selection
-                        ProfileSummary prfSum = new ProfileSummaryImp(sampleProfile, experimentDB);
+                        ProfileSummary prfSum = new ProfileSummary(sampleProfile, experimentDB);
                         lreAnalysisService.optimizeLreWindowUsingNonlinearRegression(prfSum, parameters);
                         sampleProfile.setOCF(ocf);
                         experimentDB.saveObject(sampleProfile);
@@ -216,7 +228,7 @@ public class RunInializationProvider implements RunInitializationService {
                                 RunImportUtilities.getAmpliconSize(ampliconDB, profile);
                             }
                         }
-                        ProfileSummary prfSum = new ProfileSummaryImp(profile, calbnDB);
+                        ProfileSummary prfSum = new ProfileSummary(profile, calbnDB);
                         lreAnalysisService.optimizeLreWindowUsingNonlinearRegression(prfSum, lreWindowSelectionParameters);
                     }
                     //Process the AverageCalibnProfiles
@@ -260,13 +272,13 @@ public class RunInializationProvider implements RunInitializationService {
     //Determine the avFmax across all profiles and set this within the Calibration Run
 
     private void calculateTotalAvFmax() {
-        ArrayList<Double> fmaxList = new ArrayList<Double>();//Used to determine the SD
+        ArrayList<Double> fmaxList = new ArrayList<>();//Used to determine the SD
         double fmaxSum = 0;
         int profileCount = 0;
         double averageFmax;
         double avFmaxCV = 0;
         //Combine the Sample and Calibration average profiles into a single array
-        List<AverageProfile> allAvPrfs = new ArrayList<AverageProfile>(sampleRun.getAverageProfileList());
+        List<AverageProfile> allAvPrfs = new ArrayList<>(sampleRun.getAverageProfileList());
         allAvPrfs.addAll(calRun.getAverageProfileList());
         for (AverageProfile avProfile : allAvPrfs) {
             for (Profile profile : avProfile.getReplicateProfileList()) {
@@ -324,9 +336,9 @@ public class RunInializationProvider implements RunInitializationService {
                 + "Do you want to continue with the data import?";
         return RunImportUtilities.requestYesNoAnswer("Amplicon database not open?", msg);
     }
-    
+
     /**
-     * Warns that an OCF must be entered manually. 
+     * Warns that an OCF must be entered manually.
      */
     public void displayNoOcfWarning(){
         Toolkit.getDefaultToolkit().beep();
@@ -339,8 +351,8 @@ public class RunInializationProvider implements RunInitializationService {
                    + "However, also note that 5% of the run's average\n"
                    + "Fmax can be used as a crude estimate of OCF.\n\n"
                    + "See Help for additional information.\n";
-                
-                JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "An OCF has not been entered",
+
+        JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "An OCF has not been entered",
                         JOptionPane.WARNING_MESSAGE);
     }
 }

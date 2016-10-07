@@ -18,21 +18,22 @@ package org.lreqpcr.experiment_ui.actions;
 
 import java.awt.event.ActionEvent;
 import java.util.List;
+
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
+
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.data_processing.ProfileSummary;
-import org.lreqpcr.core.data_processing.ProfileSummaryImp;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
+import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.lreqpcr.core.utilities.ProfileUtilities;
 import org.lreqpcr.core.utilities.UniversalLookup;
-import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
@@ -102,7 +103,7 @@ class ExcludeSampleProfileAction extends AbstractAction {
                     && !parentAvProfile.isTheReplicateAverageNoLessThan10Molecules()) {
                 LreAnalysisService lreAnalysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
                 //Reinitialize the LRE window
-                ProfileSummary prfSum = new ProfileSummaryImp(parentAvProfile, db);
+                ProfileSummary prfSum = new ProfileSummary(parentAvProfile, db);
                 lreAnalysisService.lreWindowInitialization(prfSum, selectionParameters);
                 //Apply nonlinear regression optimization
                 lreAnalysisService.optimizeLreWindowUsingNonlinearRegression(prfSum, selectionParameters);
@@ -110,7 +111,7 @@ class ExcludeSampleProfileAction extends AbstractAction {
             //Update the tree
             //Test to see if the parent node is a run node used in the well view
             if (sampleProfileLreNode.getParentNode().getLookup().lookup(Run.class) == null) {
-                //Must be an average profile node      
+                //Must be an average profile node
                 LreNode avSampleProfileLreNode = (LreNode) sampleProfileNodes[0].getParentNode();
                 avSampleProfileLreNode.refreshNodeLabel();
                 //Determine if the AverageSample parent node is a Run node

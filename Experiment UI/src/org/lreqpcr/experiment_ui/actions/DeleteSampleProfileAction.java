@@ -18,20 +18,21 @@ package org.lreqpcr.experiment_ui.actions;
 
 import java.awt.event.ActionEvent;
 import java.util.List;
+
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
+
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.data_processing.ProfileSummary;
-import org.lreqpcr.core.data_processing.ProfileSummaryImp;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
-import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.core.ui_elements.PanelMessages;
+import org.lreqpcr.core.utilities.UniversalLookup;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
@@ -133,7 +134,7 @@ public class DeleteSampleProfileAction extends AbstractAction {
                 Lookup.getDefault().lookup(LreAnalysisService.class);
         //Reinitialize the LRE window
         avProfile.setHasAnLreWindowBeenFound(false);
-        ProfileSummary prfSum = new ProfileSummaryImp(avProfile, db);
+        ProfileSummary prfSum = new ProfileSummary(avProfile, db);
         profileIntialization.optimizeLreWindowUsingNonlinearRegression(prfSum, selectionParameters);
         avProfile.calculateAvAmpTm();
         //Need to also save the SampeProfile's Run

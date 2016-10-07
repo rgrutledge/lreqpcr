@@ -35,7 +35,7 @@ import com.google.common.collect.Lists;
  *
  * @author Bob Rutledge
  */
-public abstract class ProfileSummary {
+public class ProfileSummary {
 
     private DatabaseServices db;
     private Profile profile;

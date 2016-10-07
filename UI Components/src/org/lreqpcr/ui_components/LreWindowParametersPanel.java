@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2013   Bob Rutledge
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -16,8 +16,6 @@
  */
 package org.lreqpcr.ui_components;
 
-import org.lreqpcr.core.ui_elements.PanelMessages;
-import com.google.common.collect.Lists;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
@@ -27,7 +25,9 @@ import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.swing.JOptionPane;
+
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageProfile;
@@ -37,10 +37,10 @@ import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.data_processing.ProfileSummary;
-import org.lreqpcr.core.data_processing.ProfileSummaryImp;
 import org.lreqpcr.core.database_services.DatabaseProvider;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
+import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.lreqpcr.core.utilities.FormatingUtilities;
 import org.lreqpcr.core.utilities.MathFunctions;
 import org.lreqpcr.core.utilities.UniversalLookup;
@@ -49,6 +49,8 @@ import org.lreqpcr.data_import_services.RunImportUtilities;
 import org.openide.util.Lookup;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
+
+import com.google.common.collect.Lists;
 
 /**
  * Displays and processes changes to the LRE window selection parameters.
@@ -208,7 +210,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
             return false;
         }
 //Uses the average Fmax to provide scale for determiing if the newMinFc is acceptable
-        //Average Fmax across all runs is calculated by the Experiment panel Tree 
+        //Average Fmax across all runs is calculated by the Experiment panel Tree
         //everytime a new profile database is opened
         //This is a quickfix for Calibration databases as they yet do not have avFmax implemented
         // TODO implement average Fmax for calibration databases********************************************************************************
@@ -241,8 +243,8 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
     }
 
     /**
-     * Resetting the Fo threshold only requires that the top of the LRE window 
-     * be reset, so that the start cycle is not modified. 
+     * Resetting the Fo threshold only requires that the top of the LRE window
+     * be reset, so that the start cycle is not modified.
      */
     @SuppressWarnings("unchecked")
     private void resetFoThreshold() {
@@ -254,21 +256,21 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
 //Need to update the replicate profiles first in order to test if this is a valid AverageProfile
             for (Profile profile : avProfile.getReplicateProfileList()) {
                 //Use the existing start cycle
-                ProfileSummary prfSum = new ProfileSummaryImp(profile, currentDB);
+                ProfileSummary prfSum = new ProfileSummary(profile, currentDB);
                 lreAnalysisService.optimizeLreWindowUsingNonlinearRegression(prfSum, selectionParameters);
             }
             if (!avProfile.isTheReplicateAverageNoLessThan10Molecules() && avProfile.areTheRepProfilesSufficientlyClustered()) {
                 //The AverageProfile is valid thus reinitialize it
                 //Use the exsiting start cycle
                 Profile profile = (Profile) avProfile;
-                ProfileSummary prfSum = new ProfileSummaryImp(profile, currentDB);
+                ProfileSummary prfSum = new ProfileSummary(profile, currentDB);
                 lreAnalysisService.optimizeLreWindowUsingNonlinearRegression(prfSum, selectionParameters);
             }
             currentDB.commitChanges();
             broadcastUpdate();
         }
     }
-    
+
     /**
      * Setting a new minFc requires that the LRE window be reinitialized.
      */
@@ -283,7 +285,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
             for (Profile profile : avProfile.getReplicateProfileList()) {
                 //Force a new start cycle to be identified
                 profile.setHasAnLreWindowBeenFound(false);
-                ProfileSummary prfSum = new ProfileSummaryImp(profile, currentDB);
+                ProfileSummary prfSum = new ProfileSummary(profile, currentDB);
                 lreAnalysisService.optimizeLreWindowUsingNonlinearRegression(prfSum, selectionParameters);
             }
             if (!avProfile.isTheReplicateAverageNoLessThan10Molecules() && avProfile.areTheRepProfilesSufficientlyClustered()) {
@@ -291,7 +293,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
                 Profile profile = (Profile) avProfile;
                 //Force a new start cycle to be identified
                 profile.setHasAnLreWindowBeenFound(false);
-                ProfileSummary prfSum = new ProfileSummaryImp(profile, currentDB);
+                ProfileSummary prfSum = new ProfileSummary(profile, currentDB);
                 lreAnalysisService.optimizeLreWindowUsingNonlinearRegression(prfSum, selectionParameters);
             }
             currentDB.commitChanges();
@@ -317,7 +319,7 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
             return null;
         }
         List<AverageProfile> profileList;
-//This is necessary becuase for unknown reasons retrieving AverageProfiles 
+        //This is necessary becuase for unknown reasons retrieving AverageProfiles
 //objects fail for calibration profiles
         if (currentDB.getDatabaseType() == DatabaseType.CALIBRATION) {
             profileList = currentDB.getAllObjects(AverageCalibrationProfile.class);
@@ -392,7 +394,8 @@ public class LreWindowParametersPanel extends javax.swing.JPanel implements Univ
             for (AverageSampleProfile avProfile : avSampleProfileList) {
                 List<Double> noValues = Lists.newArrayList();
                 if (!avProfile.isTheReplicateAverageNoLessThan10Molecules() && avProfile.areTheRepProfilesSufficientlyClustered()) {
-//Only include replicate that are >10 molecules in order to avoid scattering produced by Poisson distribution 
+                    //Only include replicate that are >10 molecules in order to avoid scattering produced by Poisson
+                    // distribution
                     double sum = 0;
                     for (SampleProfile profile : avProfile.getReplicateProfileList()) {
                         if (profile.hasAnLreWindowBeenFound() && !profile.isExcluded()) {

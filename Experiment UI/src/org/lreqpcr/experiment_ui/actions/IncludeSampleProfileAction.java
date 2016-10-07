@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2013   Bob Rutledge
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -18,20 +18,21 @@ package org.lreqpcr.experiment_ui.actions;
 
 import java.awt.event.ActionEvent;
 import java.util.List;
+
 import javax.swing.AbstractAction;
+
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.data_processing.ProfileSummary;
-import org.lreqpcr.core.data_processing.ProfileSummaryImp;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
+import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.lreqpcr.core.utilities.ProfileUtilities;
 import org.lreqpcr.core.utilities.UniversalLookup;
-import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
@@ -87,7 +88,7 @@ class IncludeSampleProfileAction extends AbstractAction {
                     && !parentAvProfile.isTheReplicateAverageNoLessThan10Molecules()) {
                 LreAnalysisService lreAnalysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
                 //Reinitialize the LRE window
-                ProfileSummary prfSum = new ProfileSummaryImp(parentAvProfile, db);
+                ProfileSummary prfSum = new ProfileSummary(parentAvProfile, db);
                 lreAnalysisService.lreWindowInitialization(prfSum, selectionParameters);
                 //Apply nonlinear regression optimization
                 lreAnalysisService.optimizeLreWindowUsingNonlinearRegression(prfSum, selectionParameters);

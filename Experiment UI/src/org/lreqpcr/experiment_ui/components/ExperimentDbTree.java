@@ -24,23 +24,31 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.List;
+
 import javax.swing.Action;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import jxl.write.WriteException;
+
 import org.lreqpcr.analysis_services.LreAnalysisService;
-import org.lreqpcr.core.data_objects.*;
+import org.lreqpcr.core.data_objects.AverageProfile;
+import org.lreqpcr.core.data_objects.AverageSampleProfile;
+import org.lreqpcr.core.data_objects.ExperimentDbInfo;
+import org.lreqpcr.core.data_objects.ExptDbInfo;
+import org.lreqpcr.core.data_objects.LreObject;
+import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
+import org.lreqpcr.core.data_objects.Profile;
+import org.lreqpcr.core.data_objects.Run;
+import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.data_processing.ProfileSummary;
-import org.lreqpcr.core.data_processing.ProfileSummaryImp;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
 import org.lreqpcr.core.ui_elements.LabelFactory;
 import org.lreqpcr.core.ui_elements.LreActionFactory;
 import org.lreqpcr.core.ui_elements.LreNode;
+import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.lreqpcr.core.utilities.FormatingUtilities;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.experiment_ui.actions.ExperimentTreeNodeActions;
-import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.lreqpcr.nonlinear_regression_services.NonlinearRegressionUtilities;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.view.BeanTreeView;
@@ -48,12 +56,14 @@ import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
+import org.openide.util.Lookup.Result;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.util.Utilities;
-import org.openide.util.Lookup.Result;
 import org.openide.util.lookup.Lookups;
 import org.openide.windows.WindowManager;
+
+import jxl.write.WriteException;
 
 /**
  * Tree-based view of an Experiment database
@@ -183,7 +193,8 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
                 displayIncompatilityMessage();
                 return;
             }
-        } else {//An ExptDbInfo is present so set it. 
+        }
+        else {//An ExptDbInfo is present so set it.
             exptDbInfo = (ExptDbInfo) l.get(0);
         }
 //Test if this database predates nonlinear regression by testing the version number, which was inmplemented at the same time as NR
@@ -316,7 +327,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
 //>10N but no LRE window found indicates that the LRE window needs to be reiniitialized
                     LreAnalysisService lreAnalysisService = Lookup.getDefault().lookup(LreAnalysisService.class);
                     selectionParameters = (LreWindowSelectionParameters) exptDB.getAllObjects(LreWindowSelectionParameters.class).get(0);
-                    ProfileSummary prfSum = new ProfileSummaryImp(avProfile, exptDB);
+                    ProfileSummary prfSum = new ProfileSummary(avProfile, exptDB);
                     lreAnalysisService.optimizeLreWindowUsingNonlinearRegression(prfSum, selectionParameters);
                 }
             }
@@ -462,7 +473,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
                 exptDB.saveObject(avSamPrf);
                 for (SampleProfile prf : avSamPrf.getReplicateProfileList()) {
                     prf.setIsTargetQuantityNormalizedToFmax(arg);
-                    //There is no need to reinitiaze the profiles because 
+                    //There is no need to reinitiaze the profiles because
                     //normalization DOES NOT CHANGE Fo
                     exptDB.saveObject(prf);
                 }

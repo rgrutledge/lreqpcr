@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2013   Bob Rutledge
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -18,13 +18,13 @@ package org.lreqpcr.nonlinear_regression_services;
 
 import java.awt.Toolkit;
 import java.util.List;
+
 import org.lreqpcr.analysis_services.LreAnalysisService;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_processing.ProfileSummary;
-import org.lreqpcr.core.data_processing.ProfileSummaryImp;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
 import org.lreqpcr.core.ui_elements.PanelMessages;
@@ -77,14 +77,14 @@ public class NonlinearRegressionUtilities {
         for (AverageProfile avProfile : profileList) {
             //Need to update the replicate profiles first in order to test if <10N
             for (Profile profile : avProfile.getReplicateProfileList()) {
-                ProfileSummary prfSum = new ProfileSummaryImp(profile, profileDb);
+                ProfileSummary prfSum = new ProfileSummary(profile, profileDb);
                 lreAnalysisService.optimizeLreWindowUsingNonlinearRegression(prfSum, selectionParameters);
                 profileDb.saveObject(profile);
             }
             if (!avProfile.isTheReplicateAverageNoLessThan10Molecules() && avProfile.areTheRepProfilesSufficientlyClustered()) {
                 //The AverageProfile is valid thus reinitialize it
                 Profile profile = (Profile) avProfile;
-                ProfileSummary prfSum = new ProfileSummaryImp(profile, profileDb);
+                ProfileSummary prfSum = new ProfileSummary(profile, profileDb);
                 lreAnalysisService.optimizeLreWindowUsingNonlinearRegression(prfSum, selectionParameters);
                 profileDb.saveObject(avProfile);
             }
