@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2013   Bob Rutledge
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -24,23 +24,24 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
+
 import javax.swing.JOptionPane;
+
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.Sample;
-import org.lreqpcr.core.data_objects.SampleImpl;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.database_services.DatabaseProvider;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
+import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.lreqpcr.core.utilities.MathFunctions;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.core.utilities.UniversalLookupListener;
 import org.lreqpcr.data_export_services.DataExportServices;
 import org.lreqpcr.sample_overview.ui_components.SampleChildren;
-import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
@@ -128,7 +129,7 @@ public final class SampleOverviewTopComponent extends TopComponent
     }
 
     private List<Sample> getSampleList() {
-        List<Sample> sampleList = new ArrayList<Sample>();
+        List<Sample> sampleList = new ArrayList<>();
         //Retrieve all amplicon names from the database
         List profileList;
         //This was needed to avoid, for unclear reasons, a DB4O "not supported" exception that occurred when retrieving AverageProfile.class.
@@ -137,7 +138,7 @@ public final class SampleOverviewTopComponent extends TopComponent
         } else {//Must be an Experiment database
             profileList = currentDB.getAllObjects(AverageSampleProfile.class);
         }
-        ArrayList<String> sampleNameList = new ArrayList<String>();
+        ArrayList<String> sampleNameList = new ArrayList<>();
         for (Object o : profileList) {
             Profile profile = (Profile) o;
             String sampleName = profile.getSampleName();
@@ -148,13 +149,13 @@ public final class SampleOverviewTopComponent extends TopComponent
         //Determine average Emax and its CV based only on AverageSampleProfiles with No >10 molecules
         //Construct a list of Amplicons using the ampList name
         for (String sampleName : sampleNameList) {
-            Sample facadeSample = new SampleImpl();
+            Sample facadeSample = new Sample();
             //Sample objects have not yet been implemented in the Experiment/Calibration databases
             //That is, a Sample is only represented as a String name
             facadeSample.setName(sampleName);
             //Retrieve all average profiles derived from this sample
             List sampleNameAverageProfileList = currentDB.retrieveUsingFieldValue(AverageProfile.class, "sampleName", sampleName);
-            ArrayList<Double> emaxArrayList = new ArrayList<Double>();
+            ArrayList<Double> emaxArrayList = new ArrayList<>();
             double emaxTotal = 0;
             for (int i = 0; i < sampleNameAverageProfileList.size(); i++) {
                 Profile profile = (Profile) sampleNameAverageProfileList.get(i);
@@ -189,12 +190,12 @@ public final class SampleOverviewTopComponent extends TopComponent
     @SuppressWarnings("unchecked")
     private HashMap<String, List<AverageSampleProfile>> getAvSamplePrfsForSelectedSamples() {
         Node[] nodes = mgr.getSelectedNodes();
-        HashMap<String, List<AverageSampleProfile>> groupList = new HashMap<String, List<AverageSampleProfile>>();
+        HashMap<String, List<AverageSampleProfile>> groupList = new HashMap<>();
         for (Node node : nodes) {
-            SampleImpl sample = node.getLookup().lookup(SampleImpl.class);
+            Sample sample = node.getLookup().lookup(Sample.class);
             if (sample != null) {
                 List profileList = currentDB.retrieveUsingFieldValue(AverageSampleProfile.class, "sampleName", sample.getName());
-                groupList.put(sample.getName(), new ArrayList<AverageSampleProfile>(profileList));
+                groupList.put(sample.getName(), new ArrayList<>(profileList));
             }
         }
         if (groupList.isEmpty()) {
@@ -211,14 +212,14 @@ public final class SampleOverviewTopComponent extends TopComponent
     @SuppressWarnings("unchecked")
     private HashMap<String, List<SampleProfile>> getSamplePrfsForSelectedSamples() {
         Node[] nodes = mgr.getSelectedNodes();
-        HashMap<String, List<SampleProfile>> groupList = new HashMap<String, List<SampleProfile>>();
+        HashMap<String, List<SampleProfile>> groupList = new HashMap<>();
         for (Node node : nodes) {
-            Sample sample = node.getLookup().lookup(SampleImpl.class);
+            Sample sample = node.getLookup().lookup(Sample.class);
             if (sample != null) {
                 List<SampleProfile> profileList = currentDB.retrieveUsingFieldValue(SampleProfile.class, "sampleName", sample.getName());
                 //This will also retrieve average profiles, so they must be removed
                 //But the db4o list causes an error to revert to creating an ArrayList
-                List<SampleProfile> samplePrfList = new ArrayList<SampleProfile>();
+                List<SampleProfile> samplePrfList = new ArrayList<>();
                 for (SampleProfile samplePrf : profileList) {
                     if (samplePrf instanceof AverageProfile) {
                         //Do nothing

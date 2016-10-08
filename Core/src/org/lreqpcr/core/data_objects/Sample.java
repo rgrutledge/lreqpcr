@@ -20,21 +20,21 @@ package org.lreqpcr.core.data_objects;
 /**
  * NOT YET IMPLEMENTED Represents a sample.
  *
- * Sample is a complex element that in e.g. gene expression analysis 
- * is composed of RNA derived from a sample, followed by cDNA derived by RT. 
+ * Sample is a complex element that in e.g. gene expression analysis
+ * is composed of RNA derived from a sample, followed by cDNA derived by RT.
  * The sample type (unknown, standard, NTC etc) should also be
- * set by the Sample. Note also, that is possible that targets could 
+ * set by the Sample. Note also, that is possible that targets could
  * be a mixture of both single and double stranded Target molecules
- * 
+ *
  * @author Bob Rutledge
  */
-public abstract class Sample extends LreObject {
+public class Sample extends LreObject {
 
     private double emaxAverage;//Average Emax
     private double emaxCV;//CV of the average Emax
-//Note that it is possible the the sample is a mixture of single and 
-//double stranded targets, so this designation is likely not correct. 
-//It may be best to specify strandedness in Profile instead. 
+    //Note that it is possible the the sample is a mixture of single and
+    //double stranded targets, so this designation is likely not correct.
+    //It may be best to specify strandedness in Profile instead.
     private TargetStrandedness targetStandedness;
     //Strandedness should be an enum...
     private boolean isTargetSingleStranded = true;
