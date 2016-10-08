@@ -22,7 +22,7 @@ package org.lreqpcr.core.data_objects;
  *
  * @author Bob Rutledge
  */
-public abstract class ReactionSetup extends LreObject {
+public class ReactionSetup extends LreObject {
 
     private String machineName, pmtGain;//MXP uses a gain setting
     private String cyclingRegime;
