@@ -19,9 +19,10 @@ package org.lreqpcr.core.data_objects;
 
 /**
  * Amplicon base abstract class NOT YET FULLY IMPLEMENTED
+ *
  * @author Bob Rutledge
  */
-public abstract class Amplicon extends LreObject {
+public class Amplicon extends LreObject {
 
     private String uniGene;
     private int ampliconSize;
@@ -46,7 +47,6 @@ public abstract class Amplicon extends LreObject {
     }
 
     /**
-     * 
      * @return the amplicon size in base pairs, zero if not set
      */
     public int getAmpliconSize() {
@@ -55,14 +55,15 @@ public abstract class Amplicon extends LreObject {
 
     /**
      * Set the amplicon size in base pairs.
-     * @param ampliconSize the amplicon size in base pairs
+     *
+     * @param ampliconSize
+     *     the amplicon size in base pairs
      */
     public void setAmpliconSize(int ampliconSize) {
         this.ampliconSize = ampliconSize;
     }
 
     /**
-     *
      * @return sequence of the 3' primer
      */
     public String getDownPrimer() {
@@ -70,15 +71,14 @@ public abstract class Amplicon extends LreObject {
     }
 
     /**
-     *
-     * @param downPrimer sequence of the 3' primer
+     * @param downPrimer
+     *     sequence of the 3' primer
      */
     public void setDownPrimer(String downPrimer) {
         this.downPrimer = downPrimer;
     }
 
     /**
-     *
      * @return sequence of the 5' primer
      */
     public String getUpPrimer() {
@@ -86,14 +86,16 @@ public abstract class Amplicon extends LreObject {
     }
 
     /**
-     *
-     * @param upPrimer sequence of the 5' primer
+     * @param upPrimer
+     *     sequence of the 5' primer
      */
     public void setUpPrimer(String upPrimer) {
         this.upPrimer = upPrimer;
     }
+
     /**
      * Not implemented
+     *
      * @return the average Emax
      */
     public double getEmaxAverage() {
@@ -102,7 +104,9 @@ public abstract class Amplicon extends LreObject {
 
     /**
      * Not implemented
-     * @param emaxAverage the average Emax
+     *
+     * @param emaxAverage
+     *     the average Emax
      */
     public void setEmaxAverage(double emaxAverage) {
         this.emaxAverage = emaxAverage;
@@ -110,6 +114,7 @@ public abstract class Amplicon extends LreObject {
 
     /**
      * Not implemented
+     *
      * @return the CV of the average Emax
      */
     public double getEmaxCV() {
@@ -118,14 +123,16 @@ public abstract class Amplicon extends LreObject {
 
     /**
      * Not implemented
-     * @param emaxCV the CV of the average Emax
+     *
+     * @param emaxCV
+     *     the CV of the average Emax
      */
     public void setEmaxCV(double emaxCV) {
         this.emaxCV = emaxCV;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return getName();
     }
 }

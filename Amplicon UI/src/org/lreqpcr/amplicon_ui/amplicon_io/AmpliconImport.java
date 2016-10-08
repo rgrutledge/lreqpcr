@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2013   Bob Rutledge
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -18,22 +18,24 @@ package org.lreqpcr.amplicon_ui.amplicon_io;
 
 import java.io.File;
 import java.io.IOException;
+
 import javax.swing.JOptionPane;
-import jxl.Sheet;
-import jxl.Workbook;
-import jxl.read.biff.BiffException;
+
 import org.lreqpcr.core.data_objects.Amplicon;
-import org.lreqpcr.core.data_objects.AmpliconImpl;
 import org.lreqpcr.core.database_services.DatabaseServices;
+import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.lreqpcr.core.utilities.IOUtilities;
 import org.lreqpcr.core.utilities.UniversalLookup;
-import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.openide.util.Exceptions;
 import org.openide.windows.WindowManager;
 
+import jxl.Sheet;
+import jxl.Workbook;
+import jxl.read.biff.BiffException;
+
 /**
  * This import function if based on the AmpliconImportExcelTemplate format
- * 
+ *
  * @author Bob Rutledge
  */
 public class AmpliconImport {
@@ -86,7 +88,7 @@ public class AmpliconImport {
         int rowCount = sheet.getRows();
         int row = 1;//Start column
         while (row < rowCount) {
-            Amplicon amp = new AmpliconImpl();
+            Amplicon amp = new Amplicon();
             amp.setName(sheet.getCell(0, row).getContents());
             try {
                 amp.setAmpliconSize(Integer.valueOf(sheet.getCell(1, row).getContents()));

@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2013   Bob Rutledge
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -21,13 +21,14 @@ import java.beans.PropertyVetoException;
 import java.io.File;
 import java.util.List;
 import java.util.logging.Logger;
+
 import javax.swing.Action;
 import javax.swing.JOptionPane;
+
 import org.lreqpcr.amplicon_ui.actions.AmpliconTreeNodeActions;
 import org.lreqpcr.amplicon_ui.components.AmpliconTreeNodeLabels;
 import org.lreqpcr.core.data_objects.Amplicon;
 import org.lreqpcr.core.data_objects.AmpliconDbInfo;
-import org.lreqpcr.core.data_objects.AmpliconImpl;
 import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.database_services.DatabaseProvider;
 import org.lreqpcr.core.database_services.DatabaseServiceFactory;
@@ -37,9 +38,9 @@ import org.lreqpcr.core.ui_elements.LabelFactory;
 import org.lreqpcr.core.ui_elements.LreActionFactory;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
+import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.core.utilities.UniversalLookupListener;
-import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
@@ -124,12 +125,12 @@ public final class AmpliconTopComponent extends TopComponent
 //Simple tree listing all amplicons, i.e. not sorted in relation to target groups
 //or the parent Target which are not implemented in this version
         List<? extends LreObject> childList =
-                (List<? extends LreObject>) ampliconDB.getAllObjects(AmpliconImpl.class);
+            (List<? extends LreObject>)ampliconDB.getAllObjects(Amplicon.class);
         root = new LreNode(new LreObjectChildren(mgr, ampliconDB, childList, nodeActionFactory,
                 nodeLabelFactory), Lookups.singleton(dbInfo), new Action[]{});
         root.setExplorerManager(mgr);
         root.setDatabaseService(ampliconDB);
-        String displayName = dbFileName.substring(0, length - 4) 
+        String displayName = dbFileName.substring(0, length - 4)
                 + " (" + String.valueOf(childList.size()) + ")";
         root.setName(displayName);
         root.setShortDescription(dbFile.getAbsolutePath());
@@ -281,7 +282,7 @@ public final class AmpliconTopComponent extends TopComponent
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
-        Amplicon newAmplicon = new AmpliconImpl();
+        Amplicon newAmplicon = new Amplicon();
         newAmplicon.setName("");
         //This allows the key listener to process key strokes
         LreNode newNode = new LreNode(Children.LEAF, Lookups.singleton(newAmplicon), new Action[]{});
@@ -289,7 +290,7 @@ public final class AmpliconTopComponent extends TopComponent
         newNode.saveLreObject();//This also saves the new amplicon to disk
         //Need to update the tree and put the selection on the new node
         //Construct a new root children list, which in this version is a simply a list of amplicons
-        List newChildList = ampliconDB.getAllObjects(AmpliconImpl.class);
+        List newChildList = ampliconDB.getAllObjects(Amplicon.class);
         nodeActionFactory = new AmpliconTreeNodeActions(mgr);
         LreObjectChildren newChildren = new LreObjectChildren(mgr,
                 ampliconDB, newChildList, nodeActionFactory, new AmpliconTreeNodeLabels());
@@ -396,7 +397,7 @@ public final class AmpliconTopComponent extends TopComponent
     public ExplorerManager getExplorerManager() {
         return mgr;
     }
-    
+
     //this is necessary to override the mode menu acess which allows the user to close the window
 @Override
     public boolean canClose(){

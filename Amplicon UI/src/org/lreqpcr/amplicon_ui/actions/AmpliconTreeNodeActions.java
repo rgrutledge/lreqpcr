@@ -17,9 +17,11 @@
 
 package org.lreqpcr.amplicon_ui.actions;
 
-import org.lreqpcr.core.ui_elements.LreActionFactory;
 import java.util.TreeMap;
+
 import javax.swing.Action;
+
+import org.lreqpcr.core.ui_elements.LreActionFactory;
 import org.openide.explorer.ExplorerManager;
 
 /**
@@ -28,16 +30,16 @@ import org.openide.explorer.ExplorerManager;
  */
 public class AmpliconTreeNodeActions implements LreActionFactory {
 
-    TreeMap<String, Action[]> actionMap = new TreeMap<String, Action[]>();
+    TreeMap<String, Action[]> actionMap = new TreeMap<>();
 
     public AmpliconTreeNodeActions(ExplorerManager mgr) {
         //Amplicon actions
         Action[] actions = new Action[]{
             new DeleteAmpliconAction(mgr)
         };
-        actionMap.put("AmpliconImpl", actions);
+        actionMap.put("Amplicon", actions);
     }
-    
+
     public Action[] getActions(String className) {
         return actionMap.get(className);
     }

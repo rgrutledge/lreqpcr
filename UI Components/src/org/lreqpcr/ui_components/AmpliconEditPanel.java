@@ -16,17 +16,18 @@
  */
 package org.lreqpcr.ui_components;
 
-import org.lreqpcr.core.ui_elements.PanelMessages;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Collection;
 import java.util.List;
+
 import javax.swing.JPanel;
+
 import org.lreqpcr.core.data_objects.Amplicon;
-import org.lreqpcr.core.data_objects.AmpliconImpl;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
 import org.lreqpcr.core.ui_elements.LreNode;
+import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.core.utilities.UniversalLookupListener;
 import org.openide.util.Lookup;
@@ -142,9 +143,9 @@ public class AmpliconEditPanel extends JPanel
     }
 
     private boolean isAmpliconNameUnique(String ampName) {
-        List nameList = ampliconDB.retrieveUsingFieldValue(AmpliconImpl.class, "name", ampName);
+        List nameList = ampliconDB.retrieveUsingFieldValue(Amplicon.class, "name", ampName);
         if (nameList.size() > 0) {
-            AmpliconImpl amplicon = (AmpliconImpl) nameList.get(0);
+            Amplicon amplicon = (Amplicon)nameList.get(0);
             if (amplicon == selectedAmplicon) {//Likely not needed
                 return true;
             } else {

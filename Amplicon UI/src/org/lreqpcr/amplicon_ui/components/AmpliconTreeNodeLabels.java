@@ -17,7 +17,7 @@
 
 package org.lreqpcr.amplicon_ui.components;
 
-import org.lreqpcr.core.data_objects.AmpliconImpl;
+import org.lreqpcr.core.data_objects.Amplicon;
 import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.ui_elements.LabelFactory;
 
@@ -28,7 +28,7 @@ import org.lreqpcr.core.ui_elements.LabelFactory;
 public class AmpliconTreeNodeLabels implements LabelFactory {
 
     public String getNodeLabel(LreObject member) {
-        if (member instanceof AmpliconImpl) {
+        if (member instanceof Amplicon) {
             return member.getName();
         }
         return "";

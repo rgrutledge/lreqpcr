@@ -19,9 +19,11 @@ package org.lreqpcr.amplicon_ui.actions;
 
 import java.awt.event.ActionEvent;
 import java.util.List;
+
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
-import org.lreqpcr.core.data_objects.AmpliconImpl;
+
+import org.lreqpcr.core.data_objects.Amplicon;
 import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
@@ -38,7 +40,7 @@ import org.openide.windows.WindowManager;
  */
 public class DeleteAmpliconAction extends AbstractAction {
 
-    private AmpliconImpl amplicon;
+    private Amplicon amplicon;
     private ExplorerManager mgr;//Defines the tree upon which these actions will be applied
 
     public DeleteAmpliconAction(ExplorerManager mgr) {
@@ -47,9 +49,9 @@ public class DeleteAmpliconAction extends AbstractAction {
     }
 
     /**
-     * Assumes that an Amplicon database has been opened. If more than one Amplicon 
-     * database is open, the first database is used. 
-     * 
+     * Assumes that an Amplicon database has been opened. If more than one Amplicon
+     * database is open, the first database is used.
+     *
      * @param e the ActionEvent
      */
     @SuppressWarnings("unchecked")
@@ -64,7 +66,7 @@ public class DeleteAmpliconAction extends AbstractAction {
         LreNode rootNode = (LreNode) mgr.getRootContext();
         LreObjectChildren children = (LreObjectChildren) rootNode.getChildren();
         if (nodes.length == 1) {
-            amplicon = selectedNode.getLookup().lookup(AmpliconImpl.class);
+            amplicon = selectedNode.getLookup().lookup(Amplicon.class);
             String msg = "Are you sure you want to permanently delete '" + amplicon.getName() +
                     "'?";
              int n = JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(),
@@ -84,14 +86,14 @@ public class DeleteAmpliconAction extends AbstractAction {
                     JOptionPane.WARNING_MESSAGE);
             if (n == JOptionPane.YES_OPTION) {
                 for (Node node : nodes) {
-                    amplicon = node.getLookup().lookup(AmpliconImpl.class);
+                    amplicon = node.getLookup().lookup(Amplicon.class);
                     ampliconDB.deleteObject(amplicon);
                     ampliconDB.commitChanges();
                 }
             }
         }
         //Update the tree
-        children.setLreObjectList((List<? extends LreObject>) ampliconDB.getAllObjects(AmpliconImpl.class));
+        children.setLreObjectList((List<? extends LreObject>)ampliconDB.getAllObjects(Amplicon.class));
         //Refresh the tree, moving the selection to the node below the deleted node
         children.addNotify();
     }

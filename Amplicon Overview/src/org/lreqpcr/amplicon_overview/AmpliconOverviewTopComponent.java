@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2013   Bob Rutledge
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -24,10 +24,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
+
 import javax.swing.JOptionPane;
+
 import org.lreqpcr.amplicon_overview.ui_components.AmpliconChildren;
 import org.lreqpcr.core.data_objects.Amplicon;
-import org.lreqpcr.core.data_objects.AmpliconImpl;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
@@ -37,11 +38,11 @@ import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.database_services.DatabaseProvider;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
+import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.lreqpcr.core.utilities.MathFunctions;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.core.utilities.UniversalLookupListener;
 import org.lreqpcr.data_export_services.DataExportServices;
-import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
@@ -131,7 +132,7 @@ public final class AmpliconOverviewTopComponent extends TopComponent
     }
 
     private List<Amplicon> getAmpliconList() {
-        List<Amplicon> ampliconList = new ArrayList<Amplicon>();
+        List<Amplicon> ampliconList = new ArrayList<>();
         List avProfileList;
         if (dbType == DatabaseType.CALIBRATION) {
             avProfileList = currentDB.getAllObjects(AverageCalibrationProfile.class);
@@ -139,7 +140,7 @@ public final class AmpliconOverviewTopComponent extends TopComponent
             avProfileList = currentDB.getAllObjects(AverageSampleProfile.class);
         }
         //Collect all the amplicon names from the average profile list
-        ArrayList<String> ampNameList = new ArrayList<String>();
+        ArrayList<String> ampNameList = new ArrayList<>();
         for (Object o : avProfileList) {
             Profile profile = (Profile) o;
             String ampName = profile.getAmpliconName();
@@ -150,7 +151,7 @@ public final class AmpliconOverviewTopComponent extends TopComponent
         //Determine average Emax and its CV based only on AverageSampleProfiles with No >10 molecules
         //Construct a list of Amplicons using the ampList name
         for (String ampName : ampNameList) {
-            Amplicon facadeAmplicon = new AmpliconImpl();
+            Amplicon facadeAmplicon = new Amplicon();
             //Amplicon objects have not yet been implemented in Experiment/Calibration databases
             //That is, an Amplicon is only represented as String name
             //Thus this facadeAmplicon is only used for display purposes
@@ -158,7 +159,7 @@ public final class AmpliconOverviewTopComponent extends TopComponent
             //Retrieve all average profiles derived from this amplicon
             List ampliconNameAverageProfileList = currentDB.retrieveUsingFieldValue(AverageProfile.class, "ampliconName", ampName);
             //Compile a list of all Emax values
-            ArrayList<Double> emaxArrayList = new ArrayList<Double>();
+            ArrayList<Double> emaxArrayList = new ArrayList<>();
             //Generate an Emax average and CV for this list
             double emaxTotal = 0;
             for (int i = 0; i < ampliconNameAverageProfileList.size(); i++) {
@@ -205,12 +206,12 @@ public final class AmpliconOverviewTopComponent extends TopComponent
     @SuppressWarnings("unchecked")
     private HashMap<String, List<AverageSampleProfile>> getAvSamplePrfForSelectedAmplicons() {
         Node[] nodes = mgr.getSelectedNodes();
-        HashMap<String, List<AverageSampleProfile>> groupList = new HashMap<String, List<AverageSampleProfile>>();
+        HashMap<String, List<AverageSampleProfile>> groupList = new HashMap<>();
         for (Node node : nodes) {
-            AmpliconImpl amplicon = node.getLookup().lookup(AmpliconImpl.class);
+            Amplicon amplicon = node.getLookup().lookup(Amplicon.class);
             if (amplicon != null) {
                 List profileList = currentDB.retrieveUsingFieldValue(AverageSampleProfile.class, "ampliconName", amplicon.getName());
-                groupList.put(amplicon.getName(), new ArrayList<AverageSampleProfile>(profileList));
+                groupList.put(amplicon.getName(), new ArrayList<>(profileList));
             }
         }
         return groupList;
@@ -219,12 +220,12 @@ public final class AmpliconOverviewTopComponent extends TopComponent
     @SuppressWarnings("unchecked")
     private HashMap<String, List<AverageCalibrationProfile>> getAvCalibrationPrfForSelectedAmplicons() {
         Node[] nodes = mgr.getSelectedNodes();
-        HashMap<String, List<AverageCalibrationProfile>> groupList = new HashMap<String, List<AverageCalibrationProfile>>();
+        HashMap<String, List<AverageCalibrationProfile>> groupList = new HashMap<>();
         for (Node node : nodes) {
-            AmpliconImpl amplicon = node.getLookup().lookup(AmpliconImpl.class);
+            Amplicon amplicon = node.getLookup().lookup(Amplicon.class);
             if (amplicon != null) {
                 List profileList = currentDB.retrieveUsingFieldValue(AverageCalibrationProfile.class, "ampliconName", amplicon.getName());
-                groupList.put(amplicon.getName(), new ArrayList<AverageCalibrationProfile>(profileList));
+                groupList.put(amplicon.getName(), new ArrayList<>(profileList));
             }
         }
         return groupList;
@@ -233,14 +234,14 @@ public final class AmpliconOverviewTopComponent extends TopComponent
     @SuppressWarnings("unchecked")
     private HashMap<String, List<SampleProfile>> getSamplePrfsForSelectedAmplicons() {
         Node[] nodes = mgr.getSelectedNodes();
-        HashMap<String, List<SampleProfile>> groupList = new HashMap<String, List<SampleProfile>>();
+        HashMap<String, List<SampleProfile>> groupList = new HashMap<>();
         for (Node node : nodes) {
-            AmpliconImpl amplicon = node.getLookup().lookup(AmpliconImpl.class);
+            Amplicon amplicon = node.getLookup().lookup(Amplicon.class);
             if (amplicon != null) {
                 List<SampleProfile> allProfileList = currentDB.retrieveUsingFieldValue(SampleProfile.class, "ampliconName", amplicon.getName());
                 //This will also retrieve average profiles, so they must be removed
                 //But the db4o list causes an error to revert to creating an ArrayList
-                List<SampleProfile> samplePrfList = new ArrayList<SampleProfile>();
+                List<SampleProfile> samplePrfList = new ArrayList<>();
                 for (SampleProfile samplePrf : allProfileList) {
                     if (samplePrf instanceof AverageProfile) {
                         //Do nothing
@@ -257,14 +258,14 @@ public final class AmpliconOverviewTopComponent extends TopComponent
     @SuppressWarnings("unchecked")
     private HashMap<String, List<CalibrationProfile>> getCalPrfsForSelectedAmplicons() {
         Node[] nodes = mgr.getSelectedNodes();
-        HashMap<String, List<CalibrationProfile>> groupList = new HashMap<String, List<CalibrationProfile>>();
+        HashMap<String, List<CalibrationProfile>> groupList = new HashMap<>();
         for (Node node : nodes) {
-            AmpliconImpl amplicon = node.getLookup().lookup(AmpliconImpl.class);
+            Amplicon amplicon = node.getLookup().lookup(Amplicon.class);
             if (amplicon != null) {
                 List<CalibrationProfile> allProfileList = currentDB.retrieveUsingFieldValue(CalibrationProfile.class, "ampliconName", amplicon.getName());
                 //This will also retrieve average profiles, so they must be removed
                 //But the db4o list needs to be converted to an ArrayList
-                List<CalibrationProfile> calibrationPrfList = new ArrayList<CalibrationProfile>();
+                List<CalibrationProfile> calibrationPrfList = new ArrayList<>();
                 for (CalibrationProfile calPrf : allProfileList) {
                     if (calPrf instanceof AverageProfile) {
                         //Do nothing
@@ -282,7 +283,7 @@ public final class AmpliconOverviewTopComponent extends TopComponent
 //        Node[] nodes = mgr.getSelectedNodes();
 //        HashMap<String, List<CalibrationProfile>> groupList = new HashMap<String, List<CalibrationProfile>>();
 //        for (Node node : nodes) {
-//            AmpliconImpl amplicon = node.getLookup().lookup(AmpliconImpl.class);
+    //            Amplicon amplicon = node.getLookup().lookup(Amplicon.class);
 //            if (amplicon != null) {
 //                    List<CalibrationProfile> profileList = currentDB.retrieveUsingFieldValue(CalibrationProfile.class, "ampliconName", amplicon.getName());
 //                    //This will also retrieve average profiles, so they must be removed
@@ -537,10 +538,10 @@ public final class AmpliconOverviewTopComponent extends TopComponent
                 return;
             }
         }
-        if (key == PanelMessages.PROFILE_DELETED 
+        if (key == PanelMessages.PROFILE_DELETED
                 || key == PanelMessages.RUN_IMPORTED
                 || key == PanelMessages.RUN_DELETED
-                || key == PanelMessages.PROFILE_EXCLUDED 
+            || key == PanelMessages.PROFILE_EXCLUDED
                 || key == PanelMessages.PROFILE_INCLUDED
                 || key == PanelMessages.PROFILE_DELETED) {
             createTree();//Not sure if this will be slow when large numbers of profiles are present in the database
