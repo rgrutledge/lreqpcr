@@ -15,34 +15,28 @@
  */
 package org.lreqpcr.lightcycler_import;
 
-import com.google.common.collect.Lists;
 import java.net.URL;
-import org.lreqpcr.core.data_objects.*;
-import org.lreqpcr.data_import_services.RunImportUtilities;
-import org.lreqpcr.core.utilities.IOUtilities;
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import javax.swing.JOptionPane;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import org.lreqpcr.data_import_services.DataImportType;
+
+import org.lreqpcr.core.data_objects.CalibrationProfile;
+import org.lreqpcr.core.data_objects.Profile;
+import org.lreqpcr.core.data_objects.Run;
+import org.lreqpcr.core.data_objects.SampleProfile;
+import org.lreqpcr.core.data_objects.TargetStrandedness;
 import org.lreqpcr.data_import_services.RunImportData;
 import org.lreqpcr.data_import_services.RunImportService;
+import org.lreqpcr.data_import_services.RunImportUtilities;
 import org.openide.util.Exceptions;
-import org.openide.util.lookup.ServiceProvider;
-import org.openide.windows.WindowManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+
+import com.google.common.collect.Lists;
 
 /**
  * Rudimentary RDML import service that only imports profiles along with the
@@ -54,11 +48,11 @@ import org.xml.sax.InputSource;
  */
 //@ServiceProvider(service=RunImportService.class)
 public class LC480ImportProvider extends RunImportService {
-    
+
     public String getRunImportServiceName() {
         return "Lightcycler";
     }
-    
+
     //*********************************NOT IMPLEMENT YET*************************************************
     public URL getHelpFile() {
         return null;
@@ -74,7 +68,7 @@ public class LC480ImportProvider extends RunImportService {
 //            return null;
 //        }
     }
-    
+
     @Override
     @SuppressWarnings(value = "unchecked")
     public RunImportData constructRunImportData() {
@@ -93,11 +87,11 @@ public class LC480ImportProvider extends RunImportService {
         }
         //Setup the objects need for the import
         //Setup the Run object
-//            Run run = new RunImpl();
+        //            Run run = new Run();
         //Set the run name and date
-        Run run = new RunImpl();
+        Run run = new Run();
         //Retrieve the xml file
-        //For development purposes, just use an example xml file       
+        //For development purposes, just use an example xml file
 //        File lcRdmlFile = IOUtilities.openXmlFile("Lightcycler XML Data Import");
 //        if (lcRdmlFile == null) {
 //            return null;
@@ -117,7 +111,7 @@ public class LC480ImportProvider extends RunImportService {
             String wellLabel = profileElement.getAttribute("title");
             //TODO parse the well label, sample and amplicon name from the wellLabel
             NodeList cycleList = profileElement.getElementsByTagName("point");
-            //Collect and set the Fc reading 
+            //Collect and set the Fc reading
             profile.setFcReadings(retrieveFcReadings(cycleList));
             if (CalibrationProfile.class.isAssignableFrom(profile.getClass())) {
                 CalibrationProfile calProfile = (CalibrationProfile) profile;
@@ -132,10 +126,10 @@ public class LC480ImportProvider extends RunImportService {
 
     //Deterimine if this is a sample or calibration profile
     private Profile createProfileType(Run run) {
-        //will need to first import the excel data 
+        //will need to first import the excel data
         return new SampleProfile();
     }
-    
+
     private double[] retrieveFcReadings(NodeList cycleList) {
         //Check the the first cycle is cycle #1, else throw an error dialog
         Element firstCycleElement = (Element) cycleList.item(0);
@@ -163,10 +157,10 @@ public class LC480ImportProvider extends RunImportService {
         }
         return fcArray;
     }
-    
+
     private class SampleInfo{
-        
-//        Enum profileType[CAL, SAMPLE];//should be an enum
+
+        //        Enum profileType[CAL, SAMPLE];//should be an enum
         String sampleName;
     }
 }

@@ -18,16 +18,17 @@ package org.lreqpcr.calibration_ui.actions;
 
 import java.awt.event.ActionEvent;
 import java.util.List;
+
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
+
 import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.data_objects.Run;
-import org.lreqpcr.core.data_objects.RunImpl;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.ui_elements.LreNode;
 import org.lreqpcr.core.ui_elements.LreObjectChildren;
-import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.core.ui_elements.PanelMessages;
+import org.lreqpcr.core.utilities.UniversalLookup;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 import org.openide.windows.WindowManager;
@@ -81,7 +82,7 @@ public class DeleteRunAction extends AbstractAction {
         }
         //Reset the tree
         LreObjectChildren children = (LreObjectChildren) parentNode.getChildren();
-        children.setLreObjectList((List<? extends LreObject>) db.getAllObjects(RunImpl.class));
+        children.setLreObjectList((List<? extends LreObject>)db.getAllObjects(Run.class));
         children.addNotify();
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_CALIBRATION_PANELS);
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.RUN_DELETED);

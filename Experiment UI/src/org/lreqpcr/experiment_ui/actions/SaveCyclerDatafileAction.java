@@ -23,9 +23,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
-import org.lreqpcr.core.data_objects.RunImpl;
+
+import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.SettingsServices;
 import org.lreqpcr.core.ui_elements.LreNode;
@@ -51,7 +53,7 @@ public class SaveCyclerDatafileAction extends AbstractAction {
         LreNode selectedNode = (LreNode) nodes[0];
         DatabaseServices db = selectedNode.getDatabaseServices();
         SettingsServices settingsDB = Lookup.getDefault().lookup(SettingsServices.class);
-        RunImpl run = selectedNode.getLookup().lookup(RunImpl.class);
+        Run run = selectedNode.getLookup().lookup(Run.class);
         JFileChooser fc = new JFileChooser();
         File file;
         byte[] dataFile;

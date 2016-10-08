@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2013   Bob Rutledge
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -21,7 +21,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.logging.Logger;
+
 import javax.swing.JOptionPane;
+
 import org.lreqpcr.core.data_objects.Amplicon;
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.Sample;
@@ -30,11 +32,11 @@ import org.lreqpcr.core.database_services.DatabaseServiceFactory;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
 import org.lreqpcr.core.ui_elements.AmpliconNode;
+import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.lreqpcr.core.ui_elements.SampleNode;
 import org.lreqpcr.core.utilities.UniversalLookup;
 import org.lreqpcr.core.utilities.UniversalLookupListener;
 import org.lreqpcr.data_export_services.DataExportServices;
-import org.lreqpcr.core.ui_elements.PanelMessages;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
@@ -279,7 +281,7 @@ public final class CalibrationTopComponent extends TopComponent
             return;
         }
         List<AverageCalibrationProfile> profileList = (List<AverageCalibrationProfile>) calibrationDB.getAllObjects(AverageCalibrationProfile.class);
-        //Confirm that this is a list of RunImpl nodes
+        //Confirm that this is a list of Run nodes
         if (!profileList.isEmpty()) {
             Lookup.getDefault().lookup(DataExportServices.class).exportAverageCalibrationProfiles(profileList);
         } else {

@@ -17,7 +17,9 @@
 package org.lreqpcr.experiment_ui.actions;
 
 import java.util.TreeMap;
+
 import javax.swing.Action;
+
 import org.lreqpcr.core.ui_elements.LreActionFactory;
 import org.openide.explorer.ExplorerManager;
 
@@ -27,7 +29,7 @@ import org.openide.explorer.ExplorerManager;
  */
 public class ExperimentTreeNodeActions implements LreActionFactory {
 
-    private TreeMap<String, Action[]> actionMap = new TreeMap<String, Action[]>();
+    private TreeMap<String, Action[]> actionMap = new TreeMap<>();
 
     public ExperimentTreeNodeActions(ExplorerManager mgr) {
 
@@ -70,7 +72,7 @@ public class ExperimentTreeNodeActions implements LreActionFactory {
 //                    new FixRunEmaxTo100percentAction(mgr),
 //                    new ReturnRunProfilesEmaxToLreDerivedEmaxAction(mgr)
                 };
-        actionMap.put("RunImpl", actions);
+        actionMap.put("Run", actions);
     }
 
     public Action[] getActions(String className) {

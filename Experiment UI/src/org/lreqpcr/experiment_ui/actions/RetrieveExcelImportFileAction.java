@@ -17,18 +17,19 @@
 
 package org.lreqpcr.experiment_ui.actions;
 
-import org.lreqpcr.core.data_objects.RunImpl;
-import org.lreqpcr.core.ui_elements.LreNode;
 import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
+
+import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.database_services.SettingsServices;
+import org.lreqpcr.core.ui_elements.LreNode;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
@@ -37,7 +38,7 @@ import org.openide.util.Lookup;
 /**
  * DEACTIVATED the cycler machine datafile, saving it with the same name
  * as the original datafile into a directory specified by the user
- * 
+ *
  * @author Bob Rutledge
  */
 public class RetrieveExcelImportFileAction extends AbstractAction {
@@ -53,7 +54,7 @@ public class RetrieveExcelImportFileAction extends AbstractAction {
         SettingsServices settingsDB = Lookup.getDefault().lookup(SettingsServices.class);
         Node[] nodes = mgr.getSelectedNodes();
         LreNode selectedNode = (LreNode) nodes[0];
-        RunImpl run = selectedNode.getLookup().lookup(RunImpl.class);
+        Run run = selectedNode.getLookup().lookup(Run.class);
 //        if(run.getImportDataFile() == null){
 //            String msg = "No import file has been stored";
 //                JOptionPane.showMessageDialog(null, msg, "No import file exsists",

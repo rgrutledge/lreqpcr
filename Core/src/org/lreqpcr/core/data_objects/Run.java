@@ -22,15 +22,16 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+
 import org.lreqpcr.core.utilities.MathFunctions;
 
 /**
- * Data object representing a Run loosely based on the RDML 1.0 specification.  
- * 
+ * Data object representing a Run loosely based on the RDML 1.0 specification.
+ *
  * @author Bob Rutledge
  */
 public abstract class Run extends LreObject {
-    
+
     private Date runDate;
     private List<String> operators;//The person(s) conducting the Run
     protected List<AverageProfile> averageProfileList;
@@ -38,19 +39,20 @@ public abstract class Run extends LreObject {
     private int month;
     private double runSpecificOCF = 0;//Run-specific OCF that only applies to Runs containing SampleProfiles
     protected double averageFmax = 0;//Average Fmax of all replicate profiles
-    protected double avFmaxCV = 0;//Average Fmax coefficient of variation 
+    protected double avFmaxCV = 0;//Average Fmax coefficient of variation
     protected double averageEmax = 0;
     protected double avEmaxCV = 0;
     private String versionNumber;
-    
+
     /**
-     * The child class is set to AverageProfile. This allows average profiles 
-     * within a Run to be retrieved via its child objects. However, for performance 
-     * reasons, this has been largely abandoned, relying instead on a List of 
-     * average profiles. 
+     * The child class is set to AverageProfile. This allows average profiles
+     * within a Run to be retrieved via its child objects. However, for performance
+     * reasons, this has been largely abandoned, relying instead on a List of
+     * average profiles.
      */
     public Run() {
         setChildClass(AverageProfile.class);
+        versionNumber = "0.8.6";
     }
 
     /**
@@ -70,8 +72,8 @@ public abstract class Run extends LreObject {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @return list containing all of the average profiles within this Run
      */
     public List<AverageProfile> getAverageProfileList() {
@@ -79,10 +81,10 @@ public abstract class Run extends LreObject {
     }
 
     /**
-     * All average profiles within a Run are stored in a list, allow direct 
-     * access without having to conduct a database search. Note that order 
-     * is not important. 
-     * 
+     * All average profiles within a Run are stored in a list, allow direct
+     * access without having to conduct a database search. Note that order
+     * is not important.
+     *
      * @param averageProfileList list containing all of the average profiles within this Run
      */
     public void setAverageProfileList(List<AverageProfile> averageProfileList) {
@@ -98,11 +100,11 @@ public abstract class Run extends LreObject {
     }
 
     /**
-     * Sets the date on which the run was conducted. While this was initially 
-     * considered inappropriate as Run date is set during data import. However, 
-     * it is provided to allow an incorrect date to be changed without re-importing  
-     * the Run.  
-     * 
+     * Sets the date on which the run was conducted. While this was initially
+     * considered inappropriate as Run date is set during data import. However,
+     * it is provided to allow an incorrect date to be changed without re-importing
+     * the Run.
+     *
      * @param runDate the new Run date
      */
     public void setRunDate(Date runDate) {
@@ -114,15 +116,15 @@ public abstract class Run extends LreObject {
     }
 
     /**
-     * 
-     * @return the month of the run 
+     *
+     * @return the month of the run
      */
     public int getMonth() {
         return month;
     }
 
     /**
-     * 
+     *
      * @return the year of the run
      */
     public int getYear() {
@@ -130,12 +132,12 @@ public abstract class Run extends LreObject {
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     public double getAverageFmax() {
         if(averageFmax == 0){
-            calculateAverageFmax();            
+            calculateAverageFmax();
         }
         return averageFmax;
     }
@@ -146,7 +148,7 @@ public abstract class Run extends LreObject {
 
     public double getAverageEmax() {
         if(averageEmax == 0){
-            calculateAverageEmax();            
+            calculateAverageEmax();
         }
         return averageEmax;
     }
@@ -156,10 +158,10 @@ public abstract class Run extends LreObject {
     }
 
     /**
-     * Only applies to Runs containing SampleProfile and provides the 
-     * ability to apply a run-specific OCF. This is applicable to Runs that differ 
-     * in fluorescence intensity in comparison with the standard reaction setup 
-     * 
+     * Only applies to Runs containing SampleProfile and provides the
+     * ability to apply a run-specific OCF. This is applicable to Runs that differ
+     * in fluorescence intensity in comparison with the standard reaction setup
+     *
      * @return run-specific OCF
      */
     public double getRunSpecificOCF() {
@@ -167,9 +169,9 @@ public abstract class Run extends LreObject {
     }
 
     /**
-     * Only applies to Runs containing SampleProfile and provides the 
-     * ability to apply a run-specific OCF. This is applicable to Runs that differ 
-     * in fluorescence intensity in comparison with the standard reaction setup 
+     * Only applies to Runs containing SampleProfile and provides the
+     * ability to apply a run-specific OCF. This is applicable to Runs that differ
+     * in fluorescence intensity in comparison with the standard reaction setup
      * @param runOCF the run-specific OCF
      */
     public void setRunSpecificOCF(double runOCF) {
@@ -178,7 +180,7 @@ public abstract class Run extends LreObject {
 
     /**
      * Included in version 0.8 to allow database compatability to be assessed.
-     * 
+     *
      * @return the version number
      */
     public String getVersionNumber() {
@@ -187,21 +189,21 @@ public abstract class Run extends LreObject {
 
     /**
      * Allows updating to a new version to maintain database compatability.
-     * 
+     *
      * @param versionNumber the version number that can contain characters
      */
     public void setVersionNumber(String versionNumber) {
         this.versionNumber = versionNumber;
     }
-    
+
     /**
      * Calculates the average Fmax and it's CV based only on the replicate profiles
      * within this Run. Note that the
-     * AverageProfiles are ignored, as are excluded SampleProfiles, along with  
+     * AverageProfiles are ignored, as are excluded SampleProfiles, along with
      * SampleProfiles for which an LRE window has not been found.
      */
     public void calculateAverageFmax(){
-        ArrayList<Double> fmaxList = new ArrayList<Double>();//Used to determine the SD
+        ArrayList<Double> fmaxList = new ArrayList<>();//Used to determine the SD
         double fmaxSum = 0;
         int profileCount = 0;
         if (averageProfileList == null){
@@ -227,9 +229,9 @@ public abstract class Run extends LreObject {
             averageFmax = 0;
         }
     }
-    
+
     public void calculateAverageEmax(){
-        ArrayList<Double> emaxList = new ArrayList<Double>();//Used to determine the SD
+        ArrayList<Double> emaxList = new ArrayList<>();//Used to determine the SD
         double emaxSum = 0;
         int profileCount = 0;
         if (averageProfileList == null){
@@ -264,7 +266,7 @@ public abstract class Run extends LreObject {
     @Override
     public int compareTo(Object o) {
         Run run = (Run)o;
-        if(runDate.compareTo(run.getRunDate()) == 0){ 
+        if (runDate.compareTo(run.getRunDate()) == 0) {
                 return getName().compareTo(run.getName());
         }else{
             return run.getRunDate().compareTo(getRunDate());

@@ -29,7 +29,6 @@ import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.Run;
-import org.lreqpcr.core.data_objects.RunImpl;
 import org.lreqpcr.core.data_processing.ProfileSummary;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.openide.util.Lookup;
@@ -103,7 +102,7 @@ public class UpdateCalbrationDatabase {
         //Testing indicates that ImplRun remain, so delete them
         List<Run> runList = (List<Run>) calbnDB.getAllObjects(Run.class);
         for (Run run : runList) {
-            if (run instanceof RunImpl) {
+            if (run instanceof Run) {
                 calbnDB.deleteObject(run);
             }
         }

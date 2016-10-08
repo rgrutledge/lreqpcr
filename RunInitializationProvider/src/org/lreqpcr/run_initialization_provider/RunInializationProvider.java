@@ -34,7 +34,6 @@ import org.lreqpcr.core.data_objects.ExptDbInfo;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.Run;
-import org.lreqpcr.core.data_objects.RunImpl;
 import org.lreqpcr.core.data_objects.SampleProfile;
 import org.lreqpcr.core.data_processing.ProfileSummary;
 import org.lreqpcr.core.database_services.DatabaseServices;
@@ -147,7 +146,7 @@ public class RunInializationProvider implements RunInitializationService {
         if (sampleProfileList != null) {
             if (!sampleProfileList.isEmpty()) {//A manual Calibration Profile import type does not have an empty SampleProfile list
                 if (experimentDB.isDatabaseOpen()) {//******Again has this not been check already at the beginning of the function???
-                    sampleRun = new RunImpl();//This is the Run object that will hold the sample profiles
+                    sampleRun = new Run();//This is the Run object that will hold the sample profiles
                     sampleRun.setRunDate(runDate);
                     sampleRun.setName(runName);
                     LreWindowSelectionParameters parameters =

@@ -16,26 +16,20 @@
 package org.lreqpcr.lightcycler_import;
 
 import java.net.URL;
-import org.lreqpcr.core.data_objects.*;
-import org.lreqpcr.data_import_services.RunImportUtilities;
-import org.lreqpcr.core.utilities.IOUtilities;
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import javax.swing.JOptionPane;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import org.lreqpcr.data_import_services.DataImportType;
+
+import org.lreqpcr.core.data_objects.CalibrationProfile;
+import org.lreqpcr.core.data_objects.Run;
+import org.lreqpcr.core.data_objects.SampleProfile;
+import org.lreqpcr.core.data_objects.TargetStrandedness;
 import org.lreqpcr.data_import_services.RunImportData;
 import org.lreqpcr.data_import_services.RunImportService;
+import org.lreqpcr.data_import_services.RunImportUtilities;
 import org.openide.util.Exceptions;
-import org.openide.windows.WindowManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -77,7 +71,7 @@ public class LightcyclerRdmlImportProvider extends RunImportService {
     @SuppressWarnings(value = "unchecked")
     public RunImportData constructRunImportData() {
         //Retrieve the xml file
-        //For development purposes, just use the example RDML file       
+        //For development purposes, just use the example RDML file
 //        File lcRdmlFile = IOUtilities.openXmlFile("Lightcycler XML Data Import");
 //        if (lcRdmlFile == null) {
 //            return null;
@@ -102,9 +96,9 @@ public class LightcyclerRdmlImportProvider extends RunImportService {
 
 //        Date dateMade = new Date(dateString);
 //        int numberOfRuns = listOfRuns.getLength();
-        ArrayList<Run> runList = new ArrayList<Run>();
+        ArrayList<Run> runList = new ArrayList<>();
         for (int i = 0; i < runNodeList.getLength(); i++) {
-            Run run = new RunImpl();
+            Run run = new Run();
             run.setRunDate(new Date());//Set the default to the current date
             Element runElement = (Element) runNodeList.item(i);
             //If a run date is provided, reset the Run's runDate
@@ -121,8 +115,8 @@ public class LightcyclerRdmlImportProvider extends RunImportService {
             //Set the run name
             run.setName(runElement.getAttribute("id"));
             //Get ready to import the run data
-            ArrayList<SampleProfile> sampleProfileList = new ArrayList<SampleProfile>();
-            ArrayList<CalibrationProfile> calbnProfileList = new ArrayList<CalibrationProfile>();
+            ArrayList<SampleProfile> sampleProfileList = new ArrayList<>();
+            ArrayList<CalibrationProfile> calbnProfileList = new ArrayList<>();
             //Determine the strandedness of the Targets
             TargetStrandedness targetStrandedness = RunImportUtilities.isTheTargetSingleStranded();
             //Get all of the reactions elements
@@ -134,7 +128,7 @@ public class LightcyclerRdmlImportProvider extends RunImportService {
                 //Get sample name of which there is only one
                 Element sampleElement = (Element) reactionElement.getElementsByTagName("sample").item(0);
                 String sampleName = sampleElement.getAttribute("id");
-                
+
                 //Get target name
                 Element targetElement = (Element) reactionElement.getElementsByTagName("tar").item(0);
                 String targetName = targetElement.getAttribute("id");
