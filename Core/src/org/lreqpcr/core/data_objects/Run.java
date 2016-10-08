@@ -30,7 +30,7 @@ import org.lreqpcr.core.utilities.MathFunctions;
  *
  * @author Bob Rutledge
  */
-public abstract class Run extends LreObject {
+public class Run extends LreObject {
 
     private Date runDate;
     private List<String> operators;//The person(s) conducting the Run
