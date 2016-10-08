@@ -18,21 +18,19 @@
 package org.lreqpcr.core.data_objects;
 
 /**
- * Base abstract class for LRE data objects structured on 
+ * Base abstract class for LRE data objects structured on
  * a Composite (family) pattern for display within a
  * tree, with pointers to the parent object and its name,
  * if one exists. By specifying the child class,
  * children of this LreObject can be retrieved from the database
  * by retrieving all objects of the child class withe a parent
  * that matches the specified parent object
- * 
- * @author Bob Rutledge
  */
 public abstract class LreObject implements Family<LreObject>, Comparable {
 
     private LreObject parent;//Parent object, if one exsists
     private Class childClass; //Child Class, if one exsists
-    
+
     private String name;//Name of this LRE object
     private String shortDescription;
     private String longDescription;
@@ -93,7 +91,7 @@ public abstract class LreObject implements Family<LreObject>, Comparable {
     public void setLongDescription(String longDescription) {
         this.longDescription = longDescription;
     }
-    
+
     /**
      * Appends the supplied string to the end of the long description, along
      * with a line break
@@ -157,7 +155,7 @@ public abstract class LreObject implements Family<LreObject>, Comparable {
     /**
      * Sorts by the LreObject name
      * @param o
-     * @return 
+     * @return
      */
     public int compareTo(Object o){
         LreObject lreObject = (LreObject) o;

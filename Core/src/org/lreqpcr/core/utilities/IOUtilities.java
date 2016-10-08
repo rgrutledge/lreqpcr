@@ -21,17 +21,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
 import org.lreqpcr.core.database_services.SettingsServices;
 import org.openide.util.Lookup;
 import org.openide.windows.WindowManager;
 
 /**
  * Static utilities for data input/output
- *
- * @author Bob Rutledge
  */
 public class IOUtilities {
 
@@ -174,8 +174,8 @@ public class IOUtilities {
                 "Excel workbook", "xls", "xlsx");
         return createFileChooser(title, filter);
     }
-    
-     /**
+
+    /**
      * Returns a user selected XML file. This is used for importing RDML
      * data (www.rdml.org).
      *
@@ -187,14 +187,14 @@ public class IOUtilities {
                 "RDML file", "xml");
         return createFileChooser(title, filter);
     }
-    
+
     /**
-     * Presents a file chooser dialog to the user for selecting a preexisting file 
+     * Presents a file chooser dialog to the user for selecting a preexisting file
      * based on the FileNameExtensionFilter. If
      * the file does not exist null is returned
      * @param title
      * @param filter
-     * @return 
+     * @return
      */
     private static File createFileChooser(String title, FileNameExtensionFilter filter){
         SettingsServices settingsDB = Lookup.getDefault().lookup(SettingsServices.class);

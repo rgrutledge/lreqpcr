@@ -17,9 +17,11 @@
 package org.lreqpcr.core.db4o_provider;
 
 import java.io.File;
+
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
 import org.lreqpcr.core.data_objects.ExptDbInfo;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.database_services.DatabaseType;
@@ -27,10 +29,6 @@ import org.lreqpcr.core.database_services.SettingsServices;
 import org.openide.util.Lookup;
 import org.openide.windows.WindowManager;
 
-/**
- * 
- * @author Bob Rutledge
- */
 public class ExperimentDb4oDatabaseServiceProvider extends Db4oDatabaseServices {
 
     private SettingsServices settingsDB = Lookup.getDefault().lookup(SettingsServices.class);
@@ -99,7 +97,7 @@ public class ExperimentDb4oDatabaseServiceProvider extends Db4oDatabaseServices 
     }
 
     /**
-     * Records the current database file as the last open database and 
+     * Records the current database file as the last open database and
      * then closes the database file.
      */
     @Override
@@ -114,9 +112,9 @@ public class ExperimentDb4oDatabaseServiceProvider extends Db4oDatabaseServices 
 
     /**
      * Opens an Experiment database file as chosen by the user. Once a valid file
-     * is selected, the current database file is closed and this new file is opened. 
+     * is selected, the current database file is closed and this new file is opened.
      * If opened successfully, the old file is stored as the last database to be retrieved
-     * 
+     *
      * @return true if a new database file is successfully opened, false if not
      */
     public boolean openUserSelectDatabaseFile() {

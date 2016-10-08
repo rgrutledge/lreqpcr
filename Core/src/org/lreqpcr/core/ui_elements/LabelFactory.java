@@ -22,7 +22,6 @@ import org.lreqpcr.core.data_objects.LreObject;
 
 /**
  * A factor interface for generating node labels
- * @author Bob Rutledge
  */
 public interface LabelFactory {
 
@@ -31,6 +30,5 @@ public interface LabelFactory {
      * @param member the member represented by the node
      * @return the node label to be used to represent the member
      */
-    public String getNodeLabel(LreObject member);
-
+    String getNodeLabel(LreObject member);
 }

@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2013  Bob Rutledge
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -16,27 +16,29 @@
  */
 package org.lreqpcr.core.utilities;
 
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.lreqpcr.core.data_objects.DatabaseInfo;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.database_services.DatabaseServices;
 
+import com.google.common.collect.Lists;
+
 /**
  * Static utility methods
- * @author Bob Rutledge
  */
 public class ProfileUtilities {
 
     /**
-     * Generates an average Fc dataset from the provided list of 
+     * Generates an average Fc dataset from the provided list of
      * profiles. Excluded profiles are ignored.
      * Returns null if the list is empty or if all the
-     * provided Profiles are excluded. 
-     * 
-     * @param replicates ArrayList of the replicate Profiles
+     * provided Profiles are excluded.
+     *
+     * @param replicates
+     *     ArrayList of the replicate Profiles
      * @return the average Fc dataset
      */
     public static double[] generateAverageFcDataset(List<? extends Profile> replicates) {
@@ -48,7 +50,7 @@ public class ProfileUtilities {
         double[] newAvFcDataset = new double[numberOfCycles];
 
         //Remove excluded profiles and profiles which do not have a LRE window from the average
-        ArrayList<Profile> profileList = new ArrayList<Profile>();
+        ArrayList<Profile> profileList = new ArrayList<>();
         for (Profile profile : replicates) {
             if (!profile.isExcluded() && profile.hasAnLreWindowBeenFound()) {
                 profileList.add(profile);
@@ -72,15 +74,16 @@ public class ProfileUtilities {
                 }
                 newAvFcDataset[i] = fcSum / numberOfProfiles;
             }
-        } else {//Only one Profile is present so just return its raw Fc readings
+        }
+        else {//Only one Profile is present so just return its raw Fc readings
             newAvFcDataset = profileList.get(0).getRawFcReadings();
         }
         return newAvFcDataset;
     }//End of generate average Fc dataset
-    
+
     public static void calcAvFmaxForAllRuns(DatabaseServices db) {
         List l = db.getAllObjects(DatabaseInfo.class);
-        DatabaseInfo dbInfo = (DatabaseInfo) l.get(0);
+        DatabaseInfo dbInfo = (DatabaseInfo)l.get(0);
         List<Run> runList = db.getAllObjects(Run.class);
         ArrayList<Double> fmaxList = Lists.newArrayList();//Used to determine SD
         double fmaxSum = 0;

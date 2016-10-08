@@ -27,8 +27,6 @@ package org.lreqpcr.core.data_objects;
  * Note that the default target strandedness for a Calibration Profile is double
  * stranded so it is not necessary to set the target strandedness for a
  * lambda-derived calibration profile.
- *
- * @author Bob Rutledge
  */
 public class CalibrationProfile extends Profile {
 

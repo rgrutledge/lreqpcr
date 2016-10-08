@@ -21,32 +21,38 @@ import java.io.File;
 /**
  * Storage and retrieval of various program settings,
  * primarily locations of the last opened database files and directories.
- *
- * @author Bob Rutledge
  */
 public interface SettingsServices {
 
-    public abstract String getLastExperimentDatabaseDirectory();
-    public abstract void setLastExperimentDatabaseDirectory(String directory);
+    String getLastExperimentDatabaseDirectory();
 
-    public abstract File getLastExperimentDatabaseFile();
-    public abstract void setLastExperimentDatabaseFile(File experimentDbFile);
+    void setLastExperimentDatabaseDirectory(String directory);
 
-    public abstract File getLastAmpliconDatabaseFile();
-    public abstract void setLastAmpliconDatabaseFile(File lastAmpliconDbFile);
+    File getLastExperimentDatabaseFile();
 
-    public abstract String getLastAmpliconDatabaseDirectory();
-    public abstract void setLastAmpliconDatabaseDirectory(String directory);
+    void setLastExperimentDatabaseFile(File experimentDbFile);
 
-    public abstract void setLastCalibrationDatabaseDirectory(String directory);
-    public abstract String getLastCalibrationDatabaseDirectory();
+    File getLastAmpliconDatabaseFile();
 
-    public abstract void setLastCalibrationDatabaseFile(File file);
-    public abstract File getLastCalibrationDatabaseFile();
+    void setLastAmpliconDatabaseFile(File lastAmpliconDbFile);
 
-    public abstract void setLastDataImportDirectory(String directory);
-    public abstract String getLastDataImportDirectory();
+    String getLastAmpliconDatabaseDirectory();
 
-    public abstract void setLastCyclerDataImportDirectory(String directory);
-    public abstract String getLastCyclerDataImportDirectory();
+    void setLastAmpliconDatabaseDirectory(String directory);
+
+    void setLastCalibrationDatabaseDirectory(String directory);
+
+    String getLastCalibrationDatabaseDirectory();
+
+    void setLastCalibrationDatabaseFile(File file);
+
+    File getLastCalibrationDatabaseFile();
+
+    void setLastDataImportDirectory(String directory);
+
+    String getLastDataImportDirectory();
+
+    void setLastCyclerDataImportDirectory(String directory);
+
+    String getLastCyclerDataImportDirectory();
 }

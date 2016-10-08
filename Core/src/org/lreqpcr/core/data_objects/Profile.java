@@ -23,8 +23,6 @@ import java.util.Date;
  * parameters of a Profile in which target quantity is expressed in fluorescence
  * units. Note that this is designed to primarily be a data storage object
  * containing only setter and getter methods.
- *
- * @author Bob Rutledge
  */
 public class Profile extends LreObject {
 

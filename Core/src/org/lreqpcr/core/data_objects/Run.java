@@ -27,8 +27,6 @@ import org.lreqpcr.core.utilities.MathFunctions;
 
 /**
  * Data object representing a Run loosely based on the RDML 1.0 specification.
- *
- * @author Bob Rutledge
  */
 public class Run extends LreObject {
 

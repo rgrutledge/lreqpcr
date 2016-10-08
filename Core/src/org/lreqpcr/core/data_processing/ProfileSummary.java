@@ -32,8 +32,6 @@ import com.google.common.collect.Lists;
  * associated LRE parameters within the Profile. A central aspect of these
  * functions is utilization of a linked-list of Cycle objects that represents
  * the cycles of the amplification profile within the Profile object.
- *
- * @author Bob Rutledge
  */
 public class ProfileSummary {
 

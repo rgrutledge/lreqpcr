@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2013   Bob Rutledge
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -22,7 +22,6 @@ package org.lreqpcr.core.data_objects;
  * and the Fo threshold, which is the maximum fractional difference
  * in a cycle's Fo vs. the average Fo derived from the cycles within
  * the LRE window, to determine if this next cycle is to be included into the LRE window.
- * @author Bob Rutledge
  */
 public class LreWindowSelectionParameters {
 
@@ -32,7 +31,7 @@ public class LreWindowSelectionParameters {
     /**
      * Returns he Fo threshold (fraction of the cycle Fo vs the average Fo) beyond which the
      * the next upper cycle will not be added to the LRE window.
-     * 
+     *
      * @return the user-selected Fo threshold or 6% (default)
      */
     public Double getFoThreshold() {
@@ -42,7 +41,7 @@ public class LreWindowSelectionParameters {
     /**
      * Sets the Fo threshold (fraction of the cycle Fo vs the average Fo) beyond which the
      * the next upper cycle will not be added to the LRE window.
-     * 
+     *
      * @param foThreshold the Fo threshold
      */
     public void setFoThreshold(Double foThreshold) {
@@ -50,9 +49,9 @@ public class LreWindowSelectionParameters {
     }
 
     /**
-     * Returns the user-selected minimum Fc reading used to select the start 
+     * Returns the user-selected minimum Fc reading used to select the start
      * cycle of the LRE window.
-     * 
+     *
      * @return the minimum Fc reading or zero if the user has not selected a minimum Fc
      */
     public Double getMinFc() {
@@ -65,5 +64,5 @@ public class LreWindowSelectionParameters {
      */
     public void setMinFc(Double minFc) {
         this.minFc = minFc;
-    }   
+    }
 }

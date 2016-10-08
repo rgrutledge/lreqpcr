@@ -18,6 +18,7 @@ package org.lreqpcr.core.db4o_provider;
 
 import java.io.File;
 import java.util.List;
+
 import org.lreqpcr.core.data_objects.Settings;
 import org.lreqpcr.core.database_services.DatabaseType;
 import org.lreqpcr.core.database_services.SettingsServices;
@@ -26,8 +27,6 @@ import org.openide.util.lookup.ServiceProvider;
 /**
  * A single Settings database file is used, which is located in the default LRE
  * directory.
- *
- * @author Bob Rutledge
  */
 @ServiceProvider(service = SettingsServices.class)
 public class SettingsServiceProvider extends Db4oDatabaseServices implements SettingsServices {
@@ -37,12 +36,13 @@ public class SettingsServiceProvider extends Db4oDatabaseServices implements Set
     @SuppressWarnings(value = "unchecked")
     public SettingsServiceProvider() {
         openDatabaseFile(new File("Settings.lre"));
-        List<Settings> list = (List<Settings>) getAllObjects(Settings.class);
+        List<Settings> list = (List<Settings>)getAllObjects(Settings.class);
         if (list.isEmpty()) {
             settings = new Settings();
             saveObject(settings);
             commitChanges();
-        } else {
+        }
+        else {
             settings = list.get(0);
         }
     }
@@ -132,7 +132,6 @@ public class SettingsServiceProvider extends Db4oDatabaseServices implements Set
 
     /**
      * Not implement.. throws an UnsupportedOperationException event if called
-     * @return
      */
     public boolean createNewDatabaseFile() {
         throw new UnsupportedOperationException("Not supported yet.");
@@ -147,14 +146,13 @@ public class SettingsServiceProvider extends Db4oDatabaseServices implements Set
 
     /**
      * Not implement.. throws an UnsupportedOperationException event if called
-     *
      */
     public boolean openUserSelectDatabaseFile() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
     /**
      * Not implement.. throws an UnsupportedOperationException event if called
-     *
      */
     public boolean openLastDatabaseFile() {
         throw new UnsupportedOperationException("Not supported yet.");

@@ -23,7 +23,6 @@ import javax.swing.Action;
 /**
  * A factory interface for generating actions for a specific Class based on its name. This is
  * used primarily to provide actions for nodes representing the specified Class.
- * @author Bob Rutledge
  */
 public interface LreActionFactory {
 
@@ -32,5 +31,5 @@ public interface LreActionFactory {
      * @param className name of the class to which the actions are to be applied
      * @return the actions
      */
-    public Action[] getActions(String className);
+    Action[] getActions(String className);
 }

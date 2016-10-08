@@ -17,9 +17,11 @@
 package org.lreqpcr.core.db4o_provider;
 
 import java.io.File;
+
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
 import org.lreqpcr.core.data_objects.AmpliconDbInfo;
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
@@ -27,11 +29,6 @@ import org.lreqpcr.core.database_services.SettingsServices;
 import org.openide.util.Lookup;
 import org.openide.windows.WindowManager;
 
-/**
- * AmpliconDatabaseService implementation
- *
- * @author Bob Rutledge
- */
 public class AmpliconDb4oServiceProvider extends Db4oDatabaseServices implements DatabaseServices {
 
     private SettingsServices settingsDB = Lookup.getDefault().lookup(SettingsServices.class);
@@ -42,14 +39,15 @@ public class AmpliconDb4oServiceProvider extends Db4oDatabaseServices implements
     public boolean createNewDatabaseFile() {
         JFileChooser fc = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                "Amplicon database files", "amp");
+            "Amplicon database files", "amp");
         fc.setFileFilter(filter);
         fc.setDialogTitle("New Amplicon Database");
         File directory;
         if (settingsDB.getLastAmpliconDatabaseDirectory() != null) {
             try {
                 directory = new File(settingsDB.getLastAmpliconDatabaseDirectory());
-            } catch (NullPointerException ev) {
+            }
+            catch (NullPointerException ev) {
                 directory = null;
             }
             fc.setCurrentDirectory(directory);
@@ -75,16 +73,18 @@ public class AmpliconDb4oServiceProvider extends Db4oDatabaseServices implements
                 }
                 if (isDuplicate) {
                     String msg = "The file '" + selectedFile.getName()
-                            + "' already exists. Please enter a unique file name";
-                    int n = JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(),
-                            msg,
-                            "File Exsists",
-                            JOptionPane.OK_CANCEL_OPTION,
-                            JOptionPane.WARNING_MESSAGE);
+                        + "' already exists. Please enter a unique file name";
+                    int n = JOptionPane.showConfirmDialog(
+                        WindowManager.getDefault().getMainWindow(),
+                        msg,
+                        "File Exsists",
+                        JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.WARNING_MESSAGE);
 
                     if (n == JOptionPane.OK_OPTION) {
                         return createNewDatabaseFile();//Start again
-                    } else {
+                    }
+                    else {
                         return false;//Abort new file creation
                     }
                 }
@@ -112,7 +112,7 @@ public class AmpliconDb4oServiceProvider extends Db4oDatabaseServices implements
     public boolean openUserSelectDatabaseFile() {
         JFileChooser fc = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                "Amplicon database files", "amp");
+            "Amplicon database files", "amp");
         fc.setFileFilter(filter);
         fc.setDialogTitle("Open Amplicon Database");
         //This allows the last directory to be retrieved
@@ -120,7 +120,8 @@ public class AmpliconDb4oServiceProvider extends Db4oDatabaseServices implements
         if (settingsDB.getLastAmpliconDatabaseDirectory() != null) {
             try {
                 directory = new File(settingsDB.getLastAmpliconDatabaseDirectory());
-            } catch (NullPointerException ev) {
+            }
+            catch (NullPointerException ev) {
                 directory = null;
             }
             fc.setCurrentDirectory(directory);
@@ -131,7 +132,8 @@ public class AmpliconDb4oServiceProvider extends Db4oDatabaseServices implements
             closeDatabase();
             settingsDB.setLastAmpliconDatabaseDirectory(fc.getCurrentDirectory().getAbsolutePath());
             return openDatabaseFile(newDatabaseFile);
-        } else {
+        }
+        else {
             return false;
         }
     }
@@ -142,7 +144,8 @@ public class AmpliconDb4oServiceProvider extends Db4oDatabaseServices implements
         if (getDatabaseFile() == null) {
             if (openDatabaseFile(settingsDB.getLastAmpliconDatabaseFile())) {
                 return true;
-            } else {
+            }
+            else {
                 return false;
             }
         }

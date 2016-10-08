@@ -19,12 +19,11 @@ package org.lreqpcr.core.utilities;
 
 /**
  * Static methods for formating
- * @author Bob Rutledge
  */
 public class FormatingUtilities {
 
     /**
-     * Provides a decimal format string pattern for the supplied number. 
+     * Provides a decimal format string pattern for the supplied number.
      * Returns ###,### for >1,000, ### for 100-1000, ##.0 10-100, #.0000 <1
      * @param number the number to be displayed
      * @return string pattern based on decimal format
@@ -42,7 +41,7 @@ public class FormatingUtilities {
         }
         if (absNumber <= 10.0 && absNumber >= 1.0) {
             return "##.00";
-        } 
+        }
         if (absNumber <=1.0 && absNumber >= 0.1 ){
             return "0.000";
         }if (absNumber <=0.1 && absNumber >= 0.01){

@@ -19,8 +19,6 @@ package org.lreqpcr.core.data_objects;
 
 /**
  * Represents the setup used to conduct an amplification: NOT IMPLEMENTED
- *
- * @author Bob Rutledge
  */
 public class ReactionSetup extends LreObject {
 
@@ -87,7 +85,6 @@ public class ReactionSetup extends LreObject {
     }
 
     /**
-     *
      * @return the primer concentration in micromolar (uM)
      */
     public double getPrimerConcentration() {
@@ -95,7 +92,6 @@ public class ReactionSetup extends LreObject {
     }
 
     /**
-     *
      * @param primerConcentration the primer concentration in micromolar (uM)
      */
     public void setPrimerConcentration(double primerConcentration) {

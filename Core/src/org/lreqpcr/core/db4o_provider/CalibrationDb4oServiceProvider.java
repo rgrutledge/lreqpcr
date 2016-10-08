@@ -17,9 +17,11 @@
 package org.lreqpcr.core.db4o_provider;
 
 import java.io.File;
+
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
 import org.lreqpcr.core.data_objects.CalibrationDbInfo;
 import org.lreqpcr.core.data_objects.LreWindowSelectionParameters;
 import org.lreqpcr.core.database_services.DatabaseServices;
@@ -28,10 +30,6 @@ import org.lreqpcr.core.database_services.SettingsServices;
 import org.openide.util.Lookup;
 import org.openide.windows.WindowManager;
 
-/**
- * 
- * @author Bob Rutledge
- */
 public class CalibrationDb4oServiceProvider extends Db4oDatabaseServices implements DatabaseServices {
 
     private SettingsServices settingsDB = Lookup.getDefault().lookup(SettingsServices.class);
@@ -101,7 +99,7 @@ public class CalibrationDb4oServiceProvider extends Db4oDatabaseServices impleme
     }
 
     /**
-     * Records the current database file as the last open database and 
+     * Records the current database file as the last open database and
      * then closes the database file.
      */
     @Override

@@ -23,8 +23,6 @@ import java.util.List;
  * replicate calibration profiles. Note that it is implicitly assumed that that
  * average ReplicateCalibrationProfile No will never be less than 10N and thus
  * that the AverageCalibrationProfile will always be valid.
- *
- * @author Bob Rutledge
  */
 public class AverageCalibrationProfile extends CalibrationProfile implements AverageProfile {
 

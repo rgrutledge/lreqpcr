@@ -21,19 +21,11 @@ package org.lreqpcr.core.db4o_provider;
 //import com.db4o.Db4o;
 //import com.db4o.ObjectContainer;
 //import com.db4o.defragment.Defragment;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
-import org.openide.util.Exceptions;
 
-/**
- *
- * @author Bob Rutledge
- */
+import java.io.File;
+
+import javax.swing.ImageIcon;
+
 public class DatabaseMaintenance extends javax.swing.JFrame {
     // TODO do something with this...
 

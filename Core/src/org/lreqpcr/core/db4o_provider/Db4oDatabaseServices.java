@@ -16,32 +16,30 @@
  */
 package org.lreqpcr.core.db4o_provider;
 
-import com.db4o.Db4o;
-import com.db4o.ObjectContainer;
-import com.db4o.ObjectSet;
-import com.db4o.config.Configuration;
-import com.db4o.query.Query;
-import com.db4o.reflect.jdk.JdkReflector;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import javax.swing.JOptionPane;
+
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.Family;
 import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_objects.Run;
 import org.lreqpcr.core.database_services.DatabaseServices;
-import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
-import org.openide.util.Exceptions;
 import org.openide.windows.WindowManager;
+
+import com.db4o.Db4o;
+import com.db4o.ObjectContainer;
+import com.db4o.ObjectSet;
+import com.db4o.config.Configuration;
+import com.db4o.query.Query;
+import com.db4o.reflect.jdk.JdkReflector;
 
 /**
  * The primary database service provider based on DB4O.
- *
- * @author Bob Rutledge
  */
 public abstract class Db4oDatabaseServices implements DatabaseServices {
 

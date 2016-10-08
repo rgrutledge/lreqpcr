@@ -19,8 +19,6 @@ package org.lreqpcr.core.data_objects;
 
 /**
  * The base abstract of a Target NOT YET IMPEMENTED
- * 
- * @author Bob Rutledge
  */
 public abstract class Target extends LreObject {
 

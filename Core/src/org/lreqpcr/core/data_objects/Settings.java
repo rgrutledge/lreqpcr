@@ -17,13 +17,13 @@
 package org.lreqpcr.core.data_objects;
 
 import java.io.File;
+
 import javax.swing.JOptionPane;
+
 import org.openide.windows.WindowManager;
 
 /**
  * Stores program settings such as last database file.
- *
- * @author Bob Rutledge
  */
 public class Settings {
 
@@ -42,9 +42,9 @@ public class Settings {
 
     private void fileDoesNotExsist(File file) {
         String msg = "The database file \"" + file.getName()
-                + "\" could not be opened. \n This is likely due to fact that it has been deleted or moved.";
+            + "\" could not be opened. \n This is likely due to fact that it has been deleted or moved.";
         JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), msg, "Unable to open database file",
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.ERROR_MESSAGE);
     }
 
     public String getLastExperimentDatabaseDirectory() {
@@ -63,7 +63,8 @@ public class Settings {
             if (!file.exists()) {
                 fileDoesNotExsist(file);
                 return null;
-            } else {
+            }
+            else {
                 return file;
             }
         }
@@ -82,7 +83,8 @@ public class Settings {
             if (!file.exists()) {
                 fileDoesNotExsist(file);
                 return null;
-            } else {
+            }
+            else {
                 return file;
             }
         }
@@ -127,7 +129,8 @@ public class Settings {
             if (!file.exists()) {
                 fileDoesNotExsist(file);
                 return null;
-            } else {
+            }
+            else {
                 return file;
             }
         }
@@ -150,7 +153,8 @@ public class Settings {
             if (!file.exists()) {
                 fileDoesNotExsist(file);
                 return null;
-            } else {
+            }
+            else {
                 return file;
             }
         }

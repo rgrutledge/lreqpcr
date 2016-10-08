@@ -18,7 +18,7 @@
 package org.lreqpcr.core.data_objects;
 
 /**
- * Provides the framework for retrieving and 
+ * Provides the framework for retrieving and
  * displaying Objects based on a single parent/multiple children
  * pattern, in which children are designated by a single type (Class). Children objects of a Parent
  * are thus retrieved by searching all Child objects (ID'd by Class) for those
@@ -31,9 +31,6 @@ package org.lreqpcr.core.data_objects;
  * however, that indexing the Parent field within the Child objects would
  * overcome such performance issues, as this avoids instantiation of
  * the Child objects.
- *
- * @param <T>
- * @author Bob Rutledge
  */
 public interface Family<T> {
 
@@ -41,13 +38,13 @@ public interface Family<T> {
      * Sets the Parent Object
      * @param parent the Parent Object
      */
-    public void setParent(T parent);
+    void setParent(T parent);
 
     /**
      * Returns the Parent Object or null if none exists
      * @return the parent Object
      */
-    public T getParent();
+    T getParent();
 
     /**
      * Sets the Child class that allows retrieval of children objects.
@@ -55,12 +52,12 @@ public interface Family<T> {
      * Assumes only one type of child.
      * @param childClass the Child class
      */
-    public void setChildClass(Class childClass);
+    void setChildClass(Class childClass);
 
     /**
      * Returns the child Class. Note that a parent can only have children of one
      * type (Class)
      * @return the type of the children
      */
-    public Class getChildClass();
+    Class getChildClass();
 }

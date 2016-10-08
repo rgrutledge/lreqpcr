@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2013   Bob Rutledge
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -19,6 +19,7 @@ package org.lreqpcr.core;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
 import org.lreqpcr.core.database_services.DatabaseServices;
 import org.lreqpcr.core.database_services.DatabaseType;
 import org.lreqpcr.core.utilities.UniversalLookup;
@@ -28,7 +29,6 @@ import org.openide.util.lookup.ServiceProvider;
 
 /**
  * Used to ensure that all database files are closed before exiting the program.
- * @author Bob Rutledge
  */
 @ServiceProvider(service = LifecycleManager.class, position = 1)
 public class LreLifecycleManager extends LifecycleManager {

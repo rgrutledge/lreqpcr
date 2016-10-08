@@ -21,8 +21,6 @@ package org.lreqpcr.core.data_processing;
  * Class representing the cycles within a Profile via a linked-list that
  * allows analysis and display of the Profile. This in turn allows data retrieval
  * by transversing the Cycle linked-list.
- *
- * @author Bob Rutledge
  */
 public class Cycle {
 

@@ -25,8 +25,6 @@ package org.lreqpcr.core.data_objects;
  * The sample type (unknown, standard, NTC etc) should also be
  * set by the Sample. Note also, that is possible that targets could
  * be a mixture of both single and double stranded Target molecules
- *
- * @author Bob Rutledge
  */
 public class Sample extends LreObject {
 

@@ -19,11 +19,8 @@ package org.lreqpcr.core.data_objects;
 
 /**
  * Provided for developing future functions based on the Visitor pattern
- *
- * @author Bob Rutledge
  */
 public interface LreVisitor {
 
-    public void visit (LreObject o);
-
+    void visit(LreObject o);
 }

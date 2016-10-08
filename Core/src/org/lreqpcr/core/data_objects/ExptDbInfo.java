@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2013  Bob Rutledge
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -16,10 +16,6 @@
  */
 package org.lreqpcr.core.data_objects;
 
-/**
- *
- * @author Bob Rutledge
- */
 public class ExptDbInfo extends DatabaseInfo {
 
     private double ocf;//The average OCF derived from the corresponding Calibration database
@@ -57,20 +53,20 @@ public class ExptDbInfo extends DatabaseInfo {
     }
 
     /**
-     * Normalization to the Run's average Fmax corrects for well to well 
+     * Normalization to the Run's average Fmax corrects for well to well
      * differences in optical calibration.
-     * 
-     * @return whether the target quantity is adjusted to the Run's average Fmax 
+     *
+     * @return whether the target quantity is adjusted to the Run's average Fmax
      */
     public boolean isTargetQuantityNormalizedToFmax() {
         return isTargetQuantityNormalizedToFmax;
     }
 
     /**
-     * Normalization to the Run's average Fmax corrects for well to well 
+     * Normalization to the Run's average Fmax corrects for well to well
      * differences in optical calibration.
-     * 
-     * @param isTargetQuantityNormalizedToFmax 
+     *
+     * @param isTargetQuantityNormalizedToFmax
      */
     public void setIsTargetQuantityNormalizedToFmax(boolean isTargetQuantityNormalizedToFmax) {
         this.isTargetQuantityNormalizedToFmax = isTargetQuantityNormalizedToFmax;

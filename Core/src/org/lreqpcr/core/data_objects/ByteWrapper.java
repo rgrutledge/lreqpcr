@@ -24,8 +24,6 @@ package org.lreqpcr.core.data_objects;
  * and thus the reason for this class. This allows images to be stored in an
  * ArrayList<ByteWrapper>, although of course any byte[] can be stored in this
  * fashion.
- *
- * @author Bob Rutledge
  */
 public class ByteWrapper {
 

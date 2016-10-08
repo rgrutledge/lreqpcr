@@ -29,19 +29,18 @@ import java.util.ArrayList;
  * could allow Experiments to contain Runs that use different Reaction Setups.
  * It also could allow a single Run to contain different types of amplification
  * reactions, each described by a corresponding Reaction Setup.
- *
+ * <p>
  * NOT IMPLEMENTED
- *
- * @author Bob Rutledge
  */
 public abstract class Experiment extends LreObject {
 
-    private ArrayList<String> investigators = new ArrayList<String>();
+    private ArrayList<String> investigators = new ArrayList<>();
     private ArrayList<Run> runList; //List of Runs within this Experiment
 
     public Experiment() {
         setChildClass(Run.class);
     }
+
     public ArrayList<String> getInvestigatorList() {
         return investigators;
     }

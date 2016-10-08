@@ -17,6 +17,7 @@
 package org.lreqpcr.core.ui_elements;
 
 import javax.swing.Action;
+
 import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.database_services.DatabaseProvider;
 import org.lreqpcr.core.database_services.DatabaseServices;
@@ -31,9 +32,7 @@ import org.openide.util.Lookup;
  * Lookup. This Node also has a reference to the database holding the LRE object,
  * providing the capability to save changes to the LRE object.
  * These Nodes also have the ability to change their Actions and Children,
- * in addition to the ability to change/refresh the node label (display name). 
- *
- * @author Bob Rutledge
+ * in addition to the ability to change/refresh the node label (display name).
  */
 public class LreNode extends AbstractNode implements ExplorerManager.Provider, DatabaseProvider {
 
@@ -55,18 +54,18 @@ public class LreNode extends AbstractNode implements ExplorerManager.Provider, D
 
     /**
      * Copied from the getActions in the Node class
-     * Get the set of actions that are associated with this node. This set is 
+     * Get the set of actions that are associated with this node. This set is
      * used to construct the context menu for the node.
-     * By default this method delegates to the deprecated getActions or 
-     * getContextActions method depending on the value of supplied argument. 
-     * @param context whether to find actions for context meaning or for the node itself 
+     * By default this method delegates to the deprecated getActions or
+     * getContextActions method depending on the value of supplied argument.
+     * @param context whether to find actions for context meaning or for the node itself
      * @return that actions of this node
      */
     @Override
     public Action[] getActions(boolean context) {
         return actions;
     }
-    
+
     /**
      * Replaces the node actions with the supplied actions.
      *
@@ -99,7 +98,7 @@ public class LreNode extends AbstractNode implements ExplorerManager.Provider, D
 
     /**
      * Provides the database in which the member of this node is stored
-     * 
+     *
      * @return the database being viewed
      */
     public DatabaseServices getDatabaseServices() {
@@ -127,7 +126,7 @@ public class LreNode extends AbstractNode implements ExplorerManager.Provider, D
 
     /**
      * Provides the ExplorerManager of the corresponding view.
-     * 
+     *
      * @return the manager of the view
      */
     public ExplorerManager getExplorerManager() {
@@ -136,7 +135,7 @@ public class LreNode extends AbstractNode implements ExplorerManager.Provider, D
 
     /**
      * Replaces the ExplorerManager of the view.
-     * 
+     *
      * @param mgr this new ExplorerManages
      */
     public void setExplorerManager(ExplorerManager mgr) {

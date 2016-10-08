@@ -22,8 +22,6 @@ package org.lreqpcr.core.data_objects;
  * amplicon database
  *
  * Not yet implemented
- *
- * @author Bob Rutledge
  */
 public class AmpliconDbInfo extends LreObject {
 

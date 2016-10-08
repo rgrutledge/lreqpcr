@@ -20,36 +20,33 @@ package org.lreqpcr.core.utilities;
 /**
  *
  * A collection of static methods for LRE-related calculations
- *
- * @author Bob Rutledge
  */
 public class LREmath {
-    
-    
+
     /**
      * Calculates Target Quantity in fluorescence units (Fo)
      *
      * <p>Note that any quantitative unit can be used just as long as the
-     * Fc is converted to the desired unit (e.g. Nc for molecules or 
-     * Mc for mass). Also note that the return value will be in the designated 
+     * Fc is converted to the desired unit (e.g. Nc for molecules or
+     * Mc for mass). Also note that the return value will be in the designated
      * quantitative unit.
-     * 
+     *
      * @param  c   the cycle number
      * @param cF   the cycle fluorescence reading (Fc)
      * @param dE   the rate of loss in cycle efficiency (deltaE)
      * @param mE   the maximal amplification efficiency (Emax)
-     * @return     the predicted target quantity in fluorescence units (Fo) 
+     * @return the predicted target quantity in fluorescence units (Fo)
      */
     public static double calcFo(int c, double cF, double dE, double mE) {
         double maxF = (mE)/-dE;
         double trgFo = maxF/(1+(((maxF/cF)-1)*Math.pow(mE+1, c)));
         return trgFo;
     }
-    
+
     /**
      * Calculates Target Quantity in fluorescence units (Fo) using an overridden Emax
      * value
-     * 
+     *
      * @param  c   the cycle number
      * @param cF   the cycle fluorescence reading (Fc)
      * @param dE   the rate of loss in cycle efficiency (deltaE)
@@ -63,19 +60,19 @@ public class LREmath {
         double trgFo = maxF/(1+(((maxF/cF)-1)*Math.pow(overridenEmaxValue + 1, c)));
         return trgFo;
     }
-    
+
     /**
      * Calculates predicted cycle fluorescence for one cycle
      *
      *<p>Note that any quantitative unit can be used just as long as the
-     *Fo is converted to the desired unit (e.g. No for molecules or 
-     *Mo for mass). Also note that the return value will be in the designated 
+     *Fo is converted to the desired unit (e.g. No for molecules or
+     *Mo for mass). Also note that the return value will be in the designated
      * quantitative unit.
-     * 
-     * @param c the cycle number 
+     *
+     * @param c the cycle number
      * @param dE the rate of loss in cycle efficiency (deltaE)
      * @param mE the maximal amplification efficiency (Emax)
-     * @param oF the target quantity in fluorescence units (Fo)     
+     * @param oF the target quantity in fluorescence units (Fo)
      * @return the predicted cycle fluorescence (pFc)
      */
     public static double calcPrdFc(int c, double dE, double mE, double oF) {
@@ -140,7 +137,7 @@ public class LREmath {
         nr2 = 1-(numSum/demSum);
         return nr2;
     }
-    
+
     /**
      * Determines non-linear correlation coefficent (R2) for
      * the predicted Fc vs. the actual Fc
@@ -151,7 +148,7 @@ public class LREmath {
      */
     public static double calcNonLinearR2(double[] fc, double[]pFc) {
         if (fc.length != pFc.length){
-            //Should 
+            //Should
             throw new IllegalArgumentException("Number of readings must be equal");
         }
         int listLength = fc.length;

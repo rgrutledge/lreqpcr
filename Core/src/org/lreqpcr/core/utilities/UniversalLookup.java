@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2013   Bob Rutledge
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -16,19 +16,18 @@
  */
 package org.lreqpcr.core.utilities;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Multimaps;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Multimaps;
+
 /**
  * Singleton object for storage of multiple objects associated with a single key.
- * Based on Google Collection's ArrayListMultimap 
+ * Based on Google Collection's ArrayListMultimap
  * Lists of element can be associated with a key, which itself can be of any object type.
  * This provides versatile functionality beyond that possible with the NetBeans Lookup.
- *
- * @author Bob Rutledge
  */
 public class UniversalLookup {
 
@@ -42,9 +41,9 @@ public class UniversalLookup {
     }
 
     /**
-     * Adds the element object to a list associated with the key. Only one instance 
+     * Adds the element object to a list associated with the key. Only one instance
      * of an element can be stored.
-     * 
+     *
      * @param key the key to which the element object will be linked
      * @param element the object to store
      * @return true if the element was successfully added
@@ -81,7 +80,7 @@ public class UniversalLookup {
 
     /**
      * Remove an element from the list associated with the key.
-     * 
+     *
      * @param key the key for the list
      * @param element the element to remove from the list
      * @return true if the removal was successful
