@@ -16,37 +16,37 @@
 package org.lreqpcr.nonlinear_regression_services;
 
 /**
- * Holds values for the 5 parameters used by the LRE sigmoidal model: 
+ * Holds values for the 5 parameters used by the LRE sigmoidal model:
  * Emax, Fmax, Fo, Fb and Fb-slope.
- * 
+ *
  * @author Bob Rutledge
  */
 public class LreParameters {
-    
-    private double emax, fmax, fo, fb, fbSlope;
 
-    public double getEmax() {
-        return emax;
+    private double maxEfficiency, maxFluorescence, targetFluorescence, fb, fbSlope;
+
+    public double getMaxEfficiency() {
+        return maxEfficiency;
     }
 
-    public void setEmax(double emax) {
-        this.emax = emax;
+    public void setMaxEfficiency(double maxEfficiency) {
+        this.maxEfficiency = maxEfficiency;
     }
 
-    public double getFmax() {
-        return fmax;
+    public double getMaxFluorescence() {
+        return maxFluorescence;
     }
 
-    public void setFmax(double fmax) {
-        this.fmax = fmax;
+    public void setMaxFluorescence(double maxFluorescence) {
+        this.maxFluorescence = maxFluorescence;
     }
 
-    public double getFo() {
-        return fo;
+    public double getTargetFluorescence() {
+        return targetFluorescence;
     }
 
-    public void setFo(double fo) {
-        this.fo = fo;
+    public void setTargetFluorescence(double targetFluorescence) {
+        this.targetFluorescence = targetFluorescence;
     }
 
     public double getFb() {
@@ -64,5 +64,4 @@ public class LreParameters {
     public void setFbSlope(double fbSlope) {
         this.fbSlope = fbSlope;
     }
-    
 }

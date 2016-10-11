@@ -113,14 +113,14 @@ public class NonlinearRegressionImplementation {
         double fbSlopeSum = 0;
         for (int i = 0; i < numberOfIterations; i++) {
             optParam = nrService.conductNonlinearRegression(lreDerivedParam, profileMap);
-            emaxArray.add(optParam.getEmax());
-            emaxSum += optParam.getEmax();
+            emaxArray.add(optParam.getMaxEfficiency());
+            emaxSum += optParam.getMaxEfficiency();
             fbArray.add(optParam.getFb());
             fbSum += optParam.getFb();
-            foArray.add(optParam.getFo());
-            foSum += optParam.getFo();
-            fmaxArray.add(optParam.getFmax());
-            fmaxSum += optParam.getFmax();
+            foArray.add(optParam.getTargetFluorescence());
+            foSum += optParam.getTargetFluorescence();
+            fmaxArray.add(optParam.getMaxFluorescence());
+            fmaxSum += optParam.getMaxFluorescence();
             fbSlopeArray.add(optParam.getFbSlope());
             fbSlopeSum += optParam.getFbSlope();
             //Reinitialize the LRE-derived parameters
@@ -188,9 +188,9 @@ public class NonlinearRegressionImplementation {
         } else {
             lreDerivedParam.setFb(profile.getNrFb());
         }
-        lreDerivedParam.setEmax(profile.getEmax());//Current LRE-derived Emax
-        lreDerivedParam.setFmax(profile.getFmax());//Current LRE-derived Fmax
-        lreDerivedParam.setFo(profile.getAvFo());//Current LRE-derived average Fo
+        lreDerivedParam.setMaxEfficiency(profile.getEmax());//Current LRE-derived Emax
+        lreDerivedParam.setMaxFluorescence(profile.getFmax());//Current LRE-derived Fmax
+        lreDerivedParam.setTargetFluorescence(profile.getAvFo());//Current LRE-derived average Fo
         lreDerivedParam.setFbSlope(profile.getNrFbSlope());//Current Fb slope
         return lreDerivedParam;
     }
