@@ -26,7 +26,7 @@ import org.lreqpcr.core.data_objects.Family;
  * Note that is a DB4O-centric interface, in which the Family interface is used
  * to retrieve various Objects from the database.
  */
-interface DatabaseServices {
+public interface DatabaseServices {
 
     /**
      * Create a new user specified database file.

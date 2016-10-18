@@ -69,7 +69,6 @@ public class LrePlot extends javax.swing.JPanel {
     /**
      * Generates a plot of reaction fluorescence and predicted fluorescence
      * versus cycle number
-     *
      */
     public LrePlot() {
         initComponents();
