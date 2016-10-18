@@ -18,6 +18,7 @@ package org.lreqpcr.experiment_ui.components;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+
 import org.lreqpcr.core.data_objects.AverageSampleProfile;
 import org.lreqpcr.core.data_objects.LreObject;
 import org.lreqpcr.core.data_objects.Profile;
@@ -48,7 +49,7 @@ public class SampleTreeNodeLabels implements LabelFactory {
             df.applyPattern(FormatingUtilities.decimalFormatPattern(avFmax));
             String avFmaxString = df.format(avFmax);
 
-            //Indicate if a Run-specific OCF if one has been applied to this Run 
+            //Indicate if a Run-specific OCF if one has been applied to this Run
             String RSO = "";
             if (run.getRunSpecificOCF() != 0) {
                 RSO = "*";
@@ -84,7 +85,7 @@ public class SampleTreeNodeLabels implements LabelFactory {
 
             if (profile instanceof AverageSampleProfile) {
                 AverageSampleProfile avPrf = (AverageSampleProfile) profile;
-                if (!(avPrf.getOCF() > 0) 
+                if (!(avPrf.getOCF() > 0)
                         && avPrf.areTheRepProfilesSufficientlyClustered()
                         && !avPrf.isTheReplicateAverageNoLessThan10Molecules()) {
                     //The averge profile cannot be initialized...so there is no Emax or No values
@@ -119,7 +120,7 @@ public class SampleTreeNodeLabels implements LabelFactory {
             }
             //Determine what to display for Emax
             if (!profile.hasAnLreWindowBeenFound() && profile.getOCF() > 0) {
-//This assumes an AverageSampleProfile that has <10N would not reach here 
+                //This assumes an AverageSampleProfile that has <10N would not reach here
                 profile.setShortDescription("An LRE window could not be found, likely due to being a flat profile"
                         + " or the Min Fc being set too high");
                 //Emax and No do not exsist
@@ -127,7 +128,7 @@ public class SampleTreeNodeLabels implements LabelFactory {
             }
             //Profile is OK
             df.applyPattern("#0.0");
-            emax = "(" + df.format(profile.getEmax() * 100) + "%) ";
+            emax = "(" + df.format(profile.getMaxEfficiency() * 100) + "%) ";
             //Determine what to display for No
             if (profile.getAmpliconSize() == 0) {
                 profile.setShortDescription("Target quantity could not be determined because the amplicon size is unknown");

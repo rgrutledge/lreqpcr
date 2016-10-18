@@ -119,7 +119,7 @@ public class LreWindowSelector {
                     && runner.getNextCycle().getCycLREparam()[2] > r2Tolerance
                     && runner.getCycLREparam()[1] > emaxThreshold) {
                 //A candidate start cycle has been identified
-                profile.setStrCycleInt(runner.getCycleNumber());
+                profile.setStartingCycleIndex(runner.getCycleNumber());
                 //Set the LRE window size to the default
                 profile.setLreWinSize(defaultLREwinSize);
      //Must update but need to first indicate that a LRE window has been found
@@ -154,26 +154,26 @@ public class LreWindowSelector {
 
         //Set start cycle to the one cycle below C1/2
         //Casting to an integer always rounds down
-        profile.setStrCycleInt((int) profile.getMidC());
+        profile.setStartingCycleIndex((int)profile.getMidC());
         prfSum.update();
 
         //1Oct14: not sure what the advantage of using 1/2 Fmax...
         //So I have deactivated it but it should be tested
 
         //        //Now reset the start cycle to the first cycle below 1/2 Fmax to stabilize
-//        double midF = ((profile.getEmax() / profile.getDeltaE() * -1)) / 2;
+        //        double midF = ((profile.getMaxEfficiency() / profile.getChangeInEfficiency() * -1)) / 2;
 //        runner = prfSum.getZeroCycle().getNextCycle();
         //        while (runner.getCurrentCycleFluorescence() < midF) {
 //            runner = runner.getNextCycle();
 //        }
         //        runner = runner.getPreviousCycle();
-        //        profile.setStrCycleInt(runner.getCycleNumber());
+        //        profile.setStartingCycleIndex(runner.getCycleNumber());
 //        prfSum.update();
 //        //Test to see if the start cycle is above C1/2, which can occur when it is close to C1/2
-//        double diff = profile.getMidC() - profile.getStrCycleInt();
+        //        double diff = profile.getMidC() - profile.getStartingCycleIndex();
 //        if (diff < 0 || Math.abs(diff) < 0.2) {
 ////Start cycle is above midC or the difference is too small, so reduce the start cycle by one cycle
-//            profile.setStrCycleInt(profile.getStrCycleInt() - 1);
+        //            profile.setStartingCycleIndex(profile.getStartingCycleIndex() - 1);
 //            prfSum.update();
 //        }
     }//End of scanning for LRE window
@@ -225,7 +225,7 @@ public class LreWindowSelector {
             runner = runner.getNextCycle();
         }
 //The start cycle is set to the next cycle, because minFc should be applied to the denominator of Ec
-        profile.setStrCycleInt(runner.getNextCycle().getCycleNumber());
+        profile.setStartingCycleIndex(runner.getNextCycle().getCycleNumber());
         profile.setLreWinSize(3);
         prfSum.update();
     }
@@ -272,7 +272,7 @@ public class LreWindowSelector {
         }
         //Set the upper boundary of the LRE window based on the Fo threshold
         //This also limits it to 95% of Fmax
-        double fmaxThreshold = profile.getFmax() * 0.95;
+        double fmaxThreshold = profile.getMaxFluorescence() * 0.95;
         while (Math.abs(runner.getNextCycle().getFoFracFoAv()) < foThreshold
             && runner.getNextCycle().getCurrentCycleFluorescence() < fmaxThreshold) {
             //Increase and set the LRE window size by 1 cycle
@@ -333,7 +333,7 @@ public class LreWindowSelector {
         }
         //Try to expand the upper region of the window based on the Fo threshold
         //This also limits the top of the LRE window to 95% of Fmax
-        double fmaxThreshold = profile.getFmax() * 0.95;
+        double fmaxThreshold = profile.getMaxFluorescence() * 0.95;
         while (Math.abs(runner.getNextCycle().getFoFracFoAv()) < foThreshold
             && runner.getNextCycle().getCurrentCycleFluorescence() < fmaxThreshold) {
             //Increase and set the LRE window size by 1 cycle

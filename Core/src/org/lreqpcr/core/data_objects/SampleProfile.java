@@ -33,8 +33,8 @@ public class SampleProfile extends Profile {
 //Need to override setters for all paramaters that change No values in order to recalculate
 //the number of target molecules via calling updateSampleProfile()
     @Override
-    public void setEmax(double eMax) {
-        super.setEmax(eMax);
+    public void setMaxEfficiency(double eMax) {
+        super.setMaxEfficiency(eMax);
         updateSampleProfile();
     }
 
@@ -161,7 +161,7 @@ public class SampleProfile extends Profile {
 //However, avFmax can change, so this seems necessary, and likely takes very little time
         double avFmax = super.getRun().getAverageFmax();
 //Note that using the Run avFmax is solely for correcting variances in well to well flourescence calibration
-        double fmax = getFmax();
+        double fmax = getMaxFluorescence();
         if (fmax <= 0 || avFmax <= 0) {
             return 0;
         }

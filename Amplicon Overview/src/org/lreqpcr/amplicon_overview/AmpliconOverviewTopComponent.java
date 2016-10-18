@@ -175,12 +175,12 @@ public final class AmpliconOverviewTopComponent extends TopComponent
                         AverageSampleProfile sampleProfile = (AverageSampleProfile) avPrf;
                         //Only includd AverageSampleProfiles with >10 molecules
                         if (!sampleProfile.isTheReplicateAverageNoLessThan10Molecules()) {
-                            emaxArrayList.add(profile.getEmax());
-                            emaxTotal = emaxTotal + profile.getEmax();
+                            emaxArrayList.add(profile.getMaxEfficiency());
+                            emaxTotal = emaxTotal + profile.getMaxEfficiency();
                         }
                     } else {//Must be a CalibrationProfile
-                        emaxArrayList.add(profile.getEmax());
-                        emaxTotal = emaxTotal + profile.getEmax();
+                        emaxArrayList.add(profile.getMaxEfficiency());
+                        emaxTotal = emaxTotal + profile.getMaxEfficiency();
                     }
                 }
             }

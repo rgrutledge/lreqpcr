@@ -210,9 +210,9 @@ public class Run extends LreObject {
         for (AverageProfile avProfile: averageProfileList){
             for(Profile profile: avProfile.getReplicateProfileList()){
                 if(profile.hasAnLreWindowBeenFound() && !profile.isExcluded()){
-                    fmaxSum += profile.getFmax();
+                    fmaxSum += profile.getMaxFluorescence();
                     profileCount++;
-                    fmaxList.add(profile.getFmax());
+                    fmaxList.add(profile.getMaxFluorescence());
                 }
             }
         }
@@ -238,9 +238,9 @@ public class Run extends LreObject {
         for (AverageProfile avProfile: averageProfileList){
             for(Profile profile: avProfile.getReplicateProfileList()){
                 if(profile.hasAnLreWindowBeenFound() && !profile.isExcluded()){
-                    emaxSum += profile.getFmax();
+                    emaxSum += profile.getMaxFluorescence();
                     profileCount++;
-                    emaxList.add(profile.getFmax());
+                    emaxList.add(profile.getMaxFluorescence());
                 }
             }
         }

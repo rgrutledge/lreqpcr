@@ -117,7 +117,7 @@ public class CalibrationProfile extends Profile {
     protected double getOcfAdjustedToFmax() {
         double avFmax = super.getRun().getAverageFmax();
 //Note that using the Run avFmax is solely for correcting variances in well to well flourescence calibration
-        double fmax = getFmax();
+        double fmax = getMaxFluorescence();
         if (fmax <= 0 || avFmax <= 0) {
             return 0;
         }

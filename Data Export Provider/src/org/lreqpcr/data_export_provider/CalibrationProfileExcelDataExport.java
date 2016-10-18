@@ -209,14 +209,14 @@ public class CalibrationProfileExcelDataExport {
                     number = new Number(3, row, calibrationProfile.getOCF(), integerFormat);
                     sheet.addCell(number);
                 }
-                number = new Number(4, row, calibrationProfile.getEmax(), percentFormat);
+                number = new Number(4, row, calibrationProfile.getMaxEfficiency(), percentFormat);
                 sheet.addCell(number);
                 if (calibrationProfile.getMidC() != 0) {
                     number = new Number(5, row, calibrationProfile.getMidC(), floatFormat);
                     sheet.addCell(number);
                 }
-                if (calibrationProfile.getFmax() != 0) {
-                    double fmax = calibrationProfile.getFmax();
+                if (calibrationProfile.getMaxFluorescence() != 0) {
+                    double fmax = calibrationProfile.getMaxFluorescence();
                     number = new Number(6, row, fmax, floatFormat);
                     sheet.addCell(number);
                 }

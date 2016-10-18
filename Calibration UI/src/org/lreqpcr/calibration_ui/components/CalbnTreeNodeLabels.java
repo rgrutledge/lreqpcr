@@ -18,6 +18,7 @@ package org.lreqpcr.calibration_ui.components;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.AverageProfile;
 import org.lreqpcr.core.data_objects.CalibrationProfile;
@@ -82,7 +83,7 @@ public class CalbnTreeNodeLabels implements LabelFactory {
                     + " or that the Min Fc is set too high");
         } else {
             df.applyPattern("#0.0");
-            emax = "(" + df.format(calbrnProfile.getEmax() * 100) + "%) ";
+            emax = "(" + df.format(calbrnProfile.getMaxEfficiency() * 100) + "%) ";
         }
         //Determine what to display for the OCF
         String ocf;

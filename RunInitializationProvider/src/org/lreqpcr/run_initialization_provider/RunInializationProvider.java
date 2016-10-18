@@ -282,9 +282,9 @@ public class RunInializationProvider implements RunInitializationService {
         for (AverageProfile avProfile : allAvPrfs) {
             for (Profile profile : avProfile.getReplicateProfileList()) {
                 if (profile.hasAnLreWindowBeenFound() && !profile.isExcluded()) {
-                    fmaxSum += profile.getFmax();
+                    fmaxSum += profile.getMaxFluorescence();
                     profileCount++;
-                    fmaxList.add(profile.getFmax());
+                    fmaxList.add(profile.getMaxFluorescence());
                 }
             }
         }

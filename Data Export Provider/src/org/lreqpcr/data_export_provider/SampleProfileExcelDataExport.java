@@ -195,16 +195,16 @@ public class SampleProfileExcelDataExport {
                     label = new Label(3, row, "nd", center);
                     sheet.addCell(label);
                 }
-                if (sampleProfile.getEmax() != -1) {
-                    number = new Number(4, row, sampleProfile.getEmax(), percentFormat);
+                if (sampleProfile.getMaxEfficiency() != -1) {
+                    number = new Number(4, row, sampleProfile.getMaxEfficiency(), percentFormat);
                     sheet.addCell(number);
                 }
                 if (!(sampleProfile.getMidC() <= 0)) {
                     number = new Number(5, row, sampleProfile.getMidC(), floatFormat);
                     sheet.addCell(number);
                 }
-                if (sampleProfile.getFmax() != -1) {
-                    double fmax = (sampleProfile.getFmax());
+                if (sampleProfile.getMaxFluorescence() != -1) {
+                    double fmax = (sampleProfile.getMaxFluorescence());
                     number = new Number(6, row, fmax, floatFormat);
                     sheet.addCell(number);
                 }

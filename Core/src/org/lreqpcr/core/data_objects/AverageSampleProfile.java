@@ -186,19 +186,19 @@ public class AverageSampleProfile extends SampleProfile implements AverageProfil
 
     //Override get Emax, midC and Fmax in order to test if this is a valid profile
     @Override
-    public double getEmax() {
+    public double getMaxEfficiency() {
         if (!areTheRepProfilesSufficientlyClustered() || isTheReplicateAverageNoLessThan10Molecules()) {
             return -1;
         }
-        return super.getEmax(); //To change body of generated methods, choose Tools | Templates.
+        return super.getMaxEfficiency(); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public double getFmax() {
+    public double getMaxFluorescence() {
         if (!areTheRepProfilesSufficientlyClustered() || isTheReplicateAverageNoLessThan10Molecules()) {
             return -1;
         }
-        return super.getFmax(); //To change body of generated methods, choose Tools | Templates.
+        return super.getMaxFluorescence(); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override

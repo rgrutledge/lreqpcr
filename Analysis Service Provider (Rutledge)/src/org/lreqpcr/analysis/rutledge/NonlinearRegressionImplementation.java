@@ -136,16 +136,16 @@ public class NonlinearRegressionImplementation {
         }
         //Set the average for each parameter into the Profile
 //This allows the final recalculation of the LRE parameters based on the average Fb and Fb-slope
-        profile.setNrEmax(emaxSum / numberOfIterations);
+        profile.setNonlinearMaxEfficiency(emaxSum / numberOfIterations);
         profile.setNrFb(fbSum / numberOfIterations);
         profile.setNrFo(foSum / numberOfIterations);
-        profile.setNrFmax(fmaxSum / numberOfIterations);
+        profile.setNonlinearMaxFluorescence(fmaxSum / numberOfIterations);
         profile.setNrFbSlope(fbSlopeSum / numberOfIterations);
         //Determine and set the parameter SD
-        profile.setNrEmaxSD(MathFunctions.calcStDev(emaxArray));
+        profile.setNonlinearMaxEfficiencyStandardDeviation(MathFunctions.calcStDev(emaxArray));
         profile.setNrFbSD(MathFunctions.calcStDev(fbArray));
         profile.setNrFoSD(MathFunctions.calcStDev(foArray));
-        profile.setNrFmaxSD(MathFunctions.calcStDev(fmaxArray));
+        profile.setNonlinearMaxFluorescenceStandardDeviation(MathFunctions.calcStDev(fmaxArray));
         profile.setNrFbSlopeSD(MathFunctions.calcStDev(fbSlopeArray));
 //Recaculate the optimized Fc dataset using the average NR-derived Fb and Fb-slope
         conductBaselineCorrection();
@@ -188,8 +188,8 @@ public class NonlinearRegressionImplementation {
         } else {
             lreDerivedParam.setFb(profile.getNrFb());
         }
-        lreDerivedParam.setMaxEfficiency(profile.getEmax());//Current LRE-derived Emax
-        lreDerivedParam.setMaxFluorescence(profile.getFmax());//Current LRE-derived Fmax
+        lreDerivedParam.setMaxEfficiency(profile.getMaxEfficiency());//Current LRE-derived Emax
+        lreDerivedParam.setMaxFluorescence(profile.getMaxFluorescence());//Current LRE-derived Fmax
         lreDerivedParam.setTargetFluorescence(profile.getAvFo());//Current LRE-derived average Fo
         lreDerivedParam.setFbSlope(profile.getNrFbSlope());//Current Fb slope
         return lreDerivedParam;
@@ -198,7 +198,7 @@ public class NonlinearRegressionImplementation {
     private boolean testIfRegressionWasSuccessful() {//**** TODO Design a more effective scheme to test for NR success
 //Test if the regression analysis was successful based on the LRE line R2
         Double r2 = profile.getR2();
-        Double emaxNR = profile.getNrEmax();
+        Double emaxNR = profile.getNonlinearMaxEfficiency();
         //Very, very crude approach
         if (r2 < 0.8 || r2.isNaN() || emaxNR < 0.3) {
             //Error dialog DISABLED as it is extremely irrating

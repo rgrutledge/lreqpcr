@@ -116,14 +116,14 @@ public class LrePlot extends javax.swing.JPanel {
             graphTitle.setText(sdf.format(calPrf.getRunDate()) + ocfLabel);
         }
         lreWinSizeDisplay.setText(String.valueOf(profile.getLreWinSize()));
-        startCycleDisplay.setText(String.valueOf(profile.getStrCycleInt()));
-        if (profile.getEmax() > 0) {
-            dEdisplay.setText(dfE.format(profile.getDeltaE()));
+        startCycleDisplay.setText(String.valueOf(profile.getStartingCycleIndex()));
+        if (profile.getMaxEfficiency() > 0) {
+            dEdisplay.setText(dfE.format(profile.getChangeInEfficiency()));
             df.applyPattern("##.0");
-            maxEdisplay.setText(df.format(profile.getEmax() * 100) + "%");
+            maxEdisplay.setText(df.format(profile.getMaxEfficiency() * 100) + "%");
             df.applyPattern("0.0000");
             r2display.setText(df.format(profile.getR2()));
-            Double fmax = profile.getEmax() / (-1 * profile.getDeltaE());
+            Double fmax = profile.getMaxEfficiency() / (-1 * profile.getChangeInEfficiency());
             df.applyPattern(FormatingUtilities.decimalFormatPattern(fmax));
             fmaxDisplay.setText(df.format(fmax));
         }
@@ -569,7 +569,7 @@ public class LrePlot extends javax.swing.JPanel {
         if (profile == null) {
             return;
         }
-        profile.setStrCycleInt(profile.getStrCycleInt() + 1);
+        profile.setStartingCycleIndex(profile.getStartingCycleIndex() + 1);
         profile.setLreWinSize(profile.getLreWinSize() - 1);
         processModifiedLreWindow();
     }//GEN-LAST:event_removeBottomActionPerformed
@@ -579,7 +579,7 @@ public class LrePlot extends javax.swing.JPanel {
         if (profile == null) {
             return;
         }
-        profile.setStrCycleInt(profile.getStrCycleInt() - 1);
+        profile.setStartingCycleIndex(profile.getStartingCycleIndex() - 1);
         profile.setLreWinSize(profile.getLreWinSize() + 1);
         processModifiedLreWindow();
     }//GEN-LAST:event_addBottomActionPerformed
@@ -626,14 +626,14 @@ private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         double y;
         if (profile != null) {
             /*Draw the LRE line*/
-            x = xMin + (((profile.getEmax() / profile.getDeltaE()) * -1) * xScalingFactor); //Fmax
-            y = yMax - (profile.getEmax() * yScalingFactor); //Emax
+            x = xMin + (((profile.getMaxEfficiency() / profile.getChangeInEfficiency()) * -1) * xScalingFactor); //Fmax
+            y = yMax - (profile.getMaxEfficiency() * yScalingFactor); //Emax
             Line2D.Double lreLine = new Line2D.Double(xMin, y, x, yMax);
             g2.draw(lreLine);
 
             //Determine the C1/2 position and show it as a red dot on the LRE line
-            double midFc = (prfSum.getProfile().getEmax() / -prfSum.getProfile().getDeltaE()) / 2;
-            double midEc = midFc * prfSum.getProfile().getDeltaE() + prfSum.getProfile().getEmax();
+            double midFc = (prfSum.getProfile().getMaxEfficiency() / -prfSum.getProfile().getChangeInEfficiency()) / 2;
+            double midEc = midFc * prfSum.getProfile().getChangeInEfficiency() + prfSum.getProfile().getMaxEfficiency();
             x = xMin + (midFc * xScalingFactor);
             y = yMax - (midEc * yScalingFactor);
             g2.setColor(Color.RED);

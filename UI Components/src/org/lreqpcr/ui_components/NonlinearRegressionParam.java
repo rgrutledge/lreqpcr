@@ -17,6 +17,7 @@
 package org.lreqpcr.ui_components;
 
 import java.text.DecimalFormat;
+
 import org.lreqpcr.core.data_objects.Profile;
 import org.lreqpcr.core.data_processing.ProfileSummary;
 import org.lreqpcr.core.utilities.FormatingUtilities;
@@ -60,12 +61,14 @@ public class NonlinearRegressionParam extends javax.swing.JPanel {
         df.applyPattern("#0.0%");
         CV = df.format(profile.getNrFoSD() / profile.getNrFo() * 100);
         nrFoDisplay.setText(dfE.format(profile.getNrFo()) + " ±" + CV);
-        CV = df.format(profile.getNrEmaxSD() / profile.getNrEmax() * 100);
-        nrEmaxDisplay.setText(df.format(profile.getNrEmax()) + " ±" + CV);
+        CV = df.format(
+            profile.getNonlinearMaxEfficiencyStandardDeviation() / profile.getNonlinearMaxEfficiency() * 100);
+        nrEmaxDisplay.setText(df.format(profile.getNonlinearMaxEfficiency()) + " ±" + CV);
         df.applyPattern("#0.0%");
-        CV = df.format(profile.getNrFmaxSD() / profile.getNrFmax() * 100);
-        df.applyPattern(FormatingUtilities.decimalFormatPattern(profile.getNrFmax())); 
-        nrFmaxDisplay.setText(df.format(profile.getNrFmax()) + " ±" + CV);
+        CV = df.format(
+            profile.getNonlinearMaxFluorescenceStandardDeviation() / profile.getNonlinearMaxFluorescence() * 100);
+        df.applyPattern(FormatingUtilities.decimalFormatPattern(profile.getNonlinearMaxFluorescence()));
+        nrFmaxDisplay.setText(df.format(profile.getNonlinearMaxFluorescence()) + " ±" + CV);
         df.applyPattern("#0.0%");
         CV = df.format(profile.getNrFbSD() / profile.getNrFb() * 100);
         double fb = profile.getNrFb();

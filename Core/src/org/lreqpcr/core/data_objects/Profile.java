@@ -76,7 +76,7 @@ public class Profile extends LreObject {
     /**
      * LRE window start cycle
      */
-    private int strCycleInt;
+    private int startingCycleIndex;
     /**
      * LRE window size
      */
@@ -84,7 +84,7 @@ public class Profile extends LreObject {
     /**
      * Linear regression values for the LRE window
      */
-    private double eMax, deltaE, r2;
+    private double maxEfficiency, changeInEfficiency, r2;
     /**
      * Fo values and CV calculated from the LRE window Fo values
      */
@@ -102,15 +102,19 @@ public class Profile extends LreObject {
      */
     private String whyExcluded;
 
-    //Nonlinear regression-derived LRE parameters
+    // Nonlinear regression-derived LRE parameters
     private double nrFb = 0;
     private double nrFbSlope = 0;
-    private double nrEmax=  0;
-    private double nrFmax = 0;
+    private double nonlinearMaxEfficiency = 0;
+    private double nonlinearMaxFluorescence = 0;
     private double nrFo = 0;
 
-    //Standard deviations derived from repeatative nonlinear regression analysis
-    private double nrFbSD, nrFbSlopeSD, nrEmaxSD, nrFmaxSD, nrFoSD;
+    // Standard deviations derived from repetative nonlinear regression analysis
+    private double nrFbSD;
+    private double nrFbSlopeSD;
+    private double nonlinearMaxEfficiencyStandardDeviation;
+    private double nonlinearMaxFluorescenceStandardDeviation;
+    private double nrFoSD;
 
     /**
      * Also sets the parent to the Run and the run date retrieved from the Run.
@@ -183,7 +187,6 @@ public class Profile extends LreObject {
     }
 
     /**
-     *
      * @return the fluorescence threshold used to generate the profile Ct
      */
     public double getFluorescenceThreshold() {
@@ -191,8 +194,7 @@ public class Profile extends LreObject {
     }
 
     /**
-     *
-     * @param ftthe fluorescence threshold used to generate the profile Ct
+     * @param fluorescenceThreshold fluorescence threshold used to generate the profile Ct
      */
     public void setFluorescenceThreshold(double fluorescenceThreshold) {
         this.fluorescenceThreshold = fluorescenceThreshold;
@@ -220,7 +222,6 @@ public class Profile extends LreObject {
     }
 
     /**
-     *
      * @return the coefficient of variation for the average Fo
      */
     public double getAvFoCV() {
@@ -228,43 +229,40 @@ public class Profile extends LreObject {
     }
 
     /**
-     *
      * @param foCV the coefficient of variation for the average Fo
      */
     public void setAvFoCV(double foCV) {
         this.avFoCV = foCV;
     }
 
-    public double getDeltaE() {
-        return deltaE;
+    public double getChangeInEfficiency() {
+        return changeInEfficiency;
     }
 
-    public void setDeltaE(double deltaE) {
-        this.deltaE = deltaE;
+    public void setChangeInEfficiency(double changeInEfficiency) {
+        this.changeInEfficiency = changeInEfficiency;
     }
 
     /**
-     *
      * @return LRE-derived Emax
      */
-    public double getEmax() {
-        return eMax;
+    public double getMaxEfficiency() {
+        return maxEfficiency;
     }
 
-    public void setEmax(double eMax) {
-        this.eMax = eMax;
+    public void setMaxEfficiency(double eMax) {
+        this.maxEfficiency = eMax;
     }
 
     /**
-     *
      * @return LRE-derived Fmax or -1 if the profile is invalid
      */
-    public double getFmax() {
+    public double getMaxFluorescence() {
         if (isExcluded()){
             return -1;
         }
         if (hasAnLreWindowBeenFound) {
-            return eMax / -(deltaE);
+            return maxEfficiency / -(changeInEfficiency);
         }
         return -1;
     }
@@ -348,12 +346,12 @@ public class Profile extends LreObject {
         this.rawFcReadings = rawFcReadings;
     }
 
-    public int getStrCycleInt() {
-        return strCycleInt;
+    public int getStartingCycleIndex() {
+        return startingCycleIndex;
     }
 
-    public void setStrCycleInt(int strCycleInt) {
-        this.strCycleInt = strCycleInt;
+    public void setStartingCycleIndex(int startingCycleIndex) {
+        this.startingCycleIndex = startingCycleIndex;
     }
 
     public String getWellLabel() {
@@ -495,29 +493,29 @@ public class Profile extends LreObject {
     /**
      * @return nonlinear regression-derived Emax
      */
-    public double getNrEmax() {
-        return nrEmax;
+    public double getNonlinearMaxEfficiency() {
+        return nonlinearMaxEfficiency;
     }
 
     /**
-     * @param nrEmax nonlinear regression-derived Emax
+     * @param nonlinearMaxEfficiency nonlinear regression-derived Emax
      */
-    public void setNrEmax(double nrEmax) {
-        this.nrEmax = nrEmax;
+    public void setNonlinearMaxEfficiency(double nonlinearMaxEfficiency) {
+        this.nonlinearMaxEfficiency = nonlinearMaxEfficiency;
     }
 
     /**
      * @return nonlinear regression-derived Fmax
      */
-    public double getNrFmax() {
-        return nrFmax;
+    public double getNonlinearMaxFluorescence() {
+        return nonlinearMaxFluorescence;
     }
 
     /**
-     * @param nrFmax nonlinear regression-derived Fmax
+     * @param nonlinearMaxFluorescence nonlinear regression-derived Fmax
      */
-    public void setNrFmax(double nrFmax) {
-        this.nrFmax = nrFmax;
+    public void setNonlinearMaxFluorescence(double nonlinearMaxFluorescence) {
+        this.nonlinearMaxFluorescence = nonlinearMaxFluorescence;
     }
 
     /**
@@ -550,20 +548,20 @@ public class Profile extends LreObject {
         this.nrFbSlopeSD = nrFbSlopeSD;
     }
 
-    public double getNrEmaxSD() {
-        return nrEmaxSD;
+    public double getNonlinearMaxEfficiencyStandardDeviation() {
+        return nonlinearMaxEfficiencyStandardDeviation;
     }
 
-    public void setNrEmaxSD(double nrEmaxSD) {
-        this.nrEmaxSD = nrEmaxSD;
+    public void setNonlinearMaxEfficiencyStandardDeviation(double nonlinearMaxEfficiencyStandardDeviation) {
+        this.nonlinearMaxEfficiencyStandardDeviation = nonlinearMaxEfficiencyStandardDeviation;
     }
 
-    public double getNrFmaxSD() {
-        return nrFmaxSD;
+    public double getNonlinearMaxFluorescenceStandardDeviation() {
+        return nonlinearMaxFluorescenceStandardDeviation;
     }
 
-    public void setNrFmaxSD(double nrFmaxSD) {
-        this.nrFmaxSD = nrFmaxSD;
+    public void setNonlinearMaxFluorescenceStandardDeviation(double nonlinearMaxFluorescenceStandardDeviation) {
+        this.nonlinearMaxFluorescenceStandardDeviation = nonlinearMaxFluorescenceStandardDeviation;
     }
 
     public double getNrFoSD() {
@@ -579,23 +577,23 @@ public class Profile extends LreObject {
      * determined LRE parameters, including eliminating the LRE window.
      */
     public void setLreVariablesToZero(){
-        nrEmax = 0;
-        nrEmaxSD = 0;
+        nonlinearMaxEfficiency = 0;
+        nonlinearMaxEfficiencyStandardDeviation = 0;
         nrFb = 0;
         nrFbSD = 0;
         nrFbSlope = 0;
         nrFbSlopeSD = 0;
-        nrFmax = 0;
-        nrFmaxSD = 0;
+        nonlinearMaxFluorescence = 0;
+        nonlinearMaxFluorescenceStandardDeviation = 0;
         nrFo = 0;
         nrFoSD = 0;
-        eMax = 0;
-        deltaE = 0;
+        maxEfficiency = 0;
+        changeInEfficiency = 0;
         r2 = 0;
         avFo = 0;
         avFoCV = 0;
         midC = 0;
-        strCycleInt = 0;
+        startingCycleIndex = 0;
         lreWinSize = 0;
         hasAnLreWindowBeenFound = false;
     }

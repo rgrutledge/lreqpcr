@@ -89,7 +89,10 @@ public class ProfileSummary {
             //Update the cycle predicted Fc
             calcPredictedFc();
             //Update C1/2
-            profile.setMidC(LREmath.getMidC(profile.getDeltaE(), profile.getEmax(), profile.getAvFo()));
+            profile.setMidC(LREmath.getMidC(
+                profile.getChangeInEfficiency(),
+                profile.getMaxEfficiency(),
+                profile.getAvFo()));
             db.saveObject(profile);
         }
     }
@@ -141,8 +144,8 @@ public class ProfileSummary {
         }
         //Calculates and transfers the LRE parameters to the Profile
         double[] regressionValues = MathFunctions.linearRegressionAnalysis(lreWinPts);
-        profile.setDeltaE(regressionValues[0]);
-        profile.setEmax(regressionValues[1]);
+        profile.setChangeInEfficiency(regressionValues[0]);
+        profile.setMaxEfficiency(regressionValues[1]);
         profile.setR2(regressionValues[2]);
         //Gather the LRE window Fc and predicted Fc
         //Start at the cycle immediately preceeding the start cycle
@@ -175,7 +178,7 @@ public class ProfileSummary {
         Cycle runner = zeroCycle.getNextCycle();//Start at cycle #1
         do { //This should provide Fo and FoEmax100 values for all Cycles
             runner.setFo(LREmath.calcFo(runner.getCycleNumber(), runner.getCurrentCycleFluorescence(),
-                profile.getDeltaE(), profile.getEmax()));
+                profile.getChangeInEfficiency(), profile.getMaxEfficiency()));
             runner = runner.getNextCycle();
         } while (runner != null);
     }
@@ -228,8 +231,8 @@ public class ProfileSummary {
         //The cycle linked-list is traversed & predicted Fc values assigned to each cycle
         Cycle runner = getZeroCycle().getNextCycle();//Goto cycle #1
         do {
-            runner.setPredictedFluorescence(LREmath.calcPrdFc(runner.getCycleNumber(), profile.getDeltaE(),
-                profile.getEmax(), profile.getAvFo()));
+            runner.setPredictedFluorescence(LREmath.calcPrdFc(runner.getCycleNumber(), profile.getChangeInEfficiency(),
+                profile.getMaxEfficiency(), profile.getAvFo()));
             runner = runner.getNextCycle();
         } while (runner != null);
     }
@@ -246,7 +249,7 @@ public class ProfileSummary {
             return null;
         }
         Cycle runner = zeroCycle;
-        for (int i = 0; i < profile.getStrCycleInt(); i++) {
+        for (int i = 0; i < profile.getStartingCycleIndex(); i++) {
             runner = runner.getNextCycle();
         }
         return runner;
@@ -294,7 +297,7 @@ public class ProfileSummary {
             return null;
         }
         Cycle runner = zeroCycle;
-        for (int i = 0; i < profile.getStrCycleInt() + profile.getLreWinSize() - 1; i++) {
+        for (int i = 0; i < profile.getStartingCycleIndex() + profile.getLreWinSize() - 1; i++) {
             runner = runner.getNextCycle();
         }
         return runner;

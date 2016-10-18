@@ -1,4 +1,5 @@
 *.iml
 .*
 !.gitignore
+*/nbproject/private/*
 /nbproject/private/*

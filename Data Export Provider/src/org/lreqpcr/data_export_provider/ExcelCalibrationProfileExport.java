@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2013   Bob Rutledge
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -16,26 +16,38 @@
  */
 package org.lreqpcr.data_export_provider;
 
-import com.google.common.collect.Lists;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import javax.swing.JOptionPane;
-import jxl.Workbook;
-import jxl.format.Alignment;
-import jxl.format.Border;
-import jxl.format.BorderLineStyle;
-import jxl.format.Colour;
-import jxl.write.*;
-import jxl.write.Number;
+
 import org.lreqpcr.core.data_objects.AverageCalibrationProfile;
 import org.lreqpcr.core.data_objects.CalibrationProfile;
 import org.lreqpcr.core.utilities.IOUtilities;
 import org.lreqpcr.core.utilities.MathFunctions;
 import org.openide.windows.WindowManager;
+
+import com.google.common.collect.Lists;
+import jxl.Workbook;
+import jxl.format.Alignment;
+import jxl.format.Border;
+import jxl.format.BorderLineStyle;
+import jxl.format.Colour;
+import jxl.write.DateFormat;
+import jxl.write.DateTime;
+import jxl.write.Formula;
+import jxl.write.Label;
+import jxl.write.Number;
+import jxl.write.NumberFormats;
+import jxl.write.WritableCellFormat;
+import jxl.write.WritableFont;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
+import jxl.write.WriteException;
 
 /**
  *
@@ -50,7 +62,7 @@ public class ExcelCalibrationProfileExport {
         }
         //Sort the profile list
         //Construction of an ArrayList avoids an exception when attempting to sort DB4O lists
-        ArrayList<AverageCalibrationProfile> profileList = new ArrayList<AverageCalibrationProfile>(prfList);
+        ArrayList<AverageCalibrationProfile> profileList = new ArrayList<>(prfList);
         Collections.sort(profileList);
         //Calculate the average OCF and CV
         double ocfSum = 0;
@@ -174,11 +186,11 @@ public class ExcelCalibrationProfileExport {
                 sheet.addCell(number);
                 label = new Label(3, row, "LRE-derived", center);
                 sheet.addCell(label);
-                number = new Number(4, row, profile.getEmax(), percentFormat);
+                number = new Number(4, row, profile.getMaxEfficiency(), percentFormat);
                 sheet.addCell(number);
                 number = new Number(5, row, profile.getMidC(), floatFormat);
                 sheet.addCell(number);
-                double fmax = (profile.getEmax() / profile.getDeltaE()) * -1;
+                double fmax = (profile.getMaxEfficiency() / profile.getChangeInEfficiency()) * -1;
                 number = new Number(6, row, fmax, floatFormat);
                 sheet.addCell(number);
                 number = new Number(7, row, profile.getAmpliconSize(), integerFormat);
