@@ -69,7 +69,7 @@ public class Profile extends LreObject {
      */
     private double fb;
     /**
-     * Is this a flat profile or has any abberrancy that dissallows an LRE window to be located
+     * Is this a flat profile or has any aberrancy that disallows an LRE window to be located
      */
     private boolean hasAnLreWindowBeenFound = false;
     private boolean didNonlinearRegressionSucceed;
