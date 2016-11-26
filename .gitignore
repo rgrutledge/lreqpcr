@@ -1,0 +1,7 @@
+*.iml
+.*
+!.gitignore
+*/nbproject/private/*
+/nbproject/private/*
+*/build/
+/build/
