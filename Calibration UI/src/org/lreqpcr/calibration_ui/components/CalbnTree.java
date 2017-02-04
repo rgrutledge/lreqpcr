@@ -21,7 +21,10 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -45,6 +48,7 @@ import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
+import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.Lookups;
 import org.openide.windows.WindowManager;
@@ -55,6 +59,7 @@ import org.openide.windows.WindowManager;
  */
 public class CalbnTree extends JPanel {
 
+    private LreNode rootLreNode;
     private ExplorerManager mgr;
     private DatabaseServices calbnDB;
     private LreActionFactory nodeActionFactory;
@@ -123,14 +128,14 @@ public class CalbnTree extends JPanel {
         fmaxNrmzBox.setSelected(calDbInfo.isOcfNormalizedToFmax());
         List<CalibrationRun> runList = (List<CalibrationRun>) calbnDB.getAllObjects(CalibrationRun.class);
         RunNodesWithAvCalChildren calRootChildren = new RunNodesWithAvCalChildren(mgr, calbnDB, runList, nodeActionFactory, nodeLabelFactory);
-        LreNode root = new LreNode(calRootChildren, Lookups.singleton(calDbInfo), new Action[]{});
-        root.setDatabaseService(calbnDB);
+        rootLreNode = new LreNode(calRootChildren, Lookups.singleton(calDbInfo), new Action[]{});
+        rootLreNode.setDatabaseService(calbnDB);
         File dbFile = calbnDB.getDatabaseFile();
         String dbFileName = dbFile.getName();
         int length = dbFileName.length();
         String displayName = dbFileName.substring(0, length - 4);
-        root.setDisplayName(displayName);
-        mgr.setRootContext(root);
+        rootLreNode.setDisplayName(displayName);
+        mgr.setRootContext(rootLreNode);
         calcAverageOCF();
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.CLEAR_PROFILE_EDITOR);
     }
@@ -218,6 +223,8 @@ public class CalbnTree extends JPanel {
         avProfileOCFdisplay = new javax.swing.JTextField();
         fmaxNrmzBox = new javax.swing.JCheckBox();
         jButton1 = new javax.swing.JButton();
+        expandAllButton = new javax.swing.JButton();
+        collapseAllButton = new javax.swing.JButton();
 
         setMinimumSize(new java.awt.Dimension(425, 250));
         setPreferredSize(new java.awt.Dimension(425, 250));
@@ -257,52 +264,69 @@ public class CalbnTree extends JPanel {
             }
         });
 
+        expandAllButton.setText("Expand All");
+        expandAllButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                expandAllButtonActionPerformed(evt);
+            }
+        });
+
+        collapseAllButton.setText("Collapse All");
+        collapseAllButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                collapseAllButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(runViewButton)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(expandAllButton, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(collapseAllButton, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(avProfileOCFdisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(fmaxNrmzBox, javax.swing.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)
+                .addComponent(avProfileOCFdisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(232, 232, 232)
+                .addComponent(fmaxNrmzBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton1)
-                .addGap(6, 6, 6))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(runViewButton)
                     .addComponent(jLabel2)
                     .addComponent(avProfileOCFdisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(fmaxNrmzBox)
-                    .addComponent(jButton1)))
+                    .addComponent(jButton1)
+                    .addComponent(expandAllButton)
+                    .addComponent(collapseAllButton))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(beanTree, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(beanTree, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(beanTree, javax.swing.GroupLayout.DEFAULT_SIZE, 221, Short.MAX_VALUE))
+                .addComponent(beanTree, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -353,9 +377,28 @@ public class CalbnTree extends JPanel {
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void expandAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_expandAllButtonActionPerformed
+        Queue<Node> nodesToExpand = new LinkedList<Node>();
+        nodesToExpand.add(rootLreNode);
+        Node currentNode;
+        while ((currentNode = nodesToExpand.poll()) != null) {
+            mgr.setExploredContext(currentNode);
+            Node[] childNodes = currentNode.getChildren().getNodes();
+            if (childNodes.length > 0) {
+                nodesToExpand.addAll(Arrays.asList(childNodes));
+            }
+        }
+    }//GEN-LAST:event_expandAllButtonActionPerformed
+
+    private void collapseAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_collapseAllButtonActionPerformed
+        createTree();
+    }//GEN-LAST:event_collapseAllButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField avProfileOCFdisplay;
     private javax.swing.JScrollPane beanTree;
+    private javax.swing.JButton collapseAllButton;
+    private javax.swing.JButton expandAllButton;
     private javax.swing.JCheckBox fmaxNrmzBox;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel2;
