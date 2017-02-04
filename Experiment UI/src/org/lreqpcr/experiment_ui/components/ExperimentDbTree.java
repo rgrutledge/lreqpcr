@@ -20,10 +20,12 @@ import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import javax.swing.Action;
 import javax.swing.JOptionPane;
@@ -54,6 +56,7 @@ import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
+import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.Lookup.Result;
@@ -62,8 +65,6 @@ import org.openide.util.LookupListener;
 import org.openide.util.Utilities;
 import org.openide.util.lookup.Lookups;
 import org.openide.windows.WindowManager;
-
-import jxl.write.WriteException;
 
 /**
  * Tree-based view of an Experiment database
@@ -76,6 +77,7 @@ import jxl.write.WriteException;
  */
 public class ExperimentDbTree extends JPanel implements LookupListener {
 
+    private LreNode rootLreNode;
     private ExplorerManager mgr;
     private DatabaseServices exptDB;
     private LreWindowSelectionParameters selectionParameters;
@@ -142,7 +144,6 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
         //Note the the db does not have a database file open yet as this is called during component construction
         nodeActionFactory = new ExperimentTreeNodeActions(mgr);
         runNodeLabelFactory = new SampleTreeNodeLabels();
-        jButton1.setVisible(false);
         createTree();
     }
 
@@ -152,9 +153,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
     @SuppressWarnings(value = "unchecked")
     //A new experiment database has been opened
     public void createTree() {
-
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.CLEAR_PROFILE_EDITOR);
-        runViewButton.setSelected(true);
         if (!exptDB.isDatabaseOpen()) {
             AbstractNode root = new AbstractNode(Children.LEAF);
             root.setName("No Experiment database is open");
@@ -222,24 +221,20 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
         df.applyPattern(FormatingUtilities.decimalFormatPattern(ocf));
         ocfDisplay.setText(df.format(ocf));
         //Retrieval all Runs from the database
-        LreNode root;
         List<? extends Run> runList = (List<? extends Run>) exptDB.getAllObjects(Run.class);
         if (!replicatProfileView) {
-            root = new LreNode(new RunNodesWithAvSampleProfileChildren(mgr, exptDB, runList, nodeActionFactory,
+            rootLreNode = new LreNode(new RunNodesWithAvSampleProfileChildren(mgr, exptDB, runList, nodeActionFactory,
                     runNodeLabelFactory), Lookups.singleton(exptDbInfo), new Action[]{});
         } else {
-            root = new LreNode(new RunNodesWithSampleProfileChildren(mgr, exptDB, runList, nodeActionFactory,
+            rootLreNode = new LreNode(new RunNodesWithSampleProfileChildren(mgr, exptDB, runList, nodeActionFactory,
                     runNodeLabelFactory), Lookups.singleton(exptDbInfo), new Action[]{});
         }
-        root.setDatabaseService(exptDB);
-        root.setDisplayName(displayName);
-        root.setShortDescription(dbFile.getAbsolutePath());
-        mgr.setRootContext(root);
+        rootLreNode.setDatabaseService(exptDB);
+        rootLreNode.setDisplayName(displayName);
+        rootLreNode.setShortDescription(dbFile.getAbsolutePath());
+        mgr.setRootContext(rootLreNode);
 //        UniversalLookup.getDefault().fireChangeEvent(PanelMessages.SET_DEFAULT_CURSOR);
     }//End of create tree
-
-    private void convertToCurrentVersion() {
-    }
 
     private void displayIncompatilityMessage() {
         JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(),
@@ -349,10 +344,11 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
         jPanel1 = new javax.swing.JPanel();
         ocfLabel = new javax.swing.JLabel();
         ocfDisplay = new javax.swing.JTextField();
-        fmaxNormalizeChkBox = new javax.swing.JCheckBox();
         runViewButton = new javax.swing.JRadioButton();
-        repViewButton = new javax.swing.JRadioButton();
-        jButton1 = new javax.swing.JButton();
+        wellViewButton = new javax.swing.JRadioButton();
+        expandAllButton = new javax.swing.JButton();
+        collapseAllButton = new javax.swing.JButton();
+        fmaxNormalizeChkBox = new javax.swing.JCheckBox();
 
         setMinimumSize(new java.awt.Dimension(425, 170));
         setPreferredSize(new java.awt.Dimension(425, 170));
@@ -369,37 +365,27 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
         ocfDisplay.setColumns(10);
         ocfDisplay.setToolTipText("Manually enter an OCF value that will be applied to all profiles");
 
-        fmaxNormalizeChkBox.setText("Fmax Normalize");
-        fmaxNormalizeChkBox.setToolTipText("Normalize target quantities to the Run's average Fmax");
-        fmaxNormalizeChkBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fmaxNormalizeChkBoxActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(19, 19, 19)
+                .addContainerGap()
                 .addComponent(ocfLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(ocfDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(fmaxNormalizeChkBox)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(81, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(0, 1, Short.MAX_VALUE)
+                .addGap(0, 0, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(ocfLabel)
-                    .addComponent(ocfDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(fmaxNormalizeChkBox)))
+                    .addComponent(ocfDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
+        runViewButton.setSelected(true);
         runViewButton.setText("Run View");
         runViewButton.setToolTipText("Return to viewing Runs");
         runViewButton.addActionListener(new java.awt.event.ActionListener() {
@@ -408,17 +394,32 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
             }
         });
 
-        repViewButton.setText("Well View");
-        repViewButton.addActionListener(new java.awt.event.ActionListener() {
+        wellViewButton.setText("Well View");
+        wellViewButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                repViewButtonActionPerformed(evt);
+                wellViewButtonActionPerformed(evt);
             }
         });
 
-        jButton1.setText("g");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        expandAllButton.setText("Expand All");
+        expandAllButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                expandAllButtonActionPerformed(evt);
+            }
+        });
+
+        collapseAllButton.setText("Collapse All");
+        collapseAllButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                collapseAllButtonActionPerformed(evt);
+            }
+        });
+
+        fmaxNormalizeChkBox.setText("Fmax Normalize");
+        fmaxNormalizeChkBox.setToolTipText("Normalize target quantities to the Run's average Fmax");
+        fmaxNormalizeChkBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fmaxNormalizeChkBoxActionPerformed(evt);
             }
         });
 
@@ -427,36 +428,52 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(beanTree, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 399, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(runViewButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(repViewButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 251, Short.MAX_VALUE)))
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(runViewButton)
+                    .addComponent(wellViewButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(collapseAllButton, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(expandAllButton, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(fmaxNormalizeChkBox)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+            .addComponent(beanTree, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton1)
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(runViewButton)
-                        .addComponent(repViewButton)))
+                    .addComponent(runViewButton)
+                    .addComponent(expandAllButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(beanTree, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(wellViewButton)
+                    .addComponent(collapseAllButton)
+                    .addComponent(fmaxNormalizeChkBox))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(beanTree, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void runViewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runViewButtonActionPerformed
-        createTree();
-        UniversalLookup.getDefault().add(PanelMessages.RUN_VIEW_SELECTED, null);
-}//GEN-LAST:event_runViewButtonActionPerformed
+        if (runViewButton.isSelected()) {
+            createTree();
+            wellViewButton.setSelected(false);
+            replicatProfileView = false;
+            UniversalLookup.getDefault().add(PanelMessages.RUN_VIEW_SELECTED, null);
+        }
+        else {
+            runViewButton.setSelected(true);
+        }
+    }//GEN-LAST:event_runViewButtonActionPerformed
+
     @SuppressWarnings(value = "unchecked")
     private void fmaxNormalizeChkBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fmaxNormalizeChkBoxActionPerformed
         boolean arg = fmaxNormalizeChkBox.isSelected();
@@ -486,35 +503,44 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
         UniversalLookup.getDefault().fireChangeEvent(PanelMessages.UPDATE_EXPERIMENT_PANELS);
     }//GEN-LAST:event_fmaxNormalizeChkBoxActionPerformed
 
-    private void repViewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_repViewButtonActionPerformed
-        if (repViewButton.isSelected()) {
+    private void wellViewButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        if (wellViewButton.isSelected()) {
+            runViewButton.setSelected(false);
             replicatProfileView = true;
             createTree();
-        } else {
-            replicatProfileView = false;
-            createTree();
         }
-    }//GEN-LAST:event_repViewButtonActionPerformed
+        else {
+            wellViewButton.setSelected(true);
+        }
+    }
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        try {
-            SampleFcExport.exportSampleProfileFcReadings(exptDB);
-        } catch (WriteException ex) {
-            Exceptions.printStackTrace(ex);
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
+    private void expandAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_expandAllButtonActionPerformed
+        Queue<Node> nodesToExpand = new LinkedList<Node>();
+        nodesToExpand.add(rootLreNode);
+        Node currentNode;
+        while ((currentNode = nodesToExpand.poll()) != null) {
+            mgr.setExploredContext(currentNode);
+            Node[] childNodes = currentNode.getChildren().getNodes();
+            if (childNodes.length > 0) {
+                nodesToExpand.addAll(Arrays.asList(childNodes));
+            }
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_expandAllButtonActionPerformed
+
+    private void collapseAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_collapseAllButtonActionPerformed
+        createTree();
+    }//GEN-LAST:event_collapseAllButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane beanTree;
+    private javax.swing.JButton collapseAllButton;
+    private javax.swing.JButton expandAllButton;
     private javax.swing.JCheckBox fmaxNormalizeChkBox;
-    private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JTextField ocfDisplay;
     private javax.swing.JLabel ocfLabel;
-    private javax.swing.JRadioButton repViewButton;
     private javax.swing.JRadioButton runViewButton;
+    private javax.swing.JRadioButton wellViewButton;
     // End of variables declaration//GEN-END:variables
 
     /**

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.4" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
+<Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
   <Properties>
     <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
       <Dimension value="[425, 170]"/>
@@ -26,35 +26,45 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
-              <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="beanTree" alignment="0" pref="399" max="32767" attributes="0"/>
-                  <Group type="102" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="runViewButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="repViewButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jPanel1" pref="251" max="32767" attributes="0"/>
-                  </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="runViewButton" min="-2" max="-2" attributes="0"/>
+                  <Component id="wellViewButton" alignment="0" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Component id="collapseAllButton" min="-2" pref="106" max="-2" attributes="0"/>
+                  <Component id="expandAllButton" pref="0" max="32767" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="jPanel1" pref="204" max="32767" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <Component id="fmaxNormalizeChkBox" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
+          <Component id="beanTree" alignment="0" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="jButton1" min="-2" max="-2" attributes="0"/>
                   <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="runViewButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="repViewButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                  </Group>
+                  <Component id="runViewButton" min="-2" max="-2" attributes="0"/>
+                  <Component id="expandAllButton" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="beanTree" pref="140" max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="wellViewButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="collapseAllButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="fmaxNormalizeChkBox" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="beanTree" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -86,24 +96,21 @@
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace min="-2" pref="19" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
                   <Component id="ocfLabel" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="ocfDisplay" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                  <Component id="fmaxNormalizeChkBox" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace pref="81" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="1" attributes="0">
-                  <EmptySpace min="0" pref="1" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="ocfLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="ocfDisplay" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="fmaxNormalizeChkBox" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
           </Group>
@@ -122,19 +129,11 @@
             <Property name="toolTipText" type="java.lang.String" value="Manually enter an OCF value that will be applied to all profiles"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JCheckBox" name="fmaxNormalizeChkBox">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Fmax Normalize"/>
-            <Property name="toolTipText" type="java.lang.String" value="Normalize target quantities to the Run&apos;s average Fmax"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="fmaxNormalizeChkBoxActionPerformed"/>
-          </Events>
-        </Component>
       </SubComponents>
     </Container>
     <Component class="javax.swing.JRadioButton" name="runViewButton">
       <Properties>
+        <Property name="selected" type="boolean" value="true"/>
         <Property name="text" type="java.lang.String" value="Run View"/>
         <Property name="toolTipText" type="java.lang.String" value="Return to viewing Runs"/>
       </Properties>
@@ -145,20 +144,37 @@
         <AuxValue name="JavaCodeGenerator_SerializeTo" type="java.lang.String" value="ExperimentDbTree_runViewButton"/>
       </AuxValues>
     </Component>
-    <Component class="javax.swing.JRadioButton" name="repViewButton">
+    <Component class="javax.swing.JRadioButton" name="wellViewButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="Well View"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="repViewButtonActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="wellViewButtonActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="jButton1">
+    <Component class="javax.swing.JButton" name="expandAllButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="g"/>
+        <Property name="text" type="java.lang.String" value="Expand All"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="expandAllButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="collapseAllButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Collapse All"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="collapseAllButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="fmaxNormalizeChkBox">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Fmax Normalize"/>
+        <Property name="toolTipText" type="java.lang.String" value="Normalize target quantities to the Run&apos;s average Fmax"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="fmaxNormalizeChkBoxActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>
