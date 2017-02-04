@@ -35,8 +35,8 @@ import com.google.common.collect.Lists;
  */
 public class ProfileSummary {
 
-    private DatabaseServices db;
-    private Profile profile;
+    private final DatabaseServices db;
+    private final Profile profile;
     private Cycle zeroCycle;
 
     /**
@@ -59,7 +59,7 @@ public class ProfileSummary {
      * Reinitializes this ProfileSummary's Cycle linked list, which is necessary
      * whenever the encapsulated Profile is modified. This involves either
      * changes to the LRE window or changes to the working Fc dataset.
-     * <p>
+     * <p/>
      * Note that the Profile is also saved to the database from which it was derived.
      */
     public void update() {
