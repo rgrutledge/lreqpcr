@@ -23,6 +23,7 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -350,6 +351,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
         collapseAllButton = new javax.swing.JButton();
         fmaxNormalizeChkBox = new javax.swing.JCheckBox();
         resetAllButton = new javax.swing.JButton();
+        resetSelectedButton = new javax.swing.JButton();
 
         setMinimumSize(new java.awt.Dimension(425, 170));
         setPreferredSize(new java.awt.Dimension(425, 170));
@@ -431,6 +433,13 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
             }
         });
 
+        resetSelectedButton.setText("Reset Selected");
+        resetSelectedButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetSelectedButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -438,7 +447,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
             .addComponent(beanTree, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(resetAllButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -447,13 +456,14 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(collapseAllButton, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(expandAllButton, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(fmaxNormalizeChkBox)
-                                .addGap(0, 0, Short.MAX_VALUE)))))
+                            .addComponent(expandAllButton, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(fmaxNormalizeChkBox)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(resetSelectedButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -469,7 +479,9 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
                     .addComponent(collapseAllButton)
                     .addComponent(fmaxNormalizeChkBox))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(resetAllButton)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(resetAllButton)
+                    .addComponent(resetSelectedButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(beanTree, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -562,6 +574,21 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
         }
     }//GEN-LAST:event_resetAllButtonActionPerformed
 
+    private void resetSelectedButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetSelectedButtonActionPerformed
+        Queue<Node> nodesToReset = new LinkedList<>();
+        Node[] selectedNodes = mgr.getSelectedNodes();
+        Collections.addAll(nodesToReset, selectedNodes);
+        Node currentNode;
+        while ((currentNode = nodesToReset.poll()) != null) {
+            LreObject profile = currentNode.getLookup().lookup(LreObject.class);
+            if (profile instanceof Profile) {
+                ProfileSummary profileSummary = new ProfileSummary((Profile) profile, exptDB);
+                lreAnalysisService.lreWindowInitialization(profileSummary, selectionParameters);
+                ((LreNode)currentNode).refreshNodeLabel();
+            }
+        }
+    }//GEN-LAST:event_resetSelectedButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane beanTree;
     private javax.swing.JButton collapseAllButton;
@@ -571,6 +598,7 @@ public class ExperimentDbTree extends JPanel implements LookupListener {
     private javax.swing.JTextField ocfDisplay;
     private javax.swing.JLabel ocfLabel;
     private javax.swing.JButton resetAllButton;
+    private javax.swing.JButton resetSelectedButton;
     private javax.swing.JRadioButton runViewButton;
     private javax.swing.JRadioButton wellViewButton;
     // End of variables declaration//GEN-END:variables
