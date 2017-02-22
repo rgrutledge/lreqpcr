@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -236,6 +237,7 @@ public class CalbnTree extends JPanel {
         expandAllButton = new javax.swing.JButton();
         collapseAllButton = new javax.swing.JButton();
         resetAllButton = new javax.swing.JButton();
+        resetSelectedButton = new javax.swing.JButton();
 
         setMinimumSize(new java.awt.Dimension(425, 250));
         setPreferredSize(new java.awt.Dimension(425, 250));
@@ -330,27 +332,36 @@ public class CalbnTree extends JPanel {
             }
         });
 
+        resetSelectedButton.setText("Reset Selected");
+        resetSelectedButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetSelectedButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(beanTree, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(resetAllButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addComponent(resetAllButton, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(resetSelectedButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(resetAllButton)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(resetAllButton)
+                    .addComponent(resetSelectedButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(beanTree, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE))
         );
@@ -439,6 +450,21 @@ public class CalbnTree extends JPanel {
         }
     }//GEN-LAST:event_resetAllButtonActionPerformed
 
+    private void resetSelectedButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetSelectedButtonActionPerformed
+        Queue<Node> nodesToReset = new LinkedList<>();
+        Node[] selectedNodes = mgr.getSelectedNodes();
+        Collections.addAll(nodesToReset, selectedNodes);
+        Node currentNode;
+        while ((currentNode = nodesToReset.poll()) != null) {
+            LreObject profile = currentNode.getLookup().lookup(LreObject.class);
+            if (profile instanceof Profile) {
+                ProfileSummary profileSummary = new ProfileSummary((Profile) profile, calbnDB);
+                lreAnalysisService.lreWindowInitialization(profileSummary, selectionParameters);
+                ((LreNode) currentNode).refreshNodeLabel();
+            }
+        }
+    }//GEN-LAST:event_resetSelectedButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField avProfileOCFdisplay;
     private javax.swing.JScrollPane beanTree;
@@ -449,6 +475,7 @@ public class CalbnTree extends JPanel {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JButton resetAllButton;
+    private javax.swing.JButton resetSelectedButton;
     private javax.swing.JRadioButton runViewButton;
     // End of variables declaration//GEN-END:variables
 }
